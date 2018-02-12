@@ -1,4 +1,4 @@
-package edu.oregonstate.mist.webapiskeleton
+package edu.oregonstate.mist.personsapi
 
 import edu.oregonstate.mist.api.Application
 import edu.oregonstate.mist.api.Configuration
@@ -7,7 +7,7 @@ import io.dropwizard.setup.Environment
 /**
  * Main application class.
  */
-class SkeletonApplication extends Application<Configuration> {
+class PersonsApplication extends Application<PersonsApplicationConfiguration> {
     /**
      * Parses command-line arguments and runs the application.
      *
@@ -15,7 +15,7 @@ class SkeletonApplication extends Application<Configuration> {
      * @param environment
      */
     @Override
-    public void run(Configuration configuration, Environment environment) {
+    public void run(PersonsApplicationConfiguration configuration, Environment environment) {
         this.setup(configuration, environment)
     }
 
@@ -26,6 +26,6 @@ class SkeletonApplication extends Application<Configuration> {
      * @throws Exception
      */
     public static void main(String[] arguments) throws Exception {
-        new SkeletonApplication().run(arguments)
+        new PersonsApplication().run(arguments)
     }
 }

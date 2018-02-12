@@ -1,75 +1,399 @@
-swagger: '2.0'
-info:
-  title: Web API Skeleton
-  description: Skeleton for Dropwizard Web APIs
-  version: '0.0'
-  license:
-    name: GNU Affero General Public License Version 3
-    url: http://www.gnu.org/licenses/agpl-3.0.en.html
-externalDocs:
-  description: GitHub Repository
-  url: https://github.com/osu-mist/web-api-skeleton
-host: localhost
-schemes:
-  - http
-basePath: /api/v0
-consumes:
-  - text/plain
-produces:
-  - text/plain
-paths:
-  /:
-    get:
-      summary: Get information
-      description: Build and runtime information about the application.
-      parameters:
-        - $ref: '#/parameters/pretty'
-      responses:
-        200:
-          description: Object containing information
-          schema:
-            $ref: '#/definitions/Info'
-
-parameters:
-  pretty:
-    name: pretty
-    in: query
-    type: boolean
-    required: false
-    description: If true, JSON response will be pretty-printed
-
-definitions:
-  Info:
-    properties:
-      name:
-        type: string
-        description: Name of the API.
-      time:
-        type: string
-        description: Build time in ISO 8601 format.
-      unixTime:
-        type: integer
-        description: Build time as milliseconds since the unix epoch.
-      commit:
-        type: string
-        description: Git commit hash of the revision which was built.
-      documentation:
-        type: string
-        description: Filename of the swagger specification for the API.
-  Error:
-    properties:
-      status:
-        type: integer
-        description: HTTP status code.
-      developerMessage:
-        type: string
-        description: An error string aimed at developers.
-      userMesage:
-        type: string
-        description: An error string aimed at end users.
-      code:
-        type: integer
-        description: Error code.
-      details:
-        type: string
-        description: A link to further information about the error.
+  ---
+  swagger: "2.0"
+  info:
+    description: "Get information about people at OSU."
+    version: "1.0.0"
+    title: "Persons API"
+    license:
+      name: "GNU Affero General Public License Version 3"
+      url: "http://www.gnu.org/licenses/agpl-3.0.en.html"
+  basePath: "/v1/persons"
+  schemes:
+  - "https"
+  produces:
+  - "application/json"
+  paths:
+    /:
+      get:
+        description: "Get general personal information, query by various identifiers"
+        parameters:
+        - name: "onid"
+          in: "query"
+          description: "ONID login name"
+          required: false
+          type: "string"
+        - name: "osuID"
+          in: "query"
+          description: "OSU ID of person"
+          required: false
+          type: "string"
+        - name: "osuUID"
+          in: "query"
+          description: "OSUUID of a person. Public identifier given in Directory API"
+          required: false
+          type: "number"
+          format: "integer"
+        - name: "pretty"
+          in: "query"
+          description: "If true, JSON response will be pretty-printed"
+          required: false
+          type: "boolean"
+        responses:
+          200:
+            description: "Successful response"
+            schema:
+              $ref: "#/definitions/PersonResultObject"
+          400:
+            description: "Bad request"
+            schema:
+              $ref: "#/definitions/Error"
+    /{osuID}:
+      get:
+        description: "Get general person information"
+        parameters:
+        - name: "osuID"
+          in: "path"
+          description: "OSU ID of person"
+          required: true
+          type: "string"
+        - name: "pretty"
+          in: "query"
+          description: "If true, JSON response will be pretty-printed"
+          required: false
+          type: "boolean"
+        responses:
+          200:
+            description: "Successful response"
+            schema:
+              $ref: "#/definitions/PersonResultObject"
+          404:
+            description: "Person not found"
+            schema:
+              $ref: "#/definitions/Error"
+    /{osuID}/jobs:
+      get:
+        description: "Get jobs associated with a person"
+        parameters:
+        - name: "osuID"
+          in: "path"
+          description: "OSU ID of person"
+          required: true
+          type: "string"
+        - name: "pretty"
+          in: "query"
+          description: "If true, JSON response will be pretty-printed"
+          required: false
+          type: "boolean"
+        responses:
+          200:
+            description: "Successful response"
+            schema:
+              $ref: "#/definitions/JobsResultObject"
+          404:
+            description: "Person not found"
+            schema:
+              $ref: "#/definitions/Error"
+    /{osuID}/image:
+      get:
+        description: "Get an ID card image for a person. If the person exists but doesn't\
+          \ have\nan ID card image, a default image will be returned.\n"
+        produces:
+        - "image/jpeg"
+        - "application/json"
+        parameters:
+        - name: "width"
+          in: "query"
+          description: "Resizes image to a pixel value for width while keeping original\
+            \ aspect ratio"
+          required: false
+          type: "integer"
+        - name: "osuID"
+          in: "path"
+          description: "OSU ID of person"
+          required: true
+          type: "string"
+        - name: "pretty"
+          in: "query"
+          description: "If true, JSON response will be pretty-printed"
+          required: false
+          type: "boolean"
+        responses:
+          200:
+            description: "Successful response"
+            schema:
+              type: "file"
+            headers:
+              Content-type:
+                type: "string"
+                description: "image/jpeg"
+          404:
+            description: "Person not found"
+            schema:
+              $ref: "#/definitions/Error"
+  definitions:
+    PersonResultObject:
+      properties:
+        data:
+          $ref: "#/definitions/PersonResultObject_data"
+      example:
+        data:
+          links:
+            self: "http://example.com/aeiou"
+          attributes:
+            lastName: "lastName"
+            homePhone: "homePhone"
+            alternatePhone: "alternatePhone"
+            osuUID: 0.80082819046101150206595775671303272247314453125
+            birthDate: "2000-01-23"
+            primaryAffiliation: "primaryAffiliation"
+            firstName: "firstName"
+            primaryPhone: "primaryPhone"
+            currentUser: true
+            currentEmployee: true
+            mobilePhone: "mobilePhone"
+            currentStudent: true
+            middleName: "middleName"
+            email: "email"
+            username: "username"
+            confidential: true
+          id: "id"
+          type: "type"
+    JobsResultObject:
+      properties:
+        data:
+          $ref: "#/definitions/JobsResultObject_data"
+      example:
+        data:
+          links:
+            self: "http://example.com/aeiou"
+          attributes:
+            jobs:
+            - fte: 0.8008282
+              active: true
+              description: "description"
+              positionNumber: "positionNumber"
+              effectiveDate: "2000-01-23"
+            - fte: 0.8008282
+              active: true
+              description: "description"
+              positionNumber: "positionNumber"
+              effectiveDate: "2000-01-23"
+          id: "id"
+          type: "type"
+    SelfLink:
+      properties:
+        self:
+          type: "string"
+          format: "url"
+          description: "Self link of resource"
+      example:
+        self: "http://example.com/aeiou"
+    Error:
+      properties:
+        status:
+          type: "integer"
+          description: "HTTP status code."
+        developerMessage:
+          type: "string"
+          description: "An error string aimed at developers."
+        userMesage:
+          type: "string"
+          description: "An error string aimed at end users."
+        code:
+          type: "integer"
+          description: "Error code."
+        details:
+          type: "string"
+          description: "A link to further information about the error."
+    PersonResultObject_data_attributes:
+      properties:
+        username:
+          type: "string"
+          description: "ONID login name"
+        osuUID:
+          type: "number"
+          format: "integer"
+          description: "Unique identifier in the Directory API"
+        firstName:
+          type: "string"
+          description: "Preferred first name"
+        middleName:
+          type: "string"
+          description: "Preferred middle name"
+        lastName:
+          type: "string"
+          description: "Preferred last name"
+        email:
+          type: "string"
+          description: "OSU directory email"
+        birthDate:
+          type: "string"
+          format: "date"
+          description: "Birth date"
+        confidential:
+          type: "boolean"
+          description: "If true, the person has opted in to being required to be listed\
+            \ as confidential"
+        primaryAffiliation:
+          type: "string"
+          description: "Primary affiliation with OSU. Values are employee, student,\
+            \ or other"
+        currentUser:
+          type: "boolean"
+          description: "If true, the person has some current affiliation with OSU"
+        currentStudent:
+          type: "boolean"
+          description: "If true, the person is a current student"
+        currentEmployee:
+          type: "boolean"
+          description: "If true, the person is a current employee"
+        primaryPhone:
+          type: "string"
+          description: "E.164 formatted phone number."
+        homePhone:
+          type: "string"
+          description: "E.164 formatted phone number."
+        alternatePhone:
+          type: "string"
+          description: "E.164 formatted phone number."
+        mobilePhone:
+          type: "string"
+          description: "E.164 formatted phone number. Capable of SMS communication."
+      example:
+        lastName: "lastName"
+        homePhone: "homePhone"
+        alternatePhone: "alternatePhone"
+        osuUID: 0.80082819046101150206595775671303272247314453125
+        birthDate: "2000-01-23"
+        primaryAffiliation: "primaryAffiliation"
+        firstName: "firstName"
+        primaryPhone: "primaryPhone"
+        currentUser: true
+        currentEmployee: true
+        mobilePhone: "mobilePhone"
+        currentStudent: true
+        middleName: "middleName"
+        email: "email"
+        username: "username"
+        confidential: true
+    PersonResultObject_data:
+      properties:
+        id:
+          type: "string"
+          description: "9 digit OSU ID"
+        type:
+          type: "string"
+          description: "person"
+        links:
+          $ref: "#/definitions/SelfLink"
+        attributes:
+          $ref: "#/definitions/PersonResultObject_data_attributes"
+      example:
+        links:
+          self: "http://example.com/aeiou"
+        attributes:
+          lastName: "lastName"
+          homePhone: "homePhone"
+          alternatePhone: "alternatePhone"
+          osuUID: 0.80082819046101150206595775671303272247314453125
+          birthDate: "2000-01-23"
+          primaryAffiliation: "primaryAffiliation"
+          firstName: "firstName"
+          primaryPhone: "primaryPhone"
+          currentUser: true
+          currentEmployee: true
+          mobilePhone: "mobilePhone"
+          currentStudent: true
+          middleName: "middleName"
+          email: "email"
+          username: "username"
+          confidential: true
+        id: "id"
+        type: "type"
+    JobsResultObject_data_attributes_jobs:
+      properties:
+        positionNumber:
+          type: "string"
+          description: "Identifies a position"
+        effectiveDate:
+          type: "string"
+          format: "date"
+          description: "Effective date of job."
+        active:
+          type: "boolean"
+          description: "If true, the job is not terminated or on leave"
+        description:
+          type: "string"
+          description: "Description of job"
+        fte:
+          type: "number"
+          format: "float"
+          description: "Full time eqivalent where full time = 1"
+      example:
+        fte: 0.8008282
+        active: true
+        description: "description"
+        positionNumber: "positionNumber"
+        effectiveDate: "2000-01-23"
+    JobsResultObject_data_attributes:
+      properties:
+        jobs:
+          type: "array"
+          items:
+            $ref: "#/definitions/JobsResultObject_data_attributes_jobs"
+      example:
+        jobs:
+        - fte: 0.8008282
+          active: true
+          description: "description"
+          positionNumber: "positionNumber"
+          effectiveDate: "2000-01-23"
+        - fte: 0.8008282
+          active: true
+          description: "description"
+          positionNumber: "positionNumber"
+          effectiveDate: "2000-01-23"
+    JobsResultObject_data:
+      properties:
+        id:
+          type: "string"
+        type:
+          type: "string"
+          description: "jobs"
+        links:
+          $ref: "#/definitions/SelfLink"
+        attributes:
+          $ref: "#/definitions/JobsResultObject_data_attributes"
+      example:
+        links:
+          self: "http://example.com/aeiou"
+        attributes:
+          jobs:
+          - fte: 0.8008282
+            active: true
+            description: "description"
+            positionNumber: "positionNumber"
+            effectiveDate: "2000-01-23"
+          - fte: 0.8008282
+            active: true
+            description: "description"
+            positionNumber: "positionNumber"
+            effectiveDate: "2000-01-23"
+        id: "id"
+        type: "type"
+  parameters:
+    osuID:
+      name: "osuID"
+      in: "path"
+      description: "OSU ID of person"
+      required: true
+      type: "string"
+    pretty:
+      name: "pretty"
+      in: "query"
+      description: "If true, JSON response will be pretty-printed"
+      required: false
+      type: "boolean"
+  externalDocs:
+    description: "GitHub Repository"
+    url: "https://github.com/osu-mist/persons-api"
