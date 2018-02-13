@@ -21,7 +21,11 @@ public class PersonMapper implements ResultSetMapper<ResourceObject> {
                 primaryAffiliation: rs.getString('PRIMARY_AFFILIATION'),
                 email: rs.getString('EMAIL_ADDRESS'),
                 username: rs.getString('USERNAME'),
-                osuUID: rs.getString('OSUUID')
+                osuUID: rs.getString('OSUUID'),
+                confidential: rs.getBoolean('CONFIDENTIAL'),
+                currentUser: rs.getBoolean('CURRENT_USER'),
+                currentEmployee: rs.getBoolean('CURRENT_EMPLOYEE'),
+                currentStudent: rs.getBoolean('CURRENT_STUDENT'),
             ),
             links: []
         )
