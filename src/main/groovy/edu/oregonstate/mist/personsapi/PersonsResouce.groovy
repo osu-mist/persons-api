@@ -27,8 +27,9 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Path('{osu_id: [0-9]{9}}')
-    Response getById(@PathParam('osu_id') String osu_id) {
-        def res = personsDAO.getById(osu_id)
-        ok(res).build()
+    Response getPersonById(@PathParam('osu_id') String osu_id) {
+        def res = personsDAO.getPersonById(osu_id)
+        // ok(res).build()
+        notFound().build() // returning not found for now
     }
 }

@@ -4,7 +4,7 @@ class Attributes {
     String lastName
     String homePhone
     String alternatePhone
-    String osuUID
+    Double osuUID
     String birthDate
     String primaryAffiliation
     String firstName

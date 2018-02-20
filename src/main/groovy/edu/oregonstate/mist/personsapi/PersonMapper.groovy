@@ -21,13 +21,17 @@ public class PersonMapper implements ResultSetMapper<ResourceObject> {
                 primaryAffiliation: rs.getString('PRIMARY_AFFILIATION'),
                 email: rs.getString('EMAIL_ADDRESS'),
                 username: rs.getString('USERNAME'),
-                osuUID: rs.getString('OSUUID'),
+                osuUID: rs.getDouble('OSUUID'),
                 confidential: rs.getBoolean('CONFIDENTIAL'),
                 currentUser: rs.getBoolean('CURRENT_USER'),
                 currentEmployee: rs.getBoolean('CURRENT_EMPLOYEE'),
                 currentStudent: rs.getBoolean('CURRENT_STUDENT'),
+                homePhone: rs.getString('HOME_PHONE'),
+                alternatePhone: rs.getString('ALTERNATE_PHONE'),
+                primaryPhone: rs.getString('PRIMARY_PHONE'),
+                mobilePhone: rs.getString('MOBILE_PHONE')
             ),
-            links: []
+            links: ["self": rs.getDouble("OSUUID")]
         )
     }
 }

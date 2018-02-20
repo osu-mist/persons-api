@@ -11,7 +11,7 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery("SELECT 1 FROM dual")
     Integer checkHealth()
 
-    @SqlQuery(AbstractPersonsDAO.getById)
+    @SqlQuery(AbstractPersonsDAO.getPersonById)
     @Mapper(PersonMapper)
-    ResourceObject getById(@Bind('osu_id') String osu_id)
+    ResourceObject getPersonById(@Bind('osu_id') String osu_id)
 }
