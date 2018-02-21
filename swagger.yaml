@@ -212,8 +212,8 @@ definitions:
                       description: Job staus
                       enum:
                         - Active
-                        - Leave without pay with benefits
-                        - Leave without pay without benefits
+                        - Leave without pay but with benefits
+                        - Leave without pay and benefits
                         - Leave with full pay and benefits
                         - Leave with partial pay and benefits
                         - Terminated
