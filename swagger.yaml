@@ -207,9 +207,16 @@ definitions:
                       type: string
                       format: date
                       description: Effective date of job.
-                    active:
-                      type: boolean
-                      description: If true, the job is not terminated or on leave
+                    status:
+                      type: string
+                      description: Job staus
+                      enum:
+                        - Active
+                        - Leave without pay with benefits
+                        - Leave without pay without benefits
+                        - Leave with full pay and benefits
+                        - Leave with partial pay and benefits
+                        - Terminated
                     description:
                       type: string
                       description: Description of job
