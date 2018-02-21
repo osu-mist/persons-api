@@ -1,6 +1,6 @@
 package edu.oregonstate.mist.core
 
-class Attributes {
+class PersonAttributes {
     String lastName
     String homePhone
     String alternatePhone

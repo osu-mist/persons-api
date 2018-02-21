@@ -1,7 +1,7 @@
-package edu.oregonstate.mist.personsapi
+package edu.oregonstate.mist.personsapi.mapper
 
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
-import edu.oregonstate.mist.core.Attributes
+import edu.oregonstate.mist.core.PersonAttributes
 import org.skife.jdbi.v2.StatementContext
 import org.skife.jdbi.v2.tweak.ResultSetMapper
 
@@ -12,8 +12,8 @@ public class PersonMapper implements ResultSetMapper<ResourceObject> {
     public ResourceObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
         new ResourceObject(
             id: rs.getString('OSU_ID'),
-            type: 'person',
-            attributes: new Attributes(
+            type: 'jobs',
+            attributes: new PersonAttributes(
                 firstName: rs.getString('FIRST_NAME'),
                 lastName: rs.getString('LAST_NAME'),
                 middleName: rs.getString('MIDDLE_NAME'),
@@ -31,7 +31,7 @@ public class PersonMapper implements ResultSetMapper<ResourceObject> {
                 primaryPhone: rs.getString('PRIMARY_PHONE'),
                 mobilePhone: rs.getString('MOBILE_PHONE')
             ),
-            links: ["self": rs.getDouble("OSUUID")]
+            links: ["self": rs.getString('OSU_ID')]
         )
     }
 }

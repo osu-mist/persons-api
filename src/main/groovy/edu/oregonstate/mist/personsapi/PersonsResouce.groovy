@@ -2,6 +2,7 @@ package edu.oregonstate.mist.personsapi
 
 import com.codahale.metrics.annotation.Timed
 import edu.oregonstate.mist.api.Resource
+import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
 
 import javax.annotation.security.PermitAll
@@ -9,7 +10,6 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
-import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
@@ -29,7 +29,19 @@ class PersonsResource extends Resource {
     @Path('{osu_id: [0-9]{9}}')
     Response getPersonById(@PathParam('osu_id') String osu_id) {
         def res = personsDAO.getPersonById(osu_id)
-        // ok(res).build()
+//        ok(res).build()
         notFound().build() // returning not found for now
+    }
+
+    @Timed
+    @GET
+    @Path('{osu_id: [0-9]{9}}/jobs')
+    Response getJobsById(@PathParam('osu_id') String osu_id) {
+        def jobs = personsDAO.getJobsById(osu_id)
+
+        println(jobs)
+
+        notFound().build()
+//        ok(res).build()
     }
 }
