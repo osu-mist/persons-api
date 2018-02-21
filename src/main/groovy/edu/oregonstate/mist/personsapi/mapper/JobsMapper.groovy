@@ -10,7 +10,11 @@ import java.sql.SQLException
 public class JobsMapper implements ResultSetMapper<JobObject> {
     public JobObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
         new JobObject(
-            positionNumber: rs.getString('POSITION_NUMBER')
+            positionNumber: rs.getString('POSITION_NUMBER'),
+            fte: rs.getFloat('FTE'),
+            description: rs.getString('DESCRIPTION'),
+            effectiveDate: rs.getDate('EFFECTIVE_DATE'),
+            active: rs.getString('ACTIVE')
         )
     }
 }
