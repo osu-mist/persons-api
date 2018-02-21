@@ -3,7 +3,7 @@ package edu.oregonstate.mist.core
 class JobObject {
     String positionNumber
     Date effectiveDate
-    String active
+    String status
     String description
     Float fte
 }

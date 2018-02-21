@@ -39,15 +39,22 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osu_id: [0-9]{9}}/jobs')
     Response getJobsById(@PathParam('osu_id') String osu_id) {
-        def res = new ResultObject(
-            data: new ResourceObject(
-                id: osu_id,
-                type: 'jobs',
-                attributes: personsDAO.getJobsById(osu_id),
-                links: ['self': osu_id]
-            )
-        )
 
-        ok(res).build()
+        def jobs = personsDAO.getJobsById(osu_id)
+
+        if (jobs) {
+            def res = new ResultObject(
+                data: new ResourceObject(
+                    id: osu_id,
+                    type: 'jobs',
+                    attributes: jobs,
+                    links: ['self': osu_id]
+                )
+            )
+            ok(res).build()
+        } else {
+            notFound().build()
+        }
+
     }
 }
