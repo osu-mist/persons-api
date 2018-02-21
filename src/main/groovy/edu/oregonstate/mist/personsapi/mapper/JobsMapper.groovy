@@ -15,8 +15,8 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
          */
         def jobStatusDict = [
             'A': 'Active',
-            'B': 'Leave without pay with benefits',
-            'L': 'Leave without pay without benefits',
+            'B': 'Leave without pay but with benefits',
+            'L': 'Leave without pay and benefits',
             'F': 'Leave with full pay and benefits',
             'P': 'Leave with partial pay and benefits',
             'T': 'Terminated'
