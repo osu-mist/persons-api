@@ -23,7 +23,9 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
         DBIFactory factory = new DBIFactory()
         DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "jdbi")
         PersonsDAO personsDAO = jdbi.onDemand(PersonsDAO.class)
-        environment.jersey().register(new PersonsResource(personsDAO))
+        environment.jersey().register(
+            new PersonsResource(personsDAO, configuration.api.endpointUri)
+        )
     }
 
     /**

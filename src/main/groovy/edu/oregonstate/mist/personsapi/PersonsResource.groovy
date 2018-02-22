@@ -21,33 +21,36 @@ import javax.ws.rs.core.Response
 @TypeChecked
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
+    private PersonUriBuilder personUriBuilder
 
-    PersonsResource(PersonsDAO personsDAO) {
+    PersonsResource(PersonsDAO personsDAO, URI endpointUri) {
         this.personsDAO = personsDAO
+        this.endpointUri = endpointUri
+        this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
+
+//    @Timed
+//    @GET
+//    @Path('{osuId: [0-9]{9}}')
+//    Response getPersonById(@PathParam('osuId') String osuId) {
+//        def res = new ResultObject(data: personsDAO.getPersonById(osuId))
+//        ok(res).build()
+//    }
 
     @Timed
     @GET
-    @Path('{osu_id: [0-9]{9}}')
-    Response getPersonById(@PathParam('osu_id') String osu_id) {
-        def res = new ResultObject(data: personsDAO.getPersonById(osu_id))
-        ok(res).build()
-    }
+    @Path('{osuId: [0-9]{9}}/jobs')
+    Response getJobsById(@PathParam('osuId') String osuId) {
 
-    @Timed
-    @GET
-    @Path('{osu_id: [0-9]{9}}/jobs')
-    Response getJobsById(@PathParam('osu_id') String osu_id) {
-
-        def jobs = personsDAO.getJobsById(osu_id)
+        def jobs = personsDAO.getJobsById(osuId)
 
         if (jobs) {
             def res = new ResultObject(
                 data: new ResourceObject(
-                    id: osu_id,
+                    id: osuId,
                     type: 'jobs',
                     attributes: jobs,
-                    links: ['self': osu_id]
+                    links: ['self': personUriBuilder.personJobUri(osuId)]
                 )
             )
             ok(res).build()
