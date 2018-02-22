@@ -46,6 +46,7 @@ dependencies {
     compile "de.thomaskrille:dropwizard-template-config:1.4.0"
     compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
     compile ':ojdbc6:'
+    compile 'com.googlecode.libphonenumber:libphonenumber:4.3'
 }
 
 codenarc {
