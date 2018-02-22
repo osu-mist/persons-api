@@ -29,13 +29,21 @@ class PersonsResource extends Resource {
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
 
-//    @Timed
-//    @GET
-//    @Path('{osuId: [0-9]{9}}')
-//    Response getPersonById(@PathParam('osuId') String osuId) {
-//        def res = new ResultObject(data: personsDAO.getPersonById(osuId))
-//        ok(res).build()
-//    }
+    @Timed
+    @GET
+    @Path('{osuId: [0-9]{9}}')
+    Response getPersonById(@PathParam('osuId') String osuId) {
+
+        def res = new ResultObject(
+            data: new ResourceObject(
+                id: osuId,
+                type: 'person',
+                attributes: personsDAO.getPersonById(osuId),
+                links: ['self': personUriBuilder.personJobUri(osuId)]
+            )
+        )
+        ok(res).build()
+    }
 
     @Timed
     @GET
