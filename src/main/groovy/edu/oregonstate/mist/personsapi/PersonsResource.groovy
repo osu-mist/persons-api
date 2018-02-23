@@ -96,6 +96,6 @@ class PersonsResource extends Resource {
         def image = personsDAO.getImageById(osuID)
 
         BufferedImage idImage = ImageIO.read(image.getBinaryStream())
-        Response.ok(idImage).build()
+        ok(idImage).build()
     }
 }
