@@ -34,7 +34,7 @@ class PersonsResource extends Resource {
     @GET
     Response list(@QueryParam('onid') String onid,
                   @QueryParam('osuID') String osuID,
-                  @QueryParam('osuUID') Double osuUID) {
+                  @QueryParam('osuUID') Long osuUID) {
 
         def id = [onid, osuID, osuUID].findAll { it }
         if (id.size() != 1) {
