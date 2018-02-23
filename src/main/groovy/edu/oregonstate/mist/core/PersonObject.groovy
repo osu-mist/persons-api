@@ -8,7 +8,7 @@ class PersonObject {
     String lastName
     String homePhone
     String alternatePhone
-    Double osuUID
+    Long osuUID
     Date birthDate
     String primaryAffiliation
     String firstName
