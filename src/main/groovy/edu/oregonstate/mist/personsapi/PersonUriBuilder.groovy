@@ -9,9 +9,15 @@ class PersonUriBuilder {
         this.endpointUri = endpointUri
     }
 
-    URI personJobUri(String osuID) {
+    URI personUri(String osuID) {
         UriBuilder.fromUri(this.endpointUri)
-            .path('persons/{osuID}/jobs')
-            .build(osuID)
+                  .path('persons/{osuID}')
+                  .build(osuID)
+    }
+
+    URI personJobsUri(String osuID) {
+        UriBuilder.fromUri(this.endpointUri)
+                  .path('persons/{osuID}/jobs')
+                  .build(osuID)
     }
 }

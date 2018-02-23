@@ -12,6 +12,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
@@ -31,40 +32,61 @@ class PersonsResource extends Resource {
 
     @Timed
     @GET
-    @Path('{osuId: [0-9]{9}}')
-    Response getPersonById(@PathParam('osuId') String osuId) {
+    Response list(@QueryParam('onid') String onid,
+                  @QueryParam('osuID') String osuID,
+                  @QueryParam('osuUID') Double osuUID) {
 
-        def res = new ResultObject(
-            data: new ResourceObject(
-                id: osuId,
+        def id = [onid, osuID, osuUID].findAll { it }
+        if (id.size() != 1) {
+            badRequest('The number of input parameter(s) is not equal to one.').build()
+        } else {
+            def persons = personsDAO.getPersons(id[0])
+            ResultObject res = new ResultObject(data: new ResourceObject(
+                id: '123',
                 type: 'person',
-                attributes: personsDAO.getPersonById(osuId),
-                links: ['self': personUriBuilder.personJobUri(osuId)]
-            )
-        )
-        ok(res).build()
+                attributes: persons,
+                links: ['self': personUriBuilder.personUri('123')]
+            ))
+            ok(res).build()
+        }
     }
 
     @Timed
     @GET
-    @Path('{osuId: [0-9]{9}}/jobs')
-    Response getJobsById(@PathParam('osuId') String osuId) {
+    @Path('{osuID: [0-9]{9}}')
+    Response getPersonById(@PathParam('osuID') String osuID) {
+        def person = personsDAO.getPersonById(osuID)
+        if (person) {
+            ResultObject res = new ResultObject(data: new ResourceObject(
+                id: osuID,
+                type: 'person',
+                attributes: person,
+                links: ['self': personUriBuilder.personUri(osuID)]
+            ))
+            ok(res).build()
+        } else {
+            notFound().build()
+        }
+    }
 
-        def jobs = personsDAO.getJobsById(osuId)
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]{9}}/jobs')
+    Response getJobsById(@PathParam('osuID') String osuID) {
+        def jobs = personsDAO.getJobsById(osuID)
 
         if (jobs) {
             def res = new ResultObject(
                 data: new ResourceObject(
-                    id: osuId,
+                    id: osuID,
                     type: 'jobs',
                     attributes: jobs,
-                    links: ['self': personUriBuilder.personJobUri(osuId)]
+                    links: ['self': personUriBuilder.personJobsUri(osuID)]
                 )
             )
             ok(res).build()
         } else {
             notFound().build()
         }
-
     }
 }
