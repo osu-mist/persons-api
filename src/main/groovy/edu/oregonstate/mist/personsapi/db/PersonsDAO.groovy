@@ -2,12 +2,15 @@ package edu.oregonstate.mist.personsapi.db
 
 import edu.oregonstate.mist.core.JobObject
 import edu.oregonstate.mist.core.PersonObject
+import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.PersonMapper
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
 import org.skife.jdbi.v2.sqlobject.Bind
 import org.skife.jdbi.v2.sqlobject.SqlQuery
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper
+
+import java.sql.Blob
 
 public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getPersons)
@@ -21,4 +24,8 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getJobsById)
     @Mapper(JobsMapper)
     List<JobObject> getJobsById(@Bind('osuID') String osuID)
+
+    @SqlQuery(AbstractPersonsDAO.getImageById)
+    @Mapper(ImageMapper)
+    Blob getImageById(@Bind('osuID') String osuID)
 }

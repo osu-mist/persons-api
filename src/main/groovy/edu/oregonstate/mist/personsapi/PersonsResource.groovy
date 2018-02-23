@@ -8,6 +8,7 @@ import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
 
 import javax.annotation.security.PermitAll
+import javax.imageio.ImageIO
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
@@ -15,6 +16,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import java.awt.image.BufferedImage
 
 @Path("persons")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,7 +36,7 @@ class PersonsResource extends Resource {
     @GET
     Response list(@QueryParam('onid') String onid,
                   @QueryParam('osuID') String osuID,
-                  @QueryParam('osuUID') Long osuUID) {
+                  @QueryParam('osuUID') String osuUID) {
 
         def id = [onid, osuID, osuUID].findAll { it }
         if (id.size() != 1) {
@@ -84,5 +86,16 @@ class PersonsResource extends Resource {
             )
         )
         ok(res).build()
+    }
+
+    @Timed
+    @GET
+    @Produces('image/jpeg')
+    @Path('{osuID: [0-9]{9}}/image')
+    Response getImageById(@PathParam('osuID') String osuID) {
+        def image = personsDAO.getImageById(osuID)
+
+        BufferedImage idImage = ImageIO.read(image.getBinaryStream())
+        Response.ok(idImage).build()
     }
 }
