@@ -12,7 +12,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.Mapper
 public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
-    PersonObject getPersons(@Bind('id') id)
+    PersonObject getPersons(@Bind('onid') onid, @Bind('osuID') osuID, @Bind('osuUID') osuUID)
 
     @SqlQuery(AbstractPersonsDAO.getPersonById)
     @Mapper(PersonMapper)

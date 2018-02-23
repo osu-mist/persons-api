@@ -40,12 +40,12 @@ class PersonsResource extends Resource {
         if (id.size() != 1) {
             badRequest('The number of input parameter(s) is not equal to one.').build()
         } else {
-            def persons = personsDAO.getPersons(id[0])
+            def persons = personsDAO.getPersons(onid, osuID, osuUID)
             ResultObject res = new ResultObject(data: new ResourceObject(
-                id: '123',
+                id: persons.osuID,
                 type: 'person',
                 attributes: persons,
-                links: ['self': personUriBuilder.personUri('123')]
+                links: ['self': personUriBuilder.personUri(persons.osuID)]
             ))
             ok(res).build()
         }
@@ -56,17 +56,13 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]{9}}')
     Response getPersonById(@PathParam('osuID') String osuID) {
         def person = personsDAO.getPersonById(osuID)
-        if (person) {
-            ResultObject res = new ResultObject(data: new ResourceObject(
-                id: osuID,
-                type: 'person',
-                attributes: person,
-                links: ['self': personUriBuilder.personUri(osuID)]
-            ))
-            ok(res).build()
-        } else {
-            notFound().build()
-        }
+        ResultObject res = new ResultObject(data: new ResourceObject(
+            id: osuID,
+            type: 'person',
+            attributes: person,
+            links: ['self': personUriBuilder.personUri(osuID)]
+        ))
+        ok(res).build()
     }
 
     @Timed

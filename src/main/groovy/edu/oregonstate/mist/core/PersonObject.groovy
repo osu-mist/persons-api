@@ -1,6 +1,10 @@
 package edu.oregonstate.mist.core
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+
 class PersonObject {
+    @JsonIgnore
+    String osuID
     String lastName
     String homePhone
     String alternatePhone

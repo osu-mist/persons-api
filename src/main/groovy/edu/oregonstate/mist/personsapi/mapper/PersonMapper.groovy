@@ -12,6 +12,7 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
     PhoneFormatter phoneFormatter = new PhoneFormatter()
     public PersonObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
         new PersonObject (
+            osuID: rs.getString('OSU_ID'),
             firstName: rs.getString('FIRST_NAME'),
             lastName: rs.getString('LAST_NAME'),
             middleName: rs.getString('MIDDLE_NAME'),
