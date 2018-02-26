@@ -26,7 +26,8 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             positionNumber: rs.getString('POSITION_NUMBER'),
             fte: rs.getFloat('FTE'),
             description: rs.getString('DESCRIPTION'),
-            effectiveDate: rs.getDate('EFFECTIVE_DATE'),
+            beginDate: rs.getDate('BEGIN_DATE'),
+            endDate: rs.getDate('END_DATE'),
             status: jobStatusDict[rs.getString('STATUS')]
         )
     }

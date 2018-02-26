@@ -203,10 +203,14 @@ definitions:
                     positionNumber:
                       type: string
                       description: Identifies a position
-                    effectiveDate:
+                    beginDate:
                       type: string
                       format: date
-                      description: Effective date of job.
+                      description: Begin date of job.
+                    endDate:
+                      type: string
+                      format: date
+                      description: End date of job.
                     status:
                       type: string
                       description: Job staus
