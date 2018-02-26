@@ -25,6 +25,7 @@ import java.awt.image.BufferedImage
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
     private PersonUriBuilder personUriBuilder
+    private final Integer maxWidth = 2000
 
     PersonsResource(PersonsDAO personsDAO, URI endpointUri) {
         this.personsDAO = personsDAO
@@ -92,10 +93,14 @@ class PersonsResource extends Resource {
     @GET
     @Produces('image/jpeg')
     @Path('{osuID: [0-9]{9}}/image')
-    Response getImageById(@PathParam('osuID') String osuID) {
+    Response getImageById(@PathParam('osuID') String osuID,
+                          @QueryParam('width') Integer width) {
         def image = personsDAO.getImageById(osuID)
 
-        BufferedImage idImage = ImageIO.read(image.getBinaryStream())
-        ok(idImage).build()
+        if (width && (width <= 0) || (width > maxWidth)) {
+            String widthError = 'Width must be value from 1 - ' + maxWidth
+            return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
+        }
+        ok(ImageManipulation.getImageStream(ImageIO.read(image.getBinaryStream()), width)).build()
     }
 }
