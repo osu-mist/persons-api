@@ -168,9 +168,6 @@ definitions:
               currentStudent:
                 type: boolean
                 description: If true, the person is a current student
-              currentEmployee:
-                type: boolean
-                description: If true, the person is a current employee
               primaryPhone:
                 type: string
                 description: E.164 formatted phone number.
