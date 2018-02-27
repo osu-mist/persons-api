@@ -16,7 +16,6 @@ import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import java.awt.image.BufferedImage
 
 @Path("persons")
 @Produces(MediaType.APPLICATION_JSON)
@@ -62,14 +61,19 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]{9}}')
     Response getPersonById(@PathParam('osuID') String osuID) {
+
         def person = personsDAO.getPersonById(osuID)
-        ResultObject res = new ResultObject(data: new ResourceObject(
-            id: osuID,
-            type: 'person',
-            attributes: person,
-            links: ['self': personUriBuilder.personUri(osuID)]
-        ))
-        ok(res).build()
+        if (person) {
+            ResultObject res = new ResultObject(data: new ResourceObject(
+                id: osuID,
+                type: 'person',
+                attributes: person,
+                links: ['self': personUriBuilder.personUri(osuID)]
+            ))
+            ok(res).build()
+        } else {
+            notFound().build()
+        }
     }
 
     @Timed
@@ -77,30 +81,37 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]{9}}/jobs')
     Response getJobsById(@PathParam('osuID') String osuID) {
         def jobs = personsDAO.getJobsById(osuID)
-
-        def res = new ResultObject(
-            data: new ResourceObject(
-                id: osuID,
-                type: 'jobs',
-                attributes: jobs,
-                links: ['self': personUriBuilder.personJobsUri(osuID)]
+        if (jobs) {
+            def res = new ResultObject(
+                data: new ResourceObject(
+                    id: osuID,
+                    type: 'jobs',
+                    attributes: jobs,
+                    links: ['self': personUriBuilder.personJobsUri(osuID)]
+                )
             )
-        )
-        ok(res).build()
+            ok(res).build()
+        } else {
+            notFound().build()
+        }
     }
 
     @Timed
     @GET
     @Produces('image/jpeg')
     @Path('{osuID: [0-9]{9}}/image')
-    Response getImageById(@PathParam('osuID') String osuID,
-                          @QueryParam('width') Integer width) {
+    Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
         def image = personsDAO.getImageById(osuID)
-
-        if (width && (width <= 0) || (width > maxWidth)) {
-            String widthError = 'Width must be value from 1 - ' + maxWidth
-            return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
+        
+        if (image) {
+            if (width && (width <= 0) || (width > maxWidth)) {
+                String widthError = 'Width must be value from 1 - ' + maxWidth
+                return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
+            }
+            def res = ImageManipulation.getImageStream(ImageIO.read(image.getBinaryStream()), width)
+            ok(res).build()
+        } else {
+            notFound().type(MediaType.APPLICATION_JSON).build()
         }
-        ok(ImageManipulation.getImageStream(ImageIO.read(image.getBinaryStream()), width)).build()
     }
 }
