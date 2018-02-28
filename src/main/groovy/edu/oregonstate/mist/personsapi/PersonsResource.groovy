@@ -102,7 +102,7 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]{9}}/image')
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
         def image = personsDAO.getImageById(osuID)
-        
+
         if (image) {
             if (width && (width <= 0) || (width > maxWidth)) {
                 String widthError = 'Width must be value from 1 - ' + maxWidth

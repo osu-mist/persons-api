@@ -14,7 +14,6 @@ class PersonObject {
     String firstName
     String primaryPhone
     Boolean currentUser
-    Boolean currentEmployee
     String mobilePhone
     Boolean currentStudent
     String middleName

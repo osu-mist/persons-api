@@ -23,7 +23,6 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             osuUID: rs.getString('OSUUID'),
             confidential: rs.getBoolean('CONFIDENTIAL'),
             currentUser: rs.getBoolean('CURRENT_USER'),
-            currentEmployee: rs.getBoolean('CURRENT_EMPLOYEE'),
             currentStudent: rs.getBoolean('CURRENT_STUDENT'),
             homePhone: phoneFormatter.toE164(rs.getString('HOME_PHONE')),
             alternatePhone: phoneFormatter.toE164(rs.getString('ALTERNATE_PHONE')),
