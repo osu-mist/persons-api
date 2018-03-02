@@ -1,6 +1,6 @@
 package edu.oregonstate.mist.personsapi.mapper
 
-import edu.oregonstate.mist.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PhoneFormatter
 import org.skife.jdbi.v2.StatementContext
 import org.skife.jdbi.v2.tweak.ResultSetMapper
@@ -23,7 +23,7 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             osuUID: rs.getString('OSUUID'),
             confidential: rs.getBoolean('CONFIDENTIAL'),
             currentUser: rs.getBoolean('CURRENT_USER'),
-            currentStudent: rs.getBoolean('CURRENT_STUDENT'),
+            currentStudent: rs.getString('CURRENT_STUDENT') == 'Y',
             homePhone: phoneFormatter.toE164(rs.getString('HOME_PHONE')),
             alternatePhone: phoneFormatter.toE164(rs.getString('ALTERNATE_PHONE')),
             primaryPhone: phoneFormatter.toE164(rs.getString('PRIMARY_PHONE')),

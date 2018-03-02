@@ -1,6 +1,6 @@
 package edu.oregonstate.mist.personsapi.mapper
 
-import edu.oregonstate.mist.core.JobObject
+import edu.oregonstate.mist.personsapi.core.JobObject
 import org.skife.jdbi.v2.StatementContext
 import org.skife.jdbi.v2.tweak.ResultSetMapper
 
@@ -20,7 +20,7 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             'F': 'Leave with full pay and benefits',
             'P': 'Leave with partial pay and benefits',
             'T': 'Terminated'
-        ]
+        ].withDefault { key -> 'New job status. Please contact API support for further assistance' }
 
         new JobObject(
             positionNumber: rs.getString('POSITION_NUMBER'),

@@ -2,9 +2,8 @@ package edu.oregonstate.mist.persons
 
 import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResultObject
-import edu.oregonstate.mist.core.JobObject
-import edu.oregonstate.mist.core.PersonObject
-import edu.oregonstate.mist.personsapi.ImageManipulation
+import edu.oregonstate.mist.personsapi.core.JobObject
+import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.mock.interceptor.MockFor

@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
     private PersonUriBuilder personUriBuilder
-    private final Integer maxWidth = 2000
+    private final Integer maxImageWidth = 2000
 
     PersonsResource(PersonsDAO personsDAO, URI endpointUri) {
         this.personsDAO = personsDAO
@@ -104,8 +104,8 @@ class PersonsResource extends Resource {
         def image = personsDAO.getImageById(osuID)
 
         if (image) {
-            if (width && (width <= 0) || (width > maxWidth)) {
-                String widthError = 'Width must be value from 1 - ' + maxWidth
+            if (width && (width <= 0) || (width > maxImageWidth)) {
+                String widthError = 'Width must be value from 1 - ' + maxImageWidth
                 return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
             }
             def res = ImageManipulation.getImageStream(ImageIO.read(image.getBinaryStream()), width)

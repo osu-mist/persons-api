@@ -1,7 +1,7 @@
 package edu.oregonstate.mist.personsapi.db
 
-import edu.oregonstate.mist.core.JobObject
-import edu.oregonstate.mist.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.JobObject
+import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.PersonMapper
