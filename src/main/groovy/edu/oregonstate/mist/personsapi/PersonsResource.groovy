@@ -105,22 +105,21 @@ class PersonsResource extends Resource {
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
 
         if (personsDAO.getPersonById(osuID)) {
-            def image = personsDAO.getImageById(osuID)
+            if (width && (width <= 0) || (width > maxImageWidth)) {
+                String widthError = 'Width must be value from 1 - ' + maxImageWidth
+                return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
+            }
 
+            def res
+            def image = personsDAO.getImageById(osuID)
             if (image) {
-                if (width && (width <= 0) || (width > maxImageWidth)) {
-                    String widthError = 'Width must be value from 1 - ' + maxImageWidth
-                    return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
-                }
-                def res = ImageManipulation.getImageStream(
-                    ImageIO.read(image.getBinaryStream()), width)
-                ok(res).build()
+                res = ImageManipulation.getImageStream(ImageIO.read(image.getBinaryStream()), width)
             } else {
                 ClassLoader classLoader = Thread.currentThread().getContextClassLoader()
                 InputStream imageInputStream = classLoader.getResourceAsStream('defaultImage.jpg')
-                BufferedImage defaultImage = ImageIO.read(imageInputStream)
-                ok(ImageManipulation.getImageStream(defaultImage, width)).build()
+                res = ImageManipulation.getImageStream(ImageIO.read(imageInputStream), width)
             }
+            ok(res).build()
         } else {
             notFound().type(MediaType.APPLICATION_JSON).build()
         }
