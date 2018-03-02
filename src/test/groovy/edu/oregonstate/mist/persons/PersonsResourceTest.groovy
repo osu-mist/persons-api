@@ -72,9 +72,9 @@ class PersonsResourceTest {
     void shouldReturn404IfBadOSUId() {
         def mock = new MockFor(PersonsDAO)
         mock.demand.with {
-            getPersonById { null }
-            getJobsById { null }
-            getImageById { null }
+            getPersonById ( 0..3 ) { null }
+            getJobsById ( 0..3 ) { null }
+            getImageById ( 0..3 ) { null }
         }
         PersonsResource personsResource = new PersonsResource(mock.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
@@ -86,9 +86,9 @@ class PersonsResourceTest {
     void shouldReturnValidResponse() {
         def mock = new MockFor(PersonsDAO)
         mock.demand.with {
-            getPersons {  String onid, String osuID, String osuUID -> [fakePerson] }
-            getPersonById { String osuID -> fakePerson }
-            getJobsById { String osuID -> fakeJob }
+            getPersons ( 0..3 ) { String onid, String osuID, String osuUID -> [fakePerson] }
+            getPersonById ( 0..3 ) { String osuID -> fakePerson }
+            getJobsById ( 0..3 ) { String osuID -> fakeJob }
         }
         PersonsResource personsResource = new PersonsResource(mock.proxyInstance(), endpointUri)
         checkValidResponse(personsResource.list('johndoe', null, null), 200, [fakePerson])

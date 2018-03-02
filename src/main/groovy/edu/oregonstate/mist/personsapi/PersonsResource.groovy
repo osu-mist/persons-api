@@ -16,6 +16,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import java.awt.image.BufferedImage
 
 @Path("persons")
 @Produces(MediaType.APPLICATION_JSON)
@@ -80,8 +81,9 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]{9}}/jobs')
     Response getJobsById(@PathParam('osuID') String osuID) {
-        def jobs = personsDAO.getJobsById(osuID)
-        if (jobs) {
+
+        if (personsDAO.getPersonById(osuID)) {
+            def jobs = personsDAO.getJobsById(osuID)
             def res = new ResultObject(
                 data: new ResourceObject(
                     id: osuID,
@@ -101,15 +103,24 @@ class PersonsResource extends Resource {
     @Produces('image/jpeg')
     @Path('{osuID: [0-9]{9}}/image')
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
-        def image = personsDAO.getImageById(osuID)
 
-        if (image) {
-            if (width && (width <= 0) || (width > maxImageWidth)) {
-                String widthError = 'Width must be value from 1 - ' + maxImageWidth
-                return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
+        if (personsDAO.getPersonById(osuID)) {
+            def image = personsDAO.getImageById(osuID)
+
+            if (image) {
+                if (width && (width <= 0) || (width > maxImageWidth)) {
+                    String widthError = 'Width must be value from 1 - ' + maxImageWidth
+                    return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
+                }
+                def res = ImageManipulation.getImageStream(
+                    ImageIO.read(image.getBinaryStream()), width)
+                ok(res).build()
+            } else {
+                ClassLoader classLoader = Thread.currentThread().getContextClassLoader()
+                InputStream imageInputStream = classLoader.getResourceAsStream('defaultImage.jpg')
+                BufferedImage defaultImage = ImageIO.read(imageInputStream)
+                ok(ImageManipulation.getImageStream(defaultImage, width)).build()
             }
-            def res = ImageManipulation.getImageStream(ImageIO.read(image.getBinaryStream()), width)
-            ok(res).build()
         } else {
             notFound().type(MediaType.APPLICATION_JSON).build()
         }
