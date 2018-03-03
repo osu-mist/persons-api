@@ -82,7 +82,7 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]{9}}/jobs')
     Response getJobsById(@PathParam('osuID') String osuID) {
 
-        if (personsDAO.getPersonById(osuID)) {
+        if (personsDAO.personExist(osuID)) {
             def jobs = personsDAO.getJobsById(osuID)
             def res = new ResultObject(
                 data: new ResourceObject(
@@ -104,7 +104,7 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]{9}}/image')
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
 
-        if (personsDAO.getPersonById(osuID)) {
+        if (personsDAO.personExist(osuID)) {
             if (width && (width <= 0) || (width > maxImageWidth)) {
                 String widthError = 'Width must be value from 1 - ' + maxImageWidth
                 return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()

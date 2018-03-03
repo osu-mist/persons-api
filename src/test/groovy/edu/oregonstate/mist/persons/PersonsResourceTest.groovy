@@ -7,6 +7,7 @@ import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.mock.interceptor.MockFor
+import groovy.mock.interceptor.StubFor
 import org.junit.Test
 
 import javax.ws.rs.core.Response
@@ -70,13 +71,15 @@ class PersonsResourceTest {
 
     @Test
     void shouldReturn404IfBadOSUId() {
-        def mock = new MockFor(PersonsDAO)
-        mock.demand.with {
-            getPersonById ( 0..3 ) { null }
-            getJobsById ( 0..3 ) { null }
-            getImageById ( 0..3 ) { null }
+        def stub = new StubFor(PersonsDAO)
+        stub.demand.with {
+            getPersonById { null }
+            personExist { null }
+            getJobsById { null }
+            personExist { null }
+            getImageById { null }
         }
-        PersonsResource personsResource = new PersonsResource(mock.proxyInstance(), endpointUri)
+        PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
         checkErrorResponse(personsResource.getJobsById('123456789'), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
@@ -84,13 +87,14 @@ class PersonsResourceTest {
 
     @Test
     void shouldReturnValidResponse() {
-        def mock = new MockFor(PersonsDAO)
-        mock.demand.with {
-            getPersons ( 0..3 ) { String onid, String osuID, String osuUID -> [fakePerson] }
-            getPersonById ( 0..3 ) { String osuID -> fakePerson }
-            getJobsById ( 0..3 ) { String osuID -> fakeJob }
+        def stub = new StubFor(PersonsDAO)
+        stub.demand.with {
+            getPersons { String onid, String osuID, String osuUID -> [fakePerson] }
+            personExist { String osuID -> '123456789' }
+            getPersonById { String osuID -> fakePerson }
+            getJobsById { String osuID -> fakeJob }
         }
-        PersonsResource personsResource = new PersonsResource(mock.proxyInstance(), endpointUri)
+        PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkValidResponse(personsResource.list('johndoe', null, null), 200, [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
         checkValidResponse(personsResource.getJobsById('123456789'), 200, fakeJob)

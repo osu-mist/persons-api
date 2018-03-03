@@ -13,6 +13,9 @@ import org.skife.jdbi.v2.sqlobject.customizers.Mapper
 import java.sql.Blob
 
 public interface PersonsDAO extends Closeable {
+    @SqlQuery(AbstractPersonsDAO.personExist)
+    String personExist(@Bind('osuID') String osuID)
+
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
     List<PersonObject> getPersons(@Bind('onid') onid, @Bind('osuID') osuID, @Bind('osuUID') osuUID)
