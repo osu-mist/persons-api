@@ -41,7 +41,7 @@ class PersonsResource extends Resource {
 
         def id = [onid, osuID, osuUID].findAll { it }
         if (id.size() != 1) {
-            badRequest('onid, osuID, and osuUID cannot not be included together').build()
+            badRequest('onid, osuID, and osuUID cannot be included together').build()
         } else {
             def persons = personsDAO.getPersons(onid, osuID, osuUID)
             ResultObject res = new ResultObject(
