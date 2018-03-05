@@ -1,6 +1,6 @@
 # Persons API
 
-Get persons resource related data.
+Get persons resource related data. This repository also contains the original [ID Images API](https://github.com/osu-mist/id-images-api).
 
 ### Generate Keys
 
