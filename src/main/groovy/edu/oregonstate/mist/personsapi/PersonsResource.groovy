@@ -88,7 +88,7 @@ class PersonsResource extends Resource {
                 data: new ResourceObject(
                     id: osuID,
                     type: 'jobs',
-                    attributes: jobs,
+                    attributes: ['jobs': jobs],
                     links: ['self': personUriBuilder.personJobsUri(osuID)]
                 )
             )

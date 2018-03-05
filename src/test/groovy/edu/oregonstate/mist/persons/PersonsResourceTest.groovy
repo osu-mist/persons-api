@@ -97,6 +97,6 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkValidResponse(personsResource.list('johndoe', null, null), 200, [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
-        checkValidResponse(personsResource.getJobsById('123456789'), 200, fakeJob)
+        checkValidResponse(personsResource.getJobsById('123456789'), 200, ['jobs': fakeJob])
     }
 }
