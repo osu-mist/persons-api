@@ -159,12 +159,6 @@ definitions:
               confidential:
                 type: boolean
                 description: If true, the person has opted in to being required to be listed as confidential
-              primaryAffiliation:
-                type: string
-                description: Primary affiliation with OSU. Values are employee, student, or other
-              currentUser:
-                type: boolean
-                description: If true, the person has some current affiliation with OSU
               currentStudent:
                 type: boolean
                 description: If true, the person is a current student
