@@ -17,10 +17,8 @@ class PersonObject {
     String homePhone
     String alternatePhone
     String osuUID
-    String primaryAffiliation
     String firstName
     String primaryPhone
-    Boolean currentUser
     String mobilePhone
     Boolean currentStudent
     String middleName

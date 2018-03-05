@@ -25,8 +25,6 @@ class PersonsResourceTest {
         alternatePhone: null,
         osuUID: '987654321',
         birthDate: Date.parse('yyyy-MM-dd','2018-01-01'),
-        primaryAffiliation: 'E',
-        currentUser: true,
         currentStudent: false,
         mobilePhone: '+15411234567',
         primaryPhone: '+15411234567',

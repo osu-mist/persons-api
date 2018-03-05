@@ -1,6 +1,6 @@
-# Web API Skeleton
+# Persons API
 
-Skeleton for Dropwizard Web APIs.
+Get persons resource related data.
 
 ### Generate Keys
 
@@ -93,7 +93,7 @@ Set the value of getContribFiles to yes in gradle.properties.
 Also set the value of contribCommit to the SHA1 of the desired commit to be used from the contrib repository.
 
     contribCommit={SHA1}
-    
+
 Files in a Github Enterprise repo will be copied to this directory upon building the application.
 
     gradle build
@@ -101,7 +101,7 @@ Files in a Github Enterprise repo will be copied to this directory upon building
 Contrib files are copied to:
 
     /src/main/groovy/edu/oregonstate/mist/contrib/
-    
+
 ## Base a New Project off the Skeleton
 
 Clone the skeleton:
