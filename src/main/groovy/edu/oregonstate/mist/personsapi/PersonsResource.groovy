@@ -60,7 +60,7 @@ class PersonsResource extends Resource {
 
     @Timed
     @GET
-    @Path('{osuID: [0-9]{9}}')
+    @Path('{osuID: [0-9]+}')
     Response getPersonById(@PathParam('osuID') String osuID) {
 
         def person = personsDAO.getPersonById(osuID)
@@ -79,7 +79,7 @@ class PersonsResource extends Resource {
 
     @Timed
     @GET
-    @Path('{osuID: [0-9]{9}}/jobs')
+    @Path('{osuID: [0-9]+}/jobs')
     Response getJobsById(@PathParam('osuID') String osuID) {
 
         if (personsDAO.personExist(osuID)) {
@@ -101,7 +101,7 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Produces('image/jpeg')
-    @Path('{osuID: [0-9]{9}}/image')
+    @Path('{osuID: [0-9]+}/image')
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
 
         if (personsDAO.personExist(osuID)) {
