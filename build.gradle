@@ -28,9 +28,9 @@ buildscript {
 // https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html#N10621
 repositories {
     mavenCentral()
-    // flatDir {
-    //     dirs 'bin'
-    // }
+     flatDir {
+         dirs 'bin'
+     }
 }
 
 // https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html#N105E1
@@ -39,13 +39,14 @@ dependencies {
     testCompile "io.dropwizard:dropwizard-testing:${dropwizardVersion}"
     codenarc "org.codenarc:CodeNarc:${codenarcVersion}"
     compile 'org.yaml:snakeyaml:1.16'
-    compile "org.codehaus.groovy:groovy:${groovyVersion}"
+    compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
     compile "io.dropwizard:dropwizard-core:${dropwizardVersion}"
     compile "io.dropwizard:dropwizard-auth:${dropwizardVersion}"
     compile "io.dropwizard:dropwizard-client:${dropwizardVersion}"
     compile "de.thomaskrille:dropwizard-template-config:1.4.0"
-    // compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
-    // compile ':ojdbc6:'
+    compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
+    compile ':ojdbc6:'
+    compile 'com.googlecode.libphonenumber:libphonenumber:4.3'
 }
 
 codenarc {

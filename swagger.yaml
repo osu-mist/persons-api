@@ -1,36 +1,116 @@
 swagger: '2.0'
 info:
-  title: Web API Skeleton
-  description: Skeleton for Dropwizard Web APIs
-  version: '0.0'
+  title: Persons API
+  description: Get information about people at OSU.
+  version: "1.0.0"
   license:
     name: GNU Affero General Public License Version 3
     url: http://www.gnu.org/licenses/agpl-3.0.en.html
 externalDocs:
   description: GitHub Repository
-  url: https://github.com/osu-mist/web-api-skeleton
-host: localhost
+  url: https://github.com/osu-mist/persons-api
 schemes:
-  - http
-basePath: /api/v0
-consumes:
-  - text/plain
+  - https
+basePath: /v1/persons
 produces:
-  - text/plain
+  - application/json
 paths:
   /:
     get:
-      summary: Get information
-      description: Build and runtime information about the application.
+      description: Get general personal information, query by various identifiers
       parameters:
+        - in: query
+          name: onid
+          required: false
+          description: ONID login name
+          type: string
+        - in: query
+          name: osuID
+          required: false
+          description: OSU ID of person
+          type: string
+        - in: query
+          name: osuUID
+          required: false
+          description: OSUUID of a person. Public identifier given in Directory API
+          type: number
+          format: integer
         - $ref: '#/parameters/pretty'
       responses:
         200:
-          description: Object containing information
+          description: Successful response
           schema:
-            $ref: '#/definitions/Info'
-
+            $ref: '#/definitions/PersonResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+  /{osuID}:
+    get:
+      description: Get general person information
+      parameters:
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PersonResultObject'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+  /{osuID}/jobs:
+    get:
+      description: Get jobs associated with a person
+      parameters:
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/JobsResultObject'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+  /{osuID}/image:
+    get:
+      description: |
+        Get an ID card image for a person. If the person exists but doesn't have
+        an ID card image, a default image will be returned.
+      produces:
+        - image/jpeg
+        - application/json
+      parameters:
+        - in: query
+          name: width
+          description: Resizes image to a pixel value for width while keeping original aspect ratio
+          required: false
+          type: integer
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: file
+          headers:
+              Content-type:
+                type: string
+                description: image/jpeg
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
 parameters:
+  osuID:
+    name: osuID
+    in: path
+    required: true
+    description: OSU ID of person
+    type: string
   pretty:
     name: pretty
     in: query
@@ -39,23 +119,112 @@ parameters:
     description: If true, JSON response will be pretty-printed
 
 definitions:
-  Info:
+  PersonResultObject:
     properties:
-      name:
+      data:
+        properties:
+          id:
+            type: string
+            description: 9 digit OSU ID
+          type:
+            type: string
+            description: person
+          links:
+            $ref: "#/definitions/SelfLink"
+          attributes:
+            properties:
+              username:
+                type: string
+                description: ONID login name
+              osuUID:
+                type: number
+                format: integer
+                description: Unique identifier in the Directory API
+              firstName:
+                type: string
+                description: Preferred first name
+              middleName:
+                type: string
+                description: Preferred middle name
+              lastName:
+                type: string
+                description: Preferred last name
+              email:
+                type: string
+                description: OSU directory email
+              birthDate:
+                type: string
+                format: date
+                description: Birth date
+              confidential:
+                type: boolean
+                description: If true, the person has opted in to being required to be listed as confidential
+              currentStudent:
+                type: boolean
+                description: If true, the person is a current student
+              primaryPhone:
+                type: string
+                description: E.164 formatted phone number.
+              homePhone:
+                type: string
+                description: E.164 formatted phone number.
+              alternatePhone:
+                type: string
+                description: E.164 formatted phone number.
+              mobilePhone:
+                type: string
+                description: E.164 formatted phone number. Capable of SMS communication.
+  JobsResultObject:
+    properties:
+      data:
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+            description: jobs
+          links:
+            $ref: "#/definitions/SelfLink"
+          attributes:
+            properties:
+              jobs:
+                type: array
+                items:
+                  properties:
+                    positionNumber:
+                      type: string
+                      description: Identifies a position
+                    beginDate:
+                      type: string
+                      format: date
+                      description: Begin date of job.
+                    endDate:
+                      type: string
+                      format: date
+                      description: End date of job.
+                    status:
+                      type: string
+                      description: Job staus
+                      enum:
+                        - Active
+                        - Leave without pay but with benefits
+                        - Leave without pay and benefits
+                        - Leave with full pay and benefits
+                        - Leave with partial pay and benefits
+                        - Terminated
+                    description:
+                      type: string
+                      description: Description of job
+                    fte:
+                      type: number
+                      format: float
+                      description: Full time eqivalent where full time = 1
+  SelfLink:
+    properties:
+      self:
         type: string
-        description: Name of the API.
-      time:
-        type: string
-        description: Build time in ISO 8601 format.
-      unixTime:
-        type: integer
-        description: Build time as milliseconds since the unix epoch.
-      commit:
-        type: string
-        description: Git commit hash of the revision which was built.
-      documentation:
-        type: string
-        description: Filename of the swagger specification for the API.
+        format: url
+        description: Self link of resource
   Error:
     properties:
       status:
