@@ -1,0 +1,16 @@
+{
+    "hostname": "https://api.oregonstate.edu/",
+    "version": "v1",
+
+    "api": "/persons/",
+
+    "token_api_url": "https://api.oregonstate.edu/oauth2/token",
+    "client_id": "secret",
+    "client_secret": "sauce",
+
+    "valid_person": {
+        "osu_id": "osu_id",
+        "onid": "onid",
+        "osuuid": "osuuid"
+    }
+}
