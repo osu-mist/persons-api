@@ -24,7 +24,7 @@ def load_config(input_file):
     }
     res = requests.post(config["token_api_url"], data=payload).json()
     headers = {'Authorization': 'Bearer ' + res["access_token"]}
-    return config['valid_person']
+    return config['person']
 
 
 def request_by_query(params):

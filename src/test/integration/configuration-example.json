@@ -8,7 +8,7 @@
     "client_id": "secret",
     "client_secret": "sauce",
 
-    "valid_person": {
+    "person": {
         "osu_id": "osu_id",
         "onid": "onid",
         "osuuid": "osuuid"
