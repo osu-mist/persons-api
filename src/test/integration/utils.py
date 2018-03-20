@@ -42,6 +42,6 @@ def get_jobs_by_osu_id(osu_id):
     return requests.get(api_url + osu_id + '/jobs', headers=headers)
 
 
-def get_image_by_osu_id(osu_id):
+def get_image_by_osu_id(osu_id, params=None):
     global api_url, headers
-    return requests.get(api_url + osu_id + '/image', headers=headers)
+    return requests.get(api_url + osu_id + '/image', headers=headers, params=params)

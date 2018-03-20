@@ -71,13 +71,27 @@ class TestStringMethods(unittest.TestCase):
         # test default image
         expected_image = Image.open('images/defaultimage.jpg')
         response_image = Image.open(BytesIO(valid_res.content))
-
         h1 = expected_image.histogram()
         h2 = response_image.histogram()
-
         rms = math.sqrt(reduce(operator.add, map(lambda x, y: (x - y) ** 2, h1, h2)) / len(h1))
-
         self.assertLess(rms, 100)
+
+        # expect 400 if width out of range (1 - 2000)
+        # self.assertEqual(utils.get_image_by_osu_id(osu_id, {'width': 0}.status_code), 400)
+        self.assertEqual(utils.get_image_by_osu_id(osu_id, {'width': 2001}).status_code, 400)
+
+        # test image resize
+        resize_width = 500
+        resize_res = utils.get_image_by_osu_id(osu_id, {'width': resize_width})
+        resized_image = Image.open(BytesIO(resize_res.content))
+
+        original_res = utils.get_image_by_osu_id(osu_id)
+        original_image = Image.open(BytesIO(original_res.content))
+
+        expected_height = ((original_image.height * resize_width) / original_image.width)
+        self.assertEqual(resize_res.status_code, 200)
+        self.assertEqual(expected_height, resized_image.height)
+        self.assertEqual(resize_width, resized_image.width)
 
         # expect 404 if osuID is not valid
         self.assertEqual(utils.get_person_by_osu_id(not_valid_osu_id).status_code, 404)
