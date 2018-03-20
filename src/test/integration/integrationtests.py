@@ -77,7 +77,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertLess(rms, 100)
 
         # expect 400 if width out of range (1 - 2000)
-        # self.assertEqual(utils.get_image_by_osu_id(osu_id, {'width': 0}.status_code), 400)
+        self.assertEqual(utils.get_image_by_osu_id(osu_id, {'width': 0}.status_code), 400)
         self.assertEqual(utils.get_image_by_osu_id(osu_id, {'width': 2001}).status_code, 400)
 
         # test image resize
