@@ -27,11 +27,21 @@ def load_config(input_file):
     return config['person']
 
 
-def request_by_query(params):
+def get_person_by_ids(params):
     global api_url, headers
     return requests.get(api_url, headers=headers, params=params)
 
 
-def request_by_id(osu_id):
+def get_person_by_osu_id(osu_id):
     global api_url, headers
     return requests.get(api_url + osu_id, headers=headers)
+
+
+def get_jobs_by_osu_id(osu_id):
+    global api_url, headers
+    return requests.get(api_url + osu_id + '/jobs', headers=headers)
+
+
+def get_image_by_osu_id(osu_id):
+    global api_url, headers
+    return requests.get(api_url + osu_id + '/image', headers=headers)
