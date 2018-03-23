@@ -24,7 +24,14 @@ def load_config(input_file):
     }
     res = requests.post(config["token_api_url"], data=payload).json()
     headers = {'Authorization': 'Bearer ' + res["access_token"]}
-    return config['person']
+    config_data = {
+        'api_url': api_url,
+        'ids_person': config['ids_person'],
+        'jobs_person': config['jobs_person'],
+        'no_job_person': config['no_job_person'],
+        'phones_person': config['phones_person']
+    }
+    return config_data
 
 
 def get_person_by_ids(params):
