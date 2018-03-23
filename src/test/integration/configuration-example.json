@@ -8,9 +8,18 @@
     "client_id": "secret",
     "client_secret": "sauce",
 
-    "person": {
+    "ids_person": {
         "osu_id": "osu_id",
         "onid": "onid",
         "osuuid": "osuuid"
+    },
+    "jobs_person": {
+        "osu_id": "osu_id"
+    },
+    "no_job_person": {
+        "osu_id": "osu_id"
+    },
+    "phones_person": {
+        "osu_id": "osu_id"
     }
 }
