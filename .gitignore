@@ -29,5 +29,14 @@ build.properties
 *.truststore
 
 # Contrib files
-
 src/main/groovy/edu/oregonstate/mist/contrib/
+
+# Integration Tests Configuration
+**/configuration.json
+
+# Python Compiled Bytecode
+*.pyc
+
+# virtual_len
+**/virtual_env/*
+**/venv/*
