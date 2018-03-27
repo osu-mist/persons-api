@@ -11,7 +11,7 @@ class ImageManipulation {
             /*
              * Resize image
              */
-            Integer height = image.getHeight() * (width / image.getWidth())
+            Integer height = Math.round(image.getHeight() * (width / image.getWidth()))
             BufferedImage resizedImage = new BufferedImage(width, height, image.getType())
             Graphics2D g2d = resizedImage.createGraphics()
             g2d.drawImage(image.getScaledInstance(width, height, Image.SCALE_SMOOTH),0, 0, null)

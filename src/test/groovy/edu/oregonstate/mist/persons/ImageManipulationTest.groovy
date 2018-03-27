@@ -27,7 +27,7 @@ class ImageManipulationTest {
     public void testResize() {
         Integer width = 175
         byte[] imageData = ImageManipulation.getImageStream(sampleImage, width)
-        Integer height = sampleImage.getHeight() * (width / sampleImage.getWidth())
+        Integer height = Math.round(sampleImage.getHeight() * (width / sampleImage.getWidth()))
 
         assert width == byteToBufferedImage(imageData).getWidth()
         assert height == byteToBufferedImage(imageData).getHeight()
