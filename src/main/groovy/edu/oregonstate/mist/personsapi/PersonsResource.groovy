@@ -105,7 +105,7 @@ class PersonsResource extends Resource {
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
 
         if (personsDAO.personExist(osuID)) {
-            if (width && (width <= 0) || (width > maxImageWidth)) {
+            if (width != null && (width <= 0) || (width > maxImageWidth)) {
                 String widthError = 'Width must be value from 1 - ' + maxImageWidth
                 return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
             }
