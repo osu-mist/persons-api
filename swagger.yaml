@@ -326,6 +326,10 @@ definitions:
             type: number
             format: float
             example: 20,050.35
+          appointmentSalary:
+            type: number
+            format: float
+            description: Equal to the annual salary multiplied by FTE.
   SelfLink:
     properties:
       self:
