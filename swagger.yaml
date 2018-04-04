@@ -14,6 +14,8 @@ schemes:
 basePath: /v1/persons
 produces:
   - application/json
+consumes:
+  - application/json
 paths:
   /:
     get:
@@ -64,6 +66,64 @@ paths:
     get:
       description: Get jobs associated with a person
       parameters:
+        - name: positionNumber
+          in: query
+          type: string
+          description: Filter by position ID.
+          required: false
+        - name: suffix
+          in: query
+          type: string
+          description: |
+            Filter by suffix. The suffix is used to differentiate multiple jobs
+            that share the same position number for a given person.
+          required: false
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/JobsResultObject'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: Create a job record for a person
+      parameters:
+        - name: job
+          in: body
+          description: Result object for a job
+          required: true
+          schema:
+            $ref: '#/definitions/JobResultObject'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+      responses:
+        202:
+          # The backend data source needs to do additional processing with the new job record.
+          # Return a 202 to indicate the record was accepted but not yet created.
+          description: Job record accepted.
+          schema:
+            $ref: '#/definitions/JobResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+  /{osuID}/jobs/{jobID}:
+    get:
+      description: Get jobs associated with a person
+      parameters:
+        - name: jobID
+          in: path
+          type: string
+          required: true
+          description: Unique ID of a job record for a person.
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
       responses:
@@ -177,48 +237,95 @@ definitions:
   JobsResultObject:
     properties:
       data:
+        type: array
+        items:
+          $ref: "#/definitions/JobResourceObject"
+  JobResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/JobResourceObject"
+  JobResourceObject:
+    properties:
+      id:
+        type: string
+        description: Uniquely identifies a job record for the given person.
+      type:
+        type: string
+        example: job
+      links:
+          $ref: "#/definitions/SelfLink"
+      attributes:
         properties:
-          id:
+          positionNumber:
             type: string
-          type:
+            description: Identifies a position
+            example: C12345
+          suffix:
             type: string
-            description: jobs
-          links:
-            $ref: "#/definitions/SelfLink"
-          attributes:
-            properties:
-              jobs:
-                type: array
-                items:
-                  properties:
-                    positionNumber:
-                      type: string
-                      description: Identifies a position
-                    beginDate:
-                      type: string
-                      format: date
-                      description: Begin date of job.
-                    endDate:
-                      type: string
-                      format: date
-                      description: End date of job.
-                    status:
-                      type: string
-                      description: Job staus
-                      enum:
-                        - Active
-                        - Leave without pay but with benefits
-                        - Leave without pay and benefits
-                        - Leave with full pay and benefits
-                        - Leave with partial pay and benefits
-                        - Terminated
-                    description:
-                      type: string
-                      description: Description of job
-                    fte:
-                      type: number
-                      format: float
-                      description: Full time eqivalent where full time = 1
+            description: |
+              Used to uniquely identify a job record for persons who have
+              multiple jobs that share the same position number.
+          beginDate:
+            type: string
+            format: date
+            description: Begin date of job.
+            example: "2018-12-31"
+          endDate:
+            type: string
+            format: date
+            description: End date of job.
+            example: "2019-01-01"
+          locationID:
+            type: string
+            description: Location ID of where job will be performed.
+          appointmentBasis:
+            type: integer
+            example: 12
+          status:
+            type: string
+            description: Job status
+            enum:
+              - Active
+              - Leave without pay but with benefits
+              - Leave without pay and benefits
+              - Leave with full pay and benefits
+              - Leave with partial pay and benefits
+              - Terminated
+            example: Active
+          description:
+            type: string
+            description: Description of job
+          fte:
+            type: number
+            format: float
+            description: Full time eqivalent where full time = 1
+            example: 0.49
+          supervisorID:
+            type: string
+            description: OSU ID of the supervisor for the job.
+          supervisorPositionNumber:
+            type: string
+            description: Position number of the supervisor.
+          homeOrganizationCode:
+            type: string
+            description: Organization (department) code tied to the job record.
+          hourlyRate:
+            type: number
+            format: float
+            description: Hourly rate of job
+            example: 12.85
+          assignmentSalary:
+            type: number
+            format: float
+            description: The salary to be paid each pay period.
+            example: 1670.83
+          paysPerYear:
+            type: integer
+            description: The number of pays per calendar year.
+          annualSalary:
+            type: number
+            format: float
+            example: 20,050.35
   SelfLink:
     properties:
       self:
