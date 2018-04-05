@@ -281,6 +281,7 @@ definitions:
           appointmentBasis:
             type: integer
             example: 12
+            default: 12
           status:
             type: string
             description: Job status
@@ -314,6 +315,10 @@ definitions:
             format: float
             description: Hourly rate of job
             example: 12.85
+          hoursPerPay:
+            type: number
+            format: float
+            description: Hours per payment for job.
           assignmentSalary:
             type: number
             format: float
@@ -330,6 +335,18 @@ definitions:
             type: number
             format: float
             description: Equal to the annual salary multiplied by FTE.
+          step:
+            type: string
+            default: 0
+          #TODO: laborDistribution field
+          encumbranceStartDate:
+            type: string
+            format: date
+            example: "2018-12-31"
+          encumbranceEndDate:
+            type: string
+            format: date
+            example: "2019-12-31"
   SelfLink:
     properties:
       self:
