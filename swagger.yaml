@@ -319,6 +319,7 @@ definitions:
             type: number
             format: float
             description: Hours per payment for job.
+            example: 173.33
           assignmentSalary:
             type: number
             format: float
