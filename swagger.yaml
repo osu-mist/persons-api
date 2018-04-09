@@ -35,6 +35,22 @@ paths:
           description: OSUUID of a person. Public identifier given in Directory API
           type: number
           format: integer
+        - in: query
+          name: firstName
+          required: false
+          description: First name of a person, for fuzzy name searching.
+          type: string
+        - in: query
+          name: lastName
+          required: false
+          description: Last name of a person, for fuzzy name searching.
+          type: string
+        - in: query
+          name: searchOldVersions
+          required: false
+          default: false
+          description: If true, searching by name or OSU ID will also search old names and OSU ID's associated with the person.
+          type: boolean
         - $ref: '#/parameters/pretty'
       responses:
         200:
@@ -149,6 +165,26 @@ definitions:
               lastName:
                 type: string
                 description: Preferred last name
+              previousNames:
+                type: array
+                description: Previous name records associated with the person
+                items:
+                  properties:
+                    firstName:
+                      type: string
+                      description: Previous first name
+                    middleName:
+                      type: string
+                      description: Previous middle name
+                    lastName:
+                      type: string
+                      description: Previous last name
+              previousIDs:
+                type: array
+                description: Previous OSU ID's associated with the person
+                items:
+                  type: string
+                  example: "931234567"
               email:
                 type: string
                 description: OSU directory email
@@ -174,6 +210,7 @@ definitions:
               mobilePhone:
                 type: string
                 description: E.164 formatted phone number. Capable of SMS communication.
+              
   JobsResultObject:
     properties:
       data:
