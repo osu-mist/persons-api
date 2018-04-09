@@ -210,7 +210,6 @@ definitions:
               mobilePhone:
                 type: string
                 description: E.164 formatted phone number. Capable of SMS communication.
-              
   JobsResultObject:
     properties:
       data:
