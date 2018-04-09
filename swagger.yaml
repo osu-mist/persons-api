@@ -165,11 +165,15 @@ definitions:
               lastName:
                 type: string
                 description: Preferred last name
-              previousNames:
+              previousRecords:
                 type: array
-                description: Previous name records associated with the person
+                description: Previous records associated with the person
                 items:
                   properties:
+                    osuID:
+                      type: string
+                      description: 9 digit OSU ID
+                      example: "931234567"
                     firstName:
                       type: string
                       description: Previous first name
@@ -179,12 +183,6 @@ definitions:
                     lastName:
                       type: string
                       description: Previous last name
-              previousIDs:
-                type: array
-                description: Previous OSU ID's associated with the person
-                items:
-                  type: string
-                  example: "931234567"
               email:
                 type: string
                 description: OSU directory email
