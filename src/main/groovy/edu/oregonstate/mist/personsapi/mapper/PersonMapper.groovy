@@ -1,6 +1,8 @@
 package edu.oregonstate.mist.personsapi.mapper
 
 import edu.oregonstate.mist.personsapi.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.Name
+
 import edu.oregonstate.mist.personsapi.PhoneFormatter
 import org.skife.jdbi.v2.StatementContext
 import org.skife.jdbi.v2.tweak.ResultSetMapper
@@ -13,9 +15,12 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
     public PersonObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
         new PersonObject (
             osuID: rs.getString('OSU_ID'),
-            firstName: rs.getString('FIRST_NAME'),
-            lastName: rs.getString('LAST_NAME'),
-            middleName: rs.getString('MIDDLE_NAME'),
+            internalID: rs.getString('INTERNAL_ID'),
+            name: new Name(
+                    firstName: rs.getString('FIRST_NAME'),
+                    middleName: rs.getString('MIDDLE_NAME'),
+                    lastName: rs.getString('LAST_NAME')
+            ),
             birthDate: rs.getDate('BIRTH_DATE'),
             email: rs.getString('EMAIL_ADDRESS'),
             username: rs.getString('USERNAME'),

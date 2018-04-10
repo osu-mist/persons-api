@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
 
@@ -33,6 +34,12 @@ class PersonsResource extends Resource {
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
 
+//    Response list(@QueryParam('onid') String onid,
+//                  @QueryParam('osuID') String osuID,
+//                  @QueryParam('osuUID') String osuUID,
+//                  @QueryParam('firstName') String firstName,
+//                  @QueryParam('lastName') String lastName,
+//                  @QueryParam('searchOldVersions') Boolean searchOldVersions) {
     @Timed
     @GET
     Response list(@QueryParam('onid') String onid,
@@ -62,9 +69,9 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}')
     Response getPersonById(@PathParam('osuID') String osuID) {
-
         def person = personsDAO.getPersonById(osuID)
         if (person) {
+            person.previousRecords = personsDAO.getPreviousRecords(person.internalID)
             ResultObject res = new ResultObject(data: new ResourceObject(
                 id: osuID,
                 type: 'person',

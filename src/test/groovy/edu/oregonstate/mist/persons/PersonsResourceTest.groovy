@@ -3,6 +3,7 @@ package edu.oregonstate.mist.persons
 import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.JobObject
+import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
@@ -20,8 +21,10 @@ class PersonsResourceTest {
 
     PersonObject fakePerson = new PersonObject(
         osuID: '123456789',
-        lastName: 'Doe',
-        firstName: 'John',
+        name: new Name(
+                lastName: 'Doe',
+                firstName: 'John'
+        ),
         alternatePhone: null,
         osuUID: '987654321',
         birthDate: Date.parse('yyyy-MM-dd','2018-01-01'),
@@ -91,6 +94,7 @@ class PersonsResourceTest {
             personExist { String osuID -> '123456789' }
             getPersonById { String osuID -> fakePerson }
             getJobsById { String osuID -> fakeJob }
+            getPreviousRecords { String internalID -> null}
         }
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkValidResponse(personsResource.list('johndoe', null, null), 200, [fakePerson])
