@@ -40,7 +40,9 @@ class PersonsResource extends Resource {
                   @QueryParam('osuUID') String osuUID) {
 
         def id = [onid, osuID, osuUID].findAll { it }
-        if (id.size() != 1) {
+        if (id.size() == 0) {
+            badRequest('onid, osuID, or osuUID must be included in the request').build()
+        } else if (id.size() > 1) {
             badRequest('onid, osuID, and osuUID cannot be included together').build()
         } else {
             def persons = personsDAO.getPersons(onid, osuID, osuUID)
