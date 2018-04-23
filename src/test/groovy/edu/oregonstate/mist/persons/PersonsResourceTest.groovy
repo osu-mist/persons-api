@@ -99,7 +99,7 @@ class PersonsResourceTest {
             getJobsById { null }
             getImageById { null }
         }
-        
+
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
         checkErrorResponse(personsResource.getJobsById('123456789'), 404)
@@ -117,7 +117,8 @@ class PersonsResourceTest {
             getPreviousRecords(2..2) { String internalID -> null }
         }
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
-        checkValidResponse(personsResource.list('johndoe', null, null, null, null, null), 200, [fakePerson])
+        checkValidResponse(personsResource.list('johndoe', null, null, null, null, null), 200,
+                [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
         checkValidResponse(personsResource.getJobsById('123456789'), 200, ['jobs': fakeJob])
     }
