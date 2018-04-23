@@ -9,15 +9,16 @@ info:
 externalDocs:
   description: GitHub Repository
   url: https://github.com/osu-mist/persons-api
+host: api.oregonstate.edu
 schemes:
   - https
-basePath: /v1/persons
+basePath: /v1
 produces:
   - application/json
 consumes:
   - application/json
 paths:
-  /:
+  /persons:
     get:
       description: Get general personal information, query by various identifiers
       parameters:
@@ -47,7 +48,7 @@ paths:
           description: Bad request
           schema:
             $ref: '#/definitions/Error'
-  /{osuID}:
+  /persons/{osuID}:
     get:
       description: Get general person information
       parameters:
@@ -62,7 +63,7 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /{osuID}/jobs:
+  /persons/{osuID}/jobs:
     get:
       description: Get jobs associated with a person
       parameters:
@@ -115,7 +116,7 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /{osuID}/jobs/{jobID}:
+  /persons/{osuID}/jobs/{jobID}:
     get:
       description: Get jobs associated with a person
       parameters:
@@ -135,7 +136,7 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /{osuID}/image:
+  /persons/{osuID}/image:
     get:
       description: |
         Get an ID card image for a person. If the person exists but doesn't have
