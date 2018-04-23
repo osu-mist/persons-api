@@ -18,18 +18,14 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)
 
-    @SqlQuery(AbstractPersonsDAO.getPersonById)
+    @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
-    PersonObject getPersonById(@Bind('onid') String onid,
-                               @Bind('osuID') String osuID,
-                               @Bind('osuUID') String osuUID,
-                               @Bind('oldOsuID') String oldOsuID)
-
-    @SqlQuery(AbstractPersonsDAO.getPersonsByName)
-    @Mapper(PersonMapper)
-    List<PersonObject> getPersonByName(@Bind('lastName') String lastName,
-                                       @Bind('firstName') String firstName,
-                                       @Bind('searchOldNames') Boolean searchOldNames)
+    List<PersonObject> getPersons(@Bind('onid') String onid,
+                                  @Bind('osuID') String osuID,
+                                  @Bind('osuUID') String osuUID,
+                                  @Bind('firstName') String firstName,
+                                  @Bind('lastName') String lastName,
+                                  @Bind('searchOldVersions') Boolean searchOldVersions)
 
     @SqlQuery(AbstractPersonsDAO.getPreviousRecords)
     @Mapper(PreviousRecordMapper)

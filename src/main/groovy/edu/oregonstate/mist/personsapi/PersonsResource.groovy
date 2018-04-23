@@ -33,6 +33,7 @@ class PersonsResource extends Resource {
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
+
     @Timed
     @GET
     Response list(@QueryParam('onid') String onid,
@@ -42,47 +43,50 @@ class PersonsResource extends Resource {
                   @QueryParam('lastName') String lastName,
                   @QueryParam('searchOldVersions') Boolean searchOldVersions) {
         // Check for a bad request.
-        def ids = [onid, osuID, osuUID].findAll { it }.size()
-        def names = [firstName, lastName].findAll { it }.size()
+        Closure<Integer> getSize = { List<String> list -> list.findAll { it }.size() }
+
+        Integer ids = getSize([onid, osuID, osuUID])
+        Integer names = getSize([firstName, lastName])
 
         Boolean validNameRequest = names == 2
 
-        if (validNameRequest && ids != 0) {
-            return badRequest('Cannot search by a name and an ID in the same request.').build()
+        String errorMessage
+
+        if (osuUID && !osuUID.matches("[0-9]+")) {
+            errorMessage = "OSU UID can only contain numbers."
+        } else if (validNameRequest && ids != 0) {
+            errorMessage = "Cannot search by a name and an ID in the same request."
         } else if (ids > 1) {
-            return badRequest('onid, osuID, and osuUID cannot be included together.').build()
+            errorMessage = "onid, osuID, and osuUID cannot be included together."
         } else if (names == 1) {
-            return badRequest('firstName and lastName must be included together.').build()
+            errorMessage = "firstName and lastName must be included together."
         } else if (searchOldVersions && (onid || osuUID)) {
-            return badRequest('searchOldVersions can only be used with ' +
-                    'name queries or OSU ID queries.').build()
+            errorMessage = "searchOldVersions can only be used with name queries or OSU ID queries."
         } else if (ids + names == 0) {
-            return badRequest('No names or IDs were provided in the request.').build()
+            errorMessage = "No names or IDs were provided in the request."
+        }
+
+        if (errorMessage) {
+            return badRequest(errorMessage).build()
         }
 
         // At this point, the request is valid. Proceed with desired data retrieval.
-        List<PersonObject> persons = new ArrayList<PersonObject>()
-
-        def addPerson = { PersonObject person ->
-            if (person) {
-                persons.add(person)
-            }
-        }
+        List<PersonObject> persons
 
         if (names == 0 && ids == 1 && !searchOldVersions) {
             // Search by a current ID.
-            addPerson(personsDAO.getPersonById(onid, osuID, osuUID, null))
+            persons = personsDAO.getPersons(onid, osuID, osuUID, null, null, false)
         } else if (validNameRequest && ids == 0 && !searchOldVersions) {
             // Search current names.
-            persons.addAll(personsDAO.getPersonByName(formatName(lastName),
-                    formatName(firstName), false))
+            persons = personsDAO.getPersons(null, null, null,
+                    formatName(firstName), formatName(lastName), false)
         } else if (names == 0 && ids == 1 && osuID && searchOldVersions) {
             // Search current and previous OSU ID's.
-            addPerson(personsDAO.getPersonById(null, osuID, null, osuID))
+            persons = personsDAO.getPersons(null, osuID, null, null, null, true)
         } else if (validNameRequest && ids == 0 && searchOldVersions) {
             // Search current and previous names.
-            persons.addAll(personsDAO.getPersonByName(formatName(lastName),
-                    formatName(firstName), true))
+            persons = personsDAO.getPersons(null, null, null,
+                    formatName(firstName), formatName(lastName), true)
         } else {
             return internalServerError("The application encountered an unexpected condition.")
                     .build()
@@ -92,6 +96,11 @@ class PersonsResource extends Resource {
         ok(res).build()
     }
 
+    /**
+     * Strip accents and convert to uppercase to prepare for DAO.
+     * @param name
+     * @return
+     */
     String formatName(String name) {
         StringUtils.stripAccents(name).toUpperCase()
     }
@@ -100,9 +109,9 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}')
     Response getPersonById(@PathParam('osuID') String osuID) {
-        def person = personsDAO.getPersonById(null, osuID, null, null)
+        def person = personsDAO.getPersons(null, osuID, null, null, null, false)
         if (person) {
-            ResultObject res = personResultObject(person)
+            ResultObject res = personResultObject(person?.get(0))
             ok(res).build()
         } else {
             notFound().build()

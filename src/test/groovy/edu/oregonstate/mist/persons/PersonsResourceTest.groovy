@@ -60,44 +60,64 @@ class PersonsResourceTest {
     }
 
     @Test
-    void shouldReturn400IfInputParamIsNotExactOne() {
+    void shouldReturn400() {
         PersonsResource personsResource = new PersonsResource(null, endpointUri)
 
-        checkErrorResponse(personsResource.list(null, null, null), 400)
-        checkErrorResponse(personsResource.list('931234567', '123456789', null), 400)
-        checkErrorResponse(personsResource.list('931234567', null, 'foobar'),400)
-        checkErrorResponse(personsResource.list(null, '123456789', 'foobar'), 400)
-        checkErrorResponse(personsResource.list('931234567', '123456789', 'foobar'),400)
+        // OSU UID can only contain numbers
+        checkErrorResponse(personsResource.list(null, null, 'badOSUUID', null, null, null), 400)
+
+        // Can't search by names and IDs in the same request
+        checkErrorResponse(personsResource.list(null, null, '123456789', 'Jane', 'Doe', null), 400)
+        checkErrorResponse(personsResource.list(null, '931234567', null, 'Jane', 'Doe', null), 400)
+        checkErrorResponse(personsResource.list('doej', null, null, 'Jane', 'Doe', null), 400)
+
+        // Only one ID parameter should be included in a request
+        checkErrorResponse(personsResource.list('doej', '93123456', null, null, null, null), 400)
+        checkErrorResponse(personsResource.list('doej', null, '12345678', null, null, null), 400)
+        checkErrorResponse(personsResource.list(null, '931236', '1238', null, null, null), 400)
+        checkErrorResponse(personsResource.list('doej', '931236', '1238', null, null, null), 400)
+
+        // First and last name must be included together
+        checkErrorResponse(personsResource.list(null, null, null, 'Jane', null, null), 400)
+        checkErrorResponse(personsResource.list(null, null, null, null, 'Doe', null), 400)
+
+        // Searching old versions can only be done with osu ID or names.
+        checkErrorResponse(personsResource.list('doej', null, null, null, null, true), 400)
+        checkErrorResponse(personsResource.list(null, null, '12345678', null, null, true), 400)
+
+        // The request must include an ID or names
+        checkErrorResponse(personsResource.list(null, null, null, null, null, null), 400)
     }
 
     @Test
     void shouldReturn404IfBadOSUId() {
         def stub = new StubFor(PersonsDAO)
         stub.demand.with {
-            getPersonById { null }
-            personExist { null }
+            getPersons { String onid, String osuID, String osuUID,
+                         String firstName, String lastName, searchOldVersions -> null }
+            personExist(2..2) { null }
             getJobsById { null }
-            personExist { null }
             getImageById { null }
         }
+        
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
         checkErrorResponse(personsResource.getJobsById('123456789'), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
 
-    @Test
+   @Test
     void shouldReturnValidResponse() {
         def stub = new StubFor(PersonsDAO)
         stub.demand.with {
-            getPersons { String onid, String osuID, String osuUID -> [fakePerson] }
+            getPersons(2..2) { String onid, String osuID, String osuUID,
+                         String firstName, String lastName, searchOldVersions -> [fakePerson] }
             personExist { String osuID -> '123456789' }
-            getPersonById { String osuID -> fakePerson }
             getJobsById { String osuID -> fakeJob }
-            getPreviousRecords { String internalID -> null}
+            getPreviousRecords(2..2) { String internalID -> null }
         }
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
-        checkValidResponse(personsResource.list('johndoe', null, null), 200, [fakePerson])
+        checkValidResponse(personsResource.list('johndoe', null, null, null, null, null), 200, [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
         checkValidResponse(personsResource.getJobsById('123456789'), 200, ['jobs': fakeJob])
     }
