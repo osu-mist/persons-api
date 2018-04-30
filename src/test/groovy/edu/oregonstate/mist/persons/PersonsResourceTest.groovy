@@ -91,6 +91,8 @@ class PersonsResourceTest {
         checkErrorResponse(personsResource.list(null, null, null, null, 'Doe', null, null),
                 400)
 
+        // Can't use searchOldNames and searchOldOsuIDs in one request
+        checkErrorResponse(personsResource.list(null, '9322525', null, null, null, true, true), 400)
 
         // Searching old OSU IDs can only be done with the OSU ID
         checkErrorResponse(personsResource.list('doej', null, null, null, null, null, true), 400)

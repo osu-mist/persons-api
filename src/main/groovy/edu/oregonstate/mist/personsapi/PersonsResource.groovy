@@ -61,6 +61,8 @@ class PersonsResource extends Resource {
             errorMessage = "onid, osuID, and osuUID cannot be included together."
         } else if (names == 1) {
             errorMessage = "firstName and lastName must be included together."
+        } else if (searchOldNames && searchOldOsuIDs) {
+            errorMessage = "searchOldNames and searchOldOsuIDs cannot both be true"
         } else if (searchOldOsuIDs && (onid || osuUID)) {
             errorMessage = "searchOldOsuIDs can only be used with OSU ID queries."
         } else if (searchOldOsuIDs && !osuID) {

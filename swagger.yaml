@@ -46,10 +46,16 @@ paths:
           description: Last name of a person, for fuzzy name searching.
           type: string
         - in: query
-          name: searchOldVersions
+          name: searchOldNames
           required: false
           default: false
-          description: If true, searching by name or OSU ID will also search old names and OSU ID's associated with the person.
+          description: If true, searching by name will also search old names associated with the person.
+          type: boolean
+        - in: query
+          name: searchOldOsuIDs
+          required: false
+          default: false
+          description: If true, searching by OSU ID will also search old OSU ID's associated with the person.
           type: boolean
         - $ref: '#/parameters/pretty'
       responses:
