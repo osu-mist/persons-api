@@ -46,20 +46,20 @@ class PersonsResource extends Resource {
         // Check for a bad request.
         Closure<Integer> getSize = { List<String> list -> list.findAll { it }.size() }
 
-        Integer ids = getSize([onid, osuID, osuUID])
-        Integer names = getSize([firstName, lastName])
+        Integer idCount = getSize([onid, osuID, osuUID])
+        Integer nameCount = getSize([firstName, lastName])
 
-        Boolean validNameRequest = names == 2
+        Boolean validNameRequest = nameCount == 2
 
         String errorMessage
 
         if (osuUID && !osuUID.matches("[0-9]+")) {
             errorMessage = "OSU UID can only contain numbers."
-        } else if (validNameRequest && ids != 0) {
+        } else if (validNameRequest && idCount != 0) {
             errorMessage = "Cannot search by a name and an ID in the same request."
-        } else if (ids > 1) {
+        } else if (idCount > 1) {
             errorMessage = "onid, osuID, and osuUID cannot be included together."
-        } else if (names == 1) {
+        } else if (nameCount == 1) {
             errorMessage = "firstName and lastName must be included together."
         } else if (searchOldNames && searchOldOsuIDs) {
             errorMessage = "searchOldNames and searchOldOsuIDs cannot both be true"
@@ -69,7 +69,7 @@ class PersonsResource extends Resource {
             errorMessage = "osuID must be included if searchOldOsuIDs is true."
         } else if (searchOldNames && !validNameRequest) {
             errorMessage = "firstName and lastName must be included if searchOldNames is true."
-        } else if (ids + names == 0) {
+        } else if (idCount + nameCount == 0) {
             errorMessage = "No names or IDs were provided in the request."
         }
 
@@ -80,17 +80,17 @@ class PersonsResource extends Resource {
         // At this point, the request is valid. Proceed with desired data retrieval.
         List<PersonObject> persons
 
-        if (names == 0 && ids == 1 && !searchOldOsuIDs) {
+        if (nameCount == 0 && idCount == 1 && !searchOldOsuIDs) {
             // Search by a current ID.
             persons = personsDAO.getPersons(onid, osuID, osuUID, null, null, false)
-        } else if (validNameRequest && ids == 0 && !searchOldNames) {
+        } else if (validNameRequest && idCount == 0 && !searchOldNames) {
             // Search current names.
             persons = personsDAO.getPersons(null, null, null,
                     formatName(firstName), formatName(lastName), false)
-        } else if (names == 0 && ids == 1 && osuID && searchOldOsuIDs) {
+        } else if (nameCount == 0 && idCount == 1 && osuID && searchOldOsuIDs) {
             // Search current and previous OSU ID's.
             persons = personsDAO.getPersons(null, osuID, null, null, null, true)
-        } else if (validNameRequest && ids == 0 && searchOldNames) {
+        } else if (validNameRequest && idCount == 0 && searchOldNames) {
             // Search current and previous names.
             persons = personsDAO.getPersons(null, null, null,
                     formatName(firstName), formatName(lastName), true)
