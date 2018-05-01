@@ -3,6 +3,7 @@ package edu.oregonstate.mist.persons
 import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.JobObject
+import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
@@ -20,8 +21,10 @@ class PersonsResourceTest {
 
     PersonObject fakePerson = new PersonObject(
         osuID: '123456789',
-        lastName: 'Doe',
-        firstName: 'John',
+        name: new Name(
+                lastName: 'Doe',
+                firstName: 'John'
+        ),
         alternatePhone: null,
         osuUID: '987654321',
         birthDate: Date.parse('yyyy-MM-dd','2018-01-01'),
@@ -57,43 +60,84 @@ class PersonsResourceTest {
     }
 
     @Test
-    void shouldReturn400IfInputParamIsNotExactOne() {
+    void shouldReturn400() {
         PersonsResource personsResource = new PersonsResource(null, endpointUri)
 
-        checkErrorResponse(personsResource.list(null, null, null), 400)
-        checkErrorResponse(personsResource.list('931234567', '123456789', null), 400)
-        checkErrorResponse(personsResource.list('931234567', null, 'foobar'),400)
-        checkErrorResponse(personsResource.list(null, '123456789', 'foobar'), 400)
-        checkErrorResponse(personsResource.list('931234567', '123456789', 'foobar'),400)
+        // OSU UID can only contain numbers
+        checkErrorResponse(personsResource.list(null, null, 'badOSUUID', null, null, null, null),
+                400)
+
+        // Can't search by names and IDs in the same request
+        checkErrorResponse(personsResource.list(null, null, '123456789', 'Jane', 'Doe', null, null),
+                400)
+        checkErrorResponse(personsResource.list(null, '931234567', null, 'Jane', 'Doe', null, null),
+                400)
+        checkErrorResponse(personsResource.list('doej', null, null, 'Jane', 'Doe', null, null),
+                400)
+
+        // Only one ID parameter should be included in a request
+        checkErrorResponse(personsResource.list('doej', '93123456', null, null, null, null, null),
+                400)
+        checkErrorResponse(personsResource.list('doej', null, '12345678', null, null, null, null),
+                400)
+        checkErrorResponse(personsResource.list(null, '931236', '1238', null, null, null, null),
+                400)
+        checkErrorResponse(personsResource.list('doej', '931236', '1238', null, null, null, null),
+                400)
+
+        // First and last name must be included together
+        checkErrorResponse(personsResource.list(null, null, null, 'Jane', null, null, null),
+                400)
+        checkErrorResponse(personsResource.list(null, null, null, null, 'Doe', null, null),
+                400)
+
+        // Can't use searchOldNames and searchOldOsuIDs in one request
+        checkErrorResponse(personsResource.list(null, '9322525', null, null, null, true, true), 400)
+
+        // Searching old OSU IDs can only be done with the OSU ID
+        checkErrorResponse(personsResource.list('doej', null, null, null, null, null, true), 400)
+        checkErrorResponse(personsResource.list(null, null, '12345678', null, null, null, true),
+                400)
+
+        // Searching old names must include a valid name request
+        checkErrorResponse(personsResource.list(null, null, null, null, null, true, null), 400)
+        checkErrorResponse(personsResource.list(null, null, null, "jane", null, true, null), 400)
+        checkErrorResponse(personsResource.list(null, null, null, null, "doe", true, null), 400)
+
+        // The request must include an ID or names
+        checkErrorResponse(personsResource.list(null, null, null, null, null, null, null), 400)
     }
 
     @Test
     void shouldReturn404IfBadOSUId() {
         def stub = new StubFor(PersonsDAO)
         stub.demand.with {
-            getPersonById { null }
-            personExist { null }
+            getPersons { String onid, String osuID, String osuUID,
+                         String firstName, String lastName, searchOldVersions -> null }
+            personExist(2..2) { null }
             getJobsById { null }
-            personExist { null }
             getImageById { null }
         }
+
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
         checkErrorResponse(personsResource.getJobsById('123456789'), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
 
-    @Test
+   @Test
     void shouldReturnValidResponse() {
         def stub = new StubFor(PersonsDAO)
         stub.demand.with {
-            getPersons { String onid, String osuID, String osuUID -> [fakePerson] }
+            getPersons(2..2) { String onid, String osuID, String osuUID,
+                         String firstName, String lastName, searchOldVersions -> [fakePerson] }
             personExist { String osuID -> '123456789' }
-            getPersonById { String osuID -> fakePerson }
             getJobsById { String osuID -> fakeJob }
+            getPreviousRecords(2..2) { String internalID -> null }
         }
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
-        checkValidResponse(personsResource.list('johndoe', null, null), 200, [fakePerson])
+        checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
+                [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
         checkValidResponse(personsResource.getJobsById('123456789'), 200, ['jobs': fakeJob])
     }
