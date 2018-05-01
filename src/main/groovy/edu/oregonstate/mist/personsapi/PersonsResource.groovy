@@ -80,20 +80,27 @@ class PersonsResource extends Resource {
         // At this point, the request is valid. Proceed with desired data retrieval.
         List<PersonObject> persons
 
-        if (nameCount == 0 && idCount == 1 && !searchOldOsuIDs) {
-            // Search by a current ID.
-            persons = personsDAO.getPersons(onid, osuID, osuUID, null, null, false)
-        } else if (validNameRequest && idCount == 0 && !searchOldNames) {
-            // Search current names.
-            persons = personsDAO.getPersons(null, null, null,
-                    formatName(firstName), formatName(lastName), false)
-        } else if (nameCount == 0 && idCount == 1 && osuID && searchOldOsuIDs) {
-            // Search current and previous OSU ID's.
-            persons = personsDAO.getPersons(null, osuID, null, null, null, true)
-        } else if (validNameRequest && idCount == 0 && searchOldNames) {
-            // Search current and previous names.
-            persons = personsDAO.getPersons(null, null, null,
-                    formatName(firstName), formatName(lastName), true)
+        if (!nameCount && idCount == 1) {
+            if (!searchOldOsuIDs) {
+                // Search by a current ID.
+                persons = personsDAO.getPersons(onid, osuID, osuUID, null, null, false)
+            } else {
+                // Search current and previous OSU ID's.
+                persons = personsDAO.getPersons(null, osuID, null, null, null, true)
+            }
+        } else if (!idCount && validNameRequest) {
+            String formattedFirstName = formatName(firstName)
+            String formattedLastName = formatName(lastName)
+
+            if (!searchOldNames) {
+                // Search current names.
+                persons = personsDAO.getPersons(null, null, null, formattedFirstName,
+                        formattedLastName, false)
+            } else {
+                // Search current and previous names.
+                persons = personsDAO.getPersons(null, null, null, formattedFirstName,
+                        formattedLastName, true)
+            }
         } else {
             return internalServerError("The application encountered an unexpected condition.")
                     .build()
