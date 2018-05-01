@@ -69,7 +69,7 @@ class PersonsResource extends Resource {
             errorMessage = "osuID must be included if searchOldOsuIDs is true."
         } else if (searchOldNames && !validNameRequest) {
             errorMessage = "firstName and lastName must be included if searchOldNames is true."
-        } else if (idCount + nameCount == 0) {
+        } else if (!idCount && !nameCount) {
             errorMessage = "No names or IDs were provided in the request."
         }
 
