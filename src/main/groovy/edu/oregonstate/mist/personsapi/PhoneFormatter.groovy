@@ -1,10 +1,11 @@
 package edu.oregonstate.mist.personsapi
 
+import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 
 class PhoneFormatter {
-    static toE164(String phoneStr) {
+    static toE164(String phoneStr) throws NumberParseException {
         if (!phoneStr) {
             return null
         }
