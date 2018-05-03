@@ -43,7 +43,7 @@ class PersonsResourceTest {
         endDate: null,
         status: 'Active',
         description: 'Fake Programmer',
-        fte: 1
+        fullTimeEquivalency: 1
     )
 
     private static void checkErrorResponse (Response res, Integer errorCode) {

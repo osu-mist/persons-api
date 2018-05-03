@@ -371,7 +371,8 @@ definitions:
             description: The salary to be paid each pay period.
             example: 1670.83
           paysPerYear:
-            type: integer
+            type: number
+            format: float
             description: The number of pays per calendar year.
           annualSalary:
             type: number

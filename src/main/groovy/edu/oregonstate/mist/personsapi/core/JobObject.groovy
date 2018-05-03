@@ -26,7 +26,7 @@ class JobObject {
     BigDecimal hourlyRate
     BigDecimal hoursPerPay
     BigDecimal assignmentSalary
-    Integer paysPerYear
+    BigDecimal paysPerYear
     BigDecimal annualSalary
     List<LaborDistribution> laborDistribution
 }
