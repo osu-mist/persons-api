@@ -2,10 +2,12 @@ package edu.oregonstate.mist.personsapi.db
 
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.PreviousRecord
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.PersonMapper
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
+import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
 import org.skife.jdbi.v2.sqlobject.Bind
 import org.skife.jdbi.v2.sqlobject.SqlQuery
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper
@@ -18,11 +20,16 @@ public interface PersonsDAO extends Closeable {
 
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
-    List<PersonObject> getPersons(@Bind('onid') onid, @Bind('osuID') osuID, @Bind('osuUID') osuUID)
+    List<PersonObject> getPersons(@Bind('onid') String onid,
+                                  @Bind('osuID') String osuID,
+                                  @Bind('osuUID') String osuUID,
+                                  @Bind('firstName') String firstName,
+                                  @Bind('lastName') String lastName,
+                                  @Bind('searchOldVersions') Boolean searchOldVersions)
 
-    @SqlQuery(AbstractPersonsDAO.getPersonById)
-    @Mapper(PersonMapper)
-    PersonObject getPersonById(@Bind('osuID') String osuID)
+    @SqlQuery(AbstractPersonsDAO.getPreviousRecords)
+    @Mapper(PreviousRecordMapper)
+    List<PreviousRecord> getPreviousRecords(@Bind('id') String internalID)
 
     @SqlQuery(AbstractPersonsDAO.getJobsById)
     @Mapper(JobsMapper)
