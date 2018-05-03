@@ -56,9 +56,24 @@ class TestStringMethods(unittest.TestCase):
         phones = filter(None, [home_phone, alternate_phone, primary_phone, mobile_phone])
         for phone in phones:
             # validate E.164 phone format
-            parsed_phone = phonenumbers.parse(phone, 'None')
+            parsed_phone = self.__parse_phone_number(phone)
             e164_phone = phonenumbers.format_number(parsed_phone, phonenumbers.PhoneNumberFormat.E164)
             self.assertEqual(phone, e164_phone)
+
+    # the backend data source has some bad phone numbers.
+    # a known bad phone number should be unformatted,
+    # therefore unable to be parsed.
+    def test_bad_phones(self):
+        long_phone_person = utils.get_person_by_osu_id(long_phone_osu_id) 
+        self.assertEqual(long_phone_person.status_code, 200)
+        long_home_phone = long_phone_person.json()['data']['attributes']['homePhone']
+
+        with self.assertRaises(phonenumbers.phonenumberutil.NumberParseException):
+            self.__parse_phone_number(long_home_phone)
+
+    @staticmethod
+    def __parse_phone_number(phone_number):
+        return phonenumbers.parse(phone_number, 'None')
 
     def test_date(self):
         iso_8601_full_date_pattern = re.compile(r'^\d{4}-\d{2}-\d{2}')
@@ -179,6 +194,9 @@ if __name__ == '__main__':
 
     # person with phones
     phones_osu_id = config_data['phones_person']['osu_id']
+
+    # persons with bad phone data
+    long_phone_osu_id = config_data['long_phone_person']['osu_id']
 
     sys.argv[:] = argv
     unittest.main()

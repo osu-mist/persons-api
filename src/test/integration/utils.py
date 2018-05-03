@@ -29,7 +29,8 @@ def load_config(input_file):
         'ids_person': config['ids_person'],
         'jobs_person': config['jobs_person'],
         'no_job_person': config['no_job_person'],
-        'phones_person': config['phones_person']
+        'phones_person': config['phones_person'],
+        'long_phone_person': config['long_phone_person']
     }
     return config_data
 
