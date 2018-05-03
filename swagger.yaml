@@ -279,10 +279,6 @@ definitions:
           locationID:
             type: string
             description: Location ID of where job will be performed.
-          appointmentBasis:
-            type: integer
-            example: 12
-            default: 12
           status:
             type: string
             description: Job status
@@ -297,23 +293,26 @@ definitions:
           description:
             type: string
             description: Description of job
-          fte:
+          fullTimeEquivalency:
             type: number
             format: float
-            description: Full time eqivalent where full time = 1
+            description: Full time eqivalency where full time = 1
             example: 0.49
           appointmentPercent:
             type: number
             format: float
             description: FTE presented as a whole percentage.
             example: 49
-          supervisorID:
+          supervisorOsuID:
             type: string
             description: OSU ID of the supervisor for the job.
           supervisorPositionNumber:
             type: string
             description: Position number of the supervisor.
-          homeOrganizationCode:
+          supervisorSuffix:
+            type: string
+            description: Suffix of the supervisor
+          timesheetOrganizationCode:
             type: string
             description: Organization (department) code tied to the job record.
           hourlyRate:
@@ -338,13 +337,6 @@ definitions:
             type: number
             format: float
             example: 20,050.35
-          appointmentSalary:
-            type: number
-            format: float
-            description: Equal to the annual salary multiplied by FTE.
-          step:
-            type: string
-            default: 0
           laborDistribution:
             type: array
             items:

@@ -13,22 +13,21 @@ class JobObject {
     Date endDate
 
     String locationID
-    Integer appointmentBasis
     String status
     String description
-    BigDecimal fte
-    Integer appointmentPercent
+    BigDecimal fullTimeEquivalency
+    BigDecimal appointmentPercent
 
-    String supervisorID
+    String supervisorOsuID
     String supervisorPositionNumber
-    String homeOrganizationCode
+    String supervisorSuffix
+
+    String timesheetOrganizationCode
     BigDecimal hourlyRate
     BigDecimal hoursPerPay
     BigDecimal assignmentSalary
     Integer paysPerYear
     BigDecimal annualSalary
-    BigDecimal appointmentSalary
-    String step
     List<LaborDistribution> laborDistribution
 }
 
@@ -42,5 +41,5 @@ class LaborDistribution {
     String organizationCode
     String accountCode
     String programCode
-    BigDecimal distributionPercentage
+    BigDecimal distributionPercent
 }
