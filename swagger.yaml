@@ -302,6 +302,11 @@ definitions:
             format: float
             description: Full time eqivalent where full time = 1
             example: 0.49
+          appointmentPercent:
+            type: number
+            format: float
+            description: FTE presented as a whole percentage.
+            example: 49
           supervisorID:
             type: string
             description: OSU ID of the supervisor for the job.
@@ -340,15 +345,44 @@ definitions:
           step:
             type: string
             default: 0
-          #TODO: laborDistribution field
-          encumbranceStartDate:
-            type: string
-            format: date
-            example: "2018-12-31"
-          encumbranceEndDate:
-            type: string
-            format: date
-            example: "2019-12-31"
+          laborDistribution:
+            type: array
+            items:
+              properties:
+                effectiveDate:
+                  type: string
+                  format: date
+                  description: Date the labor distribution is effective
+                  example: "2018-12-31"
+                chartOfAccountsCode:
+                  type: string
+                  example: C
+                accountIndex:
+                  type: string
+                  example: ABC123
+                fund:
+                  type: string
+                  example: S1234B
+                organizationCode:
+                  type: string
+                accountCode:
+                  type: string
+                programCode:
+                  type: string
+                distributionPercentage:
+                  type: number
+                  format: float
+                  description: Percentage of labor applied to this fund.
+                  example: 49.9
+          #todo: add these at a later time when they're needed
+          #encumbranceStartDate:
+          #  type: string
+          #  format: date
+          #  example: "2018-12-31"
+          #encumbranceEndDate:
+          #  type: string
+          #  format: date
+          #  example: "2019-12-31"
   SelfLink:
     properties:
       self:
