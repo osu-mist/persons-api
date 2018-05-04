@@ -21,5 +21,8 @@
     },
     "phones_person": {
         "osu_id": "osu_id"
+    },
+    "long_phone_person": {
+        "osu_id": "osu_id"
     }
 }
