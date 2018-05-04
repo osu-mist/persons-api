@@ -131,7 +131,8 @@ class PersonsResourceTest {
             getPersons(2..2) { String onid, String osuID, String osuUID,
                          String firstName, String lastName, searchOldVersions -> [fakePerson] }
             personExist { String osuID -> '123456789' }
-            getJobsById { String osuID -> fakeJob }
+            getJobsById { String osuID -> [fakeJob] }
+            getJobLaborDistribution { String osuID, String positionNumber, String suffix -> null }
             getPreviousRecords(2..2) { String internalID -> null }
         }
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)

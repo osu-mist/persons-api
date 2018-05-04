@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
@@ -155,23 +156,9 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/jobs')
     Response getJobs(@PathParam('osuID') String osuID) {
-
         if (personsDAO.personExist(osuID)) {
-            def jobs = personsDAO.getJobsById(osuID)
-            def res = new ResultObject(
-                    data: jobs.collect {
-                        String jobID = it.getJobID()
-
-                        new ResourceObject(
-                                id: it.getJobID(),
-                                type: 'jobs',
-                                attributes: it,
-                                links: ['self': personUriBuilder.personJobsUri(osuID, jobID)]
-                        )
-                    }
-            )
-
-            ok(res).build()
+            List<JobObject> jobs = personsDAO.getJobsById(osuID)
+            ok(jobResultObject(jobs, osuID)).build()
         } else {
             notFound().build()
         }
@@ -179,10 +166,43 @@ class PersonsResource extends Resource {
 
     @Timed
     @GET
+    @Path('{osuID: [0-9]+}/jobs/{jobID}')
+    Response getJobById(@PathParam('osuID') String osuID, @PathParam('jobID') String jobID) {
+        if (personsDAO.personExist(osuID)) {
+            //todo: implement this before merging!
+            internalServerError("not implemented yet").build()
+        } else {
+            notFound().build()
+        }
+    }
+
+    ResultObject jobResultObject(List<JobObject> jobs, String osuID) {
+        new ResultObject(data: jobs.collect { jobResourceObject(it, osuID)})
+    }
+
+    ResultObject jobResultObject(JobObject job, String osuID) {
+        new ResultObject(data: jobResourceObject(job, osuID))
+    }
+
+    ResourceObject jobResourceObject(JobObject job, String osuID) {
+        job.laborDistribution = personsDAO.getJobLaborDistribution(osuID,
+                job.positionNumber, job.suffix)
+
+        String jobID = job.getJobID()
+
+        new ResourceObject(
+                id: jobID,
+                type: 'jobs',
+                attributes: job,
+                links: ['self': personUriBuilder.personJobsUri(osuID, jobID)]
+        )
+    }
+
+    @Timed
+    @GET
     @Produces('image/jpeg')
     @Path('{osuID: [0-9]+}/image')
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
-
         if (personsDAO.personExist(osuID)) {
             if (width != null && (width <= 0) || (width > maxImageWidth)) {
                 String widthError = 'Width must be value from 1 - ' + maxImageWidth
