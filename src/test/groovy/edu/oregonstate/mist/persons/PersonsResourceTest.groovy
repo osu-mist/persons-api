@@ -7,7 +7,6 @@ import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
-import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import org.junit.Test
 
@@ -121,7 +120,7 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
-        checkErrorResponse(personsResource.getJobsById('123456789'), 404)
+        checkErrorResponse(personsResource.getJobs('123456789'), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
 
@@ -139,6 +138,7 @@ class PersonsResourceTest {
         checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
                 [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
-        checkValidResponse(personsResource.getJobsById('123456789'), 200, ['jobs': fakeJob])
+        checkValidResponse(personsResource.getJobs('123456789'), 200, [fakeJob])
+        //@todo add test for getJobById
     }
 }

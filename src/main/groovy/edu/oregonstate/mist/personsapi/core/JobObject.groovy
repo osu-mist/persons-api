@@ -1,6 +1,7 @@
 package edu.oregonstate.mist.personsapi.core
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 class JobObject {
     String positionNumber
@@ -29,6 +30,11 @@ class JobObject {
     BigDecimal paysPerYear
     BigDecimal annualSalary
     List<LaborDistribution> laborDistribution
+
+    @JsonIgnore
+    String getJobID() {
+        positionNumber + "-" + suffix
+    }
 }
 
 class LaborDistribution {

@@ -290,6 +290,7 @@ definitions:
       id:
         type: string
         description: Uniquely identifies a job record for the given person.
+        example: C12345-00
       type:
         type: string
         example: job
