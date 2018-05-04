@@ -42,8 +42,8 @@ class LaborDistribution {
     Date effectiveDate
 
     String chartOfAccountsCode
-    String accountIndex
-    String fund
+    String accountCode
+    String fundCode
     String organizationCode
     String accountCode
     String programCode

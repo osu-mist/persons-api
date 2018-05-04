@@ -391,10 +391,10 @@ definitions:
                 chartOfAccountsCode:
                   type: string
                   example: C
-                accountIndex:
+                accountCode:
                   type: string
                   example: ABC123
-                fund:
+                fundCode:
                   type: string
                   example: S1234B
                 organizationCode:
