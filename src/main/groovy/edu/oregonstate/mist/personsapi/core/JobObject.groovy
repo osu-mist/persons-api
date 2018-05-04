@@ -38,14 +38,8 @@ class JobObject {
 }
 
 class LaborDistribution {
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="UTC")
-    Date effectiveDate
-
-    String chartOfAccountsCode
+    String accountIndexCode
     String accountCode
-    String fundCode
-    String organizationCode
-    String accountCode
-    String programCode
+    String activityCode
     BigDecimal distributionPercent
 }

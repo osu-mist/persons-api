@@ -383,25 +383,12 @@ definitions:
             type: array
             items:
               properties:
-                effectiveDate:
-                  type: string
-                  format: date
-                  description: Date the labor distribution is effective
-                  example: "2018-12-31"
-                chartOfAccountsCode:
-                  type: string
-                  example: C
-                accountCode:
+                accountIndexCode:
                   type: string
                   example: ABC123
-                fundCode:
-                  type: string
-                  example: S1234B
-                organizationCode:
-                  type: string
                 accountCode:
                   type: string
-                programCode:
+                activityCode:
                   type: string
                 distributionPercentage:
                   type: number
