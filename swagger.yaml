@@ -138,26 +138,6 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/jobs/{jobID}:
-    get:
-      description: Get jobs associated with a person
-      parameters:
-        - name: jobID
-          in: path
-          type: string
-          required: true
-          description: Unique ID of a job record for a person.
-        - $ref: '#/parameters/osuID'
-        - $ref: '#/parameters/pretty'
-      responses:
-        200:
-          description: Successful response
-          schema:
-            $ref: '#/definitions/JobsResultObject'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
   /persons/{osuID}/image:
     get:
       description: |

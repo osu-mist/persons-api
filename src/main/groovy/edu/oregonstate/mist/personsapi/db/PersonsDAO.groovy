@@ -35,7 +35,9 @@ public interface PersonsDAO extends Closeable {
 
     @SqlQuery(AbstractPersonsDAO.getJobsById)
     @Mapper(JobsMapper)
-    List<JobObject> getJobsById(@Bind('osuID') String osuID)
+    List<JobObject> getJobsById(@Bind('osuID') String osuID,
+                                @Bind('positionNumber') String positionNumber,
+                                @Bind('suffix') String suffix)
 
     @SqlQuery(AbstractPersonsDAO.getJobLaborDistribution)
     @Mapper(LaborDistributionMapper)

@@ -38,6 +38,7 @@ class PersonsResourceTest {
 
     JobObject fakeJob = new JobObject(
         positionNumber: 'C12345',
+        suffix: '00',
         beginDate: Date.parse('yyyy-MM-dd','2018-01-01'),
         endDate: null,
         status: 'Active',
@@ -120,7 +121,7 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
-        checkErrorResponse(personsResource.getJobs('123456789'), 404)
+        checkErrorResponse(personsResource.getJobs('123456789', null, null), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
 
@@ -131,7 +132,7 @@ class PersonsResourceTest {
             getPersons(2..2) { String onid, String osuID, String osuUID,
                          String firstName, String lastName, searchOldVersions -> [fakePerson] }
             personExist { String osuID -> '123456789' }
-            getJobsById { String osuID -> [fakeJob] }
+            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
             getJobLaborDistribution { String osuID, String positionNumber, String suffix -> null }
             getPreviousRecords(2..2) { String internalID -> null }
         }
@@ -139,7 +140,6 @@ class PersonsResourceTest {
         checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
                 [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
-        checkValidResponse(personsResource.getJobs('123456789'), 200, [fakeJob])
-        //@todo add test for getJobById
+        checkValidResponse(personsResource.getJobs('123456789', null, null), 200, [fakeJob])
     }
 }

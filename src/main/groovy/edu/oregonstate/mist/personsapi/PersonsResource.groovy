@@ -155,22 +155,12 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/jobs')
-    Response getJobs(@PathParam('osuID') String osuID) {
+    Response getJobs(@PathParam('osuID') String osuID,
+                     @QueryParam('positionNumber') String positionNumber,
+                     @QueryParam('suffix') String suffix) {
         if (personsDAO.personExist(osuID)) {
-            List<JobObject> jobs = personsDAO.getJobsById(osuID)
+            List<JobObject> jobs = personsDAO.getJobsById(osuID, positionNumber, suffix)
             ok(jobResultObject(jobs, osuID)).build()
-        } else {
-            notFound().build()
-        }
-    }
-
-    @Timed
-    @GET
-    @Path('{osuID: [0-9]+}/jobs/{jobID}')
-    Response getJobById(@PathParam('osuID') String osuID, @PathParam('jobID') String jobID) {
-        if (personsDAO.personExist(osuID)) {
-            //todo: implement this before merging!
-            internalServerError("not implemented yet").build()
         } else {
             notFound().build()
         }
@@ -180,21 +170,15 @@ class PersonsResource extends Resource {
         new ResultObject(data: jobs.collect { jobResourceObject(it, osuID)})
     }
 
-    ResultObject jobResultObject(JobObject job, String osuID) {
-        new ResultObject(data: jobResourceObject(job, osuID))
-    }
-
     ResourceObject jobResourceObject(JobObject job, String osuID) {
         job.laborDistribution = personsDAO.getJobLaborDistribution(osuID,
                 job.positionNumber, job.suffix)
 
-        String jobID = job.getJobID()
-
         new ResourceObject(
-                id: jobID,
                 type: 'jobs',
                 attributes: job,
-                links: ['self': personUriBuilder.personJobsUri(osuID, jobID)]
+                links: ['self': personUriBuilder.personJobsUri(
+                        osuID, job.positionNumber, job.suffix)]
         )
     }
 
