@@ -3,6 +3,7 @@ package edu.oregonstate.mist.persons
 import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.JobObject
+import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
@@ -41,9 +42,26 @@ class PersonsResourceTest {
         suffix: '00',
         beginDate: Date.parse('yyyy-MM-dd','2018-01-01'),
         endDate: null,
+        locationID: "1A",
         status: 'Active',
         description: 'Fake Programmer',
-        fullTimeEquivalency: 1
+        fullTimeEquivalency: 1,
+        appointmentPercent: 30.2,
+        supervisorOsuID: '12345678',
+        supervisorPositionNumber: 'C65432',
+        supervisorSuffix: '01',
+        timesheetOrganizationCode: '20394',
+        hourlyRate: 12.5,
+        hoursPerPay: 173.333,
+        assignmentSalary: 2000,
+        paysPerYear: 12,
+        annualSalary: 24000,
+        laborDistribution: [new LaborDistribution(
+                accountIndexCode: 'FFB333',
+                accountCode: '23',
+                activityCode: '343A',
+                distributionPercent: 100
+        )]
     )
 
     private static void checkErrorResponse (Response res, Integer errorCode) {
