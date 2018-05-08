@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
@@ -154,22 +155,31 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/jobs')
-    Response getJobsById(@PathParam('osuID') String osuID) {
-
+    Response getJobs(@PathParam('osuID') String osuID,
+                     @QueryParam('positionNumber') String positionNumber,
+                     @QueryParam('suffix') String suffix) {
         if (personsDAO.personExist(osuID)) {
-            def jobs = personsDAO.getJobsById(osuID)
-            def res = new ResultObject(
-                data: new ResourceObject(
-                    id: osuID,
-                    type: 'jobs',
-                    attributes: ['jobs': jobs],
-                    links: ['self': personUriBuilder.personJobsUri(osuID)]
-                )
-            )
-            ok(res).build()
+            List<JobObject> jobs = personsDAO.getJobsById(osuID, positionNumber, suffix)
+            ok(jobResultObject(jobs, osuID)).build()
         } else {
             notFound().build()
         }
+    }
+
+    ResultObject jobResultObject(List<JobObject> jobs, String osuID) {
+        new ResultObject(data: jobs.collect { jobResourceObject(it, osuID)})
+    }
+
+    ResourceObject jobResourceObject(JobObject job, String osuID) {
+        job.laborDistribution = personsDAO.getJobLaborDistribution(osuID,
+                job.positionNumber, job.suffix)
+
+        new ResourceObject(
+                type: 'jobs',
+                attributes: job,
+                links: ['self': personUriBuilder.personJobsUri(
+                        osuID, job.positionNumber, job.suffix)]
+        )
     }
 
     @Timed
@@ -177,7 +187,6 @@ class PersonsResource extends Resource {
     @Produces('image/jpeg')
     @Path('{osuID: [0-9]+}/image')
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
-
         if (personsDAO.personExist(osuID)) {
             if (width != null && (width <= 0) || (width > maxImageWidth)) {
                 String widthError = 'Width must be value from 1 - ' + maxImageWidth

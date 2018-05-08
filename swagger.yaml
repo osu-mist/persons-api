@@ -9,13 +9,16 @@ info:
 externalDocs:
   description: GitHub Repository
   url: https://github.com/osu-mist/persons-api
+host: api.oregonstate.edu
 schemes:
   - https
-basePath: /v1/persons
+basePath: /v1
 produces:
   - application/json
+consumes:
+  - application/json
 paths:
-  /:
+  /persons:
     get:
       description: Get general personal information, query by various identifiers
       parameters:
@@ -67,7 +70,7 @@ paths:
           description: Bad request
           schema:
             $ref: '#/definitions/Error'
-  /{osuID}:
+  /persons/{osuID}:
     get:
       description: Get general person information
       parameters:
@@ -82,10 +85,22 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /{osuID}/jobs:
+  /persons/{osuID}/jobs:
     get:
       description: Get jobs associated with a person
       parameters:
+        - name: positionNumber
+          in: query
+          type: string
+          description: Filter by position ID.
+          required: false
+        - name: suffix
+          in: query
+          type: string
+          description: |
+            Filter by suffix. The suffix is used to differentiate multiple jobs
+            that share the same position number for a given person.
+          required: false
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
       responses:
@@ -97,7 +112,33 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /{osuID}/image:
+    post:
+      description: Create a job record for a person
+      parameters:
+        - name: job
+          in: body
+          description: Result object for a job
+          required: true
+          schema:
+            $ref: '#/definitions/JobResultObject'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+      responses:
+        202:
+          # The backend data source needs to do additional processing with the new job record.
+          # Return a 202 to indicate the record was accepted but not yet created.
+          description: Job record accepted.
+          schema:
+            $ref: '#/definitions/JobResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+  /persons/{osuID}/image:
     get:
       description: |
         Get an ID card image for a person. If the person exists but doesn't have
@@ -217,48 +258,132 @@ definitions:
   JobsResultObject:
     properties:
       data:
+        type: array
+        items:
+          $ref: "#/definitions/JobResourceObject"
+  JobResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/JobResourceObject"
+  JobResourceObject:
+    properties:
+      id:
+        type: string
+        description: Uniquely identifies a job record for the given person.
+        example: C12345-00
+      type:
+        type: string
+        example: job
+      links:
+          $ref: "#/definitions/SelfLink"
+      attributes:
         properties:
-          id:
+          positionNumber:
             type: string
-          type:
+            description: Identifies a position
+            example: C12345
+          suffix:
             type: string
-            description: jobs
-          links:
-            $ref: "#/definitions/SelfLink"
-          attributes:
-            properties:
-              jobs:
-                type: array
-                items:
-                  properties:
-                    positionNumber:
-                      type: string
-                      description: Identifies a position
-                    beginDate:
-                      type: string
-                      format: date
-                      description: Begin date of job.
-                    endDate:
-                      type: string
-                      format: date
-                      description: End date of job.
-                    status:
-                      type: string
-                      description: Job staus
-                      enum:
-                        - Active
-                        - Leave without pay but with benefits
-                        - Leave without pay and benefits
-                        - Leave with full pay and benefits
-                        - Leave with partial pay and benefits
-                        - Terminated
-                    description:
-                      type: string
-                      description: Description of job
-                    fte:
-                      type: number
-                      format: float
-                      description: Full time eqivalent where full time = 1
+            description: |
+              Used to uniquely identify a job record for persons who have
+              multiple jobs that share the same position number.
+          beginDate:
+            type: string
+            format: date
+            description: Begin date of job.
+            example: "2018-12-31"
+          endDate:
+            type: string
+            format: date
+            description: End date of job.
+            example: "2019-01-01"
+          locationID:
+            type: string
+            description: Location ID of where job will be performed.
+          status:
+            type: string
+            description: Job status
+            enum:
+              - Active
+              - Leave without pay but with benefits
+              - Leave without pay and benefits
+              - Leave with full pay and benefits
+              - Leave with partial pay and benefits
+              - Terminated
+            example: Active
+          description:
+            type: string
+            description: Description of job
+          fullTimeEquivalency:
+            type: number
+            format: float
+            description: Full time eqivalency where full time = 1
+            example: 0.49
+          appointmentPercent:
+            type: number
+            format: float
+            description: FTE presented as a whole percentage.
+            example: 49
+          supervisorOsuID:
+            type: string
+            description: OSU ID of the supervisor for the job.
+          supervisorPositionNumber:
+            type: string
+            description: Position number of the supervisor.
+          supervisorSuffix:
+            type: string
+            description: Suffix of the supervisor
+          timesheetOrganizationCode:
+            type: string
+            description: Organization (department) code tied to the job record.
+          hourlyRate:
+            type: number
+            format: float
+            description: Hourly rate of job
+            example: 12.85
+          hoursPerPay:
+            type: number
+            format: float
+            description: Hours per payment for job.
+            example: 173.33
+          assignmentSalary:
+            type: number
+            format: float
+            description: The salary to be paid each pay period.
+            example: 1670.83
+          paysPerYear:
+            type: number
+            format: float
+            description: The number of pays per calendar year.
+          annualSalary:
+            type: number
+            format: float
+            example: 20,050.35
+          laborDistribution:
+            type: array
+            items:
+              properties:
+                accountIndexCode:
+                  type: string
+                  example: ABC123
+                accountCode:
+                  type: string
+                activityCode:
+                  type: string
+                distributionPercentage:
+                  type: number
+                  format: float
+                  description: Percentage of labor applied to this fund.
+                  example: 49.9
+          #todo: add these at a later time when they're needed
+          #encumbranceStartDate:
+          #  type: string
+          #  format: date
+          #  example: "2018-12-31"
+          #encumbranceEndDate:
+          #  type: string
+          #  format: date
+          #  example: "2019-12-31"
   SelfLink:
     properties:
       self:

@@ -24,11 +24,23 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
 
         new JobObject(
             positionNumber: rs.getString('POSITION_NUMBER'),
-            fte: rs.getFloat('FTE'),
-            description: rs.getString('DESCRIPTION'),
+            suffix: rs.getString('SUFFIX'),
             beginDate: rs.getDate('BEGIN_DATE'),
             endDate: rs.getDate('END_DATE'),
-            status: jobStatusDict[rs.getString('STATUS')]
+            locationID: rs.getString('LOCATION_ID'),
+            status: jobStatusDict[rs.getString('STATUS')],
+            description: rs.getString('DESCRIPTION'),
+            fullTimeEquivalency: rs.getBigDecimal('FTE'),
+            appointmentPercent: rs.getBigDecimal('APPOINTMENT_PERCENT'),
+            supervisorOsuID: rs.getString('SUPERVISOR_ID'),
+            supervisorPositionNumber: rs.getString('SUPERVISOR_POSITION_NUMBER'),
+            supervisorSuffix: rs.getString('SUPERVISOR_SUFFIX'),
+            timesheetOrganizationCode: rs.getString('TIMESHEET_ORGANIZATION_CODE'),
+            hourlyRate: rs.getBigDecimal('HOURLY_RATE'),
+            hoursPerPay: rs.getBigDecimal('HOURS_PER_PAY'),
+            assignmentSalary: rs.getBigDecimal('ASSIGNMENT_SALARY'),
+            paysPerYear: rs.getBigDecimal('PAYS_PER_YEAR'),
+            annualSalary: rs.getBigDecimal('ANNUAL_SALARY')
         )
     }
 }

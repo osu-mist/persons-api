@@ -1,10 +1,12 @@
 package edu.oregonstate.mist.personsapi.db
 
 import edu.oregonstate.mist.personsapi.core.JobObject
+import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PreviousRecord
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
+import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
 import edu.oregonstate.mist.personsapi.mapper.PersonMapper
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
 import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
@@ -33,7 +35,15 @@ public interface PersonsDAO extends Closeable {
 
     @SqlQuery(AbstractPersonsDAO.getJobsById)
     @Mapper(JobsMapper)
-    List<JobObject> getJobsById(@Bind('osuID') String osuID)
+    List<JobObject> getJobsById(@Bind('osuID') String osuID,
+                                @Bind('positionNumber') String positionNumber,
+                                @Bind('suffix') String suffix)
+
+    @SqlQuery(AbstractPersonsDAO.getJobLaborDistribution)
+    @Mapper(LaborDistributionMapper)
+    List<LaborDistribution> getJobLaborDistribution(@Bind('osuID') String osuID,
+                                                    @Bind('positionNumber') String positionNumber,
+                                                    @Bind('suffix') String suffix)
 
     @SqlQuery(AbstractPersonsDAO.getImageById)
     @Mapper(ImageMapper)

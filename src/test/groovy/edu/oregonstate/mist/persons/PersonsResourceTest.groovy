@@ -3,11 +3,11 @@ package edu.oregonstate.mist.persons
 import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.JobObject
+import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
-import groovy.mock.interceptor.MockFor
 import groovy.mock.interceptor.StubFor
 import org.junit.Test
 
@@ -39,11 +39,29 @@ class PersonsResourceTest {
 
     JobObject fakeJob = new JobObject(
         positionNumber: 'C12345',
+        suffix: '00',
         beginDate: Date.parse('yyyy-MM-dd','2018-01-01'),
         endDate: null,
+        locationID: "1A",
         status: 'Active',
         description: 'Fake Programmer',
-        fte: 1
+        fullTimeEquivalency: 1,
+        appointmentPercent: 30.2,
+        supervisorOsuID: '12345678',
+        supervisorPositionNumber: 'C65432',
+        supervisorSuffix: '01',
+        timesheetOrganizationCode: '20394',
+        hourlyRate: 12.5,
+        hoursPerPay: 173.333,
+        assignmentSalary: 2000,
+        paysPerYear: 12,
+        annualSalary: 24000,
+        laborDistribution: [new LaborDistribution(
+                accountIndexCode: 'FFB333',
+                accountCode: '23',
+                activityCode: '343A',
+                distributionPercent: 100
+        )]
     )
 
     private static void checkErrorResponse (Response res, Integer errorCode) {
@@ -121,7 +139,7 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
-        checkErrorResponse(personsResource.getJobsById('123456789'), 404)
+        checkErrorResponse(personsResource.getJobs('123456789', null, null), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
 
@@ -132,13 +150,14 @@ class PersonsResourceTest {
             getPersons(2..2) { String onid, String osuID, String osuUID,
                          String firstName, String lastName, searchOldVersions -> [fakePerson] }
             personExist { String osuID -> '123456789' }
-            getJobsById { String osuID -> fakeJob }
+            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
+            getJobLaborDistribution { String osuID, String positionNumber, String suffix -> null }
             getPreviousRecords(2..2) { String internalID -> null }
         }
         PersonsResource personsResource = new PersonsResource(stub.proxyInstance(), endpointUri)
         checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
                 [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
-        checkValidResponse(personsResource.getJobsById('123456789'), 200, ['jobs': fakeJob])
+        checkValidResponse(personsResource.getJobs('123456789', null, null), 200, [fakeJob])
     }
 }

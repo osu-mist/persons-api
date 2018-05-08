@@ -15,9 +15,11 @@ class PersonUriBuilder {
                   .build(osuID)
     }
 
-    URI personJobsUri(String osuID) {
+    URI personJobsUri(String osuID, String positionNumber, String suffix) {
         UriBuilder.fromUri(this.endpointUri)
                   .path('persons/{osuID}/jobs')
+                  .queryParam("positionNumber", positionNumber)
+                  .queryParam("suffix", suffix)
                   .build(osuID)
     }
 }
