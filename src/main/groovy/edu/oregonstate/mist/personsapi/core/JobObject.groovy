@@ -1,8 +1,10 @@
 package edu.oregonstate.mist.personsapi.core
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 
 class JobObject {
+    @JsonProperty("positionNumber")
     String positionNumber
     String suffix
 

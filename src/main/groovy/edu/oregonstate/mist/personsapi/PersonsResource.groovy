@@ -1,18 +1,25 @@
 package edu.oregonstate.mist.personsapi
 
 import com.codahale.metrics.annotation.Timed
+import com.fasterxml.jackson.databind.ObjectMapper
+import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
+import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
+import edu.oregonstate.mist.personsapi.db.MessageQueueDAOException
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
 
 import javax.annotation.security.PermitAll
 import javax.imageio.ImageIO
+import javax.validation.Valid
+import javax.ws.rs.Consumes
 import javax.ws.rs.GET
+import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
@@ -26,11 +33,13 @@ import javax.ws.rs.core.Response
 @TypeChecked
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
+    private final MessageQueueDAO messageQueueDAO
     private PersonUriBuilder personUriBuilder
     private final Integer maxImageWidth = 2000
 
-    PersonsResource(PersonsDAO personsDAO, URI endpointUri) {
+    PersonsResource(PersonsDAO personsDAO, MessageQueueDAO messageQueueDAO, URI endpointUri) {
         this.personsDAO = personsDAO
+        this.messageQueueDAO = messageQueueDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
@@ -163,6 +172,24 @@ class PersonsResource extends Resource {
             ok(jobResultObject(jobs, osuID)).build()
         } else {
             notFound().build()
+        }
+    }
+
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/jobs')
+    Response createJob(@PathParam('osuID') String osuID,
+                       @Valid ResultObject resultObject) {
+        ObjectMapper mapper = new ObjectMapper()
+
+        JobObject job = mapper.convertValue(resultObject.data['attributes'], JobObject.class)
+
+        try {
+            messageQueueDAO.createNewJob(job, osuID)
+            return accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
+        } catch (MessageQueueDAOException) {
+            return internalServerError("Internal error with creating new job.").build()
         }
     }
 
