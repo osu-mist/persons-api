@@ -20,6 +20,21 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)
 
+    @SqlQuery(AbstractPersonsDAO.validatePositionNumber)
+    Boolean isValidPositionNumber(@Bind('positionNumber') String positionNumber)
+
+    @SqlQuery(AbstractPersonsDAO.validateLocationID)
+    Boolean isValidLocation(@Bind('locationID') String locationID)
+
+    @SqlQuery(AbstractPersonsDAO.validateAccountIndexCode)
+    Boolean isValidAccountIndexCode(@Bind('accountIndexCode') String accountIndexCode)
+
+    @SqlQuery(AbstractPersonsDAO.validateAccountCode)
+    Boolean isValidAccountCode(@Bind('accountCode') String accountCode)
+
+    @SqlQuery(AbstractPersonsDAO.validateActivityCode)
+    Boolean isValidActivityCode(@Bind('activityCode') String activityCode)
+
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
     List<PersonObject> getPersons(@Bind('onid') String onid,

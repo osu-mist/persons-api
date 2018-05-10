@@ -283,8 +283,45 @@ class PersonsResource extends Resource {
 
         if (validSupervisor
                 && !supervisorActivePositionNumbers.contains(job.supervisorPositionNumber)) {
-            addBadRequest("Supervisor does not have a position with position number " +
+            addBadRequest("Supervisor does not have an actjve position with position number " +
                     "${job.supervisorPositionNumber}")
+        }
+
+        if (job.positionNumber && !personsDAO.isValidPositionNumber(job.positionNumber)) {
+            addBadRequest("${job.positionNumber} is not a valid position number.")
+        }
+        if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
+            addBadRequest("${job.locationID} is not a valid location ID.")
+        }
+
+        if (job.laborDistribution) {
+            BigDecimal totalDistributionPercent = 0
+
+            job.laborDistribution.each {
+                if (it.distributionPercent) {
+                    totalDistributionPercent += it.distributionPercent
+                } else {
+                    addBadRequest("distributionPercent is required for each labor distribution.")
+                }
+
+                if (!it.accountIndexCode) {
+                    addBadRequest("accountIndexCode is required for each labor distribution")
+                } else if (!personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
+                    addBadRequest("${it.accountIndexCode} is not a valid accountIndexCode.")
+                }
+
+                if (it.accountCode && !personsDAO.isValidAccountCode(it.accountCode)) {
+                    addBadRequest("${it.accountCode} is not a valid accountCode.")
+                }
+
+                if (it.activityCode && !personsDAO.isValidActivityCode(it.activityCode)) {
+                    addBadRequest("${it.activityCode} is not a valid activityCode.")
+                }
+            }
+
+            if (totalDistributionPercent != 100) {
+                addBadRequest("Total sum of labor distribution percentages must equal 100.")
+            }
         }
 
         errors
