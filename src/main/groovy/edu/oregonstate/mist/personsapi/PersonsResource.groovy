@@ -1,7 +1,6 @@
 package edu.oregonstate.mist.personsapi
 
 import com.codahale.metrics.annotation.Timed
-import com.fasterxml.jackson.databind.ObjectMapper
 import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
@@ -181,9 +180,19 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/jobs')
     Response createJob(@PathParam('osuID') String osuID,
                        @Valid ResultObject resultObject) {
-        ObjectMapper mapper = new ObjectMapper()
+        if (!personsDAO.personExist(osuID)) {
+            return notFound().build()
+        }
 
-        JobObject job = mapper.convertValue(resultObject.data['attributes'], JobObject.class)
+        List<Error> errors = newJobErrors(resultObject)
+
+        if (errors) {
+            Response.ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
+            return responseBuilder.entity(errors).build()
+        }
+
+        // At this point, the submitted job object is valid. Proceed with posting to message queue.
+        JobObject job = JobObject.fromResultObject(resultObject)
 
         try {
             messageQueueDAO.createNewJob(job, osuID)
@@ -207,6 +216,78 @@ class PersonsResource extends Resource {
                 links: ['self': personUriBuilder.personJobsUri(
                         osuID, job.positionNumber, job.suffix)]
         )
+    }
+
+    private List<Error> newJobErrors(ResultObject resultObject) {
+        List<Error> errors = []
+
+        JobObject job
+
+        def addBadRequest = { String message ->
+            errors.add(Error.badRequest(message))
+        }
+
+        try {
+            job = JobObject.fromResultObject(resultObject)
+        } catch (IllegalArgumentException e) {
+            addBadRequest("Could not parse job object. " +
+                    "Make sure dates are in ISO8601 format: yyyy-MM-dd")
+
+            // if we can't deserialize the job object, no need to proceed
+            return errors
+        }
+
+        if (!job) {
+            addBadRequest("No job object provided.")
+
+            // if there's no job object, no need to proceed
+            return errors
+        }
+
+        // at this point, we have a job object. Let's validate the fields
+        def requiredFields = ["Position number": job.positionNumber,
+                              "Begin date": job.beginDate,
+                              "Supervisor OSU ID": job.supervisorOsuID,
+                              "Supervisor position number": job.supervisorPositionNumber]
+
+        requiredFields.findAll { key, value -> !value }.each { key, value ->
+            addBadRequest("${key} is required.")
+        }
+
+        if (job.beginDate && job.endDate && (job.beginDate >= job.endDate)) {
+            addBadRequest("End date must be after begin date.")
+        }
+
+        if (job.fullTimeEquivalency &&
+                (job.fullTimeEquivalency > 1 || job.fullTimeEquivalency <= 0)) {
+            addBadRequest("Full time equivalency must range from 0 to 1.")
+        }
+
+        if (job.appointmentPercent &&
+                (job.appointmentPercent > 100 || job.appointmentPercent < 0)) {
+            addBadRequest("Appointment percent must range from 0 to 100.")
+        }
+
+        Boolean validSupervisor = job.supervisorOsuID && personsDAO.personExist(job.supervisorOsuID)
+
+        if (!validSupervisor) {
+            addBadRequest("Supervisor OSU ID does not exist.")
+        }
+
+        def supervisorActiveJobs = personsDAO.getJobsById(job.supervisorOsuID,
+                job.supervisorPositionNumber, null).findAll { it.isActive() }
+
+        def supervisorActivePositionNumbers = supervisorActiveJobs.collect {
+            it.positionNumber
+        }
+
+        if (validSupervisor
+                && !supervisorActivePositionNumbers.contains(job.supervisorPositionNumber)) {
+            addBadRequest("Supervisor does not have a position with position number " +
+                    "${job.supervisorPositionNumber}")
+        }
+
+        errors
     }
 
     @Timed

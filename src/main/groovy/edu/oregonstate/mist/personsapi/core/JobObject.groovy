@@ -1,10 +1,13 @@
 package edu.oregonstate.mist.personsapi.core
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.databind.ObjectMapper
+import edu.oregonstate.mist.api.jsonapi.ResultObject
 
+@JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class JobObject {
-    @JsonProperty("positionNumber")
     String positionNumber
     String suffix
 
@@ -31,8 +34,19 @@ class JobObject {
     BigDecimal paysPerYear
     BigDecimal annualSalary
     List<LaborDistribution> laborDistribution
+
+    public static JobObject fromResultObject(ResultObject resultObject) {
+        ObjectMapper mapper = new ObjectMapper()
+        mapper.convertValue(resultObject.data['attributes'], JobObject.class)
+    }
+
+    @JsonIgnore
+    public Boolean isActive() {
+        this.status == 'Active'
+    }
 }
 
+@JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class LaborDistribution {
     String accountIndexCode
     String accountCode
