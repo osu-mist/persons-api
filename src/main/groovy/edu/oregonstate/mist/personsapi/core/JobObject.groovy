@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import groovy.transform.InheritConstructors
 
 @JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class JobObject {
@@ -37,7 +38,13 @@ class JobObject {
 
     public static JobObject fromResultObject(ResultObject resultObject) {
         ObjectMapper mapper = new ObjectMapper()
-        mapper.convertValue(resultObject.data['attributes'], JobObject.class)
+        try {
+            mapper.convertValue(resultObject.data['attributes'], JobObject.class)
+        } catch (IllegalArgumentException e) {
+            throw new PersonObjectException("Some fields weren't able to map to a person object.")
+        } catch (NullPointerException e) {
+            throw new PersonObjectException("Could not parse result object.")
+        }
     }
 
     @JsonIgnore
@@ -45,6 +52,9 @@ class JobObject {
         this.status == 'Active'
     }
 }
+
+@InheritConstructors
+class PersonObjectException extends Exception {}
 
 @JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class LaborDistribution {

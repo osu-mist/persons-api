@@ -7,6 +7,7 @@ import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
 import edu.oregonstate.mist.personsapi.db.MessageQueueDAOException
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
@@ -229,7 +230,7 @@ class PersonsResource extends Resource {
 
         try {
             job = JobObject.fromResultObject(resultObject)
-        } catch (IllegalArgumentException e) {
+        } catch (PersonObjectException e) {
             addBadRequest("Could not parse job object. " +
                     "Make sure dates are in ISO8601 format: yyyy-MM-dd")
 
