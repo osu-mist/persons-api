@@ -255,6 +255,18 @@ class PersonsResource extends Resource {
             addBadRequest("${key} is required.")
         }
 
+        def positiveNumberFields = ["Hourly rate": job.hourlyRate,
+                                    "Hours per pay": job.hoursPerPay,
+                                    "Assignment salary": job.assignmentSalary,
+                                    "Annual salary": job.annualSalary,
+                                    "Pays per year": job.paysPerYear]
+
+        positiveNumberFields.findAll { key, value ->
+            value && value < 0
+        }.each { key, value ->
+            addBadRequest("${key} cannot be a negative number.")
+        }
+
         if (job.status && job.status != 'Active') {
             addBadRequest("'Active' is the only valid job status.")
         }
