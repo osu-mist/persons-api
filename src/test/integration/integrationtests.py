@@ -64,7 +64,7 @@ class TestStringMethods(unittest.TestCase):
     # a known bad phone number should be unformatted,
     # therefore unable to be parsed.
     def test_bad_phones(self):
-        long_phone_person = utils.get_person_by_osu_id(long_phone_osu_id) 
+        long_phone_person = utils.get_person_by_osu_id(long_phone_osu_id)
         self.assertEqual(long_phone_person.status_code, 200)
         long_home_phone = long_phone_person.json()['data']['attributes']['homePhone']
 
@@ -81,8 +81,9 @@ class TestStringMethods(unittest.TestCase):
         jobs_res = utils.get_jobs_by_osu_id(jobs_osu_id)
 
         dates = [person_res.json()['data']['attributes']['birthDate']]
-        for job in jobs_res.json()['data']['attributes']['jobs']:
-            dates += [job['beginDate'], job['endDate']]
+        for job in jobs_res.json()['data']:
+            attributes = job['attributes']
+            dates += [attributes['beginDate'], attributes['endDate']]
 
         for date in filter(None, dates):
             # validate ISO 8601 full-date format
@@ -110,15 +111,11 @@ class TestStringMethods(unittest.TestCase):
         for res, res_osu_id in [(jobs_res, jobs_osu_id), (no_job_res, no_job_osu_id)]:
             self.assertEqual(res.status_code, 200)
 
-            self.assertIsNotNone(res.json()['data'])
-            self.assertEqual(res.json()['data']['type'], 'jobs')
-            self.assertEqual(res.json()['data']['id'], res_osu_id)
-
         # test person with jobs
-        self.assertGreater(len(jobs_res.json()['data']['attributes']['jobs']), 0)
+        self.assertGreater(len(jobs_res.json()['data']), 0)
 
         # test person without job
-        self.assertEqual(len(no_job_res.json()['data']['attributes']['jobs']), 0)
+        self.assertEqual(len(no_job_res.json()['data']), 0)
 
         # expect 404 if osuID is not valid
         self.assertEqual(utils.get_person_by_osu_id(not_valid_osu_id).status_code, 404)
@@ -173,7 +170,14 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(person_id_res.json()['data']['links']['self'], api_url + osu_id)
 
         jobs_res = utils.get_jobs_by_osu_id(jobs_osu_id)
-        self.assertEqual(jobs_res.json()['data']['links']['self'], api_url + osu_id + '/jobs')
+        for job in jobs_res.json()['data']:
+            attributes = job['attributes']
+            position_number = attributes['positionNumber']
+            suffix = attributes['suffix']
+            expected_url = "{}{}/jobs?positionNumber={}&suffix={}".format(
+                    api_url, osu_id, position_number, suffix)
+
+            self.assertEqual(job['links']['self'], expected_url)
 
 
 if __name__ == '__main__':
