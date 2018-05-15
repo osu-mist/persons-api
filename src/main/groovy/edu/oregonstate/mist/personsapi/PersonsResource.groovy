@@ -255,6 +255,10 @@ class PersonsResource extends Resource {
             addBadRequest("${key} is required.")
         }
 
+        if (job.status && job.status != 'Active') {
+            addBadRequest("'Active' is the only valid job status.")
+        }
+
         if (job.beginDate && job.endDate && (job.beginDate >= job.endDate)) {
             addBadRequest("End date must be after begin date.")
         }
