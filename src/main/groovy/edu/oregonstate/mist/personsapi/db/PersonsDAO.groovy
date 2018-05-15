@@ -35,6 +35,9 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.validateActivityCode)
     Boolean isValidActivityCode(@Bind('activityCode') String activityCode)
 
+    @SqlQuery(AbstractPersonsDAO.validateOrganizationCode)
+    Boolean isValidOrganizationCode(@Bind('organizationCode') String organizationCode)
+
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
     List<PersonObject> getPersons(@Bind('onid') String onid,

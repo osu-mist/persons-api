@@ -295,8 +295,14 @@ class PersonsResource extends Resource {
         if (job.positionNumber && !personsDAO.isValidPositionNumber(job.positionNumber)) {
             addBadRequest("${job.positionNumber} is not a valid position number.")
         }
+
         if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
             addBadRequest("${job.locationID} is not a valid location ID.")
+        }
+
+        if (job.timesheetOrganizationCode && !personsDAO.isValidOrganizationCode(
+                job.timesheetOrganizationCode)) {
+            addBadRequest("${job.timesheetOrganizationCode} is not a valid organization code.")
         }
 
         if (job.laborDistribution) {
