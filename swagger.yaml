@@ -133,7 +133,7 @@ paths:
         400:
           description: Bad request
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/ErrorArray'
         404:
           description: Person not found
           schema:
@@ -390,6 +390,10 @@ definitions:
         type: string
         format: url
         description: Self link of resource
+  ErrorArray:
+    type: array
+    items:
+      $ref: "#/definitions/Error"
   Error:
     properties:
       status:
