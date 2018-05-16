@@ -33,8 +33,8 @@ logging:
       threshold: ALL
       target: stdout
     - type: file
-      currentLogFilename: logs/web-api-skeleton.log
-      archivedLogFilenamePattern: logs/web-api-skeleton-%d.log.gz
+      currentLogFilename: logs/persons-api.log
+      archivedLogFilenamePattern: logs/persons-api-%d.log.gz
       archivedFileCount: 5
       threshold: ALL
       timeZone: PST
@@ -44,40 +44,32 @@ authentication:
     password: password
 
 api:
-  endpointUri: https://api.oregonstate.edu/v1/web-api-skeleton/
+  endpointUri: https://api.oregonstate.edu/v1/
 
-#
-## Example Oracle configuration
-#
-#database:
-#  driverClass: oracle.jdbc.OracleDriver
-#  url: jdbc:oracle:thin:@(DESCRIPTION=(LOAD_BALANCE=ON) (ADDRESS=(PROTOCOL=TCP)(Host=db1.example.com)(Port=1521)) (ADDRESS=(PROTOCOL=TCP)(Host=db2.example.com)(Port=1521)) (CONNECT_DATA=(SERVICE_NAME=example.db)))
-#  user: Username
-#  password: Password
-#  abandonWhenPercentageFull: 0
-#  alternateUsernamesAllowed: false
-#  commitOnReturn: false
-#  autoCommitByDefault: true
-#  readOnlyByDefault: false
-#  properties:
-#    hibernate.dialect: org.hibernate.dialect.Oracle10gDialect
-#  defaultCatalog: # none
-#  defaultTransactionIsolation: default
-#  useFairQueue: true
-#  initialSize: 10
-#  minSize: 10
-#  maxSize: 20
-#  initializationQuery: # none
-#  logAbandonedConnections: true
-#  logValidationErrors: true
-#  maxConnectionAge: # none
-#  maxWaitForConnection: 1 # second
-#  minIdleTime: 1 # minute
-#  validationQuery: "SELECT 1 FROM dual"
-#  validationQueryTimeout: # none
-#  checkConnectionWhileIdle: true
-#  checkConnectionOnConnect: false
-#  checkConnectionOnReturn: false
-#  autoCommentsEnabled: true
-#  evictionInterval: 5 # seconds
-#  validationInterval: 30 # seconds
+database:
+  driverClass: oracle.jdbc.OracleDriver
+  url: jdbc:oracle:thin:@//db-url
+  user: dbuser
+  password: dbpasswd
+  properties:
+      hibernate.dialect: org.hibernate.dialect.Oracle10gDialect
+  validationQuery: "SELECT 1 FROM dual"
+  initialSize: 2
+  minSize: 1
+  maxSize: 5
+
+messageQueue:
+  baseUrl: https://api.oregonstate.edu/v1/events
+  apiKey: secretSauce
+  newJobEventType: newJob
+
+httpClientConfiguration:
+  timeout: 150000ms
+  connectionTimeout: 15000ms
+  timeToLive: 1h
+  cookiesEnabled: false
+  maxConnections: 2
+  maxConnectionsPerRoute: 2
+  keepAlive: 0ms
+  retries: 0
+  userAgent: persons-api

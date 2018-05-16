@@ -1,7 +1,9 @@
 package edu.oregonstate.mist.personsapi
 
 import edu.oregonstate.mist.api.Application
+import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import io.dropwizard.client.HttpClientBuilder
 import io.dropwizard.jdbi.DBIFactory
 import io.dropwizard.setup.Environment
 import org.skife.jdbi.v2.DBI
@@ -20,11 +22,23 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
     public void run(PersonsApplicationConfiguration configuration, Environment environment) {
         this.setup(configuration, environment)
 
+        def httpClientBuilder = new HttpClientBuilder(environment)
+
+        if (configuration.httpClientConfiguration != null) {
+            httpClientBuilder.using(configuration.httpClientConfiguration)
+        }
+
         DBIFactory factory = new DBIFactory()
         DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "jdbi")
         PersonsDAO personsDAO = jdbi.onDemand(PersonsDAO.class)
+        MessageQueueDAO messageQueueDAO = new MessageQueueDAO(
+                httpClientBuilder.build("backend-http-client"),
+                configuration.messageQueueConfiguraiton.baseUrl,
+                configuration.messageQueueConfiguraiton.apiKey,
+                configuration.messageQueueConfiguraiton.newJobEventType)
+
         environment.jersey().register(
-            new PersonsResource(personsDAO, configuration.api.endpointUri)
+            new PersonsResource(personsDAO, messageQueueDAO, configuration.api.endpointUri)
         )
     }
 

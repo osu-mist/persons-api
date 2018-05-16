@@ -1,18 +1,25 @@
 package edu.oregonstate.mist.personsapi
 
 import com.codahale.metrics.annotation.Timed
+import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.PersonObjectException
+import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
+import edu.oregonstate.mist.personsapi.db.MessageQueueDAOException
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
 
 import javax.annotation.security.PermitAll
 import javax.imageio.ImageIO
+import javax.validation.Valid
+import javax.ws.rs.Consumes
 import javax.ws.rs.GET
+import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
@@ -26,11 +33,13 @@ import javax.ws.rs.core.Response
 @TypeChecked
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
+    private final MessageQueueDAO messageQueueDAO
     private PersonUriBuilder personUriBuilder
     private final Integer maxImageWidth = 2000
 
-    PersonsResource(PersonsDAO personsDAO, URI endpointUri) {
+    PersonsResource(PersonsDAO personsDAO, MessageQueueDAO messageQueueDAO, URI endpointUri) {
         this.personsDAO = personsDAO
+        this.messageQueueDAO = messageQueueDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
@@ -166,6 +175,34 @@ class PersonsResource extends Resource {
         }
     }
 
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/jobs')
+    Response createJob(@PathParam('osuID') String osuID,
+                       @Valid ResultObject resultObject) {
+        if (!personsDAO.personExist(osuID)) {
+            return notFound().build()
+        }
+
+        List<Error> errors = newJobErrors(resultObject)
+
+        if (errors) {
+            Response.ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
+            return responseBuilder.entity(errors).build()
+        }
+
+        // At this point, the submitted job object is valid. Proceed with posting to message queue.
+        JobObject job = JobObject.fromResultObject(resultObject)
+
+        try {
+            messageQueueDAO.createNewJob(job, osuID)
+            return accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
+        } catch (MessageQueueDAOException) {
+            return internalServerError("Internal error with creating new job.").build()
+        }
+    }
+
     ResultObject jobResultObject(List<JobObject> jobs, String osuID) {
         new ResultObject(data: jobs.collect { jobResourceObject(it, osuID)})
     }
@@ -180,6 +217,137 @@ class PersonsResource extends Resource {
                 links: ['self': personUriBuilder.personJobsUri(
                         osuID, job.positionNumber, job.suffix)]
         )
+    }
+
+    private List<Error> newJobErrors(ResultObject resultObject) {
+        List<Error> errors = []
+
+        JobObject job
+
+        def addBadRequest = { String message ->
+            errors.add(Error.badRequest(message))
+        }
+
+        try {
+            job = JobObject.fromResultObject(resultObject)
+        } catch (PersonObjectException e) {
+            addBadRequest("Could not parse job object. " +
+                    "Make sure dates are in ISO8601 format: yyyy-MM-dd")
+
+            // if we can't deserialize the job object, no need to proceed
+            return errors
+        }
+
+        if (!job) {
+            addBadRequest("No job object provided.")
+
+            // if there's no job object, no need to proceed
+            return errors
+        }
+
+        // at this point, we have a job object. Let's validate the fields
+        def requiredFields = ["Position number": job.positionNumber,
+                              "Begin date": job.beginDate,
+                              "Supervisor OSU ID": job.supervisorOsuID,
+                              "Supervisor position number": job.supervisorPositionNumber]
+
+        requiredFields.findAll { key, value -> !value }.each { key, value ->
+            addBadRequest("${key} is required.")
+        }
+
+        def positiveNumberFields = ["Hourly rate": job.hourlyRate,
+                                    "Hours per pay": job.hoursPerPay,
+                                    "Assignment salary": job.assignmentSalary,
+                                    "Annual salary": job.annualSalary,
+                                    "Pays per year": job.paysPerYear]
+
+        positiveNumberFields.findAll { key, value ->
+            value && value < 0
+        }.each { key, value ->
+            addBadRequest("${key} cannot be a negative number.")
+        }
+
+        if (job.status && !job.isActive()) {
+            addBadRequest("'Active' is the only valid job status.")
+        }
+
+        if (job.beginDate && job.endDate && (job.beginDate >= job.endDate)) {
+            addBadRequest("End date must be after begin date.")
+        }
+
+        if (job.fullTimeEquivalency &&
+                (job.fullTimeEquivalency > 1 || job.fullTimeEquivalency <= 0)) {
+            addBadRequest("Full time equivalency must range from 0 to 1.")
+        }
+
+        if (job.appointmentPercent &&
+                (job.appointmentPercent > 100 || job.appointmentPercent < 0)) {
+            addBadRequest("Appointment percent must range from 0 to 100.")
+        }
+
+        Boolean validSupervisor = job.supervisorOsuID && personsDAO.personExist(job.supervisorOsuID)
+
+        if (!validSupervisor) {
+            addBadRequest("Supervisor OSU ID does not exist.")
+        }
+
+        def supervisorActiveJobs = personsDAO.getJobsById(job.supervisorOsuID,
+                job.supervisorPositionNumber, null).findAll { it.isActive() }
+
+        def supervisorActivePositionNumbers = supervisorActiveJobs.collect {
+            it.positionNumber
+        }
+
+        if (validSupervisor
+                && !supervisorActivePositionNumbers.contains(job.supervisorPositionNumber)) {
+            addBadRequest("Supervisor does not have an actjve position with position number " +
+                    "${job.supervisorPositionNumber}")
+        }
+
+        if (job.positionNumber && !personsDAO.isValidPositionNumber(job.positionNumber)) {
+            addBadRequest("${job.positionNumber} is not a valid position number.")
+        }
+
+        if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
+            addBadRequest("${job.locationID} is not a valid location ID.")
+        }
+
+        if (job.timesheetOrganizationCode && !personsDAO.isValidOrganizationCode(
+                job.timesheetOrganizationCode)) {
+            addBadRequest("${job.timesheetOrganizationCode} is not a valid organization code.")
+        }
+
+        if (job.laborDistribution) {
+            BigDecimal totalDistributionPercent = 0
+
+            job.laborDistribution.each {
+                if (it.distributionPercent) {
+                    totalDistributionPercent += it.distributionPercent
+                } else {
+                    addBadRequest("distributionPercent is required for each labor distribution.")
+                }
+
+                if (!it.accountIndexCode) {
+                    addBadRequest("accountIndexCode is required for each labor distribution")
+                } else if (!personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
+                    addBadRequest("${it.accountIndexCode} is not a valid accountIndexCode.")
+                }
+
+                if (it.accountCode && !personsDAO.isValidAccountCode(it.accountCode)) {
+                    addBadRequest("${it.accountCode} is not a valid accountCode.")
+                }
+
+                if (it.activityCode && !personsDAO.isValidActivityCode(it.activityCode)) {
+                    addBadRequest("${it.activityCode} is not a valid activityCode.")
+                }
+            }
+
+            if (totalDistributionPercent != 100) {
+                addBadRequest("Total sum of labor distribution percentages must equal 100.")
+            }
+        }
+
+        errors
     }
 
     @Timed
