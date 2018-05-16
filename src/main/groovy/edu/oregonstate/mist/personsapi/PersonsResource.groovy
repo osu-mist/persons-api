@@ -267,7 +267,7 @@ class PersonsResource extends Resource {
             addBadRequest("${key} cannot be a negative number.")
         }
 
-        if (job.status && job.status != 'Active') {
+        if (job.status && !job.isActive()) {
             addBadRequest("'Active' is the only valid job status.")
         }
 
