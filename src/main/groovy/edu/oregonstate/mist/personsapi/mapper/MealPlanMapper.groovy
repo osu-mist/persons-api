@@ -20,7 +20,7 @@ public class MealPlanMapper implements ResultSetMapper<MealPlan> {
 
     private static String getMealPlan(String dbMealPlan) {
         if (dbMealPlan == "!OrangeCash") {
-            "Orange Rewards"
+            "Orange Cash"
         } else {
             dbMealPlan
         }
