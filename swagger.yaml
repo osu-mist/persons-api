@@ -167,6 +167,39 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
+  /persons/{osuID}/meal-plans:
+    get:
+      description: Get meal plans for a person
+      parameters:
+        - $ref: '#/parameters/osuID'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/MealPlansResultObject'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+  /persons/{osuID}/meal-plans/{mealPlanID}:
+    get:
+      description: Get meal plans for a person
+      parameters:
+        - in: path
+          name: mealPlanID
+          description: ID of meal plan
+          required: true
+          type: string
+        - $ref: '#/parameters/osuID'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/MealPlansResultObject'
+        404:
+          description: Person or meal plan not found
+          schema:
+            $ref: '#/definitions/Error'
 parameters:
   osuID:
     name: osuID
@@ -384,6 +417,46 @@ definitions:
           #  type: string
           #  format: date
           #  example: "2019-12-31"
+  MealPlansResultObject:
+    properties:
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/MealPlanResourceObject"
+  MealPlanResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/MealPlanResourceObject"
+  MealPlanResourceObject:
+    properties:
+      id:
+        type: string
+        description: Meal plan ID
+      type:
+        type: string
+        example: meal-plans
+      links:
+          $ref: "#/definitions/SelfLink"
+      attributes:
+        properties:
+          mealPlan:
+            type: string
+            description: Description of meal plan
+            example: Orange Rewards
+          balance:
+            type: number
+            format: float
+            description: Remaining balance on meal plan in USD
+            example: 23.8
+          lastUsedDate:
+            type: string
+            format: date-time
+            description: The last time the meal plan was used
+            example: "2017-07-14T16:45:15Z"
+          lastUsedLocation:
+            type: string
+            description: Description of place the meal plan was last used
+            example: "Java II"
   SelfLink:
     properties:
       self:
