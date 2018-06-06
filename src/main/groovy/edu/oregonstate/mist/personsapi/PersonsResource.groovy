@@ -5,11 +5,11 @@ import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import edu.oregonstate.mist.personsapi.core.DiningBalanceObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
-import edu.oregonstate.mist.personsapi.db.MessageQueueDAOException
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
@@ -374,5 +374,55 @@ class PersonsResource extends Resource {
         } else {
             notFound().type(MediaType.APPLICATION_JSON).build()
         }
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/dining-balances')
+    Response getDiningBalances(@PathParam('osuID') String osuID) {
+        if (personsDAO.personExist(osuID)) {
+            List<DiningBalanceObject> diningBalances = personsDAO.getDiningBalances(osuID, null)
+
+            ResultObject resultObject = new ResultObject(
+                    data: diningBalances.collect {
+                        getDiningBalanceResourceObject(it)
+                    }
+            )
+
+            ok(resultObject).build()
+        } else {
+            notFound().build()
+        }
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/dining-balances/{mealPlanID}')
+    Response getDiningBalanceByID(@PathParam('osuID') String osuID,
+                                  @PathParam('mealPlanID') String mealPlanID) {
+        if (personsDAO.personExist(osuID)) {
+            List<DiningBalanceObject> diningBalances = personsDAO.getDiningBalances(
+                    osuID, mealPlanID)
+
+            if (diningBalances) {
+                ResultObject resultObject = new ResultObject(
+                        data: getDiningBalanceResourceObject(diningBalances?.get(0))
+                )
+                ok(resultObject).build()
+            } else {
+                notFound().build()
+            }
+        } else {
+            notFound().build()
+        }
+    }
+
+    private static ResourceObject getDiningBalanceResourceObject(
+            DiningBalanceObject diningBalanceObject) {
+        new ResourceObject(
+                id: diningBalanceObject.mealPlanID,
+                type: "dining-balances",
+                attributes: diningBalanceObject
+        )
     }
 }

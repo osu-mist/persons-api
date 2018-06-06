@@ -1,5 +1,6 @@
 package edu.oregonstate.mist.personsapi
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import edu.oregonstate.mist.api.Application
 import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
