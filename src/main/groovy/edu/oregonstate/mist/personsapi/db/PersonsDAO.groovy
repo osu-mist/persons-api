@@ -1,11 +1,11 @@
 package edu.oregonstate.mist.personsapi.db
 
-import edu.oregonstate.mist.personsapi.core.DiningBalanceObject
+import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PreviousRecord
-import edu.oregonstate.mist.personsapi.mapper.DiningBalanceMapper
+import edu.oregonstate.mist.personsapi.mapper.MealPlanMapper
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
@@ -69,8 +69,8 @@ public interface PersonsDAO extends Closeable {
     @Mapper(ImageMapper)
     Blob getImageById(@Bind('osuID') String osuID)
 
-    @SqlQuery(AbstractPersonsDAO.getDiningBalances)
-    @Mapper(DiningBalanceMapper)
-    List<DiningBalanceObject> getDiningBalances(@Bind('osuID') String osuID,
-                                                @Bind('mealPlanID') String mealPlanID)
+    @SqlQuery(AbstractPersonsDAO.getMealPlans)
+    @Mapper(MealPlanMapper)
+    List<MealPlan> getMealPlans(@Bind('osuID') String osuID,
+                                @Bind('mealPlanID') String mealPlanID)
 }

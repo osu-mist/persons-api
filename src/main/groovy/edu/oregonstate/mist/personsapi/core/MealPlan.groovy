@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 
 import java.time.Instant
 
-class DiningBalanceObject {
+class MealPlan {
     @JsonIgnore
     String mealPlanID
 

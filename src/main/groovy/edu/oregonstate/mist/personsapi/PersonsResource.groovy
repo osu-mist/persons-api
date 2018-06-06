@@ -5,7 +5,7 @@ import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
-import edu.oregonstate.mist.personsapi.core.DiningBalanceObject
+import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
@@ -378,14 +378,14 @@ class PersonsResource extends Resource {
 
     @Timed
     @GET
-    @Path('{osuID: [0-9]+}/dining-balances')
-    Response getDiningBalances(@PathParam('osuID') String osuID) {
+    @Path('{osuID: [0-9]+}/meal-plans')
+    Response getMealPlans(@PathParam('osuID') String osuID) {
         if (personsDAO.personExist(osuID)) {
-            List<DiningBalanceObject> diningBalances = personsDAO.getDiningBalances(osuID, null)
+            List<MealPlan> mealPlans = personsDAO.getMealPlans(osuID, null)
 
             ResultObject resultObject = new ResultObject(
-                    data: diningBalances.collect {
-                        getDiningBalanceResourceObject(it)
+                    data: mealPlans.collect {
+                        getMealPlanResourceObject(it, osuID)
                     }
             )
 
@@ -397,16 +397,16 @@ class PersonsResource extends Resource {
 
     @Timed
     @GET
-    @Path('{osuID: [0-9]+}/dining-balances/{mealPlanID}')
-    Response getDiningBalanceByID(@PathParam('osuID') String osuID,
-                                  @PathParam('mealPlanID') String mealPlanID) {
+    @Path('{osuID: [0-9]+}/meal-plans/{mealPlanID}')
+    Response getMealPlanByID(@PathParam('osuID') String osuID,
+                             @PathParam('mealPlanID') String mealPlanID) {
         if (personsDAO.personExist(osuID)) {
-            List<DiningBalanceObject> diningBalances = personsDAO.getDiningBalances(
+            List<MealPlan> mealPlans = personsDAO.getMealPlans(
                     osuID, mealPlanID)
 
-            if (diningBalances) {
+            if (mealPlans) {
                 ResultObject resultObject = new ResultObject(
-                        data: getDiningBalanceResourceObject(diningBalances?.get(0))
+                        data: getMealPlanResourceObject(mealPlans?.get(0), osuID)
                 )
                 ok(resultObject).build()
             } else {
@@ -417,12 +417,13 @@ class PersonsResource extends Resource {
         }
     }
 
-    private static ResourceObject getDiningBalanceResourceObject(
-            DiningBalanceObject diningBalanceObject) {
+    private ResourceObject getMealPlanResourceObject(
+            MealPlan mealPlan, String osuID) {
         new ResourceObject(
-                id: diningBalanceObject.mealPlanID,
-                type: "dining-balances",
-                attributes: diningBalanceObject
+                id: mealPlan.mealPlanID,
+                type: "meal-plans",
+                attributes: mealPlan,
+                links: ['self': personUriBuilder.mealPlanUri(osuID, mealPlan.mealPlanID)]
         )
     }
 }
