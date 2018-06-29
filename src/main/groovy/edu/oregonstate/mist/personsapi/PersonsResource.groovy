@@ -5,11 +5,11 @@ import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
-import edu.oregonstate.mist.personsapi.db.MessageQueueDAOException
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
@@ -374,5 +374,56 @@ class PersonsResource extends Resource {
         } else {
             notFound().type(MediaType.APPLICATION_JSON).build()
         }
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/meal-plans')
+    Response getMealPlans(@PathParam('osuID') String osuID) {
+        if (personsDAO.personExist(osuID)) {
+            List<MealPlan> mealPlans = personsDAO.getMealPlans(osuID, null)
+
+            ResultObject resultObject = new ResultObject(
+                    data: mealPlans.collect {
+                        getMealPlanResourceObject(it, osuID)
+                    }
+            )
+
+            ok(resultObject).build()
+        } else {
+            notFound().build()
+        }
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/meal-plans/{mealPlanID}')
+    Response getMealPlanByID(@PathParam('osuID') String osuID,
+                             @PathParam('mealPlanID') String mealPlanID) {
+        if (personsDAO.personExist(osuID)) {
+            List<MealPlan> mealPlans = personsDAO.getMealPlans(
+                    osuID, mealPlanID)
+
+            if (mealPlans) {
+                ResultObject resultObject = new ResultObject(
+                        data: getMealPlanResourceObject(mealPlans?.get(0), osuID)
+                )
+                ok(resultObject).build()
+            } else {
+                notFound().build()
+            }
+        } else {
+            notFound().build()
+        }
+    }
+
+    private ResourceObject getMealPlanResourceObject(
+            MealPlan mealPlan, String osuID) {
+        new ResourceObject(
+                id: mealPlan.mealPlanID,
+                type: "meal-plans",
+                attributes: mealPlan,
+                links: ['self': personUriBuilder.mealPlanUri(osuID, mealPlan.mealPlanID)]
+        )
     }
 }
