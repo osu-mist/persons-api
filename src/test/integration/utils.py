@@ -30,7 +30,12 @@ def load_config(input_file):
         'jobs_person': config['jobs_person'],
         'no_job_person': config['no_job_person'],
         'phones_person': config['phones_person'],
-        'long_phone_person': config['long_phone_person']
+        'long_phone_person': config['long_phone_person'],
+        'regular_name': config['regular_name'],
+        'fuzzy_name': config['fuzzy_name'],
+        'alias_names': config['alias_names'],
+        'old_name': config['old_name'],
+        'old_id_person': config['old_id_person']
     }
     return config_data
 
