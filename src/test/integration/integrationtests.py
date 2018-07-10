@@ -62,12 +62,12 @@ class TestStringMethods(unittest.TestCase):
 
     def test_phones(self):
         phones_res = utils.get_person_by_osu_id(phones_osu_id)
+        phones_res_attributes = phones_res.json()['data']['attributes']
 
-        home_phone = phones_res.json()['data']['attributes']['homePhone']
-        alternate_phone = phones_res.json()['data']['attributes'][
-            'alternatePhone']
-        primary_phone = phones_res.json()['data']['attributes']['primaryPhone']
-        mobile_phone = phones_res.json()['data']['attributes']['mobilePhone']
+        home_phone = phones_res_attributes['homePhone']
+        alternate_phone = phones_res_attributes['alternatePhone']
+        primary_phone = phones_res_attributes['primaryPhone']
+        mobile_phone = phones_res_attributes['mobilePhone']
 
         phones = filter(
             None, [home_phone, alternate_phone, primary_phone, mobile_phone])
@@ -265,13 +265,13 @@ class TestStringMethods(unittest.TestCase):
             'firstName': old_name_person['first_name'],
             'lastName': old_name_person['last_name']
         }
-        self.test_old_parameters(parameters, 'searchOldNames')
+        self.validate_old_parameters(parameters, 'searchOldNames')
 
     def test_old_osu_id_search(self):
         parameters = {'osuID': old_id_person}
-        self.test_old_parameters(parameters, 'searchOldOsuIDs')
+        self.validate_old_parameters(parameters, 'searchOldOsuIDs')
 
-    def test_old_parameters(self, parameters, old_param):
+    def validate_old_parameters(self, parameters, old_param):
         parameters[old_param] = False
         no_results = utils.get_person_by_ids(parameters)
         self.assertEqual(self.length_of_response(no_results), 0)
