@@ -216,10 +216,8 @@ class TestStringMethods(unittest.TestCase):
 
     def test_name_search(self):
         person_res = utils.get_person_by_ids({
-            'firstName':
-            regular_name_person['first_name'],
-            'lastName':
-            regular_name_person['last_name']
+            'firstName': regular_name_person['first_name'],
+            'lastName': regular_name_person['last_name']
         })
 
         self.assertEqual(person_res.status_code, 200)
@@ -228,10 +226,8 @@ class TestStringMethods(unittest.TestCase):
 
     def test_fuzzy_name_search(self):
         person_res = utils.get_person_by_ids({
-            'firstName':
-            fuzzy_name_person['first_name'],
-            'lastName':
-            fuzzy_name_person['last_name']
+            'firstName': fuzzy_name_person['first_name'],
+            'lastName': fuzzy_name_person['last_name']
         })
 
         self.assertEqual(self.length_of_response(person_res), 1)
@@ -239,10 +235,8 @@ class TestStringMethods(unittest.TestCase):
     def test_name_alias(self):
         for person_name in alias_persons:
             person_res = utils.get_person_by_ids({
-                'firstName':
-                person_name['first_name_alias'],
-                'lastName':
-                person_name['last_name']
+                'firstName': person_name['first_name_alias'],
+                'lastName': person_name['last_name']
             })
 
             person = person_res.json()['data'][0]['attributes']
