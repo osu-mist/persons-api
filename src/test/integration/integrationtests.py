@@ -49,8 +49,8 @@ class TestStringMethods(unittest.TestCase):
 
         # identifiers and return ids should matched
         person_data = osu_id_res.json()['data'][0]
-        ids_list = [(person_data['id'],
-                     osu_id), (person_data['attributes']['username'], onid),
+        ids_list = [(person_data['id'], osu_id),
+                    (person_data['attributes']['username'], onid),
                     (person_data['attributes']['osuUID'], osuuid)]
         for res_id, param_id in ids_list:
             self.assertEqual(res_id, param_id)
@@ -130,8 +130,8 @@ class TestStringMethods(unittest.TestCase):
         no_job_res = utils.get_jobs_by_osu_id(no_job_osu_id)
 
         # expect 200 if osuID is valid
-        for res, res_osu_id in [(jobs_res, jobs_osu_id), (no_job_res,
-                                                          no_job_osu_id)]:
+        for res, res_osu_id in [(jobs_res, jobs_osu_id),
+                                (no_job_res, no_job_osu_id)]:
             self.assertEqual(res.status_code, 200)
 
         # test person with jobs
