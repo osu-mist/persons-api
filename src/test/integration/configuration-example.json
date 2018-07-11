@@ -24,5 +24,27 @@
     },
     "long_phone_person": {
         "osu_id": "osu_id"
+    },
+    "regular_name": {
+        "first_name": "foo",
+        "last_name": "bar"
+    },
+    "fuzzy_name": {
+        "first_name": "fooo",
+        "last_name": "baar"
+    },
+    "alias_names": [
+        {
+            "first_name": "Tom",
+            "first_name_alias": "Thomas",
+            "last_name": "Smith"
+        }
+    ],
+    "old_name": {
+        "first_name": "My",
+        "last_name": "NameHasChanged"
+    },
+    "old_id_person": {
+        "osu_id": "osu_id"
     }
 }
