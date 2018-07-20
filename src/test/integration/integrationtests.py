@@ -288,10 +288,10 @@ class TestStringMethods(unittest.TestCase):
 
     def test_current_employee(self):
         employee = utils.get_person_by_osu_id(jobs_person).json()
-        asserTrue(self.get_current_employee_field(employee))
+        assertTrue(self.get_current_employee_field(employee))
 
         not_employee = utils.get_person_by_osu_id(no_job_osu_id).json()
-        asserFalse(self.get_current_employee_field(not_employee))
+        assertFalse(self.get_current_employee_field(not_employee))
 
     @staticmethod
     def get_current_employee_field(person):
