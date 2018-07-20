@@ -287,15 +287,15 @@ class TestStringMethods(unittest.TestCase):
                     meal_plan, single_meal_plan_response.json()['data'])
 
     def test_current_employee(self):
-        employee = utils.get_person_by_osu_id(jobs_person).json()
-        assertTrue(self.get_current_employee_field(employee))
+        self.validate_current_employee(jobs_osu_id, True)
+        self.validate_current_employee(no_job_osu_id, False)
 
-        not_employee = utils.get_person_by_osu_id(no_job_osu_id).json()
-        assertFalse(self.get_current_employee_field(not_employee))
+    def validate_current_employee(self, osu_id, is_current_employee):
+        employee_response = utils.get_person_by_osu_id(osu_id)
+        self.assertEqual(employee_response.status_code, 200)
 
-    @staticmethod
-    def get_current_employee_field(person):
-        return person['data']['attributes']['currentEmployee']
+        current_employee_from_response = employee_response.json()['data']['attributes']['currentEmployee']
+        self.assertEqual(current_employee_from_response, is_current_employee)
 
     @staticmethod
     def length_of_response(response):
