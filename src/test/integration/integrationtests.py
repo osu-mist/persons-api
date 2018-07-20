@@ -294,7 +294,8 @@ class TestStringMethods(unittest.TestCase):
         employee_response = utils.get_person_by_osu_id(osu_id)
         self.assertEqual(employee_response.status_code, 200)
 
-        current_employee_from_response = employee_response.json()['data']['attributes']['currentEmployee']
+        current_employee_from_response = employee_response.json()['data'][
+            'attributes']['currentEmployee']
         self.assertEqual(current_employee_from_response, is_current_employee)
 
     @staticmethod
