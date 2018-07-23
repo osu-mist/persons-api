@@ -29,6 +29,7 @@ class PersonObject {
     String primaryPhone
     String mobilePhone
     Boolean currentStudent
+    Boolean currentEmployee
     String email
     String username
     Boolean confidential

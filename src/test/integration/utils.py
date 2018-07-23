@@ -35,7 +35,8 @@ def load_config(input_file):
         'fuzzy_name': config['fuzzy_name'],
         'alias_names': config['alias_names'],
         'old_name': config['old_name'],
-        'old_id_person': config['old_id_person']
+        'old_id_person': config['old_id_person'],
+        'meal_plan_person': config['meal_plan_person']
     }
     return config_data
 
@@ -57,4 +58,16 @@ def get_jobs_by_osu_id(osu_id):
 
 def get_image_by_osu_id(osu_id, params=None):
     global api_url, headers
-    return requests.get(api_url + osu_id + '/image', headers=headers, params=params)
+    return requests.get(api_url + osu_id + '/image',
+                        headers=headers, params=params)
+
+
+def get_meal_plans_by_osu_id(osu_id):
+    global api_url, headers
+    return requests.get(api_url + osu_id + '/meal-plans', headers=headers)
+
+
+def get_meal_plan_by_id(osu_id, meal_plan_id):
+    global api_url, headers
+    return requests.get(api_url + osu_id + '/meal-plans/' + meal_plan_id,
+                        headers=headers)

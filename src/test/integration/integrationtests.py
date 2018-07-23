@@ -274,6 +274,30 @@ class TestStringMethods(unittest.TestCase):
         person = utils.get_person_by_ids(parameters)
         self.assertEqual(self.length_of_response(person), 1)
 
+    def test_meal_plan(self):
+        meal_plan_response = utils.get_meal_plans_by_osu_id(meal_plan_person)
+        self.assertEqual(meal_plan_response.status_code, 200)
+        self.assertGreaterEqual(self.length_of_response(meal_plan_response), 1)
+
+        for meal_plan in meal_plan_response.json()['data']:
+            single_meal_plan_response = utils.get_meal_plan_by_id(
+                    meal_plan_person, meal_plan['id'])
+            self.assertEqual(single_meal_plan_response.status_code, 200)
+            self.assertEqual(
+                    meal_plan, single_meal_plan_response.json()['data'])
+
+    def test_current_employee(self):
+        self.validate_current_employee(jobs_osu_id, True)
+        self.validate_current_employee(no_job_osu_id, False)
+
+    def validate_current_employee(self, osu_id, is_current_employee):
+        employee_response = utils.get_person_by_osu_id(osu_id)
+        self.assertEqual(employee_response.status_code, 200)
+
+        current_employee_from_response = employee_response.json()['data'][
+            'attributes']['currentEmployee']
+        self.assertEqual(current_employee_from_response, is_current_employee)
+
     @staticmethod
     def length_of_response(response):
         return len(response.json()['data'])
@@ -315,6 +339,9 @@ if __name__ == '__main__':
 
     # person with old OSU ID
     old_id_person = config_data['old_id_person']['osu_id']
+
+    # person with meal plan
+    meal_plan_person = config_data['meal_plan_person']['osu_id']
 
     sys.argv[:] = argv
     unittest.main()

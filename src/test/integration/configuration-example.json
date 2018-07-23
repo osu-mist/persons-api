@@ -46,5 +46,8 @@
     },
     "old_id_person": {
         "osu_id": "osu_id"
+    },
+    "meal_plan_person" : {
+        "osu_id": "osu_id"
     }
 }
