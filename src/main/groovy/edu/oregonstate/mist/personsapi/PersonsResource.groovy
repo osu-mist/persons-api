@@ -11,8 +11,10 @@ import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
+import org.skife.jdbi.v2.OutParameters
 
 import javax.annotation.security.PermitAll
 import javax.imageio.ImageIO
@@ -20,6 +22,7 @@ import javax.validation.Valid
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.POST
+import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
@@ -33,12 +36,15 @@ import javax.ws.rs.core.Response
 @TypeChecked
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
+    private final PersonsWriteDAO personsWriteDAO
     private final MessageQueueDAO messageQueueDAO
     private PersonUriBuilder personUriBuilder
     private final Integer maxImageWidth = 2000
 
-    PersonsResource(PersonsDAO personsDAO, MessageQueueDAO messageQueueDAO, URI endpointUri) {
+    PersonsResource(PersonsDAO personsDAO, PersonsWriteDAO personsWriteDAO,
+                    MessageQueueDAO messageQueueDAO, URI endpointUri) {
         this.personsDAO = personsDAO
+        this.personsWriteDAO = personsWriteDAO
         this.messageQueueDAO = messageQueueDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
@@ -195,11 +201,14 @@ class PersonsResource extends Resource {
         // At this point, the submitted job object is valid. Proceed with posting to message queue.
         JobObject job = JobObject.fromResultObject(resultObject)
 
-        try {
-            messageQueueDAO.createNewJob(job, osuID)
-            return accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
-        } catch (MessageQueueDAOException) {
-            return internalServerError("Internal error with creating new job.").build()
+        String createJobResult = createJobInDb(osuID, JobObject.fromResultObject(resultObject))
+
+        //TODO: Should we be checking other conditions besides an null/empty string?
+        // null/empty string means success, I guess?
+        if (!createJobResult) {
+            accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
+        } else {
+            internalServerError("Error creating new job: $createJobResult").build()
         }
     }
 
@@ -217,6 +226,23 @@ class PersonsResource extends Resource {
                 links: ['self': personUriBuilder.personJobsUri(
                         osuID, job.positionNumber, job.suffix)]
         )
+    }
+
+    private String createJobInDb(String osuID, JobObject job) {
+        personsWriteDAO.createJob(
+                osuID,
+                job,
+                job.laborDistribution?.size(),
+                joinListForDB(job.laborDistribution.collect { it.accountIndexCode }),
+                joinListForDB(job.laborDistribution.collect { it.accountCode }),
+                joinListForDB(job.laborDistribution.collect { it.activityCode }),
+                joinListForDB(job.laborDistribution.collect { it.distributionPercent.toString() })
+        ).getString("return_value")
+    }
+
+    private static String joinListForDB(List<String> values) {
+        println(values.join("|"))
+        values.join("|")
     }
 
     private List<Error> newJobErrors(ResultObject resultObject) {

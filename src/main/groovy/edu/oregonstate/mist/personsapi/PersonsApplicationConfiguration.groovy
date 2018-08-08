@@ -12,17 +12,22 @@ class PersonsApplicationConfiguration extends Configuration {
 
     @Valid
     @NotNull
-    @JsonProperty("database")
-    DataSourceFactory database = new DataSourceFactory()
+    @JsonProperty("readDatabase")
+    DataSourceFactory readDatabase = new DataSourceFactory()
 
-    @JsonProperty("database")
-    public DataSourceFactory getDataSourceFactory() {
-        database
+    @JsonProperty("readDatabase")
+    public DataSourceFactory getReadDataSourceFactory() {
+        readDatabase
     }
 
-    @JsonProperty("database")
-    public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
-        this.database = dataSourceFactory
+    @Valid
+    @NotNull
+    @JsonProperty("writeDatabase")
+    DataSourceFactory writeDatabase = new DataSourceFactory()
+
+    @JsonProperty("writeDatabase")
+    public DataSourceFactory getWriteDataSourceFactory() {
+        writeDatabase
     }
 
     @JsonProperty("messageQueue")

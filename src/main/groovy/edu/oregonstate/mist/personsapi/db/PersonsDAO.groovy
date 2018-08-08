@@ -12,11 +12,17 @@ import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
 import edu.oregonstate.mist.personsapi.mapper.PersonMapper
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
 import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
+import groovy.sql.Sql
+import org.skife.jdbi.v2.OutParameters
 import org.skife.jdbi.v2.sqlobject.Bind
+import org.skife.jdbi.v2.sqlobject.BindBean
+import org.skife.jdbi.v2.sqlobject.SqlCall
 import org.skife.jdbi.v2.sqlobject.SqlQuery
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper
+import org.skife.jdbi.v2.sqlobject.customizers.OutParameter
 
 import java.sql.Blob
+import java.sql.Types
 
 public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
