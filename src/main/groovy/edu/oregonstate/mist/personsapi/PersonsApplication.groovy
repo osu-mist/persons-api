@@ -1,8 +1,6 @@
 package edu.oregonstate.mist.personsapi
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import edu.oregonstate.mist.api.Application
-import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import io.dropwizard.client.HttpClientBuilder
@@ -39,15 +37,9 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
                 environment, configuration.getWriteDataSourceFactory(), "writeJdbi")
         PersonsWriteDAO personsWriteDAO = writeJdbi.onDemand(PersonsWriteDAO.class)
 
-        MessageQueueDAO messageQueueDAO = new MessageQueueDAO(
-                httpClientBuilder.build("backend-http-client"),
-                configuration.messageQueueConfiguraiton.baseUrl,
-                configuration.messageQueueConfiguraiton.apiKey,
-                configuration.messageQueueConfiguraiton.newJobEventType)
-
         environment.jersey().register(
             new PersonsResource(
-                    personsDAO, personsWriteDAO, messageQueueDAO, configuration.api.endpointUri)
+                    personsDAO, personsWriteDAO, configuration.api.endpointUri)
         )
     }
 

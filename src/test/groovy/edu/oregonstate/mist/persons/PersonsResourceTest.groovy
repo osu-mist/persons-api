@@ -80,7 +80,7 @@ class PersonsResourceTest {
 
     @Test
     void shouldReturn400() {
-        PersonsResource personsResource = new PersonsResource(null, null, null, endpointUri)
+        PersonsResource personsResource = new PersonsResource(null, null, endpointUri)
 
         // OSU UID can only contain numbers
         checkErrorResponse(personsResource.list(null, null, 'badOSUUID', null, null, null, null),
@@ -139,7 +139,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                stub.proxyInstance(), null, null, endpointUri)
+                stub.proxyInstance(), null, endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
         checkErrorResponse(personsResource.getJobs('123456789', null, null), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
@@ -157,7 +157,7 @@ class PersonsResourceTest {
             getPreviousRecords(2..2) { String internalID -> null }
         }
         PersonsResource personsResource = new PersonsResource(
-                stub.proxyInstance(), null, null, endpointUri)
+                stub.proxyInstance(), null, endpointUri)
         checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
                 [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)

@@ -9,12 +9,10 @@ import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
-import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
-import org.skife.jdbi.v2.OutParameters
 
 import javax.annotation.security.PermitAll
 import javax.imageio.ImageIO
@@ -22,7 +20,6 @@ import javax.validation.Valid
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.POST
-import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
@@ -37,15 +34,12 @@ import javax.ws.rs.core.Response
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
     private final PersonsWriteDAO personsWriteDAO
-    private final MessageQueueDAO messageQueueDAO
     private PersonUriBuilder personUriBuilder
     private final Integer maxImageWidth = 2000
 
-    PersonsResource(PersonsDAO personsDAO, PersonsWriteDAO personsWriteDAO,
-                    MessageQueueDAO messageQueueDAO, URI endpointUri) {
+    PersonsResource(PersonsDAO personsDAO, PersonsWriteDAO personsWriteDAO, URI endpointUri) {
         this.personsDAO = personsDAO
         this.personsWriteDAO = personsWriteDAO
-        this.messageQueueDAO = messageQueueDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
@@ -242,6 +236,8 @@ class PersonsResource extends Resource {
 
     private static String joinListForDB(List<String> values) {
         println(values.join("|"))
+        //TODO: Should null values be "null" in the string (example "foo|null|bar")
+        //or should they be empty? (example "foo||bar")
         values.join("|")
     }
 
