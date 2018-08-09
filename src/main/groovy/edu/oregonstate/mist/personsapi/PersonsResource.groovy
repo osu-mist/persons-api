@@ -327,6 +327,8 @@ class PersonsResource extends Resource {
                 if (it.distributionPercent) {
                     totalDistributionPercent += it.distributionPercent
                 } else {
+                    //TODO: Should we also make sure the distribution percent is rounded to the
+                    //nearest hundredth, or should we round it ourselves?
                     addBadRequest("distributionPercent is required for each labor distribution.")
                 }
 

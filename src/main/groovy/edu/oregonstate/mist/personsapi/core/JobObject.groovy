@@ -220,9 +220,9 @@ class LaborDistributionForDb {
     public static LaborDistributionForDb getLaborDistributionForDb(
             List<LaborDistribution> laborDistribution) {
         new LaborDistributionForDb(
-                count: laborDistribution.size(),
+                count: laborDistribution ? laborDistribution.size() : 0,
                 effectiveDates: concatenateList(laborDistribution.collect {
-                    it.effectiveDate.format(dbDateFormat)
+                    it.effectiveDate.format(dbDateFormat).toUpperCase()
                 }),
                 accountIndexCodes: concatenateList(laborDistribution.collect {
                     it.accountIndexCode
@@ -241,11 +241,11 @@ class LaborDistributionForDb {
     }
 
     private static String concatenateList(List<String> list) {
-        //TODO: Should null values be "null" in the string (example "foo|null|bar")
-        //or should they be empty? (example "foo||bar")
-
+        //Replace null values with empty strings, or else this method could return "foo|null|bar"
+        //Instead, we want "foo||bar"
+        List<String> replacedNullList = list.collect { it ?: "" }
         //For DB insert, the list always contains the delimiter at the end
-        "${list.join(delimiter)}${delimiter}"
+        "${replacedNullList.join(delimiter)}${delimiter}"
     }
 
     @Override
