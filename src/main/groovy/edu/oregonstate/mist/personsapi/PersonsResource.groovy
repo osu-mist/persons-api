@@ -195,7 +195,7 @@ class PersonsResource extends Resource {
         // At this point, the submitted job object is valid. Proceed with posting to message queue.
         JobObject job = JobObject.fromResultObject(resultObject)
 
-        String createJobResult = createJobInDb(osuID, JobObject.fromResultObject(resultObject))
+        String createJobResult = personsWriteDAO.createJob(osuID, job).getString("return_value")
 
         //TODO: Should we be checking other conditions besides an null/empty string?
         // null/empty string means success, I guess?
@@ -220,25 +220,6 @@ class PersonsResource extends Resource {
                 links: ['self': personUriBuilder.personJobsUri(
                         osuID, job.positionNumber, job.suffix)]
         )
-    }
-
-    private String createJobInDb(String osuID, JobObject job) {
-        personsWriteDAO.createJob(
-                osuID,
-                job,
-                job.laborDistribution?.size(),
-                joinListForDB(job.laborDistribution.collect { it.accountIndexCode }),
-                joinListForDB(job.laborDistribution.collect { it.accountCode }),
-                joinListForDB(job.laborDistribution.collect { it.activityCode }),
-                joinListForDB(job.laborDistribution.collect { it.distributionPercent.toString() })
-        ).getString("return_value")
-    }
-
-    private static String joinListForDB(List<String> values) {
-        println(values.join("|"))
-        //TODO: Should null values be "null" in the string (example "foo|null|bar")
-        //or should they be empty? (example "foo||bar")
-        values.join("|")
     }
 
     private List<Error> newJobErrors(ResultObject resultObject) {
@@ -289,8 +270,8 @@ class PersonsResource extends Resource {
             addBadRequest("${key} cannot be a negative number.")
         }
 
-        if (job.status && !job.isActive()) {
-            addBadRequest("'Active' is the only valid job status.")
+        if (!job.isActive()) {
+            addBadRequest("'${job.activeJobStatus}' is the only valid job status.")
         }
 
         if (job.beginDate && job.endDate && (job.beginDate >= job.endDate)) {

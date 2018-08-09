@@ -4,11 +4,31 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import groovy.transform.InheritConstructors
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 @JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class JobObject {
+    private static ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
+
+    private static final String accruesLeaveTrue = 'Y'
+    private static final String accruesLeaveFalse = 'N'
+
+    public static final String activeJobStatus = "Active"
+    // Hard code job statuses and those descriptions here since there is no validation table
+    private static final def jobStatusDict = [
+            'A': activeJobStatus,
+            'B': 'Leave without pay but with benefits',
+            'L': 'Leave without pay and benefits',
+            'F': 'Leave with full pay and benefits',
+            'P': 'Leave with partial pay and benefits',
+            'T': 'Terminated'
+    ].withDefault { key -> 'New job status. Please contact API support for further assistance' }
+
     String positionNumber
     String suffix
 
@@ -24,6 +44,28 @@ class JobObject {
     String contractType
     Boolean accruesLeave
 
+    @JsonIgnore
+    public void setAccruesLeaveFromDbValue(String dbValue) {
+        switch (dbValue) {
+            case accruesLeaveTrue: this.accruesLeave = true
+                break
+            case accruesLeaveFalse: this.accruesLeave = false
+                break
+            default:
+                this.accruesLeave = null
+                break
+        }
+    }
+
+    @JsonIgnore
+    public String getAccruesLeaveForDb() {
+        if (this.accruesLeave == null) {
+            null
+        } else {
+            this.accruesLeave ? accruesLeaveTrue : accruesLeaveFalse
+        }
+    }
+
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     Date contractBeginDate
 
@@ -32,6 +74,22 @@ class JobObject {
 
     String locationID
     String status
+
+    @JsonIgnore
+    public void setStatusFromDbValue(String dbValue) {
+        this.status = jobStatusDict[dbValue]
+    }
+
+    @JsonIgnore
+    public String getStatusForDb() {
+        jobStatusDict.find { it.value == this.status }?.key
+    }
+
+    @JsonIgnore
+    public Boolean isActive() {
+        this.status == activeJobStatus
+    }
+
     String description
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
@@ -67,8 +125,12 @@ class JobObject {
 
     List<LaborDistribution> laborDistribution
 
+    @JsonIgnore
+    public LaborDistributionForDb getLaborDistrubtionForDb() {
+        LaborDistributionForDb.getLaborDistributionForDb(this.laborDistribution)
+    }
+
     public static JobObject fromResultObject(ResultObject resultObject) {
-        ObjectMapper mapper = new ObjectMapper()
         try {
             mapper.convertValue(resultObject.data['attributes'], JobObject.class)
         } catch (IllegalArgumentException e) {
@@ -78,9 +140,44 @@ class JobObject {
         }
     }
 
-    @JsonIgnore
-    public Boolean isActive() {
-        this.status == 'Active'
+    @Override
+    public String toString() {
+        "JobObject{" +
+                "positionNumber='" + positionNumber + '\'' +
+                ", suffix='" + suffix + '\'' +
+                ", effectiveDate=" + effectiveDate +
+                ", beginDate=" + beginDate +
+                ", endDate=" + endDate +
+                ", contractType='" + contractType + '\'' +
+                ", accruesLeave=" + accruesLeave +
+                ", contractBeginDate=" + contractBeginDate +
+                ", contractEndDate=" + contractEndDate +
+                ", locationID='" + locationID + '\'' +
+                ", status='" + status + '\'' +
+                ", description='" + description + '\'' +
+                ", personnelChangeDate=" + personnelChangeDate +
+                ", changeReasonCode='" + changeReasonCode + '\'' +
+                ", fullTimeEquivalency=" + fullTimeEquivalency +
+                ", appointmentPercent=" + appointmentPercent +
+                ", salaryStep=" + salaryStep +
+                ", salaryGroupCode='" + salaryGroupCode + '\'' +
+                ", strsAssignmentCode='" + strsAssignmentCode + '\'' +
+                ", supervisorOsuID='" + supervisorOsuID + '\'' +
+                ", supervisorPositionNumber='" + supervisorPositionNumber + '\'' +
+                ", supervisorSuffix='" + supervisorSuffix + '\'' +
+                ", timesheetOrganizationCode='" + timesheetOrganizationCode + '\'' +
+                ", hourlyRate=" + hourlyRate +
+                ", hoursPerPay=" + hoursPerPay +
+                ", assignmentSalary=" + assignmentSalary +
+                ", paysPerYear=" + paysPerYear +
+                ", employeeClassificationCode='" + employeeClassificationCode + '\'' +
+                ", employerCode='" + employerCode + '\'' +
+                ", annualSalary=" + annualSalary +
+                ", earnCodeEffectiveDate=" + earnCodeEffectiveDate +
+                ", earnCode='" + earnCode + '\'' +
+                ", earnCodeHours=" + earnCodeHours +
+                ", earnCodeShift='" + earnCodeShift + '\'' +
+                '}'
     }
 }
 
@@ -90,7 +187,7 @@ class PersonObjectException extends Exception {}
 @JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class LaborDistribution {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date effectiveDate
+    LocalDate effectiveDate
 
     String accountIndexCode
     String fundCode
@@ -99,4 +196,70 @@ class LaborDistribution {
     String programCode
     String activityCode
     BigDecimal distributionPercent
+}
+
+/**
+ * For creating new jobs, labor distributions are combined into a single object
+ * with concatenated values. This class represents the values for inserting into the database.
+ */
+class LaborDistributionForDb {
+    private static final String delimiter = "|"
+    private static final DateTimeFormatter dbDateFormat =
+            DateTimeFormatter.ofPattern("dd-MMM-yyyy")//example: 01-AUG-2018
+
+    Integer count //the number of labor distributions
+    String effectiveDates
+    String accountIndexCodes
+    String fundCodes
+    String organizationCodes
+    String accountCodes
+    String programCodes
+    String activityCodes
+    String distributionPercentages
+
+    public static LaborDistributionForDb getLaborDistributionForDb(
+            List<LaborDistribution> laborDistribution) {
+        new LaborDistributionForDb(
+                count: laborDistribution.size(),
+                effectiveDates: concatenateList(laborDistribution.collect {
+                    it.effectiveDate.format(dbDateFormat)
+                }),
+                accountIndexCodes: concatenateList(laborDistribution.collect {
+                    it.accountIndexCode
+                }),
+                fundCodes: concatenateList(laborDistribution.collect { it.fundCode }),
+                organizationCodes: concatenateList(laborDistribution.collect {
+                    it.organizationCode
+                }),
+                accountCodes: concatenateList(laborDistribution.collect { it.accountCode }),
+                programCodes: concatenateList(laborDistribution.collect { it.programCode }),
+                activityCodes: concatenateList(laborDistribution.collect { it.activityCode }),
+                distributionPercentages: concatenateList(laborDistribution.collect {
+                    it.distributionPercent.toString()
+                })
+        )
+    }
+
+    private static String concatenateList(List<String> list) {
+        //TODO: Should null values be "null" in the string (example "foo|null|bar")
+        //or should they be empty? (example "foo||bar")
+
+        //For DB insert, the list always contains the delimiter at the end
+        "${list.join(delimiter)}${delimiter}"
+    }
+
+    @Override
+    public String toString() {
+        "LaborDistributionForDb{" +
+                "count=" + count +
+                ", effectiveDates='" + effectiveDates + '\'' +
+                ", accountIndexCodes='" + accountIndexCodes + '\'' +
+                ", fundCodes='" + fundCodes + '\'' +
+                ", organizationCodes='" + organizationCodes + '\'' +
+                ", accountCodes='" + accountCodes + '\'' +
+                ", programCodes='" + programCodes + '\'' +
+                ", activityCodes='" + activityCodes + '\'' +
+                ", distributionPercentages='" + distributionPercentages + '\'' +
+                '}'
+    }
 }

@@ -10,7 +10,7 @@ import java.sql.SQLException
 public class LaborDistributionMapper implements ResultSetMapper<LaborDistribution> {
     public LaborDistribution map(int i, ResultSet rs, StatementContext sc) throws SQLException {
         new LaborDistribution (
-                effectiveDate: rs.getDate('EFFECTIVE_DATE'),
+                effectiveDate: rs.getDate('EFFECTIVE_DATE')?.toLocalDate(),
                 accountIndexCode: rs.getString('ACCOUNT_INDEX_CODE'),
                 fundCode: rs.getString('FUND_CODE'),
                 organizationCode: rs.getString('ORGANIZATION_CODE'),
