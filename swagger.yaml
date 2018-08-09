@@ -323,6 +323,11 @@ definitions:
             description: |
               Used to uniquely identify a job record for persons who have
               multiple jobs that share the same position number.
+          effectiveDate:
+            type: string
+            format: date
+            description: The date this job assignment is effective.
+            example: "2018-12-31"
           beginDate:
             type: string
             format: date
@@ -333,6 +338,21 @@ definitions:
             format: date
             description: End date of job.
             example: "2019-01-01"
+          contractType:
+            type: string
+          accruesLeave:
+            type: boolean
+            description: If true, the job accrues leave.
+          contractBeginDate:
+            type: string
+            format: date
+            description: The date the contract begins.
+            example: "2018-12-31"
+          contractEndDate:
+            type: string
+            format: date
+            description: The date the contract ends.
+            example: "2018-12-31"
           locationID:
             type: string
             description: Location ID of where job will be performed.
@@ -350,6 +370,14 @@ definitions:
           description:
             type: string
             description: Description of job
+          personnelChangeDate:
+            type: string
+            format: date
+            description: Date the last change was made to the job record.
+            example: "2018-12-31"
+          changeReasonCode:
+            type: string
+            description: The reason the last change was made to the job record.
           fullTimeEquivalency:
             type: number
             format: float
@@ -360,6 +388,13 @@ definitions:
             format: float
             description: FTE presented as a whole percentage.
             example: 49
+          salaryStep:
+            type: string
+            format: integer
+          salaryGroupCode:
+            type: string
+          strsAssignmentCode:
+            type: string
           supervisorOsuID:
             type: string
             description: OSU ID of the supervisor for the job.
@@ -391,18 +426,49 @@ definitions:
             type: number
             format: float
             description: The number of pays per calendar year.
+          employeeClassificationCode:
+            type: string
+          employerCode:
+            type: string
+            description: Employer identification code.
           annualSalary:
             type: number
             format: float
             example: 20,050.35
+          earnCodeEffectiveDate:
+            type: string
+            format: date
+            description: The date the earnCode became effective for this job.
+            example: "2018-12-31"
+          earnCode:
+            type: string
+            description: Default earnings code attached to the job and used on timesheet.
+          earnCodeHours:
+            type: number
+            format: float
+            description: Hours/units defaulted on timesheets for earnCode.
+          earnCodeShift:
+            type: string
+            description: Shift code used as a default on timesheet for earnCode.
           laborDistribution:
             type: array
             items:
               properties:
+                effectiveDate:
+                  type: string
+                  format: date
+                  description: Date this labor distribution becomes effective.
+                  example: "2018-12-31"
                 accountIndexCode:
                   type: string
                   example: ABC123
+                fundCode:
+                  type: string
+                organizationCode:
+                  type: string
                 accountCode:
+                  type: string
+                programCode:
                   type: string
                 activityCode:
                   type: string

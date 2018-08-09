@@ -12,17 +12,38 @@ class JobObject {
     String positionNumber
     String suffix
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="UTC")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    Date effectiveDate
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     Date beginDate
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="UTC")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     Date endDate
+
+    String contractType
+    Boolean accruesLeave
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    Date contractBeginDate
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    Date contractEndDate
 
     String locationID
     String status
     String description
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    Date personnelChangeDate
+
+    String changeReasonCode
+
     BigDecimal fullTimeEquivalency
     BigDecimal appointmentPercent
+    Integer salaryStep
+    String salaryGroupCode
+    String strsAssignmentCode
 
     String supervisorOsuID
     String supervisorPositionNumber
@@ -33,7 +54,17 @@ class JobObject {
     BigDecimal hoursPerPay
     BigDecimal assignmentSalary
     BigDecimal paysPerYear
+    String employeeClassificationCode
+    String employerCode
     BigDecimal annualSalary
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    Date earnCodeEffectiveDate
+
+    String earnCode
+    BigDecimal earnCodeHours
+    String earnCodeShift
+
     List<LaborDistribution> laborDistribution
 
     public static JobObject fromResultObject(ResultObject resultObject) {
@@ -58,8 +89,14 @@ class PersonObjectException extends Exception {}
 
 @JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class LaborDistribution {
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    Date effectiveDate
+
     String accountIndexCode
+    String fundCode
+    String organizationCode
     String accountCode
+    String programCode
     String activityCode
     BigDecimal distributionPercent
 }
