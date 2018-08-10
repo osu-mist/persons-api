@@ -240,12 +240,13 @@ class LaborDistributionForDb {
         )
     }
 
+    /**
+     * Formats a list of strings for database insert.
+     * @param List<String> ["foo", "bar", null, "eggplant"]
+     * @return String "foo|bar||eggplant|"
+     */
     private static String concatenateList(List<String> list) {
-        //Replace null values with empty strings, or else this method could return "foo|null|bar"
-        //Instead, we want "foo||bar"
-        List<String> replacedNullList = list.collect { it ?: "" }
-        //For DB insert, the list always contains the delimiter at the end
-        "${replacedNullList.join(delimiter)}${delimiter}"
+        "${list.collect { it ?: "" }.join(delimiter)}${delimiter}"
     }
 
     @Override
