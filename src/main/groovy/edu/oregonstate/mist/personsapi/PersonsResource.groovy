@@ -198,7 +198,7 @@ class PersonsResource extends Resource {
         String createJobResult = personsWriteDAO.createJob(osuID, job).getString("return_value")
 
         //TODO: Should we be checking other conditions besides an null/empty string?
-        // null/empty string means success, I guess?
+        // null/empty string == success
         if (!createJobResult) {
             accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
         } else {
@@ -236,7 +236,6 @@ class PersonsResource extends Resource {
         } catch (PersonObjectException e) {
             addBadRequest("Could not parse job object. " +
                     "Make sure dates are in ISO8601 format: yyyy-MM-dd")
-
             // if we can't deserialize the job object, no need to proceed
             return errors
         }
@@ -256,6 +255,7 @@ class PersonsResource extends Resource {
 
         requiredFields.findAll { key, value -> !value }.each { key, value ->
             addBadRequest("${key} is required.")
+            println(key)
         }
 
         def positiveNumberFields = ["Hourly rate": job.hourlyRate,
