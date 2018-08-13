@@ -36,7 +36,6 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             assignmentSalary: rs.getBigDecimal('ASSIGNMENT_SALARY'),
             paysPerYear: rs.getBigDecimal('PAYS_PER_YEAR'),
             employeeClassificationCode: rs.getString('EMPLOYEE_CLASSIFICATION_CODE'),
-            employerCode: rs.getString('EMPLOYER_CODE'),
             annualSalary: rs.getBigDecimal('ANNUAL_SALARY'),
             earnCodeEffectiveDate: rs.getDate('EARN_CODE_EFFECTIVE_DATE'),
             earnCode: rs.getString('EARN_CODE'),

@@ -49,7 +49,6 @@ public @interface BindJob {
                     q.bind("assignmentSalary", job.assignmentSalary)
                     q.bind("paysPerYear", job.paysPerYear)
                     q.bind("employeeClassificationCode", job.employeeClassificationCode)
-                    q.bind("employerCode", job.employerCode)
                     q.bind("annualSalary", job.annualSalary)
                     q.bind("earnCodeEffectiveDate", job.earnCodeEffectiveDate)
                     q.bind("earnCode", job.earnCode)

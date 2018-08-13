@@ -113,7 +113,6 @@ class JobObject {
     BigDecimal assignmentSalary
     BigDecimal paysPerYear
     String employeeClassificationCode
-    String employerCode
     BigDecimal annualSalary
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
@@ -171,7 +170,6 @@ class JobObject {
                 ", assignmentSalary=" + assignmentSalary +
                 ", paysPerYear=" + paysPerYear +
                 ", employeeClassificationCode='" + employeeClassificationCode + '\'' +
-                ", employerCode='" + employerCode + '\'' +
                 ", annualSalary=" + annualSalary +
                 ", earnCodeEffectiveDate=" + earnCodeEffectiveDate +
                 ", earnCode='" + earnCode + '\'' +
