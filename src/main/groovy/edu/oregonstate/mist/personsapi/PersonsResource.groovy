@@ -278,6 +278,11 @@ class PersonsResource extends Resource {
             addBadRequest("End date must be after begin date.")
         }
 
+        if (job.contractBeginDate && job.contractEndDate &&
+                (job.contractBeginDate >= job.contractEndDate)) {
+            addBadRequest("Contract end date must be after begin date.")
+        }
+
         if (job.fullTimeEquivalency &&
                 (job.fullTimeEquivalency > 1 || job.fullTimeEquivalency <= 0)) {
             addBadRequest("Full time equivalency must range from 0 to 1.")
@@ -288,23 +293,22 @@ class PersonsResource extends Resource {
             addBadRequest("Appointment percent must range from 0 to 100.")
         }
 
-        Boolean validSupervisor = job.supervisorOsuID && personsDAO.personExist(job.supervisorOsuID)
+        if (job.supervisorOsuID) {
+            if (!personsDAO.personExist(job.supervisorOsuID)) {
+                addBadRequest("Supervisor OSU ID does not exist.")
+            } else if (job.supervisorPositionNumber) {
+                def supervisorActiveJobs = personsDAO.getJobsById(job.supervisorOsuID,
+                        job.supervisorPositionNumber, null).findAll { it.isActive() }
 
-        if (!validSupervisor) {
-            addBadRequest("Supervisor OSU ID does not exist.")
-        }
+                def supervisorActivePositionNumbers = supervisorActiveJobs.collect {
+                    it.positionNumber
+                }
 
-        def supervisorActiveJobs = personsDAO.getJobsById(job.supervisorOsuID,
-                job.supervisorPositionNumber, null).findAll { it.isActive() }
-
-        def supervisorActivePositionNumbers = supervisorActiveJobs.collect {
-            it.positionNumber
-        }
-
-        if (validSupervisor
-                && !supervisorActivePositionNumbers.contains(job.supervisorPositionNumber)) {
-            addBadRequest("Supervisor does not have an actjve position with position number " +
-                    "${job.supervisorPositionNumber}")
+                if (!supervisorActivePositionNumbers.contains(job.supervisorPositionNumber)) {
+                    addBadRequest("Supervisor does not have an active position with " +
+                            "position number ${job.supervisorPositionNumber}.")
+                }
+            }
         }
 
         if (job.positionNumber && !personsDAO.isValidPositionNumber(job.positionNumber)) {
