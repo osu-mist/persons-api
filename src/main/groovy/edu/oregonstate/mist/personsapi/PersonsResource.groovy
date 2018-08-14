@@ -255,7 +255,6 @@ class PersonsResource extends Resource {
 
         requiredFields.findAll { key, value -> !value }.each { key, value ->
             addBadRequest("${key} is required.")
-            println(key)
         }
 
         def positiveNumberFields = ["Hourly rate": job.hourlyRate,

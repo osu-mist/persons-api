@@ -231,6 +231,21 @@ class PersonsResourceTest {
     }
 
     private PersonsResource getPersonsResourceWithGoodMockDAOs() {
+        def outParametersStub = new StubFor(OutParameters)
+        outParametersStub.demand.getString { String name -> "" }
+
+        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+        personsWriteDAOStub.demand.createJob { String osuID, JobObject job ->
+            outParametersStub.proxyInstance()
+        }
+
+        new PersonsResource(
+                getGoodMockPersonsDAO().proxyInstance(),
+                personsWriteDAOStub.proxyInstance(),
+                endpointUri)
+    }
+
+    private StubFor getGoodMockPersonsDAO() {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
@@ -245,16 +260,7 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> true }
         }
 
-        def outParametersStub = new StubFor(OutParameters)
-        outParametersStub.demand.getString { String name -> "" }
-
-        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
-        personsWriteDAOStub.demand.createJob { String osuID, JobObject job ->
-            outParametersStub.proxyInstance()
-        }
-
-        new PersonsResource(
-                personsDAOStub.proxyInstance(), personsWriteDAOStub.proxyInstance(), endpointUri)
+        personsDAOStub
     }
 
     @Test
@@ -425,6 +431,16 @@ class PersonsResourceTest {
             checkCreateJobErrorMessageResponse(badAppointmentPercentJob,
                     "Appointment percent must range from 0 to 100.")
         }
+    }
+
+    void checkCreateJobErrorMessageResponse(JobObject job, String expectedMessage) {
+        checkErrorResponse(
+                getPersonsResourceWithGoodMockDAOs().createJob(
+                        "123",
+                        new ResultObject(data: new ResourceObject(attributes: job))),
+                400,
+                expectedMessage
+        )
     }
 
     @Test
@@ -730,13 +746,28 @@ class PersonsResourceTest {
         )
     }
 
-    void checkCreateJobErrorMessageResponse(JobObject job, String expectedMessage) {
+    @Test
+    void notNullDAOResponseShouldThrowError() {
+        String personsWriteDAOResponse = "Something broke!"
+        def outParametersStub = new StubFor(OutParameters)
+        outParametersStub.demand.getString { String name -> personsWriteDAOResponse }
+
+        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+        personsWriteDAOStub.demand.createJob { String osuID, JobObject job ->
+            outParametersStub.proxyInstance()
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                getGoodMockPersonsDAO().proxyInstance(),
+                personsWriteDAOStub.proxyInstance(),
+                endpointUri)
+
         checkErrorResponse(
-                getPersonsResourceWithGoodMockDAOs().createJob(
+                personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
-                400,
-                expectedMessage
+                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                500,
+                "Error creating new job: $personsWriteDAOResponse"
         )
     }
 }
