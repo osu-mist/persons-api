@@ -66,8 +66,6 @@ public @interface BindJob {
                     q.bind("laborProgramCodes", labor.programCodes)
                     q.bind("laborActivityCodes", labor.activityCodes)
                     q.bind("laborDistributionPercentages", labor.distributionPercentages)
-                    println(job.toString())
-                    println(labor.toString())
                 }
             }
         }

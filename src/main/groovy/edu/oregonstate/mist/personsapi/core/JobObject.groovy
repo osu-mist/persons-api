@@ -138,45 +138,6 @@ class JobObject {
             throw new PersonObjectException("Could not parse result object.")
         }
     }
-
-    @Override
-    public String toString() {
-        "JobObject{" +
-                "positionNumber='" + positionNumber + '\'' +
-                ", suffix='" + suffix + '\'' +
-                ", effectiveDate=" + effectiveDate +
-                ", beginDate=" + beginDate +
-                ", endDate=" + endDate +
-                ", contractType='" + contractType + '\'' +
-                ", accruesLeave=" + accruesLeave +
-                ", contractBeginDate=" + contractBeginDate +
-                ", contractEndDate=" + contractEndDate +
-                ", locationID='" + locationID + '\'' +
-                ", status='" + status + '\'' +
-                ", description='" + description + '\'' +
-                ", personnelChangeDate=" + personnelChangeDate +
-                ", changeReasonCode='" + changeReasonCode + '\'' +
-                ", fullTimeEquivalency=" + fullTimeEquivalency +
-                ", appointmentPercent=" + appointmentPercent +
-                ", salaryStep=" + salaryStep +
-                ", salaryGroupCode='" + salaryGroupCode + '\'' +
-                ", strsAssignmentCode='" + strsAssignmentCode + '\'' +
-                ", supervisorOsuID='" + supervisorOsuID + '\'' +
-                ", supervisorPositionNumber='" + supervisorPositionNumber + '\'' +
-                ", supervisorSuffix='" + supervisorSuffix + '\'' +
-                ", timesheetOrganizationCode='" + timesheetOrganizationCode + '\'' +
-                ", hourlyRate=" + hourlyRate +
-                ", hoursPerPay=" + hoursPerPay +
-                ", assignmentSalary=" + assignmentSalary +
-                ", paysPerYear=" + paysPerYear +
-                ", employeeClassificationCode='" + employeeClassificationCode + '\'' +
-                ", annualSalary=" + annualSalary +
-                ", earnCodeEffectiveDate=" + earnCodeEffectiveDate +
-                ", earnCode='" + earnCode + '\'' +
-                ", earnCodeHours=" + earnCodeHours +
-                ", earnCodeShift='" + earnCodeShift + '\'' +
-                '}'
-    }
 }
 
 @InheritConstructors
@@ -245,20 +206,5 @@ class LaborDistributionForDb {
      */
     private static String concatenateList(List<String> list) {
         "${list.collect { it ?: "" }.join(delimiter)}${delimiter}"
-    }
-
-    @Override
-    public String toString() {
-        "LaborDistributionForDb{" +
-                "count=" + count +
-                ", effectiveDates='" + effectiveDates + '\'' +
-                ", accountIndexCodes='" + accountIndexCodes + '\'' +
-                ", fundCodes='" + fundCodes + '\'' +
-                ", organizationCodes='" + organizationCodes + '\'' +
-                ", accountCodes='" + accountCodes + '\'' +
-                ", programCodes='" + programCodes + '\'' +
-                ", activityCodes='" + activityCodes + '\'' +
-                ", distributionPercentages='" + distributionPercentages + '\'' +
-                '}'
     }
 }

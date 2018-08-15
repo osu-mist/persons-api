@@ -108,7 +108,7 @@ class PersonsResourceTest {
 
         def responseEntity = res.getEntity()
 
-        if (responseEntity.class == ArrayList.class) {
+        if (responseEntity instanceof ArrayList) {
             responseEntity.each {
                 assertEquals(Error.class, it.class)
             }
@@ -231,17 +231,9 @@ class PersonsResourceTest {
     }
 
     private PersonsResource getPersonsResourceWithGoodMockDAOs() {
-        def outParametersStub = new StubFor(OutParameters)
-        outParametersStub.demand.getString { String name -> "" }
-
-        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
-        personsWriteDAOStub.demand.createJob { String osuID, JobObject job ->
-            outParametersStub.proxyInstance()
-        }
-
         new PersonsResource(
                 getGoodMockPersonsDAO().proxyInstance(),
-                personsWriteDAOStub.proxyInstance(),
+                getMockPersonsWriteDAO("").proxyInstance(),
                 endpointUri)
     }
 
@@ -261,6 +253,17 @@ class PersonsResourceTest {
         }
 
         personsDAOStub
+    }
+
+    private getMockPersonsWriteDAO(String returnMessage) {
+        def outParametersStub = new StubFor(OutParameters)
+        outParametersStub.demand.getString { String name -> returnMessage }
+
+        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+        personsWriteDAOStub.demand.createJob { String osuID, JobObject job ->
+            outParametersStub.proxyInstance()
+        }
+        personsWriteDAOStub
     }
 
     @Test
@@ -749,17 +752,10 @@ class PersonsResourceTest {
     @Test
     void notNullDAOResponseShouldThrowError() {
         String personsWriteDAOResponse = "Something broke!"
-        def outParametersStub = new StubFor(OutParameters)
-        outParametersStub.demand.getString { String name -> personsWriteDAOResponse }
-
-        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
-        personsWriteDAOStub.demand.createJob { String osuID, JobObject job ->
-            outParametersStub.proxyInstance()
-        }
 
         PersonsResource personsResource = new PersonsResource(
                 getGoodMockPersonsDAO().proxyInstance(),
-                personsWriteDAOStub.proxyInstance(),
+                getMockPersonsWriteDAO(personsWriteDAOResponse).proxyInstance(),
                 endpointUri)
 
         checkErrorResponse(
