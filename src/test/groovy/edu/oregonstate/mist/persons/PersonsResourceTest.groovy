@@ -321,7 +321,8 @@ class PersonsResourceTest {
                 beginDate: sampleDate,
                 supervisorOsuID: '123',
                 supervisorPositionNumber: fakeJob.supervisorPositionNumber,
-                status: 'Active'
+                status: 'Active',
+                effectiveDate: sampleDate
         )
 
         ResultObject jobResultObject = new ResultObject(data: new ResourceObject(attributes: job))
@@ -346,6 +347,11 @@ class PersonsResourceTest {
                     "123", jobResultObject), 400, "Supervisor position number is required.")
             supervisorPositionNumber = fakeJob.supervisorPositionNumber
 
+            effectiveDate = null
+            checkErrorResponse(getPersonsResourceWithGoodMockDAOs().createJob(
+                    "123", jobResultObject), 400, "Effective date is required.")
+            effectiveDate = sampleDate
+
             checkValidResponse(getPersonsResourceWithGoodMockDAOs().createJob(
                     "123", jobResultObject), 202, it)
         }
@@ -362,6 +368,7 @@ class PersonsResourceTest {
                 supervisorOsuID: '123',
                 supervisorPositionNumber: fakeJob.supervisorPositionNumber,
                 status: 'Active',
+                effectiveDate: sampleDate,
                 hourlyRate: negativeNumber
         )
 

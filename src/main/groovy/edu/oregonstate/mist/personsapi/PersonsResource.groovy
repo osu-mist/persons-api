@@ -251,7 +251,8 @@ class PersonsResource extends Resource {
         def requiredFields = ["Position number": job.positionNumber,
                               "Begin date": job.beginDate,
                               "Supervisor OSU ID": job.supervisorOsuID,
-                              "Supervisor position number": job.supervisorPositionNumber]
+                              "Supervisor position number": job.supervisorPositionNumber,
+                              "Effective date": job.effectiveDate]
 
         requiredFields.findAll { key, value -> !value }.each { key, value ->
             addBadRequest("${key} is required.")
@@ -296,6 +297,7 @@ class PersonsResource extends Resource {
             if (!personsDAO.personExist(job.supervisorOsuID)) {
                 addBadRequest("Supervisor OSU ID does not exist.")
             } else if (job.supervisorPositionNumber) {
+                //todo: check if supervisor job is active by the time the person's job begins
                 def supervisorActiveJobs = personsDAO.getJobsById(job.supervisorOsuID,
                         job.supervisorPositionNumber, null).findAll { it.isActive() }
 
@@ -330,11 +332,12 @@ class PersonsResource extends Resource {
                 if (it.distributionPercent) {
                     totalDistributionPercent += it.distributionPercent
                 } else {
-                    //TODO: Should we also make sure the distribution percent is rounded to the
-                    //nearest hundredth, or should we round it ourselves?
+                    //TODO: Yes, make sure they're rounded
                     addBadRequest("distributionPercent is required for each labor distribution.")
                 }
 
+                //TODO: either have account index code or accountcode+activitycode+org+program+fund
+                //TODO: require effective date. All effective dates should be same
                 if (!it.accountIndexCode) {
                     addBadRequest("accountIndexCode is required for each labor distribution")
                 } else if (!personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
@@ -348,6 +351,8 @@ class PersonsResource extends Resource {
                 if (it.activityCode && !personsDAO.isValidActivityCode(it.activityCode)) {
                     addBadRequest("${it.activityCode} is not a valid activityCode.")
                 }
+
+                //todo: validate org code, program code, fund code
             }
 
             if (totalDistributionPercent != 100) {
