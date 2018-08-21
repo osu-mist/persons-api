@@ -297,23 +297,24 @@ class PersonsResource extends Resource {
             if (!personsDAO.personExist(job.supervisorOsuID)) {
                 addBadRequest("Supervisor OSU ID does not exist.")
             } else if (job.supervisorPositionNumber) {
-                //todo: check if supervisor job is active by the time the person's job begins
-                def supervisorActiveJobs = personsDAO.getJobsById(job.supervisorOsuID,
-                        job.supervisorPositionNumber, null).findAll { it.isActive() }
+                Boolean validSupervisorPosition = personsDAO.isValidSupervisorPosition(
+                        job.beginDate,
+                        job.supervisorOsuID,
+                        job.supervisorPositionNumber,
+                        job.supervisorSuffix
+                )
 
-                def supervisorActivePositionNumbers = supervisorActiveJobs.collect {
-                    it.positionNumber
-                }
-
-                if (!supervisorActivePositionNumbers.contains(job.supervisorPositionNumber)) {
-                    addBadRequest("Supervisor does not have an active position with " +
-                            "position number ${job.supervisorPositionNumber}.")
+                if (!validSupervisorPosition) {
+                    addBadRequest("Supervisor does not have an active position with position " +
+                            "number ${job.supervisorPositionNumber} for the given begin date.")
                 }
             }
         }
 
-        if (job.positionNumber && !personsDAO.isValidPositionNumber(job.positionNumber)) {
-            addBadRequest("${job.positionNumber} is not a valid position number.")
+        if (job.positionNumber &&
+                !personsDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
+            addBadRequest("${job.positionNumber} is not a valid position number " +
+                    "for the given begin date.")
         }
 
         if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {

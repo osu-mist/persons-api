@@ -241,10 +241,10 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                String supervisorPositionNumber, String supervisorSuffix -> true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -464,7 +464,7 @@ class PersonsResourceTest {
                     '123456789'
                 }
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -489,11 +489,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Terminated')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                false
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -510,7 +510,7 @@ class PersonsResourceTest {
                         new ResultObject(data: new ResourceObject(attributes: fakeJob))),
                 400,
                 "Supervisor does not have an active position with position number " +
-                        "${fakeJob.supervisorPositionNumber}."
+                        "${fakeJob.supervisorPositionNumber} for the given begin date."
         )
     }
 
@@ -519,11 +519,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> false }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -539,7 +539,7 @@ class PersonsResourceTest {
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: fakeJob))),
                 400,
-                "${fakeJob.positionNumber} is not a valid position number."
+                "${fakeJob.positionNumber} is not a valid position number for the given begin date."
         )
     }
 
@@ -548,11 +548,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> false }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -577,11 +577,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> false }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -606,11 +606,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
@@ -642,11 +642,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -674,11 +674,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> false }
@@ -703,11 +703,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -732,11 +732,11 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix ->
-                [new JobObject(
-                        positionNumber: fakeJob.supervisorPositionNumber, status: 'Active')]
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
-            isValidPositionNumber { String positionNumber -> true }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
