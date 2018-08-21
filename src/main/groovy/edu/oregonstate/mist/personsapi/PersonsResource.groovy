@@ -328,17 +328,35 @@ class PersonsResource extends Resource {
 
         if (job.laborDistribution) {
             BigDecimal totalDistributionPercent = 0
+            boolean missingDistributionPercent = false
+            boolean missingEffectiveDate = false
+            boolean invalidFieldCombination = false
+
 
             job.laborDistribution.each {
                 if (it.distributionPercent) {
                     totalDistributionPercent += it.distributionPercent
                 } else {
-                    //TODO: Yes, make sure they're rounded
-                    addBadRequest("distributionPercent is required for each labor distribution.")
+                    missingDistributionPercent = true
                 }
 
-                //TODO: either have account index code or accountcode+activitycode+org+program+fund
-                //TODO: require effective date. All effective dates should be same
+                if (!it.effectiveDate) {
+                    missingEffectiveDate = true
+                }
+
+                boolean someFundingFieldsIncluded = it.accountCode || it.activityCode ||
+                        it.organizationCode || it.programCode || it.fundCode
+
+                boolean allFundingFieldsIncluded = it.accountCode && it.activityCode &&
+                        it.organizationCode && it.programCode && it.fundCode
+
+                invalidFieldCombination = (it.accountIndexCode && someFundingFieldsIncluded) ||
+                        (!it.accountIndexCode && !allFundingFieldsIncluded)
+
+                if (it.accountIndexCode && someFundingFieldsIncluded) {
+                    invalidFieldCombination = true
+                } else if ()
+
                 if (!it.accountIndexCode) {
                     addBadRequest("accountIndexCode is required for each labor distribution")
                 } else if (!personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
@@ -353,11 +371,31 @@ class PersonsResource extends Resource {
                     addBadRequest("${it.activityCode} is not a valid activityCode.")
                 }
 
-                //todo: validate org code, program code, fund code
+                if (it.organizationCode &&
+                        !personsDAO.isValidOrganizationCode(it.organizationCode)) {
+                    addBadRequest("${it.organizationCode} is not a valid organizationCode.")
+                }
+
+                if (it.programCode && !personsDAO.isValidProgramCode(it.programCode)) {
+                    addBadRequest("${it.programCode} is not a valid programCode.")
+                }
+
+                if (it.fundCode && !personsDAO.isValidFundCode(it.fundCode)) {
+                    addBadRequest("${it.fundCode} is not a valid fundCode.")
+                }
             }
 
-            if (totalDistributionPercent != 100) {
+            if (missingDistributionPercent) {
+                addBadRequest("distributionPercent is required for each labor distribution.")
+            } else if (totalDistributionPercent != 100) {
                 addBadRequest("Total sum of labor distribution percentages must equal 100.")
+            }
+
+            if (missingEffectiveDate) {
+                addBadRequest("effectiveDate is required for each labor distribution.")
+            } else if (job.laborDistribution.collect {
+                it.effectiveDate.atStartOfDay() }.unique().size() > 1) {
+                addBadRequest("effectiveDate must be the same for each labor distribution.")
             }
         }
 
