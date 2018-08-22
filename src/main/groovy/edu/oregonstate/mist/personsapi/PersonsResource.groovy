@@ -337,10 +337,12 @@ class PersonsResource extends Resource {
                 if (it.distributionPercent) {
                     totalDistributionPercent += it.distributionPercent
                 } else {
+                    //each labor distribution must have a distribution percent
                     missingDistributionPercent = true
                 }
 
                 if (!it.effectiveDate) {
+                    //each labor distribution must have an effective date
                     missingEffectiveDate = true
                 }
 
@@ -353,13 +355,9 @@ class PersonsResource extends Resource {
                 invalidFieldCombination = (it.accountIndexCode && someFundingFieldsIncluded) ||
                         (!it.accountIndexCode && !allFundingFieldsIncluded)
 
-                if (it.accountIndexCode && someFundingFieldsIncluded) {
-                    invalidFieldCombination = true
-                } else if ()
 
-                if (!it.accountIndexCode) {
-                    addBadRequest("accountIndexCode is required for each labor distribution")
-                } else if (!personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
+                if (it.accountIndexCode &&
+                        !personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
                     addBadRequest("${it.accountIndexCode} is not a valid accountIndexCode.")
                 }
 
@@ -396,6 +394,12 @@ class PersonsResource extends Resource {
             } else if (job.laborDistribution.collect {
                 it.effectiveDate.atStartOfDay() }.unique().size() > 1) {
                 addBadRequest("effectiveDate must be the same for each labor distribution.")
+            }
+
+            if (invalidFieldCombination) {
+                addBadRequest("For each labor distribution, you must either specify an " +
+                    "accountIndexCode, or a combination of the fundCode, organizationCode, " +
+                    "accountCode, programCode, and activityCode.")
             }
         }
 
