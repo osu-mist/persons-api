@@ -89,11 +89,11 @@ class PersonsResourceTest {
                 laborDistribution: [new LaborDistribution(
                         effectiveDate: LocalDate.now(),
                         accountIndexCode: 'FFB333',
-                        fundCode: 'fake-fund-code',
-                        organizationCode: 'fake-org-code',
-                        accountCode: '23',
-                        programCode: 'fake-program-code',
-                        activityCode: '343A',
+                        fundCode: null,
+                        organizationCode: null,
+                        accountCode: null,
+                        programCode: null,
+                        activityCode: null,
                         distributionPercent: 100
                 )]
         )
@@ -246,10 +246,12 @@ class PersonsResourceTest {
             }
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
-            isValidOrganizationCode { String organizationCode -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
             isValidAccountCode { String accountCode -> true }
             isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> true }
         }
 
         personsDAOStub
@@ -328,28 +330,23 @@ class PersonsResourceTest {
         ResultObject jobResultObject = new ResultObject(data: new ResourceObject(attributes: job))
 
         job.with {
-            checkErrorResponse(getPersonsResourceWithGoodMockDAOs().createJob(
-                    "123", jobResultObject), 400, "Position number is required.")
+            checkCreateJobErrorMessageResponse(it, "Position number is required.")
             positionNumber = "123456"
 
             beginDate = null
-            checkErrorResponse(getPersonsResourceWithGoodMockDAOs().createJob(
-                    "123", jobResultObject), 400, "Begin date is required.")
+            checkCreateJobErrorMessageResponse(it, "Begin date is required.")
             beginDate = sampleDate
 
             supervisorOsuID = null
-            checkErrorResponse(getPersonsResourceWithGoodMockDAOs().createJob(
-                    "123", jobResultObject), 400, "Supervisor OSU ID is required.")
+            checkCreateJobErrorMessageResponse(it, "Supervisor OSU ID is required.")
             supervisorOsuID = "123"
 
             supervisorPositionNumber = null
-            checkErrorResponse(getPersonsResourceWithGoodMockDAOs().createJob(
-                    "123", jobResultObject), 400, "Supervisor position number is required.")
+            checkCreateJobErrorMessageResponse(it, "Supervisor position number is required.")
             supervisorPositionNumber = fakeJob.supervisorPositionNumber
 
             effectiveDate = null
-            checkErrorResponse(getPersonsResourceWithGoodMockDAOs().createJob(
-                    "123", jobResultObject), 400, "Effective date is required.")
+            checkCreateJobErrorMessageResponse(it, "Effective date is required.")
             effectiveDate = sampleDate
 
             checkValidResponse(getPersonsResourceWithGoodMockDAOs().createJob(
@@ -499,6 +496,8 @@ class PersonsResourceTest {
             isValidAccountIndexCode { String accountIndexCode -> true }
             isValidAccountCode { String accountCode -> true }
             isValidActivityCode { String activityCode -> true }
+            isValidFundCode { String fundCode -> true }
+            isValidProgramCode { String programCode -> true }
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -621,7 +620,7 @@ class PersonsResourceTest {
 
         JobObject job = fakeJob
         LaborDistribution laborDistribution = new LaborDistribution(
-                accountIndexCode: "foo", distributionPercent: 55)
+                effectiveDate: LocalDate.now(), accountIndexCode: "foo", distributionPercent: 55)
 
         job.laborDistribution.with {
             clear()
@@ -638,35 +637,31 @@ class PersonsResourceTest {
     }
 
     @Test
-    void accountIndexCodeIsRequired() {
-        def personsDAOStub = getPersonsDAOStub()
-        personsDAOStub.demand.with {
-            personExist(2..2) { String osuID -> '123456789' }
-            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
-                                        String supervisorPositionNumber, String supervisorSuffix ->
-                true
-            }
-            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
-            isValidLocation { String locationID -> true }
-            isValidOrganizationCode { String organizationCode -> true }
-            isValidAccountIndexCode { String accountIndexCode -> true }
-            isValidAccountCode { String accountCode -> true }
-            isValidActivityCode { String activityCode -> true }
-        }
-
-        PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
-
+    void allLaborFieldsCantBeNull() {
         JobObject job = fakeJob
         job.laborDistribution[0].accountIndexCode = null
+        checkInvalidLaborDistributionFieldsErrorMessage(job)
+    }
 
-        checkErrorResponse(
-                personsResource.createJob(
-                        "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
-                400,
-                "accountIndexCode is required for each labor distribution"
-        )
+    @Test
+    void allLaborFieldsCantBeUsed() {
+        JobObject job = fakeJob
+        job.laborDistribution[0].with {
+            fundCode = 'example'
+            organizationCode = 'example'
+            accountCode = 'example'
+            programCode = 'example'
+            activityCode = 'example'
+        }
+
+        checkInvalidLaborDistributionFieldsErrorMessage(job)
+    }
+
+    private checkInvalidLaborDistributionFieldsErrorMessage(JobObject job) {
+        checkCreateJobErrorMessageResponse(job,
+                "For each labor distribution, you must either specify an accountIndexCode, " +
+                        "or a combination of the fundCode, organizationCode, accountCode, " +
+                        "programCode, and activityCode.")
     }
 
     @Test
@@ -682,8 +677,6 @@ class PersonsResourceTest {
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> false }
-            isValidAccountCode { String accountCode -> true }
-            isValidActivityCode { String activityCode -> true }
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -709,19 +702,30 @@ class PersonsResourceTest {
             }
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
-            isValidOrganizationCode { String organizationCode -> true }
-            isValidAccountIndexCode { String accountIndexCode -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountCode { String accountCode -> false }
             isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> true }
         }
 
         PersonsResource personsResource = new PersonsResource(
                 personsDAOStub.proxyInstance(), null, endpointUri)
 
+        JobObject job = fakeJob
+        job.laborDistribution[0].with {
+            accountIndexCode = null
+            fundCode = 'example'
+            organizationCode = 'example'
+            accountCode = 'example'
+            programCode = 'example'
+            activityCode = 'example'
+        }
+
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        new ResultObject(data: new ResourceObject(attributes: job))),
                 400,
                 "${fakeJob.laborDistribution[0].accountCode} is not a valid accountCode."
         )
@@ -738,10 +742,21 @@ class PersonsResourceTest {
             }
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
-            isValidOrganizationCode { String organizationCode -> true }
-            isValidAccountIndexCode { String accountIndexCode -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountCode { String accountCode -> true }
             isValidActivityCode { String activityCode -> false }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> true }
+        }
+
+        JobObject job = fakeJob
+        job.laborDistribution[0].with {
+            accountIndexCode = null
+            fundCode = 'example'
+            organizationCode = 'example'
+            accountCode = 'example'
+            programCode = 'example'
+            activityCode = 'example'
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -750,10 +765,196 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        new ResultObject(data: new ResourceObject(attributes: job))),
                 400,
                 "${fakeJob.laborDistribution[0].activityCode} is not a valid activityCode."
         )
+    }
+
+    @Test
+    void invalidLaborOrganizationCode() {
+        String badOrganizationCode = "bad"
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
+            }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode(2..2) { String organizationCode ->
+                if (organizationCode == badOrganizationCode) {
+                    false
+                } else {
+                    true
+                }
+            }
+            isValidAccountIndexCode { String accountIndexCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> true }
+        }
+
+        JobObject job = fakeJob
+        job.laborDistribution[0].with {
+            accountIndexCode = null
+            fundCode = 'example'
+            organizationCode = badOrganizationCode
+            accountCode = 'example'
+            programCode = 'example'
+            activityCode = 'example'
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.createJob(
+                        "123",
+                        new ResultObject(data: new ResourceObject(attributes: job))),
+                400,
+                "${fakeJob.laborDistribution[0].organizationCode} is not a valid organizationCode."
+        )
+    }
+
+    @Test
+    void invalidProgramCode() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
+            }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> false }
+            isValidFundCode { String fundCode -> true }
+        }
+
+        JobObject job = fakeJob
+        job.laborDistribution[0].with {
+            accountIndexCode = null
+            fundCode = 'example'
+            organizationCode = 'example'
+            accountCode = 'example'
+            programCode = 'example'
+            activityCode = 'example'
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.createJob(
+                        "123",
+                        new ResultObject(data: new ResourceObject(attributes: job))),
+                400,
+                "${fakeJob.laborDistribution[0].programCode} is not a valid programCode."
+        )
+    }
+
+    @Test
+    void invalidFundCode() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
+            }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> false }
+        }
+
+        JobObject job = fakeJob
+        job.laborDistribution[0].with {
+            accountIndexCode = null
+            fundCode = 'example'
+            organizationCode = 'example'
+            accountCode = 'example'
+            programCode = 'example'
+            activityCode = 'example'
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.createJob(
+                        "123",
+                        new ResultObject(data: new ResourceObject(attributes: job))),
+                400,
+                "${fakeJob.laborDistribution[0].fundCode} is not a valid fundCode."
+        )
+    }
+
+    @Test
+    void laborEffectiveDateIsRequired() {
+        JobObject job = fakeJob
+        fakeJob.laborDistribution[0].effectiveDate = null
+        checkCreateJobErrorMessageResponse(job,
+                "effectiveDate is required for each labor distribution.")
+    }
+
+    @Test
+    void laborEffectiveDatesMustMatch() {
+        List<LaborDistribution> laborDistributions = [
+                new LaborDistribution(
+                        effectiveDate: LocalDate.now(), accountIndexCode: "foo",
+                        distributionPercent: 50),
+                new LaborDistribution(
+                        effectiveDate: LocalDate.now().plusDays(1), accountIndexCode: "foo",
+                        distributionPercent: 50)
+        ]
+
+        JobObject job = fakeJob
+        job.laborDistribution = laborDistributions
+
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix -> true
+            }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> true }
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.createJob(
+                        "123",
+                        new ResultObject(data: new ResourceObject(attributes: job))),
+                400,
+                "effectiveDate must be the same for each labor distribution."
+        )
+    }
+
+    @Test
+    void laborDistributionPercentIsRequired() {
+        JobObject job = fakeJob
+        fakeJob.laborDistribution[0].distributionPercent = null
+        checkCreateJobErrorMessageResponse(job,
+                "distributionPercent is required for each labor distribution.")
     }
 
     @Test
