@@ -22,12 +22,6 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
     public void run(PersonsApplicationConfiguration configuration, Environment environment) {
         this.setup(configuration, environment)
 
-        def httpClientBuilder = new HttpClientBuilder(environment)
-
-        if (configuration.httpClientConfiguration != null) {
-            httpClientBuilder.using(configuration.httpClientConfiguration)
-        }
-
         DBIFactory factory = new DBIFactory()
         DBI readJdbi = factory.build(environment, configuration.getReadDataSourceFactory(),
                 "readJdbi")
