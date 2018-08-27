@@ -15,7 +15,6 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             effectiveDate: rs.getDate('EFFECTIVE_DATE'),
             beginDate: rs.getDate('BEGIN_DATE'),
             endDate: rs.getDate('END_DATE'),
-            contractType: rs.getString('CONTRACT_TYPE'),
             contractBeginDate: rs.getDate('CONTRACT_BEGIN_DATE'),
             contractEndDate: rs.getDate('CONTRACT_END_DATE'),
             locationID: rs.getString('LOCATION_ID'),

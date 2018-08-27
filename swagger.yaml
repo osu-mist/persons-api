@@ -195,7 +195,7 @@ paths:
         200:
           description: Successful response
           schema:
-            $ref: '#/definitions/MealPlansResultObject'
+            $ref: '#/definitions/MealPlanResultObject'
         404:
           description: Person or meal plan not found
           schema:
@@ -302,6 +302,12 @@ definitions:
       data:
         $ref: "#/definitions/JobResourceObject"
   JobResourceObject:
+    required:
+      - positionNumber
+      - beginDate
+      - supervisorOsuID
+      - supervisorPositionNumber
+      - effectiveDate
     properties:
       id:
         type: string
@@ -338,8 +344,6 @@ definitions:
             format: date
             description: End date of job.
             example: "2019-01-01"
-          contractType:
-            type: string
           accruesLeave:
             type: boolean
             description: If true, the job accrues leave.
@@ -477,15 +481,6 @@ definitions:
                   format: float
                   description: Percentage of labor applied to this fund.
                   example: 49.9
-          #todo: add these at a later time when they're needed
-          #encumbranceStartDate:
-          #  type: string
-          #  format: date
-          #  example: "2018-12-31"
-          #encumbranceEndDate:
-          #  type: string
-          #  format: date
-          #  example: "2019-12-31"
   MealPlansResultObject:
     properties:
       data:

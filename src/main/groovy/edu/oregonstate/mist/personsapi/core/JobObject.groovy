@@ -41,7 +41,6 @@ class JobObject {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     Date endDate
 
-    String contractType
     Boolean accruesLeave
 
     @JsonIgnore

@@ -26,7 +26,6 @@ public @interface BindJob {
                     q.bind("effectiveDate", job.effectiveDate)
                     q.bind("beginDate", job.beginDate)
                     q.bind("endDate", job.endDate)
-                    q.bind("contractType", job.contractType)
                     q.bind("accruesLeave", job.getAccruesLeaveForDb())
                     q.bind("contractBeginDate", job.contractBeginDate)
                     q.bind("contractEndDate", job.contractEndDate)

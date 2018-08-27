@@ -58,7 +58,6 @@ class PersonsResourceTest {
                 effectiveDate: sampleDate,
                 beginDate: sampleDate,
                 endDate: null,
-                contractType: 'A good contract!',
                 accruesLeave: true,
                 contractBeginDate: sampleDate,
                 contractEndDate: null,
@@ -925,7 +924,8 @@ class PersonsResourceTest {
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
             isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
-                                        String supervisorPositionNumber, String supervisorSuffix -> true
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
             }
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }

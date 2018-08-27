@@ -332,7 +332,6 @@ class PersonsResource extends Resource {
             boolean missingEffectiveDate = false
             boolean invalidFieldCombination = false
 
-
             job.laborDistribution.each {
                 if (it.distributionPercent) {
                     totalDistributionPercent += it.distributionPercent
@@ -354,7 +353,6 @@ class PersonsResource extends Resource {
 
                 invalidFieldCombination = (it.accountIndexCode && someFundingFieldsIncluded) ||
                         (!it.accountIndexCode && !allFundingFieldsIncluded)
-
 
                 if (it.accountIndexCode &&
                         !personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
