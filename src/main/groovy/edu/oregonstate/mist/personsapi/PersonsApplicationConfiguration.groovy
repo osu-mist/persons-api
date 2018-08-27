@@ -29,13 +29,4 @@ class PersonsApplicationConfiguration extends Configuration {
     public DataSourceFactory getWriteDataSourceFactory() {
         writeDatabase
     }
-
-    @JsonProperty("messageQueue")
-    @NotNull
-    @Valid
-    Map<String, String> messageQueueConfiguraiton
-
-    @Valid
-    @NotNull
-    HttpClientConfiguration httpClientConfiguration
 }
