@@ -46,7 +46,8 @@ authentication:
 api:
   endpointUri: https://api.oregonstate.edu/v1/
 
-database:
+readDatabase:
+# Database configuration for database that is for reading (GET requests)
   driverClass: oracle.jdbc.OracleDriver
   url: jdbc:oracle:thin:@//db-url
   user: dbuser
@@ -58,18 +59,15 @@ database:
   minSize: 1
   maxSize: 5
 
-messageQueue:
-  baseUrl: https://api.oregonstate.edu/v1/events
-  apiKey: secretSauce
-  newJobEventType: newJob
-
-httpClientConfiguration:
-  timeout: 150000ms
-  connectionTimeout: 15000ms
-  timeToLive: 1h
-  cookiesEnabled: false
-  maxConnections: 2
-  maxConnectionsPerRoute: 2
-  keepAlive: 0ms
-  retries: 0
-  userAgent: persons-api
+writeDatabase:
+# Database configuration for database that accepts write operations (POST, PUT, and DELETE requests)
+  driverClass: oracle.jdbc.OracleDriver
+  url: jdbc:oracle:thin:@//db-url
+  user: dbuser
+  password: dbpasswd
+  properties:
+      hibernate.dialect: org.hibernate.dialect.Oracle10gDialect
+  validationQuery: "SELECT 1 FROM dual"
+  initialSize: 2
+  minSize: 1
+  maxSize: 5

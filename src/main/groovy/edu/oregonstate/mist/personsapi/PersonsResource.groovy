@@ -9,8 +9,8 @@ import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
-import edu.oregonstate.mist.personsapi.db.MessageQueueDAO
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
 
@@ -33,13 +33,13 @@ import javax.ws.rs.core.Response
 @TypeChecked
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
-    private final MessageQueueDAO messageQueueDAO
+    private final PersonsWriteDAO personsWriteDAO
     private PersonUriBuilder personUriBuilder
     private final Integer maxImageWidth = 2000
 
-    PersonsResource(PersonsDAO personsDAO, MessageQueueDAO messageQueueDAO, URI endpointUri) {
+    PersonsResource(PersonsDAO personsDAO, PersonsWriteDAO personsWriteDAO, URI endpointUri) {
         this.personsDAO = personsDAO
-        this.messageQueueDAO = messageQueueDAO
+        this.personsWriteDAO = personsWriteDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
@@ -195,11 +195,14 @@ class PersonsResource extends Resource {
         // At this point, the submitted job object is valid. Proceed with posting to message queue.
         JobObject job = JobObject.fromResultObject(resultObject)
 
-        try {
-            messageQueueDAO.createNewJob(job, osuID)
-            return accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
-        } catch (MessageQueueDAOException) {
-            return internalServerError("Internal error with creating new job.").build()
+        String createJobResult = personsWriteDAO.createJob(osuID, job).getString("return_value")
+
+        //TODO: Should we be checking other conditions besides an null/empty string?
+        // null/empty string == success
+        if (!createJobResult) {
+            accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
+        } else {
+            internalServerError("Error creating new job: $createJobResult").build()
         }
     }
 
@@ -233,7 +236,6 @@ class PersonsResource extends Resource {
         } catch (PersonObjectException e) {
             addBadRequest("Could not parse job object. " +
                     "Make sure dates are in ISO8601 format: yyyy-MM-dd")
-
             // if we can't deserialize the job object, no need to proceed
             return errors
         }
@@ -249,7 +251,8 @@ class PersonsResource extends Resource {
         def requiredFields = ["Position number": job.positionNumber,
                               "Begin date": job.beginDate,
                               "Supervisor OSU ID": job.supervisorOsuID,
-                              "Supervisor position number": job.supervisorPositionNumber]
+                              "Supervisor position number": job.supervisorPositionNumber,
+                              "Effective date": job.effectiveDate]
 
         requiredFields.findAll { key, value -> !value }.each { key, value ->
             addBadRequest("${key} is required.")
@@ -267,12 +270,17 @@ class PersonsResource extends Resource {
             addBadRequest("${key} cannot be a negative number.")
         }
 
-        if (job.status && !job.isActive()) {
-            addBadRequest("'Active' is the only valid job status.")
+        if (!job.isActive()) {
+            addBadRequest("'${job.activeJobStatus}' is the only valid job status.")
         }
 
         if (job.beginDate && job.endDate && (job.beginDate >= job.endDate)) {
             addBadRequest("End date must be after begin date.")
+        }
+
+        if (job.contractBeginDate && job.contractEndDate &&
+                (job.contractBeginDate >= job.contractEndDate)) {
+            addBadRequest("Contract end date must be after begin date.")
         }
 
         if (job.fullTimeEquivalency &&
@@ -285,27 +293,28 @@ class PersonsResource extends Resource {
             addBadRequest("Appointment percent must range from 0 to 100.")
         }
 
-        Boolean validSupervisor = job.supervisorOsuID && personsDAO.personExist(job.supervisorOsuID)
+        if (job.supervisorOsuID) {
+            if (!personsDAO.personExist(job.supervisorOsuID)) {
+                addBadRequest("Supervisor OSU ID does not exist.")
+            } else if (job.supervisorPositionNumber) {
+                Boolean validSupervisorPosition = personsDAO.isValidSupervisorPosition(
+                        job.beginDate,
+                        job.supervisorOsuID,
+                        job.supervisorPositionNumber,
+                        job.supervisorSuffix
+                )
 
-        if (!validSupervisor) {
-            addBadRequest("Supervisor OSU ID does not exist.")
+                if (!validSupervisorPosition) {
+                    addBadRequest("Supervisor does not have an active position with position " +
+                            "number ${job.supervisorPositionNumber} for the given begin date.")
+                }
+            }
         }
 
-        def supervisorActiveJobs = personsDAO.getJobsById(job.supervisorOsuID,
-                job.supervisorPositionNumber, null).findAll { it.isActive() }
-
-        def supervisorActivePositionNumbers = supervisorActiveJobs.collect {
-            it.positionNumber
-        }
-
-        if (validSupervisor
-                && !supervisorActivePositionNumbers.contains(job.supervisorPositionNumber)) {
-            addBadRequest("Supervisor does not have an actjve position with position number " +
-                    "${job.supervisorPositionNumber}")
-        }
-
-        if (job.positionNumber && !personsDAO.isValidPositionNumber(job.positionNumber)) {
-            addBadRequest("${job.positionNumber} is not a valid position number.")
+        if (job.positionNumber &&
+                !personsDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
+            addBadRequest("${job.positionNumber} is not a valid position number " +
+                    "for the given begin date.")
         }
 
         if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
@@ -319,17 +328,34 @@ class PersonsResource extends Resource {
 
         if (job.laborDistribution) {
             BigDecimal totalDistributionPercent = 0
+            boolean missingDistributionPercent = false
+            boolean missingEffectiveDate = false
+            boolean invalidFieldCombination = false
 
             job.laborDistribution.each {
                 if (it.distributionPercent) {
                     totalDistributionPercent += it.distributionPercent
                 } else {
-                    addBadRequest("distributionPercent is required for each labor distribution.")
+                    //each labor distribution must have a distribution percent
+                    missingDistributionPercent = true
                 }
 
-                if (!it.accountIndexCode) {
-                    addBadRequest("accountIndexCode is required for each labor distribution")
-                } else if (!personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
+                if (!it.effectiveDate) {
+                    //each labor distribution must have an effective date
+                    missingEffectiveDate = true
+                }
+
+                boolean someFundingFieldsIncluded = it.accountCode || it.activityCode ||
+                        it.organizationCode || it.programCode || it.fundCode
+
+                boolean allFundingFieldsIncluded = it.accountCode && it.activityCode &&
+                        it.organizationCode && it.programCode && it.fundCode
+
+                invalidFieldCombination = (it.accountIndexCode && someFundingFieldsIncluded) ||
+                        (!it.accountIndexCode && !allFundingFieldsIncluded)
+
+                if (it.accountIndexCode &&
+                        !personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
                     addBadRequest("${it.accountIndexCode} is not a valid accountIndexCode.")
                 }
 
@@ -340,10 +366,38 @@ class PersonsResource extends Resource {
                 if (it.activityCode && !personsDAO.isValidActivityCode(it.activityCode)) {
                     addBadRequest("${it.activityCode} is not a valid activityCode.")
                 }
+
+                if (it.organizationCode &&
+                        !personsDAO.isValidOrganizationCode(it.organizationCode)) {
+                    addBadRequest("${it.organizationCode} is not a valid organizationCode.")
+                }
+
+                if (it.programCode && !personsDAO.isValidProgramCode(it.programCode)) {
+                    addBadRequest("${it.programCode} is not a valid programCode.")
+                }
+
+                if (it.fundCode && !personsDAO.isValidFundCode(it.fundCode)) {
+                    addBadRequest("${it.fundCode} is not a valid fundCode.")
+                }
             }
 
-            if (totalDistributionPercent != 100) {
+            if (missingDistributionPercent) {
+                addBadRequest("distributionPercent is required for each labor distribution.")
+            } else if (totalDistributionPercent != 100) {
                 addBadRequest("Total sum of labor distribution percentages must equal 100.")
+            }
+
+            if (missingEffectiveDate) {
+                addBadRequest("effectiveDate is required for each labor distribution.")
+            } else if (job.laborDistribution.collect {
+                it.effectiveDate.atStartOfDay() }.unique().size() > 1) {
+                addBadRequest("effectiveDate must be the same for each labor distribution.")
+            }
+
+            if (invalidFieldCombination) {
+                addBadRequest("For each labor distribution, you must either specify an " +
+                    "accountIndexCode, or a combination of the fundCode, organizationCode, " +
+                    "accountCode, programCode, and activityCode.")
             }
         }
 
