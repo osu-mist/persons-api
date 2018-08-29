@@ -3,9 +3,9 @@ import operator
 import re
 import sys
 import unittest
+from copy import deepcopy
 from functools import reduce
 from io import BytesIO
-from copy import deepcopy
 
 import phonenumbers
 from PIL import Image
