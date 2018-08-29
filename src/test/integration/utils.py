@@ -1,8 +1,9 @@
 import argparse
 import json
-import unittest
-import requests
 import sys
+import unittest
+
+import requests
 
 
 def parse_args():
@@ -24,6 +25,7 @@ def load_config(input_file):
     }
     res = requests.post(config["token_api_url"], data=payload).json()
     headers = {'Authorization': 'Bearer ' + res["access_token"]}
+    valid_job_body = json.load(open("valid-job-body.json"))
     config_data = {
         'api_url': api_url,
         'ids_person': config['ids_person'],
@@ -36,7 +38,8 @@ def load_config(input_file):
         'alias_names': config['alias_names'],
         'old_name': config['old_name'],
         'old_id_person': config['old_id_person'],
-        'meal_plan_person': config['meal_plan_person']
+        'meal_plan_person': config['meal_plan_person'],
+        'valid_job_body': valid_job_body
     }
     return config_data
 
@@ -71,3 +74,9 @@ def get_meal_plan_by_id(osu_id, meal_plan_id):
     global api_url, headers
     return requests.get(api_url + osu_id + '/meal-plans/' + meal_plan_id,
                         headers=headers)
+
+
+def post_job_by_osu_id(osu_id, body):
+    global api_url, headers
+    return requests.post(api_url + osu_id + '/jobs', headers=headers,
+                         data=body)

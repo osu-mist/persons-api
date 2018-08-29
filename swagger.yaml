@@ -476,7 +476,7 @@ definitions:
                   type: string
                 activityCode:
                   type: string
-                distributionPercentage:
+                distributionPercent:
                   type: number
                   format: float
                   description: Percentage of labor applied to this fund.

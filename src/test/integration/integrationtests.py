@@ -1,13 +1,16 @@
 import math
 import operator
-import phonenumbers
 import re
 import sys
 import unittest
-import utils
 from functools import reduce
 from io import BytesIO
+from copy import deepcopy
+
+import phonenumbers
 from PIL import Image
+
+import utils
 
 
 class TestStringMethods(unittest.TestCase):
@@ -125,7 +128,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(
             utils.get_person_by_osu_id(not_valid_osu_id).status_code, 404)
 
-    def test_jobs_by_osu_id(self):
+    def test_get_jobs_by_osu_id(self):
         jobs_res = utils.get_jobs_by_osu_id(jobs_osu_id)
         no_job_res = utils.get_jobs_by_osu_id(no_job_osu_id)
 
@@ -143,6 +146,136 @@ class TestStringMethods(unittest.TestCase):
         # expect 404 if osuID is not valid
         self.assertEqual(
             utils.get_person_by_osu_id(not_valid_osu_id).status_code, 404)
+
+    def test_post_job_by_osu_id(self):
+        test_job = deepcopy(valid_job_body)
+
+        # expect 404 if osuID is not valid
+        self.assertEqual(
+            utils.post_job_by_osu_id(not_valid_osu_id, {}).status_code, 404)
+
+        # expect 400 if:
+
+        # POST body is empty
+        no_body = utils.post_job_by_osu_id(osu_id, {})
+        self.assertEqual(no_body.status_code, 400)
+        self.assertEqual(len(no_body.json()), 1)
+        self.assertIn("No job object provided",
+                      no_body.json()[0]["developerMessage"])
+
+        # dates are not in ISO8601 format
+        self.validate_bad_job_post(test_job, "effectiveDate", "badDate",
+                                   "Make sure dates are in ISO8601 format")
+
+        # required field is missing
+        required_fields = ["positionNumber", "hoursPerPay", "assignmentSalary",
+                           "annualSalary", "paysPerYear"]
+        for field in required_fields:
+            self.validate_bad_job_post(test_job, field, None,
+                                       field + " is required")
+
+        # positive field has negative value
+        positive_fields = ["hourlyRate", "hoursPerPay", "assignmentSalary",
+                           "annualSalary", "paysPerYear"]
+        for field in positive_fields:
+            self.validate_bad_job_post(test_job, field, "-1",
+                                       field + " cannot be a negative number")
+
+        # beginDate is after endDate
+        self.start_after_end(test_job, "beginDate", "endDate")
+
+        # contractBeginDate is after contractEndDate
+        self.start_after_end(test_job, "contractBeginDate", "contractEndDate")
+
+        # fullTimeEquivalency out of range (0-1)
+        self.validate_bad_job_post(test_job, "fullTimeEquivalency", "2",
+                                   "Full time equivalency must range from 0 "
+                                   "to 1")
+
+        # appointmentPercent out of range (0-100)
+        self.validate_bad_job_post(test_job, "appointmentPercent", "101",
+                                   "Appointment percent must range from 0 to "
+                                   "100")
+
+        # invalid supervisorOsuID
+        self.validate_bad_job_post(test_job, "supervisorOsuID", "badOsuId",
+                                   "Supervisor OSU ID does not exist")
+
+        # invalid positionNumber
+        self.validate_bad_job_post(test_job, "positionNumber",
+                                   "badPositionNumber",
+                                   "not a valid position number for the given "
+                                   "begin date")
+
+        # invalid locationID
+        self.validate_bad_job_post(test_job, "locationID", "badLocationID",
+                                   "not a valid location ID")
+
+        # invalid timesheetOrganizationCode
+        self.validate_bad_job_post(test_job, "timesheetOrganizationCode",
+                                   "badOrganizationCode",
+                                   "not a valid organization code")
+
+        # laborDistribution errors:
+
+        # missing fields
+        required_dist_fields = ["distributionPercent", "effectiveDate"]
+        for field in required_dist_fields:
+            self.validate_labor_distribution(test_job, field, None,
+                                             field + " is required for each "
+                                                     "labor distribution")
+
+        # invalid combination (non-null accountIndexCode + non-null values
+        # for other fields)
+        self.validate_labor_distribution(test_job, "accountIndexCode",
+                                         "nonNullValue",
+                                         "you must either specify an "
+                                         "accountIndexCode, or a combination")
+
+        # invalid fields
+        invalid_fields = ["accountIndexCode", "accountCode", "activityCode",
+                          "organizationCode", "programCode", "fundCode"]
+        for field in invalid_fields:
+            self.validate_labor_distribution(test_job, field, "badFieldName",
+                                             "is not a valid " + field)
+
+        # invalid total percentage
+        self.validate_labor_distribution(test_job, "distributionPercent", 999,
+                                         "Total sum of labor distribution "
+                                         "percentages must equal 100")
+
+    def validate_labor_distribution(self, test_job, attribute, bad_value,
+                                    message=None):
+        test_attributes = test_job["data"]["attributes"]
+        test_labor_dist = test_attributes["laborDistribution"][0]
+        valid_attributes = valid_job_body["data"]["attributes"]
+        valid_labor_dist = valid_attributes["laborDistribution"][0]
+
+        test_labor_dist[attribute] = bad_value
+        self.validate_bad_response(test_job, message)
+        valid_attribute = valid_labor_dist[attribute]
+        test_labor_dist[attribute] = valid_attribute
+
+    def validate_bad_job_post(self, test_job, attribute, bad_value,
+                              message=None):
+        test_job["data"]["attributes"][attribute] = bad_value
+        self.validate_bad_response(test_job, message)
+        valid_attribute = valid_job_body["data"]["attributes"][attribute]
+        test_job["data"]["attributes"][attribute] = valid_attribute
+
+    def validate_bad_response(self, test_job, message):
+        res = utils.post_job_by_osu_id(osu_id, test_job)
+        self.assertEqual(res.status_code, 400)
+        if message:
+            error_messages = [e["developerMessage"] for e in res.json()]
+            self.assertIn(message, error_messages)
+
+    def start_after_end(self, test_job, begin, end):
+        end_date = test_job["data"]["attributes"][end]
+        end_year = end_date.split("-")[0]
+        later_date = end_date.replace(end_year, str(int(end_year) + 1), 1)
+        self.validate_bad_job_post(test_job, begin, later_date,
+                                   "date must be after begin date")
 
     def test_image_by_osu_id(self):
         image_res = utils.get_image_by_osu_id(osu_id)
@@ -290,8 +423,8 @@ class TestStringMethods(unittest.TestCase):
         self.validate_current_employee(jobs_osu_id, True)
         self.validate_current_employee(no_job_osu_id, False)
 
-    def validate_current_employee(self, osu_id, is_current_employee):
-        employee_response = utils.get_person_by_osu_id(osu_id)
+    def validate_current_employee(self, employee_osu_id, is_current_employee):
+        employee_response = utils.get_person_by_osu_id(employee_osu_id)
         self.assertEqual(employee_response.status_code, 200)
 
         current_employee_from_response = employee_response.json()['data'][
@@ -342,6 +475,9 @@ if __name__ == '__main__':
 
     # person with meal plan
     meal_plan_person = config_data['meal_plan_person']['osu_id']
+
+    # valid job body
+    valid_job_body = config_data['valid_job_body']
 
     sys.argv[:] = argv
     unittest.main()
