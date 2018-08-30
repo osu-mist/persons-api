@@ -153,8 +153,6 @@ class TestStringMethods(unittest.TestCase):
             utils.post_job_by_osu_id(not_valid_osu_id, {}).status_code, 404)
 
     def test_bad_post_job(self):
-        # expect 400 if:
-
         # POST body is empty
         self.validate_bad_response({}, "No job object provided")
 
@@ -176,12 +174,26 @@ class TestStringMethods(unittest.TestCase):
             self.validate_bad_job_post(test_job, field, "-1",
                                        field + " cannot be a negative number")
 
+        # invalid fields
+        invalid_fields = [
+            {"supervisorOsuID": "Supervisor OSU ID does not exist"},
+            {"positionNumber": "not a valid position number for the given "
+                               "begin date"},
+            {"locationID": "not a valid location ID"},
+            {"timesheetOrganizationCode": "not a valid organization code"}
+        ]
+        for field, message in invalid_fields:
+            self.validate_bad_job_post(test_job, field, "badValue",
+                                       message)
+
+    def test_start_dates_after_end(self):
         # beginDate is after endDate
         self.start_after_end(test_job, "beginDate", "endDate")
 
         # contractBeginDate is after contractEndDate
         self.start_after_end(test_job, "contractBeginDate", "contractEndDate")
 
+    def test_out_of_range_values(self):
         # fullTimeEquivalency out of range (0-1)
         self.validate_bad_job_post(test_job, "fullTimeEquivalency", "2",
                                    "Full time equivalency must range from 0 "
@@ -191,25 +203,6 @@ class TestStringMethods(unittest.TestCase):
         self.validate_bad_job_post(test_job, "appointmentPercent", "101",
                                    "Appointment percent must range from 0 to "
                                    "100")
-
-        # invalid supervisorOsuID
-        self.validate_bad_job_post(test_job, "supervisorOsuID", "badOsuId",
-                                   "Supervisor OSU ID does not exist")
-
-        # invalid positionNumber
-        self.validate_bad_job_post(test_job, "positionNumber",
-                                   "badPositionNumber",
-                                   "not a valid position number for the given "
-                                   "begin date")
-
-        # invalid locationID
-        self.validate_bad_job_post(test_job, "locationID", "badLocationID",
-                                   "not a valid location ID")
-
-        # invalid timesheetOrganizationCode
-        self.validate_bad_job_post(test_job, "timesheetOrganizationCode",
-                                   "badOrganizationCode",
-                                   "not a valid organization code")
 
     def test_labor_distribution(self):
         # missing fields
