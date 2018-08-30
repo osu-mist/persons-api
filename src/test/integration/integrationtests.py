@@ -147,29 +147,24 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(
             utils.get_person_by_osu_id(not_valid_osu_id).status_code, 404)
 
-    def test_post_job_by_osu_id(self):
-        test_job = deepcopy(valid_job_body)
-
+    def test_post_job_not_found(self):
         # expect 404 if osuID is not valid
         self.assertEqual(
             utils.post_job_by_osu_id(not_valid_osu_id, {}).status_code, 404)
 
+    def test_bad_post_job(self):
         # expect 400 if:
 
         # POST body is empty
-        no_body = utils.post_job_by_osu_id(osu_id, {})
-        self.assertEqual(no_body.status_code, 400)
-        self.assertEqual(len(no_body.json()), 1)
-        self.assertIn("No job object provided",
-                      no_body.json()[0]["developerMessage"])
+        self.validate_bad_response({}, "No job object provided")
 
         # dates are not in ISO8601 format
         self.validate_bad_job_post(test_job, "effectiveDate", "badDate",
                                    "Make sure dates are in ISO8601 format")
 
         # required field is missing
-        required_fields = ["positionNumber", "hoursPerPay", "assignmentSalary",
-                           "annualSalary", "paysPerYear"]
+        required_fields = ["positionNumber", "beginDate", "supervisorOsuID",
+                           "supervisorPositionNumber", "effectiveDate"]
         for field in required_fields:
             self.validate_bad_job_post(test_job, field, None,
                                        field + " is required")
@@ -216,8 +211,7 @@ class TestStringMethods(unittest.TestCase):
                                    "badOrganizationCode",
                                    "not a valid organization code")
 
-        # laborDistribution errors:
-
+    def test_labor_distribution(self):
         # missing fields
         required_dist_fields = ["distributionPercent", "effectiveDate"]
         for field in required_dist_fields:
@@ -244,37 +238,37 @@ class TestStringMethods(unittest.TestCase):
                                          "Total sum of labor distribution "
                                          "percentages must equal 100")
 
-    def validate_labor_distribution(self, test_job, attribute, bad_value,
+    def validate_labor_distribution(self, job_body, attribute, bad_value,
                                     message=None):
-        test_attributes = test_job["data"]["attributes"]
+        test_attributes = job_body["data"]["attributes"]
         test_labor_dist = test_attributes["laborDistribution"][0]
         valid_attributes = valid_job_body["data"]["attributes"]
         valid_labor_dist = valid_attributes["laborDistribution"][0]
 
         test_labor_dist[attribute] = bad_value
-        self.validate_bad_response(test_job, message)
+        self.validate_bad_response(job_body, message)
         valid_attribute = valid_labor_dist[attribute]
         test_labor_dist[attribute] = valid_attribute
 
-    def validate_bad_job_post(self, test_job, attribute, bad_value,
+    def validate_bad_job_post(self, job_body, attribute, bad_value,
                               message=None):
-        test_job["data"]["attributes"][attribute] = bad_value
-        self.validate_bad_response(test_job, message)
+        job_body["data"]["attributes"][attribute] = bad_value
+        self.validate_bad_response(job_body, message)
         valid_attribute = valid_job_body["data"]["attributes"][attribute]
-        test_job["data"]["attributes"][attribute] = valid_attribute
+        job_body["data"]["attributes"][attribute] = valid_attribute
 
-    def validate_bad_response(self, test_job, message):
-        res = utils.post_job_by_osu_id(osu_id, test_job)
+    def validate_bad_response(self, job_body, message):
+        res = utils.post_job_by_osu_id(osu_id, job_body)
         self.assertEqual(res.status_code, 400)
         if message:
             error_messages = [e["developerMessage"] for e in res.json()]
             self.assertIn(message, error_messages)
 
-    def start_after_end(self, test_job, begin, end):
-        end_date = test_job["data"]["attributes"][end]
+    def start_after_end(self, job_body, begin, end):
+        end_date = job_body["data"]["attributes"][end]
         end_year = end_date.split("-")[0]
         later_date = end_date.replace(end_year, str(int(end_year) + 1), 1)
-        self.validate_bad_job_post(test_job, begin, later_date,
+        self.validate_bad_job_post(job_body, begin, later_date,
                                    "date must be after begin date")
 
     def test_image_by_osu_id(self):
@@ -478,6 +472,9 @@ if __name__ == '__main__':
 
     # valid job body
     valid_job_body = config_data['valid_job_body']
+
+    # job body used for testing
+    test_job = deepcopy(valid_job_body)
 
     sys.argv[:] = argv
     unittest.main()

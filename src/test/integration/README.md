@@ -1,6 +1,6 @@
 # Persons API Integration Tests
 
-The integration tests for Persons API written using Python 2.
+The integration tests for Persons API written using Python 3.
 
 ## Configuration
 
