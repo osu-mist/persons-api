@@ -171,17 +171,17 @@ class TestStringMethods(unittest.TestCase):
         positive_fields = ["hourlyRate", "hoursPerPay", "assignmentSalary",
                            "annualSalary", "paysPerYear"]
         for field in positive_fields:
-            self.validate_bad_job_post(test_job, field, "-1",
+            self.validate_bad_job_post(test_job, field, -1,
                                        field + " cannot be a negative number")
 
         # invalid fields
-        invalid_fields = [
-            {"supervisorOsuID": "Supervisor OSU ID does not exist"},
-            {"positionNumber": "not a valid position number for the given "
-                               "begin date"},
-            {"locationID": "not a valid location ID"},
-            {"timesheetOrganizationCode": "not a valid organization code"}
-        ]
+        invalid_fields = {
+            "supervisorOsuID": "Supervisor OSU ID does not exist",
+            "positionNumber": "not a valid position number for the given "
+                               "begin date",
+            "locationID": "not a valid location ID",
+            "timesheetOrganizationCode": "not a valid organization code",
+        }
         for field, message in invalid_fields:
             self.validate_bad_job_post(test_job, field, "badValue",
                                        message)
