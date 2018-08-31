@@ -153,7 +153,7 @@ class TestStringMethods(unittest.TestCase):
             utils.post_job_by_osu_id(not_valid_osu_id, {}).status_code, 404)
 
     def test_bad_post_job(self):
-        # POST body is empty
+        # "data" field is empty
         self.validate_bad_response({"data": {}}, "No job object provided")
 
         # dates are not in ISO8601 format
