@@ -395,6 +395,7 @@ definitions:
           salaryStep:
             type: string
             format: integer
+            example: "1"
           salaryGroupCode:
             type: string
           strsAssignmentCode:
@@ -438,7 +439,7 @@ definitions:
           annualSalary:
             type: number
             format: float
-            example: 20,050.35
+            example: 20050.35
           earnCodeEffectiveDate:
             type: string
             format: date

@@ -154,7 +154,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_bad_post_job(self):
         # POST body is empty
-        self.validate_bad_response({}, "No job object provided")
+        self.validate_bad_response({"data": {}}, "No job object provided")
 
         # dates are not in ISO8601 format
         self.validate_bad_job_post(test_job, "effectiveDate", "badDate",
@@ -255,7 +255,9 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
         if message:
             error_messages = [e["developerMessage"] for e in res.json()]
-            self.assertIn(message, error_messages)
+            self.assertIsNotNone(
+                any(message in res_message for res_message in error_messages)
+            )
 
     def start_after_end(self, job_body, begin, end):
         end_date = job_body["data"]["attributes"][end]

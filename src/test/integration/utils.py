@@ -14,17 +14,27 @@ def parse_args():
 
 
 def load_config(input_file):
-    global api_url, headers
+    global api_url, session
 
     config = json.load(open(input_file))
     api_url = config["hostname"] + config["version"] + config['api']
-    payload = {
-        'client_id': config["client_id"],
-        'client_secret': config["client_secret"],
-        'grant_type': 'client_credentials'
-    }
-    res = requests.post(config["token_api_url"], data=payload).json()
-    headers = {'Authorization': 'Bearer ' + res["access_token"]}
+    session = requests.Session()
+    if config["use_basic_auth"]:
+        session.verify = False
+        session.auth = (
+            config["basic_auth_username"], config["basic_auth_password"]
+        )
+    else:
+        payload = {
+            'client_id': config["client_id"],
+            'client_secret': config["client_secret"],
+            'grant_type': 'client_credentials'
+        }
+        res = requests.post(config["token_api_url"], data=payload).json()
+        session.headers.update(
+            {'Authorization': 'Bearer ' + res["access_token"]}
+        )
+
     valid_job_body = json.load(open("valid-job-body.json"))
     config_data = {
         'api_url': api_url,
@@ -45,38 +55,37 @@ def load_config(input_file):
 
 
 def get_person_by_ids(params):
-    global api_url, headers
-    return requests.get(api_url, headers=headers, params=params)
+    global api_url
+    return session.get(api_url, params=params)
 
 
 def get_person_by_osu_id(osu_id):
-    global api_url, headers
-    return requests.get(api_url + osu_id, headers=headers)
+    global api_url
+    return session.get(api_url + osu_id)
 
 
 def get_jobs_by_osu_id(osu_id):
-    global api_url, headers
-    return requests.get(api_url + osu_id + '/jobs', headers=headers)
+    global api_url
+    return session.get(api_url + osu_id + '/jobs')
 
 
 def get_image_by_osu_id(osu_id, params=None):
-    global api_url, headers
-    return requests.get(api_url + osu_id + '/image',
-                        headers=headers, params=params)
+    global api_url
+    return session.get(api_url + osu_id + '/image', params=params)
 
 
 def get_meal_plans_by_osu_id(osu_id):
-    global api_url, headers
-    return requests.get(api_url + osu_id + '/meal-plans', headers=headers)
+    global api_url
+    return session.get(api_url + osu_id + '/meal-plans')
 
 
 def get_meal_plan_by_id(osu_id, meal_plan_id):
-    global api_url, headers
-    return requests.get(api_url + osu_id + '/meal-plans/' + meal_plan_id,
-                        headers=headers)
+    global api_url
+    return session.get(api_url + osu_id + '/meal-plans/' + meal_plan_id)
 
 
 def post_job_by_osu_id(osu_id, body):
-    global api_url, headers
-    return requests.post(api_url + osu_id + '/jobs', headers=headers,
-                         data=body)
+    global api_url
+    return session.post(api_url + osu_id + '/jobs',
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(body))
