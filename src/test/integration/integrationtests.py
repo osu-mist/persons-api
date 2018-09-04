@@ -182,7 +182,7 @@ class TestStringMethods(unittest.TestCase):
             "locationID": "not a valid location ID",
             "timesheetOrganizationCode": "not a valid organization code",
         }
-        for field, message in invalid_fields:
+        for field, message in invalid_fields.items():
             self.validate_bad_job_post(test_job, field, "badValue",
                                        message)
 
