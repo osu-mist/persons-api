@@ -1,0 +1,52 @@
+{
+  "data": {
+    "type": "job",
+    "attributes": {
+      "positionNumber": "C12345",
+      "suffix": "string",
+      "effectiveDate": "2018-12-31",
+      "beginDate": "2018-12-31",
+      "endDate": "2019-01-01",
+      "accruesLeave": true,
+      "contractBeginDate": "2018-12-31",
+      "contractEndDate": "2018-12-31",
+      "locationID": "string",
+      "status": "Active",
+      "description": "string",
+      "personnelChangeDate": "2018-12-31",
+      "changeReasonCode": "string",
+      "fullTimeEquivalency": 0.49,
+      "appointmentPercent": 49,
+      "salaryStep": "1",
+      "salaryGroupCode": "string",
+      "strsAssignmentCode": "string",
+      "supervisorOsuID": "osu_id",
+      "supervisorPositionNumber": "string",
+      "supervisorSuffix": "string",
+      "timesheetOrganizationCode": "string",
+      "hourlyRate": 12.85,
+      "hoursPerPay": 173.33,
+      "assignmentSalary": 1670.83,
+      "paysPerYear": 0,
+      "employeeClassificationCode": "string",
+      "employerCode": "string",
+      "annualSalary": 20050.35,
+      "earnCodeEffectiveDate": "2018-12-31",
+      "earnCode": "string",
+      "earnCodeHours": 0,
+      "earnCodeShift": "string",
+      "laborDistribution": [
+        {
+          "effectiveDate": "2018-12-31",
+          "accountIndexCode": null,
+          "fundCode": "string",
+          "organizationCode": "string",
+          "accountCode": "string",
+          "programCode": "string",
+          "activityCode": "string",
+          "distributionPercent": 49.9
+        }
+      ]
+    }
+  }
+}

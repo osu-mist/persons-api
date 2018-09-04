@@ -4,6 +4,10 @@
 
     "api": "/persons/",
 
+    "use_basic_auth": false,
+    "basic_auth_username": "username",
+    "basic_auth_password": "password",
+
     "token_api_url": "https://api.oregonstate.edu/oauth2/token",
     "client_id": "secret",
     "client_secret": "sauce",
