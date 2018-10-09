@@ -15,9 +15,12 @@ import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
 import org.skife.jdbi.v2.sqlobject.Bind
 import org.skife.jdbi.v2.sqlobject.SqlQuery
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper
+import org.skife.jdbi.v2.sqlobject.stringtemplate.UseStringTemplate3StatementLocator
+import org.skife.jdbi.v2.unstable.BindIn
 
 import java.sql.Blob
 
+@UseStringTemplate3StatementLocator
 public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)
@@ -57,7 +60,7 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
     List<PersonObject> getPersons(@Bind('onid') String onid,
-                                  @Bind('osuID') String osuID,
+                                  @BindIn('osuIDs') List<String> osuIDs,
                                   @Bind('osuUID') String osuUID,
                                   @Bind('firstName') String firstName,
                                   @Bind('lastName') String lastName,

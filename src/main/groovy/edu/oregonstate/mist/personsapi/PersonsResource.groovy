@@ -36,6 +36,7 @@ class PersonsResource extends Resource {
     private final PersonsWriteDAO personsWriteDAO
     private PersonUriBuilder personUriBuilder
     private final Integer maxImageWidth = 2000
+    private final Integer maxIDListLimit = 50 //The max number of IDs retrieved in a single request
 
     PersonsResource(PersonsDAO personsDAO, PersonsWriteDAO personsWriteDAO, URI endpointUri) {
         this.personsDAO = personsDAO
@@ -61,6 +62,8 @@ class PersonsResource extends Resource {
 
         Boolean validNameRequest = nameCount == 2
 
+        List<String> osuIDList = getListFromString(osuID)
+
         String errorMessage
 
         if (osuUID && !osuUID.matches("[0-9]+")) {
@@ -81,6 +84,8 @@ class PersonsResource extends Resource {
             errorMessage = "firstName and lastName must be included if searchOldNames is true."
         } else if (!idCount && !nameCount) {
             errorMessage = "No names or IDs were provided in the request."
+        } else if (!isValidIDList(osuIDList)) {
+            errorMessage = "The number of IDs in a request cannot exceed $maxIDListLimit."
         }
 
         if (errorMessage) {
@@ -93,10 +98,10 @@ class PersonsResource extends Resource {
         if (!nameCount && idCount == 1) {
             if (!searchOldOsuIDs) {
                 // Search by a current ID.
-                persons = personsDAO.getPersons(onid, osuID, osuUID, null, null, false)
+                persons = personsDAO.getPersons(onid, osuIDList, osuUID, null, null, false)
             } else {
                 // Search current and previous OSU ID's.
-                persons = personsDAO.getPersons(null, osuID, null, null, null, true)
+                persons = personsDAO.getPersons(null, osuIDList, null, null, null, true)
             }
         } else if (!idCount && validNameRequest) {
             String formattedFirstName = formatName(firstName)
@@ -129,11 +134,25 @@ class PersonsResource extends Resource {
         StringUtils.stripAccents(name).toUpperCase()
     }
 
+    /**
+     * Get a list of strings from a comma delimited string. Used for searching for multiple IDs in
+     * a persons request.
+     * @param commaDelimitedList
+     * @return
+     */
+    private static List<String> getListFromString(String commaDelimitedList) {
+        commaDelimitedList ? commaDelimitedList.tokenize(",") : []
+    }
+
+    private Boolean isValidIDList(List<String> idList) {
+        !idList || idList.size() <= maxIDListLimit
+    }
+
     @Timed
     @GET
     @Path('{osuID: [0-9]+}')
     Response getPersonById(@PathParam('osuID') String osuID) {
-        def person = personsDAO.getPersons(null, osuID, null, null, null, false)
+        def person = personsDAO.getPersons(null, [osuID], null, null, null, false)
         if (person) {
             ResultObject res = personResultObject(person?.get(0))
             ok(res).build()

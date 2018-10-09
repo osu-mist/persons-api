@@ -196,7 +196,7 @@ class PersonsResourceTest {
     void shouldReturn404IfBadOSUId() {
         def stub = getPersonsDAOStub()
         stub.demand.with {
-            getPersons { String onid, String osuID, String osuUID,
+            getPersons { String onid, List<String> osuIDs, String osuUID,
                          String firstName, String lastName, searchOldVersions -> null }
             personExist(2..2) { null }
             getJobsById { null }
@@ -214,7 +214,7 @@ class PersonsResourceTest {
     void shouldReturnValidResponse() {
         def stub = getPersonsDAOStub()
         stub.demand.with {
-            getPersons(2..2) { String onid, String osuID, String osuUID,
+            getPersons(2..2) { String onid, List<String> osuIDs, String osuUID,
                          String firstName, String lastName, searchOldVersions -> [fakePerson] }
             personExist { String osuID -> '123456789' }
             getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
