@@ -30,8 +30,15 @@ paths:
         - in: query
           name: osuID
           required: false
-          description: OSU ID of person
-          type: string
+          description: >
+            OSU ID of one or more persons. Multiple IDs can be retrieved
+            in a single request by separating with a comma. IDs that are not
+            able to be found will not be returned in the response.
+            Example: /persons?osuID=1,2,3
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
         - in: query
           name: osuUID
           required: false
