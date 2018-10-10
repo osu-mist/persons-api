@@ -3,6 +3,7 @@ import operator
 import re
 import sys
 import unittest
+import random
 from copy import deepcopy
 from functools import reduce
 from io import BytesIO
@@ -419,6 +420,36 @@ class TestStringMethods(unittest.TestCase):
         current_employee_from_response = employee_response.json()['data'][
             'attributes']['currentEmployee']
         self.assertEqual(current_employee_from_response, is_current_employee)
+
+    def test_multiple_osu_id(self):
+        osu_id_list = [osu_id, jobs_osu_id, phones_osu_id, long_phone_osu_id]
+        parameters = self.osu_id_parameter_from_list(osu_id_list)
+        persons = utils.get_person_by_ids(parameters)
+        self.assertEqual(persons.status_code, 200)
+
+        persons_response_body = persons.json()
+        response_osu_id_list = [person['id'] for person in
+                persons_response_body['data']]
+
+        self.assertEqual(len(response_osu_id_list), len(osu_id_list))
+
+        for osu_id in osu_id_list:
+            self.assertTrue(osu_id in response_osu_id_list)
+
+    def test_too_many_osu_id_request(self):
+        id_list = [random.randint(930000000, 939999999)] * 50
+        valid_parameters = self.osu_id_parameter_from_list(id_list)
+        persons = utils.get_person_by_ids(parameters)
+        self.assertEqual(persons.status_code, 200)
+
+        id_list.append("foo")
+        invalid_parameters = self.osu_id_parameter_from_list(id_list)
+        too_many_ids = utils.get_person_by_ids(invalid_parameters)
+        self.assertEqual(persons.status_code, 400)
+
+    @staticmethod
+    def osu_id_parameter_from_list(id_list):
+        {'osuID': id_list.join(",")}
 
     @staticmethod
     def length_of_response(response):
