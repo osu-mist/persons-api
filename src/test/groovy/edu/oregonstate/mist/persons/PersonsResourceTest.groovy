@@ -9,6 +9,7 @@ import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import groovy.mock.interceptor.StubFor
 import org.junit.Before
@@ -143,9 +144,13 @@ class PersonsResourceTest {
         new StubFor(PersonsDAO)
     }
 
+    private static StubFor getPersonsStringTemplateDAOStub() {
+        new StubFor(PersonsStringTemplateDAO)
+    }
+
     @Test
     void shouldReturn400() {
-        PersonsResource personsResource = new PersonsResource(null, null, endpointUri)
+        PersonsResource personsResource = new PersonsResource(null, null, null, endpointUri)
 
         // OSU UID can only contain numbers
         checkErrorResponse(personsResource.list(null, null, 'badOSUUID', null, null, null, null),
@@ -194,17 +199,19 @@ class PersonsResourceTest {
 
     @Test
     void shouldReturn404IfBadOSUId() {
-        def stub = getPersonsDAOStub()
-        stub.demand.with {
-            getPersons { String onid, List<String> osuIDs, String osuUID,
-                         String firstName, String lastName, searchOldVersions -> null }
+        def stubDAO = getPersonsDAOStub()
+        stubDAO.demand.with {
             personExist(2..2) { null }
             getJobsById { null }
             getImageById { null }
         }
 
+        def stubStringTemplateDAO = getPersonsStringTemplateDAOStub()
+        stubStringTemplateDAO.demand.getPersons { String onid, List<String> osuIDs, String osuUID,
+                                 String firstName, String lastName, searchOldVersions -> null }
+
         PersonsResource personsResource = new PersonsResource(
-                stub.proxyInstance(), null, endpointUri)
+                stubDAO.proxyInstance(), stubStringTemplateDAO.proxyInstance(), null, endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789'), 404)
         checkErrorResponse(personsResource.getJobs('123456789', null, null), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
@@ -212,17 +219,22 @@ class PersonsResourceTest {
 
     @Test
     void shouldReturnValidResponse() {
-        def stub = getPersonsDAOStub()
-        stub.demand.with {
-            getPersons(2..2) { String onid, List<String> osuIDs, String osuUID,
-                         String firstName, String lastName, searchOldVersions -> [fakePerson] }
+        def stubPersonsDAO = getPersonsDAOStub()
+        stubPersonsDAO.demand.with {
             personExist { String osuID -> '123456789' }
             getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
             getJobLaborDistribution { String osuID, String positionNumber, String suffix -> null }
             getPreviousRecords(2..2) { String internalID -> null }
         }
-        PersonsResource personsResource = new PersonsResource(
-                stub.proxyInstance(), null, endpointUri)
+
+        def stubPersonsStringTemplateDAO = getPersonsStringTemplateDAOStub()
+        stubPersonsStringTemplateDAO.demand.getPersons(2..2) { String onid, List<String> osuIDs,
+                                                               String osuUID, String firstName,
+                                                               String lastName, searchOldVersions ->
+            [fakePerson] }
+
+        PersonsResource personsResource = new PersonsResource(stubPersonsDAO.proxyInstance(),
+                stubPersonsStringTemplateDAO.proxyInstance(), null, endpointUri)
         checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
                 [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
@@ -232,10 +244,15 @@ class PersonsResourceTest {
     private PersonsResource getPersonsResourceWithGoodMockDAOs() {
         new PersonsResource(
                 getGoodMockPersonsDAO().proxyInstance(),
+                null,
                 getMockPersonsWriteDAO("").proxyInstance(),
                 endpointUri)
     }
 
+    private StubFor getGoodMockPersonsStringTemplateDAO() {
+        def personsStringTemplateDAOStub = getPersonsStringTemplateDAOStub()
+
+    }
     private StubFor getGoodMockPersonsDAO() {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
@@ -280,7 +297,7 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.personExist { String osuID -> null }
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         Response response = personsResource.createJob("foo", new ResultObject())
         checkErrorResponse(response, 404)
@@ -307,7 +324,7 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.personExist { String osuID -> "123456789" }
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         ResultObject badJobResultObject = new ResultObject(data: new ResourceObject(
                 attributes: resourceObjectAttributes))
@@ -469,7 +486,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -500,7 +517,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -530,7 +547,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -559,7 +576,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -588,7 +605,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -615,7 +632,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         JobObject job = fakeJob
         LaborDistribution laborDistribution = new LaborDistribution(
@@ -679,7 +696,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -709,7 +726,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         JobObject job = fakeJob
         job.laborDistribution[0].with {
@@ -759,7 +776,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -807,7 +824,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -847,7 +864,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -887,7 +904,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -938,7 +955,7 @@ class PersonsResourceTest {
         }
 
         PersonsResource personsResource = new PersonsResource(
-                personsDAOStub.proxyInstance(), null, endpointUri)
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
 
         checkErrorResponse(
                 personsResource.createJob(
@@ -963,6 +980,7 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(
                 getGoodMockPersonsDAO().proxyInstance(),
+                null,
                 getMockPersonsWriteDAO(personsWriteDAOResponse).proxyInstance(),
                 endpointUri)
 
