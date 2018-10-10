@@ -3,7 +3,6 @@ package edu.oregonstate.mist.personsapi
 import edu.oregonstate.mist.api.Application
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
-import io.dropwizard.client.HttpClientBuilder
 import io.dropwizard.jdbi.DBIFactory
 import io.dropwizard.setup.Environment
 import org.skife.jdbi.v2.DBI

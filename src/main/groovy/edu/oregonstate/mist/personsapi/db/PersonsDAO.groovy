@@ -60,7 +60,8 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
     List<PersonObject> getPersons(@Bind('onid') String onid,
-                                  @BindIn('osuIDs') List<String> osuIDs,
+                                  @BindIn(value = 'osuIDs',
+                                          onEmpty = BindIn.EmptyHandling.NULL) List<String> osuIDs,
                                   @Bind('osuUID') String osuUID,
                                   @Bind('firstName') String firstName,
                                   @Bind('lastName') String lastName,

@@ -35,6 +35,7 @@ class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
     private final PersonsWriteDAO personsWriteDAO
     private PersonUriBuilder personUriBuilder
+
     private final Integer maxImageWidth = 2000
     private final Integer maxIDListLimit = 50 //The max number of IDs retrieved in a single request
 
@@ -141,7 +142,8 @@ class PersonsResource extends Resource {
      * @return
      */
     private static List<String> getListFromString(String commaDelimitedList) {
-        commaDelimitedList ? commaDelimitedList.tokenize(",") : []
+        //commaDelimitedList ? commaDelimitedList.tokenize(",") : []
+        commaDelimitedList?.tokenize(",")
     }
 
     private Boolean isValidIDList(List<String> idList) {
