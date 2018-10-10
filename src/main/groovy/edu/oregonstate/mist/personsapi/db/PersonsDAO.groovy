@@ -15,12 +15,10 @@ import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
 import org.skife.jdbi.v2.sqlobject.Bind
 import org.skife.jdbi.v2.sqlobject.SqlQuery
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper
-import org.skife.jdbi.v2.sqlobject.stringtemplate.UseStringTemplate3StatementLocator
 import org.skife.jdbi.v2.unstable.BindIn
 
 import java.sql.Blob
 
-@UseStringTemplate3StatementLocator
 public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)

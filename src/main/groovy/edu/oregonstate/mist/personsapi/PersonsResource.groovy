@@ -10,6 +10,7 @@ import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
@@ -33,14 +34,19 @@ import javax.ws.rs.core.Response
 @TypeChecked
 class PersonsResource extends Resource {
     private final PersonsDAO personsDAO
+    private final PersonsStringTemplateDAO personsStringTemplateDAO
     private final PersonsWriteDAO personsWriteDAO
     private PersonUriBuilder personUriBuilder
 
     private final Integer maxImageWidth = 2000
     private final Integer maxIDListLimit = 50 //The max number of IDs retrieved in a single request
 
-    PersonsResource(PersonsDAO personsDAO, PersonsWriteDAO personsWriteDAO, URI endpointUri) {
+    PersonsResource(PersonsDAO personsDAO,
+                    PersonsStringTemplateDAO personsStringTemplateDAO,
+                    PersonsWriteDAO personsWriteDAO,
+                    URI endpointUri) {
         this.personsDAO = personsDAO
+        this.personsStringTemplateDAO = personsStringTemplateDAO
         this.personsWriteDAO = personsWriteDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
@@ -99,10 +105,12 @@ class PersonsResource extends Resource {
         if (!nameCount && idCount == 1) {
             if (!searchOldOsuIDs) {
                 // Search by a current ID.
-                persons = personsDAO.getPersons(onid, osuIDList, osuUID, null, null, false)
+                persons = personsStringTemplateDAO.getPersons(
+                        onid, osuIDList, osuUID, null, null, false)
             } else {
                 // Search current and previous OSU ID's.
-                persons = personsDAO.getPersons(null, osuIDList, null, null, null, true)
+                persons = personsStringTemplateDAO.getPersons(
+                        null, osuIDList, null, null, null, true)
             }
         } else if (!idCount && validNameRequest) {
             String formattedFirstName = formatName(firstName)
@@ -110,11 +118,11 @@ class PersonsResource extends Resource {
 
             if (!searchOldNames) {
                 // Search current names.
-                persons = personsDAO.getPersons(null, null, null, formattedFirstName,
+                persons = personsStringTemplateDAO.getPersons(null, null, null, formattedFirstName,
                         formattedLastName, false)
             } else {
                 // Search current and previous names.
-                persons = personsDAO.getPersons(null, null, null, formattedFirstName,
+                persons = personsStringTemplateDAO.getPersons(null, null, null, formattedFirstName,
                         formattedLastName, true)
             }
         } else {
@@ -142,7 +150,6 @@ class PersonsResource extends Resource {
      * @return
      */
     private static List<String> getListFromString(String commaDelimitedList) {
-        //commaDelimitedList ? commaDelimitedList.tokenize(",") : []
         commaDelimitedList?.tokenize(",")
     }
 
@@ -154,7 +161,7 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}')
     Response getPersonById(@PathParam('osuID') String osuID) {
-        def person = personsDAO.getPersons(null, [osuID], null, null, null, false)
+        def person = personsStringTemplateDAO.getPersons(null, [osuID], null, null, null, false)
         if (person) {
             ResultObject res = personResultObject(person?.get(0))
             ok(res).build()

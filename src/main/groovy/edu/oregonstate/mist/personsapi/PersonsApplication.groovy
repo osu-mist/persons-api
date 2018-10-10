@@ -2,6 +2,7 @@ package edu.oregonstate.mist.personsapi
 
 import edu.oregonstate.mist.api.Application
 import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import io.dropwizard.jdbi.DBIFactory
 import io.dropwizard.setup.Environment
@@ -25,14 +26,16 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
         DBI readJdbi = factory.build(environment, configuration.getReadDataSourceFactory(),
                 "readJdbi")
         PersonsDAO personsDAO = readJdbi.onDemand(PersonsDAO.class)
+        PersonsStringTemplateDAO personsStringTemplateDAO = readJdbi.onDemand(
+                PersonsStringTemplateDAO.class)
 
         DBI writeJdbi = factory.build(
                 environment, configuration.getWriteDataSourceFactory(), "writeJdbi")
         PersonsWriteDAO personsWriteDAO = writeJdbi.onDemand(PersonsWriteDAO.class)
 
         environment.jersey().register(
-            new PersonsResource(
-                    personsDAO, personsWriteDAO, configuration.api.endpointUri)
+            new PersonsResource(personsDAO, personsStringTemplateDAO,
+                    personsWriteDAO, configuration.api.endpointUri)
         )
     }
 
