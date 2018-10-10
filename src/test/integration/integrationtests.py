@@ -422,7 +422,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(current_employee_from_response, is_current_employee)
 
     def test_multiple_osu_id(self):
-        osu_id_list = [osu_id, jobs_osu_id, phones_osu_id, long_phone_osu_id]
+        osu_id_list = [jobs_osu_id, no_job_osu_id]
         parameters = self.osu_id_parameter_from_list(osu_id_list)
         persons = utils.get_person_by_ids(parameters)
         self.assertEqual(persons.status_code, 200)
@@ -433,23 +433,23 @@ class TestStringMethods(unittest.TestCase):
 
         self.assertEqual(len(response_osu_id_list), len(osu_id_list))
 
-        for osu_id in osu_id_list:
+        for id in osu_id_list:
             self.assertTrue(osu_id in response_osu_id_list)
 
     def test_too_many_osu_id_request(self):
-        id_list = [random.randint(930000000, 939999999)] * 50
+        id_list = [str(random.randint(930000000, 939999999))] * 50
         valid_parameters = self.osu_id_parameter_from_list(id_list)
-        persons = utils.get_person_by_ids(parameters)
+        persons = utils.get_person_by_ids(valid_parameters)
         self.assertEqual(persons.status_code, 200)
 
         id_list.append("foo")
         invalid_parameters = self.osu_id_parameter_from_list(id_list)
         too_many_ids = utils.get_person_by_ids(invalid_parameters)
-        self.assertEqual(persons.status_code, 400)
+        self.assertEqual(too_many_ids.status_code, 400)
 
     @staticmethod
     def osu_id_parameter_from_list(id_list):
-        {'osuID': id_list.join(",")}
+        return {'osuID': ",".join(id_list)}
 
     @staticmethod
     def length_of_response(response):
