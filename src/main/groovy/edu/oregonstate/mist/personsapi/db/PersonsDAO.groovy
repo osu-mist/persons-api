@@ -15,6 +15,7 @@ import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
 import org.skife.jdbi.v2.sqlobject.Bind
 import org.skife.jdbi.v2.sqlobject.SqlQuery
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper
+import org.skife.jdbi.v2.unstable.BindIn
 
 import java.sql.Blob
 
@@ -57,7 +58,8 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)
     List<PersonObject> getPersons(@Bind('onid') String onid,
-                                  @Bind('osuID') String osuID,
+                                  @BindIn(value = 'osuIDs',
+                                          onEmpty = BindIn.EmptyHandling.NULL) List<String> osuIDs,
                                   @Bind('osuUID') String osuUID,
                                   @Bind('firstName') String firstName,
                                   @Bind('lastName') String lastName,
