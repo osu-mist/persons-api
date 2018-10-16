@@ -21,6 +21,9 @@ paths:
   /persons:
     get:
       description: Get general personal information, query by various identifiers
+      tags:
+        - persons
+      operationId: getPersons
       parameters:
         - in: query
           name: onid
@@ -81,6 +84,9 @@ paths:
   /persons/{osuID}:
     get:
       description: Get general person information
+      tags:
+        - persons
+      operationId: getPersonByID
       parameters:
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
@@ -97,6 +103,9 @@ paths:
   /persons/{osuID}/jobs:
     get:
       description: Get jobs associated with a person
+      tags:
+        - jobs
+      operationId: getJobs
       parameters:
         - name: positionNumber
           in: query
@@ -124,6 +133,7 @@ paths:
             $ref: '#/definitions/Error'
     post:
       description: Create a job record for a person
+      operationId: postJob
       parameters:
         - name: job
           in: body
@@ -154,6 +164,9 @@ paths:
       description: |
         Get an ID card image for a person. If the person exists but doesn't have
         an ID card image, a default image will be returned.
+      tags:
+        - images
+      operationId: getImage
       produces:
         - image/jpeg
         - application/json
@@ -182,6 +195,9 @@ paths:
   /persons/{osuID}/meal-plans:
     get:
       description: Get meal plans for a person
+      tags:
+        - meal-plans
+      operationId: getMealPlans
       parameters:
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/authorization'
@@ -197,6 +213,9 @@ paths:
   /persons/{osuID}/meal-plans/{mealPlanID}:
     get:
       description: Get meal plans for a person
+      tags:
+        - meal-plans
+      operationId: getMealPlanByID
       parameters:
         - in: path
           name: mealPlanID
