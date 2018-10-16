@@ -215,7 +215,7 @@ paths:
       description: Get meal plans for a person
       tags:
         - meal-plans
-      operationId: getMealPlansByID
+      operationId: getMealPlanByID
       parameters:
         - in: path
           name: mealPlanID
