@@ -358,32 +358,23 @@ class PersonsResource extends Resource {
             BigDecimal totalDistributionPercent = 0
             boolean missingDistributionPercent = false
             boolean missingEffectiveDate = false
-            boolean invalidFieldCombination = false
 
             job.laborDistribution.each {
                 if (it.distributionPercent) {
+                    //validate the total later
                     totalDistributionPercent += it.distributionPercent
                 } else {
                     //each labor distribution must have a distribution percent
                     missingDistributionPercent = true
                 }
 
-                if (!it.effectiveDate) {
-                    //each labor distribution must have an effective date
-                    missingEffectiveDate = true
-                }
+                //each labor distribution must have an effective date
+                //no need to validate the date format here. jackson does that earlier
+                missingEffectiveDate = !it.effectiveDate ? true : missingEffectiveDate
 
-                boolean someFundingFieldsIncluded = it.accountCode || it.activityCode ||
-                        it.organizationCode || it.programCode || it.fundCode
-
-                boolean allFundingFieldsIncluded = it.accountCode && it.activityCode &&
-                        it.organizationCode && it.programCode && it.fundCode
-
-                invalidFieldCombination = (it.accountIndexCode && someFundingFieldsIncluded) ||
-                        (!it.accountIndexCode && !allFundingFieldsIncluded)
-
-                if (it.accountIndexCode &&
+                if (!it.accountIndexCode ||
                         !personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
+                    //accountIndexCode is required
                     addBadRequest("${it.accountIndexCode} is not a valid accountIndexCode.")
                 }
 
@@ -421,14 +412,7 @@ class PersonsResource extends Resource {
                 it.effectiveDate.atStartOfDay() }.unique().size() > 1) {
                 addBadRequest("effectiveDate must be the same for each labor distribution.")
             }
-
-            if (invalidFieldCombination) {
-                addBadRequest("For each labor distribution, you must either specify an " +
-                    "accountIndexCode, or a combination of the fundCode, organizationCode, " +
-                    "accountCode, programCode, and activityCode.")
-            }
         }
-
         errors
     }
 

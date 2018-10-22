@@ -153,6 +153,7 @@ class LaborDistribution {
     String accountCode
     String programCode
     String activityCode
+    String locationCode
     BigDecimal distributionPercent
 }
 
@@ -173,6 +174,7 @@ class LaborDistributionForDb {
     String accountCodes
     String programCodes
     String activityCodes
+    String locationCodes
     String distributionPercentages
 
     public static LaborDistributionForDb getLaborDistributionForDb(
@@ -192,6 +194,7 @@ class LaborDistributionForDb {
                 accountCodes: concatenateList(laborDistribution.collect { it.accountCode }),
                 programCodes: concatenateList(laborDistribution.collect { it.programCode }),
                 activityCodes: concatenateList(laborDistribution.collect { it.activityCode }),
+                locationCodes: concatenateList(laborDistribution.collect { it.locationCode }),
                 distributionPercentages: concatenateList(laborDistribution.collect {
                     it.distributionPercent.toString()
                 })

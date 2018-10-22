@@ -653,14 +653,14 @@ class PersonsResourceTest {
     }
 
     @Test
-    void allLaborFieldsCantBeNull() {
+    void accountIndexCodeCantBeNull() {
         JobObject job = fakeJob
         job.laborDistribution[0].accountIndexCode = null
-        checkInvalidLaborDistributionFieldsErrorMessage(job)
+        checkCreateJobErrorMessageResponse(job, "null is not a valid accountIndexCode.")
     }
 
     @Test
-    void allLaborFieldsCantBeUsed() {
+    void allLaborFieldsCanBeUsed() {
         JobObject job = fakeJob
         job.laborDistribution[0].with {
             fundCode = 'example'
@@ -670,14 +670,16 @@ class PersonsResourceTest {
             activityCode = 'example'
         }
 
-        checkInvalidLaborDistributionFieldsErrorMessage(job)
-    }
+        ResultObject newJobResultObject = new ResultObject(
+                data: new ResourceObject(
+                        attributes: job
+                )
+        )
 
-    private checkInvalidLaborDistributionFieldsErrorMessage(JobObject job) {
-        checkCreateJobErrorMessageResponse(job,
-                "For each labor distribution, you must either specify an accountIndexCode, " +
-                        "or a combination of the fundCode, organizationCode, accountCode, " +
-                        "programCode, and activityCode.")
+        PersonsResource personsResource = getPersonsResourceWithGoodMockDAOs()
+        Response response = personsResource.createJob("hello", newJobResultObject)
+
+        checkValidResponse(response, 202, job)
     }
 
     @Test
@@ -719,6 +721,7 @@ class PersonsResourceTest {
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
             isValidAccountCode { String accountCode -> false }
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> true }
@@ -730,7 +733,7 @@ class PersonsResourceTest {
 
         JobObject job = fakeJob
         job.laborDistribution[0].with {
-            accountIndexCode = null
+            accountIndexCode = 'example'
             fundCode = 'example'
             organizationCode = 'example'
             accountCode = 'example'
@@ -759,6 +762,7 @@ class PersonsResourceTest {
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
             isValidAccountCode { String accountCode -> true }
             isValidActivityCode { String activityCode -> false }
             isValidProgramCode { String programCode -> true }
@@ -767,7 +771,7 @@ class PersonsResourceTest {
 
         JobObject job = fakeJob
         job.laborDistribution[0].with {
-            accountIndexCode = null
+            accountIndexCode = 'example'
             fundCode = 'example'
             organizationCode = 'example'
             accountCode = 'example'
@@ -815,7 +819,7 @@ class PersonsResourceTest {
 
         JobObject job = fakeJob
         job.laborDistribution[0].with {
-            accountIndexCode = null
+            accountIndexCode = 'example'
             fundCode = 'example'
             organizationCode = badOrganizationCode
             accountCode = 'example'
@@ -847,6 +851,7 @@ class PersonsResourceTest {
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
             isValidAccountCode { String accountCode -> true }
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> false }
@@ -855,7 +860,7 @@ class PersonsResourceTest {
 
         JobObject job = fakeJob
         job.laborDistribution[0].with {
-            accountIndexCode = null
+            accountIndexCode = 'example'
             fundCode = 'example'
             organizationCode = 'example'
             accountCode = 'example'
@@ -887,6 +892,7 @@ class PersonsResourceTest {
             isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
             isValidAccountCode { String accountCode -> true }
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> true }
@@ -895,7 +901,7 @@ class PersonsResourceTest {
 
         JobObject job = fakeJob
         job.laborDistribution[0].with {
-            accountIndexCode = null
+            accountIndexCode = 'example'
             fundCode = 'example'
             organizationCode = 'example'
             accountCode = 'example'

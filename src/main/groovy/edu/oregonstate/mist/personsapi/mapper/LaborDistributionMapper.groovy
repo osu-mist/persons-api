@@ -17,6 +17,7 @@ public class LaborDistributionMapper implements ResultSetMapper<LaborDistributio
                 accountCode: rs.getString('ACCOUNT_CODE'),
                 programCode: rs.getString('PROGRAM_CODE'),
                 activityCode: rs.getString('ACTIVITY_CODE'),
+                locationCode: rs.getString('LOCATION_CODE'),
                 distributionPercent: rs.getBigDecimal('DISTRIBUTION_PERCENT')
         )
     }
