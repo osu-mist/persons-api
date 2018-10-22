@@ -41,6 +41,8 @@ class PersonsResource extends Resource {
     private final Integer maxImageWidth = 2000
     private final Integer maxIDListLimit = 50 //The max number of IDs retrieved in a single request
 
+    private final String notValidErrorPhrase = "is not a valid"
+
     PersonsResource(PersonsDAO personsDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
                     PersonsWriteDAO personsWriteDAO,
@@ -341,17 +343,18 @@ class PersonsResource extends Resource {
 
         if (job.positionNumber &&
                 !personsDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
-            addBadRequest("${job.positionNumber} is not a valid position number " +
+            addBadRequest("${job.positionNumber} $notValidErrorPhrase position number " +
                     "for the given begin date.")
         }
 
         if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
-            addBadRequest("${job.locationID} is not a valid location ID.")
+            addBadRequest("${job.locationID} $notValidErrorPhrase location ID.")
         }
 
         if (job.timesheetOrganizationCode && !personsDAO.isValidOrganizationCode(
                 job.timesheetOrganizationCode)) {
-            addBadRequest("${job.timesheetOrganizationCode} is not a valid organization code.")
+            addBadRequest("${job.timesheetOrganizationCode} $notValidErrorPhrase " +
+                    "organization code.")
         }
 
         if (job.laborDistribution) {
@@ -375,28 +378,32 @@ class PersonsResource extends Resource {
                 if (!it.accountIndexCode ||
                         !personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
                     //accountIndexCode is required
-                    addBadRequest("${it.accountIndexCode} is not a valid accountIndexCode.")
+                    addBadRequest("${it.accountIndexCode} $notValidErrorPhrase accountIndexCode.")
                 }
 
                 if (it.accountCode && !personsDAO.isValidAccountCode(it.accountCode)) {
-                    addBadRequest("${it.accountCode} is not a valid accountCode.")
+                    addBadRequest("${it.accountCode} $notValidErrorPhrase accountCode.")
                 }
 
                 if (it.activityCode && !personsDAO.isValidActivityCode(it.activityCode)) {
-                    addBadRequest("${it.activityCode} is not a valid activityCode.")
+                    addBadRequest("${it.activityCode} $notValidErrorPhrase activityCode.")
                 }
 
                 if (it.organizationCode &&
                         !personsDAO.isValidOrganizationCode(it.organizationCode)) {
-                    addBadRequest("${it.organizationCode} is not a valid organizationCode.")
+                    addBadRequest("${it.organizationCode} $notValidErrorPhrase organizationCode.")
                 }
 
                 if (it.programCode && !personsDAO.isValidProgramCode(it.programCode)) {
-                    addBadRequest("${it.programCode} is not a valid programCode.")
+                    addBadRequest("${it.programCode} $notValidErrorPhrase programCode.")
                 }
 
                 if (it.fundCode && !personsDAO.isValidFundCode(it.fundCode)) {
-                    addBadRequest("${it.fundCode} is not a valid fundCode.")
+                    addBadRequest("${it.fundCode} $notValidErrorPhrase fundCode.")
+                }
+
+                if (it.locationCode && !personsDAO.isValidLocationCode(it.locationCode)) {
+                    addBadRequest("${it.locationCode} $notValidErrorPhrase locationCode.")
                 }
             }
 

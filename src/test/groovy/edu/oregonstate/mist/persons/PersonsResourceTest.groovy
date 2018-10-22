@@ -94,6 +94,7 @@ class PersonsResourceTest {
                         accountCode: null,
                         programCode: null,
                         activityCode: null,
+                        locationCode: null,
                         distributionPercent: 100
                 )]
         )
@@ -726,6 +727,7 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> true }
             isValidFundCode { String fundCode -> true }
+            isValidLocationCode { String locationCode -> true }
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -739,6 +741,7 @@ class PersonsResourceTest {
             accountCode = 'example'
             programCode = 'example'
             activityCode = 'example'
+            locationCode = 'example'
         }
 
         checkErrorResponse(
@@ -767,6 +770,7 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> false }
             isValidProgramCode { String programCode -> true }
             isValidFundCode { String fundCode -> true }
+            isValidLocationCode { String locationCode -> true }
         }
 
         JobObject job = fakeJob
@@ -777,6 +781,7 @@ class PersonsResourceTest {
             accountCode = 'example'
             programCode = 'example'
             activityCode = 'example'
+            locationCode = 'example'
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -815,6 +820,7 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> true }
             isValidFundCode { String fundCode -> true }
+            isValidLocationCode { String locationCode -> true }
         }
 
         JobObject job = fakeJob
@@ -825,6 +831,7 @@ class PersonsResourceTest {
             accountCode = 'example'
             programCode = 'example'
             activityCode = 'example'
+            locationCode = 'example'
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -856,6 +863,7 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> false }
             isValidFundCode { String fundCode -> true }
+            isValidLocationCode { String locationCode -> true }
         }
 
         JobObject job = fakeJob
@@ -866,6 +874,7 @@ class PersonsResourceTest {
             accountCode = 'example'
             programCode = 'example'
             activityCode = 'example'
+            locationCode = 'example'
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -897,6 +906,7 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> true }
             isValidFundCode { String fundCode -> false }
+            isValidLocationCode { String locationCode -> true }
         }
 
         JobObject job = fakeJob
@@ -907,6 +917,7 @@ class PersonsResourceTest {
             accountCode = 'example'
             programCode = 'example'
             activityCode = 'example'
+            locationCode = 'example'
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -918,6 +929,49 @@ class PersonsResourceTest {
                         new ResultObject(data: new ResourceObject(attributes: job))),
                 400,
                 "${fakeJob.laborDistribution[0].fundCode} is not a valid fundCode."
+        )
+    }
+
+    @Test
+    void invalidLocationCode() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            isValidSupervisorPosition { Date employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
+            }
+            isValidPositionNumber { String positionNumber, Date jobBeginDate -> true }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> true }
+            isValidLocationCode { String locationCode -> false }
+        }
+
+        JobObject job = fakeJob
+        job.laborDistribution[0].with {
+            accountIndexCode = 'example'
+            fundCode = 'example'
+            organizationCode = 'example'
+            accountCode = 'example'
+            programCode = 'example'
+            activityCode = 'example'
+            locationCode = 'example'
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.createJob(
+                        "123",
+                        new ResultObject(data: new ResourceObject(attributes: job))),
+                400,
+                "${fakeJob.laborDistribution[0].locationCode} is not a valid locationCode."
         )
     }
 
