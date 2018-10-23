@@ -133,6 +133,8 @@ paths:
             $ref: '#/definitions/Error'
     post:
       description: Create a job record for a person
+      tags:
+        - jobs
       operationId: postJob
       parameters:
         - name: job
@@ -140,7 +142,7 @@ paths:
           description: Result object for a job
           required: true
           schema:
-            $ref: '#/definitions/JobResultObject'
+            $ref: '#/definitions/NewJobResultObject'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
@@ -339,7 +341,29 @@ definitions:
     properties:
       data:
         $ref: "#/definitions/JobResourceObject"
+  NewJobResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/NewJobResourceObject"
   JobResourceObject:
+    properties:
+      id:
+        type: string
+        description: Uniquely identifies a job record for the given person.
+        example: C12345-00
+      type:
+        $ref: "#/definitions/JobType"
+      links:
+        $ref: "#/definitions/SelfLink"
+      attributes:
+        $ref: "#/definitions/JobAttributes"
+  NewJobResourceObject:
+    properties:
+      type:
+        $ref: "#/definitions/JobType"
+      attributes:
+        $ref: "#/definitions/JobAttributes"
+  JobAttributes:
     required:
       - positionNumber
       - beginDate
@@ -347,179 +371,177 @@ definitions:
       - supervisorPositionNumber
       - effectiveDate
     properties:
-      id:
+      positionNumber:
         type: string
-        description: Uniquely identifies a job record for the given person.
-        example: C12345-00
-      type:
+        description: Identifies a position
+        example: C12345
+      suffix:
         type: string
-        example: job
-      links:
-          $ref: "#/definitions/SelfLink"
-      attributes:
-        properties:
-          positionNumber:
-            type: string
-            description: Identifies a position
-            example: C12345
-          suffix:
-            type: string
-            description: |
-              Used to uniquely identify a job record for persons who have
-              multiple jobs that share the same position number.
-          effectiveDate:
-            type: string
-            format: date
-            description: The date this job assignment is effective.
-            example: "2018-12-31"
-          beginDate:
-            type: string
-            format: date
-            description: Begin date of job.
-            example: "2018-12-31"
-          endDate:
-            type: string
-            format: date
-            description: End date of job.
-            example: "2019-01-01"
-          accruesLeave:
-            type: boolean
-            description: If true, the job accrues leave.
-          contractBeginDate:
-            type: string
-            format: date
-            description: The date the contract begins.
-            example: "2018-12-31"
-          contractEndDate:
-            type: string
-            format: date
-            description: The date the contract ends.
-            example: "2018-12-31"
-          locationID:
-            type: string
-            description: Location ID of where job will be performed.
-          status:
-            type: string
-            description: Job status
-            enum:
-              - Active
-              - Leave without pay but with benefits
-              - Leave without pay and benefits
-              - Leave with full pay and benefits
-              - Leave with partial pay and benefits
-              - Terminated
-            example: Active
-          description:
-            type: string
-            description: Description of job
-          personnelChangeDate:
-            type: string
-            format: date
-            description: Date the last change was made to the job record.
-            example: "2018-12-31"
-          changeReasonCode:
-            type: string
-            description: The reason the last change was made to the job record.
-          fullTimeEquivalency:
-            type: number
-            format: float
-            description: Full time eqivalency where full time = 1
-            example: 0.49
-          appointmentPercent:
-            type: number
-            format: float
-            description: FTE presented as a whole percentage.
-            example: 49
-          salaryStep:
-            type: string
-            format: integer
-            example: "1"
-          salaryGroupCode:
-            type: string
-          strsAssignmentCode:
-            type: string
-          supervisorOsuID:
-            type: string
-            description: OSU ID of the supervisor for the job.
-          supervisorPositionNumber:
-            type: string
-            description: Position number of the supervisor.
-          supervisorSuffix:
-            type: string
-            description: Suffix of the supervisor
-          timesheetOrganizationCode:
-            type: string
-            description: Organization (department) code tied to the job record.
-          hourlyRate:
-            type: number
-            format: float
-            description: Hourly rate of job
-            example: 12.85
-          hoursPerPay:
-            type: number
-            format: float
-            description: Hours per payment for job.
-            example: 173.33
-          assignmentSalary:
-            type: number
-            format: float
-            description: The salary to be paid each pay period.
-            example: 1670.83
-          paysPerYear:
-            type: number
-            format: float
-            description: The number of pays per calendar year.
-          employeeClassificationCode:
-            type: string
-          employerCode:
-            type: string
-            description: Employer identification code.
-          annualSalary:
-            type: number
-            format: float
-            example: 20050.35
-          earnCodeEffectiveDate:
-            type: string
-            format: date
-            description: The date the earnCode became effective for this job.
-            example: "2018-12-31"
-          earnCode:
-            type: string
-            description: Default earnings code attached to the job and used on timesheet.
-          earnCodeHours:
-            type: number
-            format: float
-            description: Hours/units defaulted on timesheets for earnCode.
-          earnCodeShift:
-            type: string
-            description: Shift code used as a default on timesheet for earnCode.
-          laborDistribution:
-            type: array
-            items:
-              properties:
-                effectiveDate:
-                  type: string
-                  format: date
-                  description: Date this labor distribution becomes effective.
-                  example: "2018-12-31"
-                accountIndexCode:
-                  type: string
-                  example: ABC123
-                fundCode:
-                  type: string
-                organizationCode:
-                  type: string
-                accountCode:
-                  type: string
-                programCode:
-                  type: string
-                activityCode:
-                  type: string
-                distributionPercent:
-                  type: number
-                  format: float
-                  description: Percentage of labor applied to this fund.
-                  example: 49.9
+        description: |
+          Used to uniquely identify a job record for persons who have
+          multiple jobs that share the same position number.
+      effectiveDate:
+        type: string
+        format: date
+        description: The date this job assignment is effective.
+        example: "2018-12-31"
+      beginDate:
+        type: string
+        format: date
+        description: Begin date of job.
+        example: "2018-12-31"
+      endDate:
+        type: string
+        format: date
+        description: End date of job.
+        example: "2019-01-01"
+      accruesLeave:
+        type: boolean
+        description: If true, the job accrues leave.
+      contractBeginDate:
+        type: string
+        format: date
+        description: The date the contract begins.
+        example: "2018-12-31"
+      contractEndDate:
+        type: string
+        format: date
+        description: The date the contract ends.
+        example: "2018-12-31"
+      locationID:
+        type: string
+        description: Location ID of where job will be performed.
+      status:
+        type: string
+        description: Job status
+        enum:
+          - Active
+          - Leave without pay but with benefits
+          - Leave without pay and benefits
+          - Leave with full pay and benefits
+          - Leave with partial pay and benefits
+          - Terminated
+        example: Active
+      description:
+        type: string
+        description: Description of job
+      personnelChangeDate:
+        type: string
+        format: date
+        description: Date the last change was made to the job record.
+        example: "2018-12-31"
+      changeReasonCode:
+        type: string
+        description: The reason the last change was made to the job record.
+      fullTimeEquivalency:
+        type: number
+        format: float
+        description: Full time eqivalency where full time = 1
+        example: 0.49
+      appointmentPercent:
+        type: number
+        format: float
+        description: FTE presented as a whole percentage.
+        example: 49
+      salaryStep:
+        type: string
+        format: integer
+        example: "1"
+      salaryGroupCode:
+        type: string
+      strsAssignmentCode:
+        type: string
+      supervisorOsuID:
+        type: string
+        description: OSU ID of the supervisor for the job.
+      supervisorPositionNumber:
+        type: string
+        description: Position number of the supervisor.
+      supervisorSuffix:
+        type: string
+        description: Suffix of the supervisor
+      timesheetOrganizationCode:
+        type: string
+        description: Organization (department) code tied to the job record.
+      hourlyRate:
+        type: number
+        format: float
+        description: Hourly rate of job
+        example: 12.85
+      hoursPerPay:
+        type: number
+        format: float
+        description: Hours per payment for job.
+        example: 173.33
+      assignmentSalary:
+        type: number
+        format: float
+        description: The salary to be paid each pay period.
+        example: 1670.83
+      paysPerYear:
+        type: number
+        format: float
+        description: The number of pays per calendar year.
+      employeeClassificationCode:
+        type: string
+      employerCode:
+        type: string
+        description: Employer identification code.
+      annualSalary:
+        type: number
+        format: float
+        example: 20050.35
+      earnCodeEffectiveDate:
+        type: string
+        format: date
+        description: The date the earnCode became effective for this job.
+        example: "2018-12-31"
+      earnCode:
+        type: string
+        description: Default earnings code attached to the job and used on timesheet.
+      earnCodeHours:
+        type: number
+        format: float
+        description: Hours/units defaulted on timesheets for earnCode.
+      earnCodeShift:
+        type: string
+        description: Shift code used as a default on timesheet for earnCode.
+      laborDistribution:
+        type: array
+        items:
+          required:
+            - effectiveDate
+            - accountIndexCode
+            - distributionPercent
+          properties:
+            effectiveDate:
+              type: string
+              format: date
+              description: Date this labor distribution becomes effective.
+              example: "2018-12-31"
+            accountIndexCode:
+              type: string
+              example: ABC123
+            fundCode:
+              type: string
+            organizationCode:
+              type: string
+            accountCode:
+              type: string
+            programCode:
+              type: string
+            activityCode:
+              type: string
+            locationCode:
+              type: string
+            distributionPercent:
+              type: number
+              format: float
+              description: Percentage of labor applied to this fund.
+              example: 49.9
+  JobType:
+    type: string
+    example: job
   MealPlansResultObject:
     properties:
       data:

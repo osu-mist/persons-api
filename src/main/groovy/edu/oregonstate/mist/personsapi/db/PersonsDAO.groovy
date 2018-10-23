@@ -34,6 +34,7 @@ public interface PersonsDAO extends Closeable {
                                               String supervisorPositionNumber,
                                       @Bind('supervisorSuffix') String supervisorSuffix)
 
+    // Validate location ID that represents a physical location a job is performed
     @SqlQuery(AbstractPersonsDAO.validateLocationID)
     Boolean isValidLocation(@Bind('locationID') String locationID)
 
@@ -54,6 +55,10 @@ public interface PersonsDAO extends Closeable {
 
     @SqlQuery(AbstractPersonsDAO.validateFundCode)
     Boolean isValidFundCode(@Bind('fundCode') String fundCode)
+
+    // Validate financial location codes for labor distributions
+    @SqlQuery(AbstractPersonsDAO.validateLocationCode)
+    Boolean isValidLocationCode(@Bind('locationCode') String locationCode)
 
     @SqlQuery(AbstractPersonsDAO.getPersons)
     @Mapper(PersonMapper)

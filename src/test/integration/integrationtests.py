@@ -213,16 +213,13 @@ class TestStringMethods(unittest.TestCase):
                                              field + " is required for each "
                                                      "labor distribution")
 
-        # invalid combination (non-null accountIndexCode + non-null values
-        # for other fields)
-        self.validate_labor_distribution(test_job, "accountIndexCode",
-                                         "nonNullValue",
-                                         "you must either specify an "
-                                         "accountIndexCode, or a combination")
+        # account index code is always required
+        self.validate_labor_distribution(test_job, "accountIndexCode", None,
+                                         "null is not a valid accountIndexCode.")
 
         # invalid fields
         invalid_fields = ["accountIndexCode", "accountCode", "activityCode",
-                          "organizationCode", "programCode", "fundCode"]
+                          "organizationCode", "programCode", "fundCode", "locationCode"]
         for field in invalid_fields:
             self.validate_labor_distribution(test_job, field, "badFieldName",
                                              "is not a valid " + field)

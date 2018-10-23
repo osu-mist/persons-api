@@ -41,6 +41,8 @@ class PersonsResource extends Resource {
     private final Integer maxImageWidth = 2000
     private final Integer maxIDListLimit = 50 //The max number of IDs retrieved in a single request
 
+    private final String notValidErrorPhrase = "is not a valid"
+
     PersonsResource(PersonsDAO personsDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
                     PersonsWriteDAO personsWriteDAO,
@@ -341,71 +343,67 @@ class PersonsResource extends Resource {
 
         if (job.positionNumber &&
                 !personsDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
-            addBadRequest("${job.positionNumber} is not a valid position number " +
+            addBadRequest("${job.positionNumber} $notValidErrorPhrase position number " +
                     "for the given begin date.")
         }
 
         if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
-            addBadRequest("${job.locationID} is not a valid location ID.")
+            addBadRequest("${job.locationID} $notValidErrorPhrase location ID.")
         }
 
         if (job.timesheetOrganizationCode && !personsDAO.isValidOrganizationCode(
                 job.timesheetOrganizationCode)) {
-            addBadRequest("${job.timesheetOrganizationCode} is not a valid organization code.")
+            addBadRequest("${job.timesheetOrganizationCode} $notValidErrorPhrase " +
+                    "organization code.")
         }
 
         if (job.laborDistribution) {
             BigDecimal totalDistributionPercent = 0
             boolean missingDistributionPercent = false
             boolean missingEffectiveDate = false
-            boolean invalidFieldCombination = false
 
             job.laborDistribution.each {
                 if (it.distributionPercent) {
+                    //validate the total later
                     totalDistributionPercent += it.distributionPercent
                 } else {
                     //each labor distribution must have a distribution percent
                     missingDistributionPercent = true
                 }
 
-                if (!it.effectiveDate) {
-                    //each labor distribution must have an effective date
-                    missingEffectiveDate = true
-                }
+                //each labor distribution must have an effective date
+                //no need to validate the date format here. jackson does that earlier
+                missingEffectiveDate = !it.effectiveDate ? true : missingEffectiveDate
 
-                boolean someFundingFieldsIncluded = it.accountCode || it.activityCode ||
-                        it.organizationCode || it.programCode || it.fundCode
-
-                boolean allFundingFieldsIncluded = it.accountCode && it.activityCode &&
-                        it.organizationCode && it.programCode && it.fundCode
-
-                invalidFieldCombination = (it.accountIndexCode && someFundingFieldsIncluded) ||
-                        (!it.accountIndexCode && !allFundingFieldsIncluded)
-
-                if (it.accountIndexCode &&
+                if (!it.accountIndexCode ||
                         !personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
-                    addBadRequest("${it.accountIndexCode} is not a valid accountIndexCode.")
+                    //accountIndexCode is required
+                    addBadRequest("${it.accountIndexCode} $notValidErrorPhrase accountIndexCode.")
                 }
 
                 if (it.accountCode && !personsDAO.isValidAccountCode(it.accountCode)) {
-                    addBadRequest("${it.accountCode} is not a valid accountCode.")
+                    addBadRequest("${it.accountCode} $notValidErrorPhrase accountCode.")
                 }
 
                 if (it.activityCode && !personsDAO.isValidActivityCode(it.activityCode)) {
-                    addBadRequest("${it.activityCode} is not a valid activityCode.")
+                    addBadRequest("${it.activityCode} $notValidErrorPhrase activityCode.")
                 }
 
                 if (it.organizationCode &&
                         !personsDAO.isValidOrganizationCode(it.organizationCode)) {
-                    addBadRequest("${it.organizationCode} is not a valid organizationCode.")
+                    addBadRequest("${it.organizationCode} $notValidErrorPhrase organizationCode.")
                 }
 
                 if (it.programCode && !personsDAO.isValidProgramCode(it.programCode)) {
-                    addBadRequest("${it.programCode} is not a valid programCode.")
+                    addBadRequest("${it.programCode} $notValidErrorPhrase programCode.")
                 }
 
                 if (it.fundCode && !personsDAO.isValidFundCode(it.fundCode)) {
-                    addBadRequest("${it.fundCode} is not a valid fundCode.")
+                    addBadRequest("${it.fundCode} $notValidErrorPhrase fundCode.")
+                }
+
+                if (it.locationCode && !personsDAO.isValidLocationCode(it.locationCode)) {
+                    addBadRequest("${it.locationCode} $notValidErrorPhrase locationCode.")
                 }
             }
 
@@ -421,14 +419,7 @@ class PersonsResource extends Resource {
                 it.effectiveDate.atStartOfDay() }.unique().size() > 1) {
                 addBadRequest("effectiveDate must be the same for each labor distribution.")
             }
-
-            if (invalidFieldCombination) {
-                addBadRequest("For each labor distribution, you must either specify an " +
-                    "accountIndexCode, or a combination of the fundCode, organizationCode, " +
-                    "accountCode, programCode, and activityCode.")
-            }
         }
-
         errors
     }
 

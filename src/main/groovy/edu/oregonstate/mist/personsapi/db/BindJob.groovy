@@ -64,6 +64,7 @@ public @interface BindJob {
                     q.bind("laborAccountCodes", labor.accountCodes)
                     q.bind("laborProgramCodes", labor.programCodes)
                     q.bind("laborActivityCodes", labor.activityCodes)
+                    q.bind("laborLocationCodes", labor.locationCodes)
                     q.bind("laborDistributionPercentages", labor.distributionPercentages)
                 }
             }
