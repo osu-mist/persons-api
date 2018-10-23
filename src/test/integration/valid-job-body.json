@@ -38,12 +38,13 @@
       "laborDistribution": [
         {
           "effectiveDate": "2018-12-31",
-          "accountIndexCode": null,
+          "accountIndexCode": "string",
           "fundCode": "string",
           "organizationCode": "string",
           "accountCode": "string",
           "programCode": "string",
           "activityCode": "string",
+          "locationCode": "string",
           "distributionPercent": 49.9
         }
       ]
