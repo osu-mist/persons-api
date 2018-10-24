@@ -71,6 +71,7 @@ class JobObject {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     Date contractEndDate
 
+    String contractType
     String locationID
     String status
 
