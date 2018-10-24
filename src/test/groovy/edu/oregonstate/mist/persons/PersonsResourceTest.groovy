@@ -62,6 +62,7 @@ class PersonsResourceTest {
                 accruesLeave: true,
                 contractBeginDate: sampleDate,
                 contractEndDate: null,
+                contractType: "foo",
                 locationID: '1A',
                 status: 'Active',
                 description: 'Fake Programmer',

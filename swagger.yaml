@@ -408,6 +408,9 @@ definitions:
         format: date
         description: The date the contract ends.
         example: "2018-12-31"
+      contractType:
+        type: string
+        description: Contract type code/ID.
       locationID:
         type: string
         description: Location ID of where job will be performed.

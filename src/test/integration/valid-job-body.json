@@ -10,6 +10,7 @@
       "accruesLeave": true,
       "contractBeginDate": "2018-12-31",
       "contractEndDate": "2018-12-31",
+      "contractType": "string",
       "locationID": "string",
       "status": "Active",
       "description": "string",
