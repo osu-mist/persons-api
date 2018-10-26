@@ -33,13 +33,13 @@ class JobObject {
     String suffix
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date effectiveDate
+    LocalDate effectiveDate
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date beginDate
+    LocalDate beginDate
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date endDate
+    LocalDate endDate
 
     Boolean accruesLeave
 
@@ -66,10 +66,10 @@ class JobObject {
     }
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date contractBeginDate
+    LocalDate contractBeginDate
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date contractEndDate
+    LocalDate contractEndDate
 
     String contractType
     String locationID
@@ -93,7 +93,7 @@ class JobObject {
     String description
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date personnelChangeDate
+    LocalDate personnelChangeDate
 
     String changeReasonCode
 
@@ -116,7 +116,7 @@ class JobObject {
     BigDecimal annualSalary
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    Date earnCodeEffectiveDate
+    LocalDate earnCodeEffectiveDate
 
     String earnCode
     BigDecimal earnCodeHours

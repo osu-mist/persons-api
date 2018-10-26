@@ -18,6 +18,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.Mapper
 import org.skife.jdbi.v2.unstable.BindIn
 
 import java.sql.Blob
+import java.time.LocalDate
 
 public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
@@ -25,10 +26,10 @@ public interface PersonsDAO extends Closeable {
 
     @SqlQuery(AbstractPersonsDAO.validatePositionNumber)
     Boolean isValidPositionNumber(@Bind('positionNumber') String positionNumber,
-                                  @Bind('jobBeginDate') Date jobBeginDate)
+                                  @Bind('jobBeginDate') LocalDate jobBeginDate)
 
     @SqlQuery(AbstractPersonsDAO.validateSupervisorPosition)
-    Boolean isValidSupervisorPosition(@Bind('employeeBeginDate') Date employeeBeginDate,
+    Boolean isValidSupervisorPosition(@Bind('employeeBeginDate') LocalDate employeeBeginDate,
                                       @Bind('supervisorOsuID') String supervisorOsuID,
                                       @Bind('supervisorPositionNumber')
                                               String supervisorPositionNumber,
