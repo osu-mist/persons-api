@@ -458,7 +458,7 @@ if __name__ == '__main__':
     config_data = utils.load_config(args.inputfile)
     api_url = config_data['api_url']
 
-    not_valid_osu_id = '999999999'
+    not_valid_osu_id = '999999998'
 
     # person with ids
     osu_id = config_data['ids_person']['osu_id']
