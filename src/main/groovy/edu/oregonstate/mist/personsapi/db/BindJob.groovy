@@ -57,6 +57,10 @@ public @interface BindJob {
 
                     LaborDistributionForDb labor = job.laborDistrubtionForDb
 
+                    println("labor effective dates: " + labor.effectiveDates)
+                    println("job effectiveDate: " + job.effectiveDate)
+                    println("job beginDate: " + job.beginDate)
+                    
                     q.bind("laborCount", labor.count)
                     q.bind("laborEffectiveDates", labor.effectiveDates)
                     q.bind("laborAccountIndexCodes", labor.accountIndexCodes)
