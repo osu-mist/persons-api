@@ -264,6 +264,8 @@ class PersonsResourceTest {
                 String supervisorPositionNumber, String supervisorSuffix -> true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -440,6 +442,15 @@ class PersonsResourceTest {
     }
 
     @Test
+    void jobBeginDateAndEffectiveDateMustMatch() {
+        JobObject badDateJob = fakeJob
+        fakeJob.beginDate = LocalDate.parse('2018-01-01')
+        fakeJob.effectiveDate = LocalDate.parse('2017-01-01')
+        checkCreateJobErrorMessageResponse(badDateJob, "Begin date and effective date must " +
+                "match for new jobs.")
+    }
+
+    @Test
     void fteMustBeWithinRange() {
         JobObject badFteJob = fakeJob
         [-0.5, 1.5].each {
@@ -481,6 +492,8 @@ class PersonsResourceTest {
                 }
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -510,6 +523,8 @@ class PersonsResourceTest {
                 false
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -542,6 +557,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> false }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -562,6 +579,38 @@ class PersonsResourceTest {
     }
 
     @Test
+    void jobAlreadyExists() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            isValidSupervisorPosition { LocalDate employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
+            }
+            isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> true }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.createJob(
+                        "123",
+                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                400,
+                "Person already has a non-terminated job for the given effective " +
+                        "date, position, and suffix."
+        )
+    }
+
+    @Test
     void invalidLocationID() {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
@@ -571,6 +620,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> false }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -600,6 +651,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> false }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -629,6 +682,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
@@ -694,6 +749,8 @@ class PersonsResourceTest {
                                         String supervisorPositionNumber, String supervisorSuffix ->
                 true
             }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
@@ -722,6 +779,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -765,6 +824,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -809,6 +870,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode ->
                 if (organizationCode == badOrganizationCode) {
@@ -858,6 +921,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -901,6 +966,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -944,6 +1011,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -1007,6 +1076,8 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
@@ -1052,6 +1123,65 @@ class PersonsResourceTest {
                         new ResultObject(data: new ResourceObject(attributes: fakeJob))),
                 500,
                 "Error creating new job: $personsWriteDAOResponse"
+        )
+    }
+
+    @Test
+    void getJobByIdReturnsNotFoundIfPersonDoesNotExist() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.personExist { String osuID -> null }
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+        Response response = personsResource.getJobById("foo", "bar")
+        checkErrorResponse(response, 404)
+    }
+
+    @Test
+    void getJobByIdReturnsNotFoundIfJobDoesNotExist() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist { String osuID -> "foo" }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
+        }
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+        Response response = personsResource.getJobById("foo", "foo-bar")
+        checkErrorResponse(response, 404)
+    }
+
+    @Test
+    void nonTerminatedJobDoesNotExistForJobUpdate() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
+            isValidSupervisorPosition { LocalDate employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
+            }
+            isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
+                                     String employeePositionNumber, String employeeSuffix -> false }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.updateJob(
+                        "123",
+                        "foo-bar",
+                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                400,
+                "Person does not have a non-terminated job that matches the " +
+                        "position and suffix for the given effective date."
         )
     }
 }

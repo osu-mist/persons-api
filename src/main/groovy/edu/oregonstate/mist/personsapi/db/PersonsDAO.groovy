@@ -28,6 +28,12 @@ public interface PersonsDAO extends Closeable {
     Boolean isValidPositionNumber(@Bind('positionNumber') String positionNumber,
                                   @Bind('jobBeginDate') LocalDate jobBeginDate)
 
+    @SqlQuery(AbstractPersonsDAO.validateEmployeePosition)
+    Boolean nonTerminatedJobExists(@Bind('effectiveDate') LocalDate effectiveDate,
+                                   @Bind('employeeOsuID') String employeeOsuID,
+                                   @Bind('employeePositionNumber') String employeePositionNumber,
+                                   @Bind('employeeSuffix') String employeeSuffix)
+
     @SqlQuery(AbstractPersonsDAO.validateSupervisorPosition)
     Boolean isValidSupervisorPosition(@Bind('employeeBeginDate') LocalDate employeeBeginDate,
                                       @Bind('supervisorOsuID') String supervisorOsuID,
