@@ -431,6 +431,10 @@ class PersonsResource extends Resource {
             addBadRequest("Contract end date must be after begin date.")
         }
 
+        if (!update && job.beginDate && job.effectiveDate && (job.beginDate != job.effectiveDate)) {
+            addBadRequest("Begin date and effective date must match for new jobs.")
+        }
+
         if (job.fullTimeEquivalency &&
                 (job.fullTimeEquivalency > 1 || job.fullTimeEquivalency <= 0)) {
             addBadRequest("Full time equivalency must range from 0 to 1.")

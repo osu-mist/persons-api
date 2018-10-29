@@ -442,6 +442,15 @@ class PersonsResourceTest {
     }
 
     @Test
+    void jobBeginDateAndEffectiveDateMustMatch() {
+        JobObject badDateJob = fakeJob
+        fakeJob.beginDate = LocalDate.parse('2018-01-01')
+        fakeJob.effectiveDate = LocalDate.parse('2017-01-01')
+        checkCreateJobErrorMessageResponse(badDateJob, "Begin date and effective date must " +
+                "match for new jobs.")
+    }
+
+    @Test
     void fteMustBeWithinRange() {
         JobObject badFteJob = fakeJob
         [-0.5, 1.5].each {
