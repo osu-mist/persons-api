@@ -161,6 +161,57 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
+  /persons/{osuID}/jobs/{jobID}:
+    get:
+      description: Get a specific job associated with a person.
+      tags:
+        - jobs
+      operationId: getJob
+      parameters:
+        - $ref: '#/parameters/jobID'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+        - $ref: '#/parameters/authorization'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/JobResultObject'
+        404:
+          description: Person or job not found
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: Update a job record for a person
+      tags:
+        - jobs
+      operationId: putJob
+      parameters:
+        - name: job
+          in: body
+          description: Result object for a job
+          required: true
+          schema:
+            $ref: '#/definitions/NewJobResultObject'
+        - $ref: '#/parameters/jobID'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+        - $ref: '#/parameters/authorization'
+      responses:
+        202:
+          # The backend data source needs to do additional processing with the new job record.
+          # Return a 202 to indicate the record was accepted but not yet created.
+          description: Job record accepted.
+          schema:
+            $ref: '#/definitions/JobResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorArray'
+        404:
+          description: Person or job not found
+          schema:
+            $ref: '#/definitions/Error'
   /persons/{osuID}/image:
     get:
       description: |
@@ -241,6 +292,12 @@ parameters:
     in: path
     required: true
     description: OSU ID of person
+    type: string
+  jobID:
+    name: jobID
+    in: path
+    description: ID of the specific job to be updated
+    required: true
     type: string
   pretty:
     name: pretty
@@ -377,9 +434,12 @@ definitions:
         example: C12345
       suffix:
         type: string
+        # TODO: find a better way to describe different required fields for
+        # a given set of attributes. Suffix is required for PUT but not POST.
         description: |
           Used to uniquely identify a job record for persons who have
           multiple jobs that share the same position number.
+          For updating existing jobs, this field is required.
       effectiveDate:
         type: string
         format: date

@@ -21,6 +21,7 @@ import javax.validation.Valid
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.POST
+import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
@@ -42,6 +43,8 @@ class PersonsResource extends Resource {
     private final Integer maxIDListLimit = 50 //The max number of IDs retrieved in a single request
 
     private final String notValidErrorPhrase = "is not a valid"
+
+    private static String jobIDDelimiter = "-"
 
     PersonsResource(PersonsDAO personsDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
@@ -199,7 +202,7 @@ class PersonsResource extends Resource {
                      @QueryParam('suffix') String suffix) {
         if (personsDAO.personExist(osuID)) {
             List<JobObject> jobs = personsDAO.getJobsById(osuID, positionNumber, suffix)
-            ok(jobResultObject(jobs, osuID)).build()
+            ok(jobsResultObject(jobs, osuID)).build()
         } else {
             notFound().build()
         }
@@ -215,14 +218,54 @@ class PersonsResource extends Resource {
             return notFound().build()
         }
 
-        List<Error> errors = newJobErrors(resultObject)
+        List<Error> errors = newJobErrors(resultObject, osuID, false)
 
         if (errors) {
-            Response.ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
-            return responseBuilder.entity(errors).build()
+            return errorArrayResponse(errors)
         }
 
-        // At this point, the submitted job object is valid. Proceed with posting to message queue.
+        createOrUpdateJobInDB(resultObject, osuID)
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/jobs/{jobID: [0-9a-zA-Z-]+}')
+    Response getJobById(@PathParam('osuID') String osuID,
+                        @PathParam('jobID') String jobID) {
+        if (!personsDAO.personExist(osuID)) {
+            return notFound().build()
+        }
+
+        JobObject job = getJobObject(osuID, jobID)
+
+        if (!job) {
+            notFound().build()
+        } else {
+            ok(jobResultObject(job, osuID)).build()
+        }
+    }
+
+    @Timed
+    @PUT
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/jobs/{jobID: [0-9a-zA-Z-]+}')
+    Response updateJob(@PathParam('osuID') String osuID,
+                       @PathParam('jobID') String jobID,
+                       @Valid ResultObject resultObject) {
+        if (!personsDAO.personExist(osuID) || !getJobObject(osuID, jobID)) {
+            return notFound().build()
+        }
+
+        List<Error> errors = newJobErrors(resultObject, osuID, true)
+
+        if (errors) {
+            return errorArrayResponse(errors)
+        }
+
+        createOrUpdateJobInDB(resultObject, osuID)
+    }
+
+    private Response createOrUpdateJobInDB(ResultObject resultObject, String osuID) {
         JobObject job = JobObject.fromResultObject(resultObject)
 
         String createJobResult = personsWriteDAO.createJob(osuID, job).getString("return_value")
@@ -236,8 +279,66 @@ class PersonsResource extends Resource {
         }
     }
 
-    ResultObject jobResultObject(List<JobObject> jobs, String osuID) {
+    private Response errorArrayResponse(List<Error> errors) {
+        Response.ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
+        responseBuilder.entity(errors).build()
+    }
+
+    private JobObject getJobObject(String osuID, String jobID) {
+        def parsedJobID = parseJobID(jobID)
+
+        String positionNumber = parsedJobID.positionNumber
+        String suffix = parsedJobID.suffix
+
+        if (!positionNumber || !suffix) {
+            return null
+        }
+
+        List<JobObject> job = personsDAO.getJobsById(osuID, positionNumber, suffix)
+
+        if (!job) {
+            null
+        } else {
+            job?.get(0)
+        }
+    }
+
+    /**
+     * Parses a hyphen delimited positionNumber and suffix to a map.
+     * @param jobID
+     * @return
+     */
+    private static Map<String, String> parseJobID(String jobID) {
+        def parsedJobID = [positionNumber: "", suffix: ""]
+
+        // jobID should be in the format of "positionNumber-suffix"
+        def splitJobID = jobID.split(jobIDDelimiter, 2)
+        if (splitJobID.length != 2) {
+            return parsedJobID
+        }
+
+        parsedJobID.positionNumber = splitJobID[0]
+        parsedJobID.suffix = splitJobID[1]
+
+        parsedJobID
+    }
+
+    /**
+     * Joins a positionNumber and suffix into a single hyphen delimited string.
+     * @param positionNumber
+     * @param suffix
+     * @return
+     */
+    private static String joinJobID(String positionNumber, String suffix) {
+        positionNumber + jobIDDelimiter + suffix
+    }
+
+    ResultObject jobsResultObject(List<JobObject> jobs, String osuID) {
         new ResultObject(data: jobs.collect { jobResourceObject(it, osuID)})
+    }
+
+    ResultObject jobResultObject(JobObject job, String osuID) {
+        new ResultObject(data: jobResourceObject(job, osuID))
     }
 
     ResourceObject jobResourceObject(JobObject job, String osuID) {
@@ -245,6 +346,7 @@ class PersonsResource extends Resource {
                 job.positionNumber, job.suffix)
 
         new ResourceObject(
+                id: joinJobID(job.positionNumber, job.suffix),
                 type: 'jobs',
                 attributes: job,
                 links: ['self': personUriBuilder.personJobsUri(
@@ -252,7 +354,7 @@ class PersonsResource extends Resource {
         )
     }
 
-    private List<Error> newJobErrors(ResultObject resultObject) {
+    private List<Error> newJobErrors(ResultObject resultObject, String osuID, Boolean update) {
         List<Error> errors = []
 
         JobObject job
@@ -278,11 +380,11 @@ class PersonsResource extends Resource {
         }
 
         // at this point, we have a job object. Let's validate the fields
-        def requiredFields = ["Position number": job.positionNumber,
-                              "Begin date": job.beginDate,
-                              "Supervisor OSU ID": job.supervisorOsuID,
+        def requiredFields = ["Position number"           : job.positionNumber,
+                              "Begin date"                : job.beginDate,
+                              "Supervisor OSU ID"         : job.supervisorOsuID,
                               "Supervisor position number": job.supervisorPositionNumber,
-                              "Effective date": job.effectiveDate]
+                              "Effective date"            : job.effectiveDate]
 
         requiredFields.findAll { key, value -> !value }.each { key, value ->
             addBadRequest("${key} is required.")
@@ -298,6 +400,22 @@ class PersonsResource extends Resource {
             value && value < 0
         }.each { key, value ->
             addBadRequest("${key} cannot be a negative number.")
+        }
+
+        if (!job.suffix && update) {
+            addBadRequest("Suffix is required when updating an existing job.")
+        } else if (job.suffix && job.positionNumber && job.effectiveDate) {
+            Boolean nonTerminatedJobExists = personsDAO.nonTerminatedJobExists(
+                    job.effectiveDate, osuID, job.positionNumber, job.suffix
+            )
+
+            if (update && !nonTerminatedJobExists) { //check that a job can be updated
+                addBadRequest("Person does not have a non-terminated job that matches the " +
+                        "position and suffix for the given effective date.")
+            } else if (!update && nonTerminatedJobExists) { //check that a job can be created
+                addBadRequest("Person already has a non-terminated job for the given effective " +
+                        "date, position, and suffix.")
+            }
         }
 
         if (!job.isActive()) {
