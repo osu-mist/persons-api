@@ -404,18 +404,11 @@ class PersonsResource extends Resource {
 
         if (!job.suffix && update) {
             addBadRequest("Suffix is required when updating an existing job.")
-        } else if (job.suffix && job.positionNumber && job.effectiveDate) {
-            Boolean nonTerminatedJobExists = personsDAO.nonTerminatedJobExists(
-                    job.effectiveDate, osuID, job.positionNumber, job.suffix
-            )
+        }
 
-            if (update && !nonTerminatedJobExists) { //check that a job can be updated
-                addBadRequest("Person does not have a non-terminated job that matches the " +
-                        "position and suffix for the given effective date.")
-            } else if (!update && nonTerminatedJobExists) { //check that a job can be created
-                addBadRequest("Person already has a non-terminated job for the given effective " +
-                        "date, position, and suffix.")
-            }
+        if (!update && job.positionNumber && job.suffix && personsDAO.getJobsById(
+                osuID, job.positionNumber, job.suffix)) {
+            addBadRequest("Person already has a job with the given position number and suffix.")
         }
 
         if (!job.isActive()) {

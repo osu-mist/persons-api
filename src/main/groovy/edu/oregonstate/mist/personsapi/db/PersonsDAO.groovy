@@ -28,12 +28,6 @@ public interface PersonsDAO extends Closeable {
     Boolean isValidPositionNumber(@Bind('positionNumber') String positionNumber,
                                   @Bind('jobBeginDate') LocalDate jobBeginDate)
 
-    @SqlQuery(AbstractPersonsDAO.validateEmployeePosition)
-    Boolean nonTerminatedJobExists(@Bind('effectiveDate') LocalDate effectiveDate,
-                                   @Bind('employeeOsuID') String employeeOsuID,
-                                   @Bind('employeePositionNumber') String employeePositionNumber,
-                                   @Bind('employeeSuffix') String employeeSuffix)
-
     @SqlQuery(AbstractPersonsDAO.validateSupervisorPosition)
     Boolean isValidSupervisorPosition(@Bind('employeeBeginDate') LocalDate employeeBeginDate,
                                       @Bind('supervisorOsuID') String supervisorOsuID,
@@ -67,15 +61,6 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.validateLocationCode)
     Boolean isValidLocationCode(@Bind('locationCode') String locationCode)
 
-    @SqlQuery(AbstractPersonsDAO.getPersons)
-    @Mapper(PersonMapper)
-    List<PersonObject> getPersons(@Bind('onid') String onid,
-                                  @BindIn(value = 'osuIDs',
-                                          onEmpty = BindIn.EmptyHandling.NULL) List<String> osuIDs,
-                                  @Bind('osuUID') String osuUID,
-                                  @Bind('firstName') String firstName,
-                                  @Bind('lastName') String lastName,
-                                  @Bind('searchOldVersions') Boolean searchOldVersions)
 
     @SqlQuery(AbstractPersonsDAO.getPreviousRecords)
     @Mapper(PreviousRecordMapper)

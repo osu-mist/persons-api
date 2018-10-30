@@ -256,6 +256,7 @@ class PersonsResourceTest {
         def personsStringTemplateDAOStub = getPersonsStringTemplateDAOStub()
 
     }
+
     private StubFor getGoodMockPersonsDAO() {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
@@ -264,8 +265,7 @@ class PersonsResourceTest {
                 String supervisorPositionNumber, String supervisorSuffix -> true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -418,6 +418,43 @@ class PersonsResourceTest {
     }
 
     @Test
+    void suffixIsRequiredForUpdate() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789' }
+            isValidSupervisorPosition { LocalDate employeeBeginDate, String supervisorOsuID,
+                                        String supervisorPositionNumber, String supervisorSuffix ->
+                true
+            }
+            isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
+            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
+            isValidLocation { String locationID -> true }
+            isValidOrganizationCode(2..2) { String organizationCode -> true }
+            isValidAccountIndexCode { String accountIndexCode -> true }
+            isValidAccountCode { String accountCode -> true }
+            isValidActivityCode { String activityCode -> true }
+            isValidProgramCode { String programCode -> true }
+            isValidFundCode { String fundCode -> true }
+            isValidLocationCode { String locationCode -> true }
+        }
+
+        JobObject job = fakeJob
+        job.suffix = null
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.updateJob(
+                        "123",
+                        "foo-bar",
+                        new ResultObject(data: new ResourceObject(attributes: job))),
+                400,
+                "Suffix is required when updating an existing job."
+        )
+    }
+
+    @Test
     void jobMustBeActive() {
         JobObject terminatedJob = fakeJob
         terminatedJob.status = 'Terminated'
@@ -492,8 +529,7 @@ class PersonsResourceTest {
                 }
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -523,8 +559,7 @@ class PersonsResourceTest {
                 false
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -557,8 +592,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> false }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -588,8 +622,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> true }
+            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -605,8 +638,7 @@ class PersonsResourceTest {
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: fakeJob))),
                 400,
-                "Person already has a non-terminated job for the given effective " +
-                        "date, position, and suffix."
+                "Person already has a job with the given position number and suffix."
         )
     }
 
@@ -620,8 +652,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> false }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -651,8 +682,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> false }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -682,8 +712,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
@@ -749,8 +778,7 @@ class PersonsResourceTest {
                                         String supervisorPositionNumber, String supervisorSuffix ->
                 true
             }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
@@ -779,8 +807,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -824,8 +851,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -870,8 +896,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode ->
                 if (organizationCode == badOrganizationCode) {
@@ -921,8 +946,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -966,8 +990,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -1011,8 +1034,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -1076,8 +1098,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
@@ -1152,23 +1173,11 @@ class PersonsResourceTest {
     }
 
     @Test
-    void nonTerminatedJobDoesNotExistForJobUpdate() {
+    void updateJobReturnsNotFoundIfJobDoesNotExist() {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
-            isValidSupervisorPosition { LocalDate employeeBeginDate, String supervisorOsuID,
-                                        String supervisorPositionNumber, String supervisorSuffix ->
-                true
-            }
-            isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
-            isValidLocation { String locationID -> true }
-            isValidOrganizationCode { String organizationCode -> true }
-            isValidAccountIndexCode { String accountIndexCode -> true }
-            isValidAccountCode { String accountCode -> true }
-            isValidActivityCode { String activityCode -> true }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -1179,9 +1188,7 @@ class PersonsResourceTest {
                         "123",
                         "foo-bar",
                         new ResultObject(data: new ResourceObject(attributes: fakeJob))),
-                400,
-                "Person does not have a non-terminated job that matches the " +
-                        "position and suffix for the given effective date."
+                404
         )
     }
 }
