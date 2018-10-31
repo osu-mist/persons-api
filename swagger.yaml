@@ -288,6 +288,29 @@ paths:
           description: Person or meal plan not found
           schema:
             $ref: '#/definitions/Error'
+  /persons/{osuID}/addresses:
+    get:
+      description: Get addresses for a person
+      tags:
+        - addresses
+      operationId: getAddresses
+      parameters:
+        - in: query
+          name: addressType
+          description: Filter by address type. Example 'CM'
+          required: false
+          type: string
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/authorization'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddressesResultObject'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
 parameters:
   osuID:
     name: osuID
@@ -654,6 +677,67 @@ definitions:
             type: string
             description: Description of place the meal plan was last used
             example: "Java II"
+  AddressesResultObject:
+    properties:
+      data:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: Globally unique ID for the address.
+            type:
+              type: string
+              example: addresses
+            attributes:
+              properties:
+                addressType:
+                  type: string
+                  description: Code for the type of address record.
+                  example: CM
+                addressTypeDescription:
+                  type: string
+                  description: Short description of the address type.
+                  example: Current Mailing
+                addressNumber:
+                  type: integer
+                  description: Number used to differentiate to address records of the same type.
+                addressLine1:
+                  type: string
+                  example: "123 Main Street"
+                addressLine2:
+                  type: string
+                  example: "Apartment 123"
+                addressLine3:
+                  type: string
+                addressLine4:
+                  type: string
+                houseNumber:
+                  type: string
+                city:
+                  type: string
+                stateCode:
+                  type: string
+                  description: State code/abbreviation. This could also represent a province.
+                  example: "OR"
+                state:
+                  type: string
+                  description: Human readable state code. This could also represent a province.
+                  example: "Oregon"
+                postalCode:
+                  type: string
+                  example: "97331"
+                countyCode:
+                  type: string
+                  example: "41003"
+                county:
+                  type: string
+                  description: Human readable county.
+                  example: "Benton"
+                lastModified:
+                  type: string
+                  format: date
+                  description: The date this address record was last modified.
   SelfLink:
     properties:
       self:
