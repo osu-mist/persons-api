@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull
 
 class PersonsResourceTest {
     private final URI endpointUri = new URI('https://www.foo.com/')
+    private final String studentEmploymentType = "student"
 
     PersonObject fakePerson
     JobObject fakeJob
@@ -244,18 +245,23 @@ class PersonsResourceTest {
         checkValidResponse(personsResource.getJobs('123456789', null, null), 200, [fakeJob])
     }
 
-    private PersonsResource getPersonsResourceWithGoodMockDAOs() {
+    private PersonsResource getPersonsResourceWithGoodMockDAOsForNewJob() {
         new PersonsResource(
-                getGoodMockPersonsDAO().proxyInstance(),
+                getGoodMockPersonsDAOForNewJob().proxyInstance(),
                 null,
                 getMockPersonsWriteDAO("").proxyInstance(),
                 endpointUri)
     }
 
-    private StubFor getGoodMockPersonsStringTemplateDAO() {
-        def personsStringTemplateDAOStub = getPersonsStringTemplateDAOStub()
-
+    private PersonsResource getPersonsResourceWithGoodMockDAOsForUpdateJob() {
+        new PersonsResource(
+                getGoodMockPersonsDAOForUpdateJob().proxyInstance(),
+                null,
+                getMockPersonsWriteDAO("").proxyInstance(),
+                endpointUri
+        )
     }
+
     private StubFor getGoodMockPersonsDAO() {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
@@ -264,8 +270,6 @@ class PersonsResourceTest {
                 String supervisorPositionNumber, String supervisorSuffix -> true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                String employeePositionNumber, String employeeSuffix -> false }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -273,6 +277,24 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> true }
             isValidFundCode { String fundCode -> true }
+        }
+
+        personsDAOStub
+    }
+
+    private StubFor getGoodMockPersonsDAOForNewJob() {
+        def personsDAOStub = getGoodMockPersonsDAO()
+        personsDAOStub.demand.getJobsById { String osuID, String positionNumber, String suffix ->
+            []
+        }
+
+        personsDAOStub
+    }
+
+    private StubFor getGoodMockPersonsDAOForUpdateJob() {
+        def personsDAOStub = getGoodMockPersonsDAO()
+        personsDAOStub.demand.getJobsById { String osuID, String positionNumber, String suffix ->
+            [fakeJob]
         }
 
         personsDAOStub
@@ -291,9 +313,11 @@ class PersonsResourceTest {
 
     @Test
     void createJobSuccessful() {
-        PersonsResource personsResource = getPersonsResourceWithGoodMockDAOs()
+        PersonsResource personsResource = getPersonsResourceWithGoodMockDAOsForNewJob()
 
-        Response response = personsResource.createJob("hello", fakeJobResultObject)
+        Response response = personsResource.createJob(
+                "hello", fakeJobResultObject, studentEmploymentType
+        )
         checkValidResponse(response, 202, fakeJob)
     }
 
@@ -304,7 +328,9 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(
                 personsDAOStub.proxyInstance(), null, null, endpointUri)
 
-        Response response = personsResource.createJob("foo", new ResultObject())
+        Response response = personsResource.createJob(
+                "foo", new ResultObject(), studentEmploymentType
+        )
         checkErrorResponse(response, 404)
     }
 
@@ -333,7 +359,9 @@ class PersonsResourceTest {
 
         ResultObject badJobResultObject = new ResultObject(data: new ResourceObject(
                 attributes: resourceObjectAttributes))
-        Response response = personsResource.createJob("123456789", badJobResultObject)
+        Response response = personsResource.createJob(
+                "123456789", badJobResultObject,studentEmploymentType
+        )
         checkErrorResponse(response, 400, expectedMessage)
     }
 
@@ -370,8 +398,8 @@ class PersonsResourceTest {
             checkCreateJobErrorMessageResponse(it, "Effective date is required.")
             effectiveDate = sampleDate
 
-            checkValidResponse(getPersonsResourceWithGoodMockDAOs().createJob(
-                    "123", jobResultObject), 202, it)
+            checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
+                    "123", jobResultObject, studentEmploymentType), 202, it)
         }
     }
 
@@ -412,9 +440,28 @@ class PersonsResourceTest {
             checkCreateJobErrorMessageResponse(it, "Pays per year cannot be a negative number.")
             paysPerYear = positiveNumber
 
-            checkValidResponse(getPersonsResourceWithGoodMockDAOs().createJob(
-                    "123", jobResultObject), 202, it)
+            checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
+                    "123", jobResultObject, studentEmploymentType), 202, it)
         }
+    }
+
+    @Test
+    void suffixIsRequiredForUpdate() {
+        JobObject job = fakeJob
+        job.suffix = null
+
+        PersonsResource personsResource = new PersonsResource(
+                getGoodMockPersonsDAOForUpdateJob().proxyInstance(), null, null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.updateJob(
+                        "123",
+                        "foo-bar",
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
+                400,
+                "Suffix is required when updating an existing job."
+        )
     }
 
     @Test
@@ -472,9 +519,10 @@ class PersonsResourceTest {
 
     void checkCreateJobErrorMessageResponse(JobObject job, String expectedMessage) {
         checkErrorResponse(
-                getPersonsResourceWithGoodMockDAOs().createJob(
+                getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 expectedMessage
         )
@@ -492,8 +540,7 @@ class PersonsResourceTest {
                 }
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -507,7 +554,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 400,
                 "Supervisor OSU ID does not exist."
         )
@@ -523,8 +571,7 @@ class PersonsResourceTest {
                 false
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -540,7 +587,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 400,
                 "Supervisor does not have an active position with position number " +
                         "${fakeJob.supervisorPositionNumber} for the given begin date."
@@ -557,8 +605,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> false }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -572,7 +619,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 400,
                 "${fakeJob.positionNumber} is not a valid position number for the given begin date."
         )
@@ -588,8 +636,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> true }
+            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -603,10 +650,10 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 400,
-                "Person already has a non-terminated job for the given effective " +
-                        "date, position, and suffix."
+                "Person already has a job with the given position number and suffix."
         )
     }
 
@@ -620,8 +667,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> false }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -635,7 +681,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 400,
                 "${fakeJob.locationID} is not a valid location ID."
         )
@@ -651,8 +698,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> false }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -666,7 +712,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 400,
                 "${fakeJob.timesheetOrganizationCode} is not a valid organization code."
         )
@@ -682,8 +729,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
             isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
@@ -704,7 +750,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "Total sum of labor distribution percentages must equal 100."
         )
@@ -734,8 +781,10 @@ class PersonsResourceTest {
                 )
         )
 
-        PersonsResource personsResource = getPersonsResourceWithGoodMockDAOs()
-        Response response = personsResource.createJob("hello", newJobResultObject)
+        PersonsResource personsResource = getPersonsResourceWithGoodMockDAOsForNewJob()
+        Response response = personsResource.createJob(
+                "hello", newJobResultObject, studentEmploymentType
+        )
 
         checkValidResponse(response, 202, job)
     }
@@ -749,8 +798,7 @@ class PersonsResourceTest {
                                         String supervisorPositionNumber, String supervisorSuffix ->
                 true
             }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode { String organizationCode -> true }
@@ -763,7 +811,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 400,
                 "${fakeJob.laborDistribution[0].accountIndexCode} is not a valid accountIndexCode."
         )
@@ -779,8 +828,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -808,7 +856,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "${fakeJob.laborDistribution[0].accountCode} is not a valid accountCode."
         )
@@ -824,8 +873,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -853,7 +901,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "${fakeJob.laborDistribution[0].activityCode} is not a valid activityCode."
         )
@@ -870,8 +919,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode ->
                 if (organizationCode == badOrganizationCode) {
@@ -905,7 +953,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "${fakeJob.laborDistribution[0].organizationCode} is not a valid organizationCode."
         )
@@ -921,8 +970,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -950,7 +998,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "${fakeJob.laborDistribution[0].programCode} is not a valid programCode."
         )
@@ -966,8 +1015,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -995,7 +1043,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "${fakeJob.laborDistribution[0].fundCode} is not a valid fundCode."
         )
@@ -1011,8 +1060,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode { String accountIndexCode -> true }
@@ -1040,7 +1088,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "${fakeJob.laborDistribution[0].locationCode} is not a valid locationCode."
         )
@@ -1076,8 +1125,7 @@ class PersonsResourceTest {
                 true
             }
             isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
             isValidLocation { String locationID -> true }
             isValidOrganizationCode(2..2) { String organizationCode -> true }
             isValidAccountIndexCode(2..2) { String accountIndexCode -> true }
@@ -1093,7 +1141,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: job))),
+                        new ResultObject(data: new ResourceObject(attributes: job)),
+                        studentEmploymentType),
                 400,
                 "effectiveDate must be the same for each labor distribution."
         )
@@ -1112,7 +1161,7 @@ class PersonsResourceTest {
         String personsWriteDAOResponse = "Something broke!"
 
         PersonsResource personsResource = new PersonsResource(
-                getGoodMockPersonsDAO().proxyInstance(),
+                getGoodMockPersonsDAOForNewJob().proxyInstance(),
                 null,
                 getMockPersonsWriteDAO(personsWriteDAOResponse).proxyInstance(),
                 endpointUri)
@@ -1120,7 +1169,8 @@ class PersonsResourceTest {
         checkErrorResponse(
                 personsResource.createJob(
                         "123",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
+                        fakeJobResultObject,
+                        studentEmploymentType),
                 500,
                 "Error creating new job: $personsWriteDAOResponse"
         )
@@ -1152,23 +1202,11 @@ class PersonsResourceTest {
     }
 
     @Test
-    void nonTerminatedJobDoesNotExistForJobUpdate() {
+    void updateJobReturnsNotFoundIfJobDoesNotExist() {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> '123456789' }
-            getJobsById { String osuID, String positionNumber, String suffix -> [fakeJob] }
-            isValidSupervisorPosition { LocalDate employeeBeginDate, String supervisorOsuID,
-                                        String supervisorPositionNumber, String supervisorSuffix ->
-                true
-            }
-            isValidPositionNumber { String positionNumber, LocalDate jobBeginDate -> true }
-            nonTerminatedJobExists { LocalDate effectiveDate, String employeeOsuID,
-                                     String employeePositionNumber, String employeeSuffix -> false }
-            isValidLocation { String locationID -> true }
-            isValidOrganizationCode { String organizationCode -> true }
-            isValidAccountIndexCode { String accountIndexCode -> true }
-            isValidAccountCode { String accountCode -> true }
-            isValidActivityCode { String activityCode -> true }
+            getJobsById { String osuID, String positionNumber, String suffix -> [] }
         }
 
         PersonsResource personsResource = new PersonsResource(
@@ -1178,10 +1216,38 @@ class PersonsResourceTest {
                 personsResource.updateJob(
                         "123",
                         "foo-bar",
-                        new ResultObject(data: new ResourceObject(attributes: fakeJob))),
-                400,
-                "Person does not have a non-terminated job that matches the " +
-                        "position and suffix for the given effective date."
+                        fakeJobResultObject,
+                        studentEmploymentType),
+                404
         )
+    }
+
+    @Test
+    void invalidEmploymentTypeReturnsBadRequest() {
+        String expectedMessage = "Invalid employmentType (query parameter). " +
+                "Valid types are: student, graduate"
+
+        List<String> invalidEmploymentTypes = ["Classified", "", null]
+
+        invalidEmploymentTypes.each {
+            checkErrorResponse(
+                    getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
+                            "123456789",
+                            fakeJobResultObject,
+                            it),
+                    400,
+                    expectedMessage
+            )
+
+            checkErrorResponse(
+                    getPersonsResourceWithGoodMockDAOsForUpdateJob().updateJob(
+                            "123",
+                            "foo-bar",
+                            fakeJobResultObject,
+                            it),
+                    400,
+                    expectedMessage
+            )
+        }
     }
 }

@@ -39,12 +39,14 @@ class PersonsResource extends Resource {
     private final PersonsWriteDAO personsWriteDAO
     private PersonUriBuilder personUriBuilder
 
-    private final Integer maxImageWidth = 2000
-    private final Integer maxIDListLimit = 50 //The max number of IDs retrieved in a single request
+    private static final Integer maxImageWidth = 2000
 
-    private final String notValidErrorPhrase = "is not a valid"
+    // The max number of IDs retrieved in a single request
+    private static final Integer maxIDListLimit = 50
 
-    private static String jobIDDelimiter = "-"
+    private static final String notValidErrorPhrase = "is not a valid"
+    private static final String jobIDDelimiter = "-"
+    private static final List<String> validEmploymentTypes = ["student", "graduate"]
 
     PersonsResource(PersonsDAO personsDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
@@ -213,12 +215,13 @@ class PersonsResource extends Resource {
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/jobs')
     Response createJob(@PathParam('osuID') String osuID,
-                       @Valid ResultObject resultObject) {
+                       @Valid ResultObject resultObject,
+                       @QueryParam('employmentType') String employmentType) {
         if (!personsDAO.personExist(osuID)) {
             return notFound().build()
         }
 
-        List<Error> errors = newJobErrors(resultObject, osuID, false)
+        List<Error> errors = newJobErrors(resultObject, osuID, employmentType, false)
 
         if (errors) {
             return errorArrayResponse(errors)
@@ -251,12 +254,13 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/jobs/{jobID: [0-9a-zA-Z-]+}')
     Response updateJob(@PathParam('osuID') String osuID,
                        @PathParam('jobID') String jobID,
-                       @Valid ResultObject resultObject) {
+                       @Valid ResultObject resultObject,
+                       @QueryParam('employmentType') String employmentType) {
         if (!personsDAO.personExist(osuID) || !getJobObject(osuID, jobID)) {
             return notFound().build()
         }
 
-        List<Error> errors = newJobErrors(resultObject, osuID, true)
+        List<Error> errors = newJobErrors(resultObject, osuID, employmentType, true)
 
         if (errors) {
             return errorArrayResponse(errors)
@@ -354,13 +358,21 @@ class PersonsResource extends Resource {
         )
     }
 
-    private List<Error> newJobErrors(ResultObject resultObject, String osuID, Boolean update) {
+    private List<Error> newJobErrors(ResultObject resultObject,
+                                     String osuID,
+                                     String employmentType,
+                                     Boolean update) {
         List<Error> errors = []
 
         JobObject job
 
         def addBadRequest = { String message ->
             errors.add(Error.badRequest(message))
+        }
+
+        if (!validEmploymentTypes.contains(employmentType)) {
+            addBadRequest("Invalid employmentType (query parameter). " +
+                    "Valid types are: ${validEmploymentTypes.join(", ")}")
         }
 
         try {
@@ -404,18 +416,11 @@ class PersonsResource extends Resource {
 
         if (!job.suffix && update) {
             addBadRequest("Suffix is required when updating an existing job.")
-        } else if (job.suffix && job.positionNumber && job.effectiveDate) {
-            Boolean nonTerminatedJobExists = personsDAO.nonTerminatedJobExists(
-                    job.effectiveDate, osuID, job.positionNumber, job.suffix
-            )
+        }
 
-            if (update && !nonTerminatedJobExists) { //check that a job can be updated
-                addBadRequest("Person does not have a non-terminated job that matches the " +
-                        "position and suffix for the given effective date.")
-            } else if (!update && nonTerminatedJobExists) { //check that a job can be created
-                addBadRequest("Person already has a non-terminated job for the given effective " +
-                        "date, position, and suffix.")
-            }
+        if (!update && job.positionNumber && job.suffix && personsDAO.getJobsById(
+                osuID, job.positionNumber, job.suffix)) {
+            addBadRequest("Person already has a job with the given position number and suffix.")
         }
 
         if (!job.isActive()) {

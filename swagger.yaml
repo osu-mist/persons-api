@@ -143,6 +143,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/NewJobResultObject'
+        - $ref: '#/parameters/employmentType'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
@@ -193,6 +194,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/NewJobResultObject'
+        - $ref: '#/parameters/employmentType'
         - $ref: '#/parameters/jobID'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
@@ -299,6 +301,13 @@ parameters:
     description: ID of the specific job to be updated
     required: true
     type: string
+  employmentType:
+    name: employmentType
+    in: query
+    description: The type of employment that the job record should be processed as.
+    required: true
+    type: string
+    enum: [student, graduate]
   pretty:
     name: pretty
     in: query

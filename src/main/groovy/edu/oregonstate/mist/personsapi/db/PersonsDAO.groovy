@@ -3,19 +3,16 @@ package edu.oregonstate.mist.personsapi.db
 import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
-import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PreviousRecord
 import edu.oregonstate.mist.personsapi.mapper.MealPlanMapper
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
-import edu.oregonstate.mist.personsapi.mapper.PersonMapper
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
 import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
 import org.skife.jdbi.v2.sqlobject.Bind
 import org.skife.jdbi.v2.sqlobject.SqlQuery
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper
-import org.skife.jdbi.v2.unstable.BindIn
 
 import java.sql.Blob
 import java.time.LocalDate
@@ -27,12 +24,6 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.validatePositionNumber)
     Boolean isValidPositionNumber(@Bind('positionNumber') String positionNumber,
                                   @Bind('jobBeginDate') LocalDate jobBeginDate)
-
-    @SqlQuery(AbstractPersonsDAO.validateEmployeePosition)
-    Boolean nonTerminatedJobExists(@Bind('effectiveDate') LocalDate effectiveDate,
-                                   @Bind('employeeOsuID') String employeeOsuID,
-                                   @Bind('employeePositionNumber') String employeePositionNumber,
-                                   @Bind('employeeSuffix') String employeeSuffix)
 
     @SqlQuery(AbstractPersonsDAO.validateSupervisorPosition)
     Boolean isValidSupervisorPosition(@Bind('employeeBeginDate') LocalDate employeeBeginDate,
@@ -66,16 +57,6 @@ public interface PersonsDAO extends Closeable {
     // Validate financial location codes for labor distributions
     @SqlQuery(AbstractPersonsDAO.validateLocationCode)
     Boolean isValidLocationCode(@Bind('locationCode') String locationCode)
-
-    @SqlQuery(AbstractPersonsDAO.getPersons)
-    @Mapper(PersonMapper)
-    List<PersonObject> getPersons(@Bind('onid') String onid,
-                                  @BindIn(value = 'osuIDs',
-                                          onEmpty = BindIn.EmptyHandling.NULL) List<String> osuIDs,
-                                  @Bind('osuUID') String osuUID,
-                                  @Bind('firstName') String firstName,
-                                  @Bind('lastName') String lastName,
-                                  @Bind('searchOldVersions') Boolean searchOldVersions)
 
     @SqlQuery(AbstractPersonsDAO.getPreviousRecords)
     @Mapper(PreviousRecordMapper)
