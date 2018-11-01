@@ -1263,10 +1263,18 @@ class PersonsResourceTest {
         String expectedMessage = "Student position numbers must begin with one " +
                 "of these prefixes: C50, C51, C52"
 
+        JobObject invalidStudentJob = fakeJob
+        invalidStudentJob.positionNumber = "C123456"
+        ResultObject invalidStudentJobResultObject = new ResultObject(
+                data: new ResourceObject(
+                        attributes: invalidStudentJob
+                )
+        )
+
         checkErrorResponse(
                 getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
                         "123456789",
-                        fakeJobResultObject,
+                        invalidStudentJobResultObject,
                         studentEmploymentType),
                 400,
                 expectedMessage
@@ -1276,7 +1284,7 @@ class PersonsResourceTest {
                 getPersonsResourceWithGoodMockDAOsForUpdateJob().updateJob(
                         "123",
                         "foo-bar",
-                        fakeJobResultObject,
+                        invalidStudentJobResultObject,
                         studentEmploymentType),
                 400,
                 expectedMessage
