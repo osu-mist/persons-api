@@ -131,6 +131,13 @@ class JobObject {
     BigDecimal earnCodeHours
     String earnCodeShift
 
+    Boolean useTemporarySSN
+    Boolean employeeInformationRelease
+    Boolean salaryInformationRelease
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    LocalDate salaryInformationReleaseDate
+
     List<LaborDistribution> laborDistribution
 
     @JsonIgnore

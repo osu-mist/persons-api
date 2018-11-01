@@ -578,6 +578,19 @@ definitions:
       earnCodeShift:
         type: string
         description: Shift code used as a default on timesheet for earnCode.
+      useTemporarySSN:
+        type: boolean
+        description: When creating or updating a job, this field indicates the employee needs a temporary social security number assigned.
+      employeeInformationRelease:
+        type: boolean
+        description: Indicates the employee has consented to having their employment information shared.
+      salaryInformationRelease:
+        type: boolean
+        description: Indicates the employee has consented to having their salary information shared.
+      salaryInformationReleaseDate:
+        type: string
+        format: date
+        description: The date that the employee accepted or denied to have their salary information shared.
       laborDistribution:
         type: array
         items:
