@@ -305,7 +305,7 @@ class PersonsResourceTest {
         outParametersStub.demand.getString { String name -> returnMessage }
 
         def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
-        personsWriteDAOStub.demand.createJob { String osuID, JobObject job ->
+        personsWriteDAOStub.demand.createGraduateJob { String osuID, JobObject job ->
             outParametersStub.proxyInstance()
         }
         personsWriteDAOStub

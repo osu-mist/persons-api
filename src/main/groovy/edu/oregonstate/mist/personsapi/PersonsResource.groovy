@@ -14,6 +14,7 @@ import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
+import org.skife.jdbi.v2.OutParameters
 
 import javax.annotation.security.PermitAll
 import javax.imageio.ImageIO
@@ -227,7 +228,13 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID)
+        JobObject job = JobObject.fromResultObject(resultObject)
+
+        String updateJobOutput = personsWriteDAO.createGraduateJob(osuID, job).getString(
+                PersonsWriteDAO.outParameter
+        )
+
+        createOrUpdateJobInDB(job, updateJobOutput)
     }
 
     @Timed
@@ -266,20 +273,22 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID)
-    }
-
-    private Response createOrUpdateJobInDB(ResultObject resultObject, String osuID) {
         JobObject job = JobObject.fromResultObject(resultObject)
 
-        String createJobResult = personsWriteDAO.createJob(osuID, job).getString("return_value")
+        String updateJobOutput = personsWriteDAO.updateGraduateJob(osuID, job).getString(
+                PersonsWriteDAO.outParameter
+        )
 
+        createOrUpdateJobInDB(job, updateJobOutput)
+    }
+
+    private Response createOrUpdateJobInDB(JobObject job, String dbFunctionOutput) {
         //TODO: Should we be checking other conditions besides an null/empty string?
         // null/empty string == success
-        if (!createJobResult) {
+        if (!dbFunctionOutput) {
             accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
         } else {
-            internalServerError("Error creating new job: $createJobResult").build()
+            internalServerError("Error creating new job: $dbFunctionOutput").build()
         }
     }
 

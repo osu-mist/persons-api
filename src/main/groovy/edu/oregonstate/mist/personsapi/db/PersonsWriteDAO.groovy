@@ -10,8 +10,15 @@ import org.skife.jdbi.v2.sqlobject.customizers.OutParameter
 import java.sql.Types
 
 public interface PersonsWriteDAO extends Closeable {
-    @SqlCall(AbstractPersonsDAO.createJobFunction)
+    static final String outParameter = "return_value"
+
+    @SqlCall(AbstractPersonsDAO.graduateNewFunction)
     @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
-    OutParameters createJob(@Bind('osuID') String osuID,
-                            @BindJob JobObject job)
+    OutParameters createGraduateJob(@Bind('osuID') String osuID,
+                                    @BindJob JobObject job)
+
+    @SqlCall(AbstractPersonsDAO.graduateUpdateFunction)
+    @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
+    OutParameters updateGraduateJob(@Bind('osuID') String osuID,
+                                    @BindJob JobObject job)
 }
