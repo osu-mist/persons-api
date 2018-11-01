@@ -12,6 +12,16 @@ import java.sql.Types
 public interface PersonsWriteDAO extends Closeable {
     static final String outParameter = "return_value"
 
+    @SqlCall(AbstractPersonsDAO.studentNewFunction)
+    @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
+    OutParameters createStudentJob(@Bind('osuID') String osuID,
+                                    @BindJob JobObject job)
+
+    @SqlCall(AbstractPersonsDAO.studentUpdateFunction)
+    @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
+    OutParameters updateStudentJob(@Bind('osuID') String osuID,
+                                    @BindJob JobObject job)
+
     @SqlCall(AbstractPersonsDAO.graduateNewFunction)
     @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
     OutParameters createGraduateJob(@Bind('osuID') String osuID,

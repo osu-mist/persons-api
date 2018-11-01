@@ -14,7 +14,8 @@ import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
 import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
-import org.skife.jdbi.v2.OutParameters
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import javax.annotation.security.PermitAll
 import javax.imageio.ImageIO
@@ -47,7 +48,14 @@ class PersonsResource extends Resource {
 
     private static final String notValidErrorPhrase = "is not a valid"
     private static final String jobIDDelimiter = "-"
-    private static final List<String> validEmploymentTypes = ["student", "graduate"]
+
+    private static final String studentEmploymentType = "student"
+    private static final String graduateEmploymentType = "graduate"
+    private static final List<String> validEmploymentTypes = [
+            studentEmploymentType, graduateEmploymentType
+    ]
+
+    private static Logger logger = LoggerFactory.getLogger(this)
 
     PersonsResource(PersonsDAO personsDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
@@ -228,13 +236,7 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        JobObject job = JobObject.fromResultObject(resultObject)
-
-        String updateJobOutput = personsWriteDAO.createGraduateJob(osuID, job).getString(
-                PersonsWriteDAO.outParameter
-        )
-
-        createOrUpdateJobInDB(job, updateJobOutput)
+        createOrUpdateJobInDB(resultObject, osuID, employmentType, false)
     }
 
     @Timed
@@ -273,21 +275,48 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        JobObject job = JobObject.fromResultObject(resultObject)
-
-        String updateJobOutput = personsWriteDAO.updateGraduateJob(osuID, job).getString(
-                PersonsWriteDAO.outParameter
-        )
-
-        createOrUpdateJobInDB(job, updateJobOutput)
+        createOrUpdateJobInDB(resultObject, osuID, employmentType, true)
     }
 
-    private Response createOrUpdateJobInDB(JobObject job, String dbFunctionOutput) {
+    private Response createOrUpdateJobInDB(ResultObject resultObject,
+                                           String osuID,
+                                           String employmentType,
+                                           Boolean update) {
+        JobObject job = JobObject.fromResultObject(resultObject)
+
+        String dbFunctionOutput
+
+        switch (employmentType) {
+            case studentEmploymentType:
+                if (update) {
+                    logger.info("Updating $studentEmploymentType job")
+                    dbFunctionOutput = personsWriteDAO.updateStudentJob(osuID, job)
+                            .getString(PersonsWriteDAO.outParameter)
+                } else {
+                    logger.info("Creating $studentEmploymentType job")
+                    dbFunctionOutput = personsWriteDAO.createStudentJob(osuID, job)
+                            .getString(PersonsWriteDAO.outParameter)
+                }
+                break
+            case graduateEmploymentType:
+                if (update) {
+                    logger.info("Updating $graduateEmploymentType job")
+                    dbFunctionOutput = personsWriteDAO.updateGraduateJob(osuID, job)
+                            .getString(PersonsWriteDAO.outParameter)
+                } else {
+                    logger.info("Creating $graduateEmploymentType job")
+                    dbFunctionOutput = personsWriteDAO.createGraduateJob(osuID, job)
+                            .getString(PersonsWriteDAO.outParameter)
+                }
+                break
+        }
+
         //TODO: Should we be checking other conditions besides an null/empty string?
         // null/empty string == success
         if (!dbFunctionOutput) {
             accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
         } else {
+            logger.error("Unexpected database return value: $dbFunctionOutput")
             internalServerError("Error creating new job: $dbFunctionOutput").build()
         }
     }
