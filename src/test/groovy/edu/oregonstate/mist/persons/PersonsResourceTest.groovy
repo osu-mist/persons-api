@@ -57,7 +57,7 @@ class PersonsResourceTest {
         sampleDate = LocalDate.parse('2018-01-01')
 
         fakeJob = new JobObject(
-                positionNumber: 'C12345',
+                positionNumber: 'C50345',
                 suffix: '00',
                 effectiveDate: sampleDate,
                 beginDate: sampleDate,
@@ -302,14 +302,20 @@ class PersonsResourceTest {
     }
 
     private getMockPersonsWriteDAO(String returnMessage) {
-        def outParametersStub = new StubFor(OutParameters)
-        outParametersStub.demand.getString { String name -> returnMessage }
+        def outParametersStub = getOutParametersStub(returnMessage)
 
         def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
         personsWriteDAOStub.demand.createGraduateJob { String osuID, JobObject job ->
             outParametersStub.proxyInstance()
         }
         personsWriteDAOStub
+    }
+
+    private getOutParametersStub(String returnMessage) {
+        def outParametersStub = new StubFor(OutParameters)
+        outParametersStub.demand.getString { String name -> returnMessage }
+
+        outParametersStub
     }
 
     @Test
@@ -1275,5 +1281,65 @@ class PersonsResourceTest {
                 400,
                 expectedMessage
         )
+    }
+
+    @Test
+    void correctDAOMethodsShouldBeCalledForCreateJob() {
+        def outParametersStub = getOutParametersStub("")
+        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+
+        personsWriteDAOStub.demand.with {
+            createStudentJob { String osuID, JobObject job ->
+                outParametersStub.proxyInstance()
+            }
+            createGraduateJob { String osuID, JobObject job ->
+                outParametersStub.proxyInstance()
+            }
+        }
+
+        [studentEmploymentType, graduateEmploymentType].each {
+            PersonsResource personsResource = new PersonsResource(
+                    getGoodMockPersonsDAOForNewJob().proxyInstance(),
+                    null,
+                    personsWriteDAOStub.proxyInstance(),
+                    endpointUri
+            )
+
+            checkValidResponse(
+                    personsResource.createJob("foo", fakeJobResultObject, it),
+                    202,
+                    fakeJob
+            )
+        }
+    }
+
+    @Test
+    void correctDAOMethodsShouldBeCalledForUpdateJob() {
+        def outParametersStub = getOutParametersStub("")
+        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+
+        personsWriteDAOStub.demand.with {
+            updateStudentJob { String osuID, JobObject job ->
+                outParametersStub.proxyInstance()
+            }
+            updateGraduateJob { String osuID, JobObject job ->
+                outParametersStub.proxyInstance()
+            }
+        }
+
+        [studentEmploymentType, graduateEmploymentType].each {
+            PersonsResource personsResource = new PersonsResource(
+                    getGoodMockPersonsDAOForUpdateJob().proxyInstance(),
+                    null,
+                    personsWriteDAOStub.proxyInstance(),
+                    endpointUri
+            )
+
+            checkValidResponse(
+                    personsResource.updateJob("foo", "foo-bar", fakeJobResultObject, it),
+                    202,
+                    fakeJob
+            )
+        }
     }
 }
