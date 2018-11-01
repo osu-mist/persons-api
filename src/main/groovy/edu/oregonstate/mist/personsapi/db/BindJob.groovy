@@ -54,6 +54,10 @@ public @interface BindJob {
                     q.bind("earnCode", job.earnCode)
                     q.bind("earnCodeHours", job.earnCodeHours)
                     q.bind("earnCodeShift", job.earnCodeShift)
+                    q.bind("useTemporarySSN", job.useTemporarySSN)
+                    q.bind("employeeInformationRelease", job.employeeInformationRelease)
+                    q.bind("salaryInformationRelease", job.salaryInformationRelease)
+                    q.bind("salaryInformationReleaseDate", job.salaryInformationReleaseDate)
 
                     LaborDistributionForDb labor = job.laborDistrubtionForDb
 
