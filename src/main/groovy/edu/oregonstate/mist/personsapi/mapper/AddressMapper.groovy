@@ -13,7 +13,6 @@ public class AddressMapper implements ResultSetMapper<AddressObject> {
                 id: rs.getString('ADDRESS_ID'),
                 addressType: rs.getString('ADDRESS_TYPE'),
                 addressTypeDescription: rs.getString('ADDRESS_TYPE_DESCRIPTION'),
-                addressNumber: rs.getInt('ADDRESS_NUMBER'),
                 addressLine1: rs.getString('ADDRESS_LINE_1'),
                 addressLine2: rs.getString('ADDRESS_LINE_2'),
                 addressLine3: rs.getString('ADDRESS_LINE_3'),
@@ -25,6 +24,8 @@ public class AddressMapper implements ResultSetMapper<AddressObject> {
                 postalCode: rs.getString('POSTAL_CODE'),
                 countyCode: rs.getString('COUNTY_CODE'),
                 county: rs.getString('COUNTY'),
+                nationCode: rs.getString('NATION_CODE'),
+                nation: rs.getString('NATION'),
                 lastModified: rs.getDate('LAST_MODIFIED')?.toLocalDate()
         )
     }

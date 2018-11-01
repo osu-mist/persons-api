@@ -11,7 +11,6 @@ class AddressObject {
 
     String addressType
     String addressTypeDescription
-    Integer addressNumber
     String addressLine1
     String addressLine2
     String addressLine3
@@ -23,6 +22,8 @@ class AddressObject {
     String postalCode
     String countyCode
     String county
+    String nationCode
+    String nation
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     LocalDate lastModified

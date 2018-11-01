@@ -297,7 +297,13 @@ paths:
       parameters:
         - in: query
           name: addressType
-          description: Filter by address type. Example 'CM'
+          description: |
+            Filter by address type. Common address types and their descriptions:
+            - "CM" - Current Mailing
+            - "PA" - Student Alternate Contact
+            - "DM" - Department (US Mail)
+            - "RK" - Financial Aid Address
+            - "RH" - Residence Hall
           required: false
           type: string
         - $ref: '#/parameters/osuID'
@@ -699,9 +705,6 @@ definitions:
                   type: string
                   description: Short description of the address type.
                   example: Current Mailing
-                addressNumber:
-                  type: integer
-                  description: Number used to differentiate to address records of the same type.
                 addressLine1:
                   type: string
                   example: "123 Main Street"
@@ -734,6 +737,11 @@ definitions:
                   type: string
                   description: Human readable county.
                   example: "Benton"
+                nationCode:
+                  type: string
+                nation:
+                  type: string
+                  description: Human readable nation/country name.
                 lastModified:
                   type: string
                   format: date
