@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull
 class PersonsResourceTest {
     private final URI endpointUri = new URI('https://www.foo.com/')
     private final String graduateEmploymentType = "graduate"
+    private final String studentEmploymentType = "student"
 
     PersonObject fakePerson
     JobObject fakeJob
@@ -1249,5 +1250,30 @@ class PersonsResourceTest {
                     expectedMessage
             )
         }
+    }
+
+    @Test
+    void studentPositionsMustUseValidPrefix() {
+        String expectedMessage = "Student position numbers must begin with one " +
+                "of these prefixes: C50, C51, C52"
+
+        checkErrorResponse(
+                getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
+                        "123456789",
+                        fakeJobResultObject,
+                        studentEmploymentType),
+                400,
+                expectedMessage
+        )
+
+        checkErrorResponse(
+                getPersonsResourceWithGoodMockDAOsForUpdateJob().updateJob(
+                        "123",
+                        "foo-bar",
+                        fakeJobResultObject,
+                        studentEmploymentType),
+                400,
+                expectedMessage
+        )
     }
 }

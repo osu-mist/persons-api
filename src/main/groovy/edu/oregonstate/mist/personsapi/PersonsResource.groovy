@@ -506,10 +506,15 @@ class PersonsResource extends Resource {
             }
         }
 
-        if (job.positionNumber &&
-                !personsDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
-            addBadRequest("${job.positionNumber} $notValidErrorPhrase position number " +
-                    "for the given begin date.")
+        if (job.positionNumber) {
+            if (!personsDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
+                addBadRequest("${job.positionNumber} $notValidErrorPhrase position number " +
+                        "for the given begin date.")
+            }
+            if (employmentType == studentEmploymentType && !job.isValidStudentPositionNumber()) {
+                addBadRequest("Student position numbers must begin with one of these prefixes: " +
+                        "${JobObject.validStudentPositionNumberPrefixes.join(", ")}")
+            }
         }
 
         if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
