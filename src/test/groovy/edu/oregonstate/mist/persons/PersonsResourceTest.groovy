@@ -3,6 +3,7 @@ package edu.oregonstate.mist.persons
 import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import edu.oregonstate.mist.personsapi.core.AddressObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.Name
@@ -1259,6 +1260,19 @@ class PersonsResourceTest {
     }
 
     @Test
+    void getAddressesReturnsNotFoundIfPersonNotFound() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.personExist(2..2) { String osuID -> null }
+
+        PersonsResource personsResource = new PersonsResource(
+                personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+        checkErrorResponse(
+                personsResource.getAddresses("foo", null),
+                404)
+    }
+
+    @Test
     void studentPositionsMustUseValidPrefix() {
         String expectedMessage = "Student position numbers must begin with one " +
                 "of these prefixes: C50, C51, C52"
@@ -1289,6 +1303,33 @@ class PersonsResourceTest {
                 400,
                 expectedMessage
         )
+    }
+
+    @Test
+    void getAddressesReturnsExpectedObject() {
+            AddressObject addressObject = new AddressObject(
+                    id: "foo-bar",
+                    addressType: "CM",
+                    addressLine1: "123 Main St.",
+                    city: "Corvallis",
+                    stateCode: "OR",
+                    lastModified: LocalDate.now()
+            )
+
+            def personsDAOStub = getPersonsDAOStub()
+            personsDAOStub.demand.with {
+                personExist(2..2) { String osuID -> "12345678" }
+                getAddresses() { String osuID, String addressType -> [addressObject] }
+            }
+
+            PersonsResource personsResource = new PersonsResource(
+                    personsDAOStub.proxyInstance(), null, null, endpointUri)
+
+            checkValidResponse(
+                    personsResource.getAddresses("12345678", null),
+                    200,
+                    [addressObject]
+            )
     }
 
     @Test
