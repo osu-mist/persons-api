@@ -29,6 +29,15 @@ class JobObject {
             'T': 'Terminated'
     ].withDefault { key -> 'New job status. Please contact API support for further assistance' }
 
+    public static final List<String> validStudentPositionNumberPrefixes = ["C50", "C51", "C52"]
+
+    @JsonIgnore
+    public Boolean isValidStudentPositionNumber() {
+        validStudentPositionNumberPrefixes.collect {
+            this.positionNumber?.startsWith(it)
+        }.contains(true)
+    }
+
     String positionNumber
     String suffix
 
@@ -121,6 +130,13 @@ class JobObject {
     String earnCode
     BigDecimal earnCodeHours
     String earnCodeShift
+
+    Boolean useTemporarySSN
+    Boolean employeeInformationRelease
+    Boolean salaryInformationRelease
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    LocalDate salaryInformationReleaseDate
 
     List<LaborDistribution> laborDistribution
 
