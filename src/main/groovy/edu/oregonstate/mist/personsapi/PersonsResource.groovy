@@ -5,6 +5,7 @@ import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
+import edu.oregonstate.mist.personsapi.core.AddressObject
 import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
@@ -655,6 +656,30 @@ class PersonsResource extends Resource {
             } else {
                 notFound().build()
             }
+        } else {
+            notFound().build()
+        }
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/addresses')
+    Response getAddresses(@PathParam('osuID') String osuID,
+                          @QueryParam('addressType') String addressType) {
+        if (personsDAO.personExist(osuID)) {
+            List<AddressObject> addresses = personsDAO.getAddresses(osuID, addressType)
+
+            ResultObject resultObject = new ResultObject(
+                    data: addresses.collect {
+                        new ResourceObject(
+                                id: it.id,
+                                type: "addresses",
+                                attributes: it
+                        )
+                    }
+            )
+
+            ok(resultObject).build()
         } else {
             notFound().build()
         }
