@@ -58,6 +58,7 @@ public @interface BindJob {
                     q.bind("employeeInformationRelease", job.employeeInformationRelease)
                     q.bind("salaryInformationRelease", job.salaryInformationRelease)
                     q.bind("salaryInformationReleaseDate", job.salaryInformationReleaseDate)
+                    q.bind("retirementCode", job.retirementCode)
 
                     LaborDistributionForDb labor = job.laborDistrubtionForDb
 

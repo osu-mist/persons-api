@@ -620,6 +620,8 @@ definitions:
         type: string
         format: date
         description: The date that the employee accepted or denied to have their salary information shared.
+      retirementCode:
+        type: string
       laborDistribution:
         type: array
         items:
