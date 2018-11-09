@@ -54,9 +54,12 @@ public @interface BindJob {
                     q.bind("earnCode", job.earnCode)
                     q.bind("earnCodeHours", job.earnCodeHours)
                     q.bind("earnCodeShift", job.earnCodeShift)
-                    q.bind("useTemporarySSN", job.useTemporarySSN)
-                    q.bind("employeeInformationRelease", job.employeeInformationRelease)
-                    q.bind("salaryInformationRelease", job.salaryInformationRelease)
+
+                    // these boolean fields expect the strings "true" or "false"
+                    q.bind("useTemporarySSN", job.useTemporarySSN?.toString())
+                    q.bind("employeeInformationRelease", job.employeeInformationRelease?.toString())
+                    q.bind("salaryInformationRelease", job.salaryInformationRelease?.toString())
+
                     q.bind("salaryInformationReleaseDate", job.salaryInformationReleaseDate)
                     q.bind("retirementCode", job.retirementCode)
 
