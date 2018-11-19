@@ -622,6 +622,17 @@ definitions:
         description: The date that the employee accepted or denied to have their salary information shared.
       retirementCode:
         type: string
+      i9FormCode:
+        type: string
+        description: Code to indicate the status of the employee's I9 form.
+      i9Date:
+        type: string
+        format: date
+        description: The date that the I9 form was received.
+      i9ExpirationDate:
+        type: string
+        format: date
+        description: The date the I9 form expires.
       laborDistribution:
         type: array
         items:

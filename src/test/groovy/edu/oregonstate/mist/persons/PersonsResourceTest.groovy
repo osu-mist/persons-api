@@ -91,6 +91,9 @@ class PersonsResourceTest {
                 earnCode: 'some-earn-code',
                 earnCodeHours: 300,
                 earnCodeShift: 'foo',
+                i9FormCode: 'R',
+                i9Date: sampleDate,
+                i9ExpirationDate: sampleDate,
                 laborDistribution: [new LaborDistribution(
                         effectiveDate: LocalDate.now(),
                         accountIndexCode: 'FFB333',
