@@ -138,6 +138,14 @@ class JobObject {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     LocalDate salaryInformationReleaseDate
 
+    String i9FormCode
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    LocalDate i9Date
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    LocalDate i9ExpirationDate
+
     List<LaborDistribution> laborDistribution
 
     @JsonIgnore

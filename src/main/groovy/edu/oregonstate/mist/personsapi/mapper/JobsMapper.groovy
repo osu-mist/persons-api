@@ -40,7 +40,10 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             earnCodeEffectiveDate: rs.getDate('EARN_CODE_EFFECTIVE_DATE')?.toLocalDate(),
             earnCode: rs.getString('EARN_CODE'),
             earnCodeHours: rs.getBigDecimal('EARN_CODE_HOURS'),
-            earnCodeShift: rs.getString('EARN_CODE_SHIFT')
+            earnCodeShift: rs.getString('EARN_CODE_SHIFT'),
+            i9FormCode: rs.getString('I9_FORM_CODE'),
+            i9Date: rs.getDate('I9_DATE')?.toLocalDate(),
+            i9ExpirationDate: rs.getDate('I9_EXPIRATION_DATE')?.toLocalDate()
         )
 
         job.setAccruesLeaveFromDbValue(rs.getString('ACCRUE_LEAVE_INDICATOR'))
