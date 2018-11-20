@@ -624,7 +624,10 @@ definitions:
         type: string
       i9FormCode:
         type: string
-        description: Code to indicate the status of the employee's I9 form.
+        description: |
+          Code to indicate the status of the employee's I9 form.
+          Possible values: R - Received, N - Not received, T - Temporary, E - Exempt.
+        enum: [R, N, T, E]
       i9Date:
         type: string
         format: date
