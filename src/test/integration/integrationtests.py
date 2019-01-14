@@ -162,8 +162,7 @@ class TestStringMethods(unittest.TestCase):
                                    "Make sure dates are in ISO8601 format")
 
         # required field is missing
-        required_fields = ["positionNumber", "beginDate", "supervisorOsuID",
-                           "supervisorPositionNumber", "effectiveDate"]
+        required_fields = ["positionNumber", "beginDate", "effectiveDate"]
         for field in required_fields:
             self.validate_bad_job_post(test_job, field, None,
                                        field + " is required")
