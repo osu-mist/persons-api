@@ -433,8 +433,6 @@ class PersonsResource extends Resource {
         // at this point, we have a job object. Let's validate the fields
         def requiredFields = ["Position number"           : job.positionNumber,
                               "Begin date"                : job.beginDate,
-                              "Supervisor OSU ID"         : job.supervisorOsuID,
-                              "Supervisor position number": job.supervisorPositionNumber,
                               "Effective date"            : job.effectiveDate]
 
         requiredFields.findAll { key, value -> !value }.each { key, value ->
