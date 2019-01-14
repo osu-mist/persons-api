@@ -381,8 +381,6 @@ class PersonsResourceTest {
         JobObject job = new JobObject(
                 positionNumber: null,
                 beginDate: sampleDate,
-                supervisorOsuID: '123',
-                supervisorPositionNumber: fakeJob.supervisorPositionNumber,
                 status: 'Active',
                 effectiveDate: sampleDate
         )
@@ -396,14 +394,6 @@ class PersonsResourceTest {
             beginDate = null
             checkCreateJobErrorMessageResponse(it, "Begin date is required.")
             beginDate = sampleDate
-
-            supervisorOsuID = null
-            checkCreateJobErrorMessageResponse(it, "Supervisor OSU ID is required.")
-            supervisorOsuID = "123"
-
-            supervisorPositionNumber = null
-            checkCreateJobErrorMessageResponse(it, "Supervisor position number is required.")
-            supervisorPositionNumber = fakeJob.supervisorPositionNumber
 
             effectiveDate = null
             checkCreateJobErrorMessageResponse(it, "Effective date is required.")
