@@ -447,6 +447,42 @@ class PersonsResourceTest {
     }
 
     @Test
+    void createJobEarnFields() {
+        JobObject job = new JobObject(
+            positionNumber: fakeJob.positionNumber,
+            beginDate: sampleDate,
+            status: 'Active',
+            effectiveDate: sampleDate,
+            earnCode: null,
+            earnCodeEffectiveDate: null,
+            earnCodeHours: null,
+            earnCodeShift: null
+        )
+        String expectedMessage = "earnCode, earnCodeEffectiveDate, earnCodeHours, earnCodeShift" +
+                                 " should be all null or all not null."
+
+        ResultObject jobResultObject = new ResultObject(data: new ResourceObject(attributes: job))
+
+        job.with {
+            checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
+                "123", jobResultObject, graduateEmploymentType), 202, it)
+
+            earnCode = fakeJob.earnCode
+            checkCreateJobErrorMessageResponse(it, expectedMessage)
+
+            earnCodeEffectiveDate = fakeJob.earnCodeEffectiveDate
+            checkCreateJobErrorMessageResponse(it, expectedMessage)
+
+            earnCodeHours = fakeJob.earnCodeHours
+            checkCreateJobErrorMessageResponse(it, expectedMessage)
+
+            earnCodeShift = fakeJob.earnCodeShift
+            checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
+                "123", jobResultObject, graduateEmploymentType), 202, it)
+        }
+    }
+
+    @Test
     void suffixIsRequiredForUpdate() {
         JobObject job = fakeJob
         job.suffix = null
