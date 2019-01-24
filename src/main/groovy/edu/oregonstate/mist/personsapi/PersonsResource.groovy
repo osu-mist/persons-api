@@ -494,7 +494,7 @@ class PersonsResource extends Resource {
             job.earnCodeShift
         ]
 
-        if (!(earnFields.every {it -> it} || earnFields.every {it -> !it})) {
+        if (!(earnFields.every {it} || earnFields.every {!it})) {
             addBadRequest("earnCode, earnCodeEffectiveDate, earnCodeHours, earnCodeShift" +
                           " should be all null or all not null.")
         }
