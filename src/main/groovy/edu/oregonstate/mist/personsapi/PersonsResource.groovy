@@ -487,6 +487,18 @@ class PersonsResource extends Resource {
             addBadRequest("Appointment percent must range from 0 to 100.")
         }
 
+        def earnFields = [
+            job.earnCode,
+            job.earnCodeEffectiveDate,
+            job.earnCodeHours,
+            job.earnCodeShift
+        ]
+
+        if (!(earnFields.every {it -> it} || earnFields.every {it -> !it})) {
+            addBadRequest("earnCode, earnCodeEffectiveDate, earnCodeHours, earnCodeShift" +
+                          " should be all null or all not null.")
+        }
+
         if (job.supervisorOsuID) {
             if (!personsDAO.personExist(job.supervisorOsuID)) {
                 addBadRequest("Supervisor OSU ID does not exist.")
