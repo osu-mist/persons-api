@@ -433,7 +433,7 @@ class TestStringMethods(unittest.TestCase):
             self.assertTrue(osu_id in response_osu_id_list)
 
     def test_too_many_osu_id_request(self):
-        id_list = [str(random.randint(930000000, 939999999))] * 50
+        id_list = [str(random.randint(930000000, 939999999)) for _ in range(50)]
         valid_parameters = self.osu_id_parameter_from_list(id_list)
         persons = utils.get_person_by_ids(valid_parameters)
         self.assertEqual(persons.status_code, 200)
