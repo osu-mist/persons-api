@@ -29,6 +29,7 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             confidential: rs.getString('CONFIDENTIAL') == 'Y',
             currentStudent: rs.getString('CURRENT_STUDENT') == 'Y',
             currentEmployee: rs.getString('CURRENT_EMPLOYEE') == 'A',
+            employeeStatus: rs.getString('CURRENT_EMPLOYEE'),
             homePhone: formatPhoneNumber(rs.getString('HOME_PHONE')),
             alternatePhone: formatPhoneNumber(rs.getString('ALTERNATE_PHONE')),
             primaryPhone: formatPhoneNumber(rs.getString('PRIMARY_PHONE')),

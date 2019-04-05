@@ -30,6 +30,7 @@ class PersonObject {
     String mobilePhone
     Boolean currentStudent
     Boolean currentEmployee
+    String employeeStatus
     String email
     String username
     Boolean confidential
