@@ -400,7 +400,7 @@ definitions:
                       description: Previous last name
               email:
                 type: string
-                description: OSU directory email
+                description: Primary email address
               birthDate:
                 type: string
                 format: date
