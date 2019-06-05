@@ -421,7 +421,7 @@ definitions:
                   The status of the employee:
                   A - Active
                   B - Leave without pay and with benefits
-                  L -Leave without pay and without benefits
+                  L - Leave without pay and without benefits
                   F - Leave with pay and with benefits
                   P - Leave with partial pay and with benefits
                   T - Terminated
