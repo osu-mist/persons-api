@@ -414,6 +414,17 @@ definitions:
               currentEmployee:
                 type: boolean
                 description: If true, the person is a current employee
+              employeeStatus:
+                type: string
+                enum: ['A', 'B', 'L', 'F', 'P', 'T']
+                description: >
+                  The status of the employee:
+                  A - Active
+                  B - Leave without pay and with benefits
+                  L -Leave without pay and without benefits
+                  F - Leave with pay and with benefits
+                  P - Leave with partial pay and with benefits
+                  T - Terminated
               primaryPhone:
                 type: string
                 description: E.164 formatted phone number.
