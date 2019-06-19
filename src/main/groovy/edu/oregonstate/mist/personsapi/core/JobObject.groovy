@@ -113,10 +113,20 @@ class JobObject {
     String strsAssignmentCode
 
     String supervisorOsuID
+    String supervisorLastName
+    String supervisorFirstName
+    String supervisorEmail
     String supervisorPositionNumber
     String supervisorSuffix
 
     String timesheetOrganizationCode
+    String timesheetOrganizationDesc
+    String timesheetOrganizationPredCode
+    String timesheetOrganizationPredDesc
+    String homeOrganizationCode
+    String homeOrganizationDesc
+    String homeOrganizationPredCode
+    String homeOrganizationPredDesc
     BigDecimal hourlyRate
     BigDecimal hoursPerPay
     BigDecimal assignmentSalary
