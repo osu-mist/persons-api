@@ -566,6 +566,15 @@ definitions:
       supervisorOsuID:
         type: string
         description: OSU ID of the supervisor for the job.
+      supervisorLastName:
+        type: string
+        description: Last name of the supervisor for the job.
+      supervisorFirstName:
+        type: string
+        description: First name of the supervisor for the job.
+      supervisorEmail:
+        type: string
+        description: The primary email of the supervisor for the job.
       supervisorPositionNumber:
         type: string
         description: Position number of the supervisor.
@@ -574,7 +583,28 @@ definitions:
         description: Suffix of the supervisor
       timesheetOrganizationCode:
         type: string
-        description: Organization (department) code tied to the job record.
+        description: Organization code where time sheet is sent for this job.
+      timesheetOrganizationDesc:
+        type: string
+        description: Organization title where time sheet is sent for this job.
+      timesheetOrganizationPredCode:
+        type: string
+        description: The next higher organizational code of the current timesheet organization.
+      timesheetOrganizationPredDesc:
+        type: string
+        description: The next higher organizational title of the current timesheet organization.
+      homeOrganizationCode:
+        type: string
+        description: The home organization code of the employee.
+      homeOrganizationDesc:
+        type: string
+        description: The home organization title of the employee.
+      homeOrganizationPredCode:
+        type: string
+        description: The next higher organizational code of the current home organization.
+      homeOrganizationPredDesc:
+        type: string
+        description: The next higher organizational title of the current home organization.
       hourlyRate:
         type: number
         format: float
