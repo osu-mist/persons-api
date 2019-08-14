@@ -34,6 +34,7 @@ class PersonObject {
     String email
     String username
     Boolean confidential
+    String ssnStatus
 }
 
 class PreviousRecord {

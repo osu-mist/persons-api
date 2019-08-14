@@ -14,6 +14,17 @@ import java.sql.SQLException
 public class PersonMapper implements ResultSetMapper<PersonObject> {
     PhoneFormatter phoneFormatter = new PhoneFormatter()
     public PersonObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
+        String rawSSN = rs.getString('SSN')
+        String ssnStatus = 'invalid'
+
+        if (rawSSN && rawSSN.startsWith('VAULT')) {
+            ssnStatus = 'valut'
+        } else if (rawSSN == 'REDACTED' || rawSSN == 'ARCHIVED') {
+            ssnStatus = rawSSN.toLowerCase()
+        } else if (rawSSN && rawSSN.matches(/^(?!0{9})\d{9}$/)) {
+            ssnStatus = 'valid'
+        }
+
         new PersonObject (
             osuID: rs.getString('OSU_ID'),
             internalID: rs.getString('INTERNAL_ID'),
@@ -33,7 +44,8 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             homePhone: formatPhoneNumber(rs.getString('HOME_PHONE')),
             alternatePhone: formatPhoneNumber(rs.getString('ALTERNATE_PHONE')),
             primaryPhone: formatPhoneNumber(rs.getString('PRIMARY_PHONE')),
-            mobilePhone: formatPhoneNumber(rs.getString('MOBILE_PHONE'))
+            mobilePhone: formatPhoneNumber(rs.getString('MOBILE_PHONE')),
+            ssnStatus: ssnStatus
         )
     }
 
