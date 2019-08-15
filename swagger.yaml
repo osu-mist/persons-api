@@ -441,9 +441,9 @@ definitions:
                 type: string
                 description: SSN status
                 enum:
-                  - VAULT
-                  - VALID
-                  - INVALID
+                  - vault
+                  - valid
+                  - invalid
   JobsResultObject:
     properties:
       data:
