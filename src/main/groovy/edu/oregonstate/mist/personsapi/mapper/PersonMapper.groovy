@@ -17,11 +17,11 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
         String rawSSN = rs.getString('SSN')
         String ssnStatus = 'invalid'
 
-        if (rawSSN && rawSSN.startsWith('VAULT')) {
+        if (rawSSN?.startsWith('VAULT')) {
             ssnStatus = 'valut'
         } else if (rawSSN == 'REDACTED' || rawSSN == 'ARCHIVED') {
             ssnStatus = rawSSN.toLowerCase()
-        } else if (rawSSN && rawSSN.matches(/^(?!0{9})\d{9}$/)) {
+        } else if (rawSSN?.matches(/^(?!0{9})\d{9}$/)) {
             ssnStatus = 'valid'
         }
 
