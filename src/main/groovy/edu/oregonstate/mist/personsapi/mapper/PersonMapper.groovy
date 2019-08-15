@@ -19,7 +19,7 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
 
         if (rawSSN?.startsWith('VAULT')) {
             ssnStatus = 'valut'
-        } else if (rawSSN == 'REDACTED' || rawSSN == 'ARCHIVED') {
+        } else if (rawSSN in ['REDACTED', 'ARCHIVED']) {
             ssnStatus = rawSSN.toLowerCase()
         } else if (rawSSN?.matches(/^(?!0{9})\d{9}$/)) {
             ssnStatus = 'valid'
