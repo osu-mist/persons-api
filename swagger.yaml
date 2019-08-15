@@ -437,6 +437,13 @@ definitions:
               mobilePhone:
                 type: string
                 description: E.164 formatted phone number. Capable of SMS communication.
+              ssnStatus:
+                type: string
+                description: SSN status
+                enum:
+                  - VAULT
+                  - VALID
+                  - INVALID
   JobsResultObject:
     properties:
       data:

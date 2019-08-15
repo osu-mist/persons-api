@@ -33,7 +33,8 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             homePhone: formatPhoneNumber(rs.getString('HOME_PHONE')),
             alternatePhone: formatPhoneNumber(rs.getString('ALTERNATE_PHONE')),
             primaryPhone: formatPhoneNumber(rs.getString('PRIMARY_PHONE')),
-            mobilePhone: formatPhoneNumber(rs.getString('MOBILE_PHONE'))
+            mobilePhone: formatPhoneNumber(rs.getString('MOBILE_PHONE')),
+            ssnStatus: rs.getString('SSNStatus')
         )
     }
 
