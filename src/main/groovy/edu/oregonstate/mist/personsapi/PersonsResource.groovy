@@ -17,6 +17,7 @@ import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException
 
 import javax.annotation.security.PermitAll
 import javax.imageio.ImageIO
@@ -703,5 +704,40 @@ class PersonsResource extends Resource {
                 attributes: mealPlan,
                 links: ['self': personUriBuilder.mealPlanUri(osuID, mealPlan.mealPlanID)]
         )
+    }
+
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/ssn')
+    Response createSSN(@PathParam('osuID') String osuID,
+                       @Valid ResultObject resultObject) {
+
+        String pidm = personsDAO.personExist(osuID)
+        if (!pidm) {
+            return notFound().build()
+        }
+
+        if (personsDAO.ssnIsNotNull(osuID) == "Y") {
+            return badRequest("Persons's SSN is not null or in vault").build()
+        }
+
+        String ssn = resultObject.data['attributes']['ssn']
+        if (!ssn.matches(/^\d{9}$/)) {
+            return badRequest("SSN must be 9 digits").build()
+        }
+
+        try {
+            logger.info("Creating SSN")
+            personsWriteDAO.updateSSN(pidm, ssn)
+            return accepted(new ResourceObject(
+                id: ssn,
+                type: "ssn",
+                attributes: ["ssn": ssn]
+            )
+            ).build()
+        } catch (UnableToExecuteStatementException e) {
+            return badRequest("Unable to execute SQL query").build()
+        }
     }
 }

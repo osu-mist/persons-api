@@ -231,8 +231,8 @@ paths:
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
-        200:
-          description: SSN record updated.
+        202:
+          description: SSN record accepted.
           schema:
             $ref: '#/definitions/SSNResultObject'
         400:

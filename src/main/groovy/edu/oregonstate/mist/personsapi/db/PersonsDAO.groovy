@@ -23,6 +23,9 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)
 
+    @SqlQuery(AbstractPersonsDAO.ssnIsNotNull)
+    String ssnIsNotNull(@Bind('osuID') String osuID)
+
     @SqlQuery(AbstractPersonsDAO.validatePositionNumber)
     Boolean isValidPositionNumber(@Bind('positionNumber') String positionNumber,
                                   @Bind('jobBeginDate') LocalDate jobBeginDate)
