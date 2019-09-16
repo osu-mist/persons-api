@@ -214,6 +214,35 @@ paths:
           description: Person or job not found
           schema:
             $ref: '#/definitions/Error'
+  /persons/{osuID}/ssn:
+    post:
+      description: Create person's SSN
+      tags:
+        - ssn
+      operationId: postSSN
+      parameters:
+        - name: ssn
+          in: body
+          description: Result object for an SSN
+          required: true
+          schema:
+            $ref: '#/definitions/NewSSNResultObject'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/pretty'
+        - $ref: '#/parameters/authorization'
+      responses:
+        200:
+          description: SSN record updated.
+          schema:
+            $ref: '#/definitions/SSNResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorArray'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
   /persons/{osuID}/image:
     get:
       description: |
@@ -720,6 +749,9 @@ definitions:
   JobType:
     type: string
     example: job
+  SSNType:
+    type: string
+    example: ssn
   MealPlansResultObject:
     properties:
       data:
@@ -823,6 +855,33 @@ definitions:
                   type: string
                   format: date
                   description: The date this address record was last modified.
+  NewSSNResultObject:
+    properties:
+      data:
+        properties:
+          type:
+            $ref: "#/definitions/SSNType"
+          attributes:
+            properties:
+              ssn:
+                type: string
+                pattern: '\d{9}'
+  SSNResultObject:
+    properties:
+      id:
+        type: string
+        description: 9 digits SSN
+        example: '123456789'
+      type:
+        $ref: "#/definitions/SSNType"
+      links:
+        $ref: "#/definitions/SelfLink"
+      attributes:
+        properties:
+          ssn:
+            type: string
+            description: 9 digits SSN
+            example: '123456789'
   SelfLink:
     properties:
       self:
