@@ -152,6 +152,38 @@ class PersonsResource extends Resource {
         ok(res).build()
     }
 
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    Response createPerson(@Valid ResultObject resultObject) {
+        println('------dump-------')
+        println(resultObject.dump())
+        println('-------------')
+        PersonObject person = PersonObject.fromResultObject(resultObject)
+
+        println('-----from-------')
+        println(person.dump())
+        println(person.name.dump())
+        println('-------------')
+
+        String dbFunctionOutput = personsWriteDAO.personNewFunction(person)
+                                                 .getString(PersonsWriteDAO.outParameter)
+
+        println('-------------')
+        println(dbFunctionOutput)
+        println('-------------')
+
+        if (!dbFunctionOutput.startsWith("ERROR")) {
+            accepted(new ResultObject(data: new ResourceObject(
+                id: "dbFunctionOutput",
+                type: "person",
+                attributes: person)
+            )).build()
+        } else {
+            return badRequest(dbFunctionOutput).build()
+        }
+    }
+
     /**
      * Strip accents and convert to uppercase to prepare for DAO.
      * @param name
