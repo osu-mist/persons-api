@@ -737,7 +737,7 @@ class PersonsResource extends Resource {
             )
             ).build()
         } catch (UnableToExecuteStatementException e) {
-            return badRequest("Unable to execute SQL query").build()
+            return internalServerError("Unable to execute SQL query").build()
         }
     }
 }
