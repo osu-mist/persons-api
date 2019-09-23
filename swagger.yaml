@@ -417,6 +417,7 @@ definitions:
         - firstName
         - lastName
         - birthDate
+        - sexCode
         properties:
           firstName:
             type: string
@@ -424,11 +425,32 @@ definitions:
           lastName:
             type: string
             description: Preferred last name
+          middleName:
+            type: string
+            description: Preferred middle name
           birthDate:
             type: string
             format: date
             description: Birth date
             example: "1995-01-20"
+          citizenCode:
+            type: string
+            enum: [FN, N, R, S, C]
+            description: |
+              Person's citzen code
+              - "FN" - Foreign National
+              - "N" - Non Resident Alien
+              - "R" - Resident Alien
+              - "S" - Substantial Presence Alien
+              - "C" - Citizen
+          sexCode:
+            type: string
+            enum: [M, F, N]
+            description: |
+              Person's sex code
+              - "M" - Male
+              - "F" - Female
+              - "N" - Non-specified
   PersonResultObject:
     properties:
       data:
