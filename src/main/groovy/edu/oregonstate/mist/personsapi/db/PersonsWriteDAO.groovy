@@ -15,7 +15,7 @@ public interface PersonsWriteDAO extends Closeable {
 
     @SqlCall(AbstractPersonsDAO.personNewFunction)
     @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
-    OutParameters personNewFunction(@BindPerson PersonObject person)
+    OutParameters createPerson(@BindPerson PersonObject person)
 
     @SqlCall(AbstractPersonsDAO.studentNewFunction)
     @OutParameter(name = "return_value", sqlType = Types.VARCHAR)

@@ -20,12 +20,12 @@ public @interface BindPerson {
         public Binder build(Annotation annotation) {
             new Binder<BindPerson, PersonObject>() {
                 public void bind(SQLStatement q, BindPerson bind, PersonObject person) {
-                    println('-----Bind------')
-                    println(person.birthDate)
-                    println('-------------')
                     q.bind("firstName", person.name.firstName)
                     q.bind("lastName", person.name.lastName)
+                    q.bind("middleName", person.name.middleName)
                     q.bind("birthDate", person.birthDate)
+                    q.bind("citizen", person.citizen)
+                    q.bind("sex", person.sex)
                 }
             }
         }

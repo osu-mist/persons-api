@@ -166,7 +166,7 @@ class PersonsResource extends Resource {
         println(person.name.dump())
         println('-------------')
 
-        String dbFunctionOutput = personsWriteDAO.personNewFunction(person)
+        String dbFunctionOutput = personsWriteDAO.createPerson(person)
                                                  .getString(PersonsWriteDAO.outParameter)
 
         println('-------------')

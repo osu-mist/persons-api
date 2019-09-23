@@ -28,6 +28,8 @@ class PersonObject {
     @JsonUnwrapped
     Name name
     List<PreviousRecord> previousRecords
+    String citizen
+    String sex
     String homePhone
     String alternatePhone
     String osuUID

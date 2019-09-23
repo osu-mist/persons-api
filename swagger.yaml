@@ -414,26 +414,27 @@ definitions:
         $ref: "#/definitions/PersonType"
       attributes:
         required:
-        - firstName
-        - lastName
+        - name
         - birthDate
         - sexCode
         properties:
-          firstName:
-            type: string
-            description: Preferred first name
-          lastName:
-            type: string
-            description: Preferred last name
-          middleName:
-            type: string
-            description: Preferred middle name
+          name:
+            properties:
+              firstName:
+                type: string
+                description: Preferred first name
+              lastName:
+                type: string
+                description: Preferred last name
+              middleName:
+                type: string
+                description: Preferred middle name
           birthDate:
             type: string
             format: date
             description: Birth date
             example: "1995-01-20"
-          citizenCode:
+          citizen:
             type: string
             enum: [FN, N, R, S, C]
             description: |
@@ -443,7 +444,7 @@ definitions:
               - "R" - Resident Alien
               - "S" - Substantial Presence Alien
               - "C" - Citizen
-          sexCode:
+          sex:
             type: string
             enum: [M, F, N]
             description: |
