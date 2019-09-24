@@ -714,6 +714,7 @@ class PersonsResource extends Resource {
                        @Valid ResultObject resultObject) {
 
         String pidm = personsDAO.personExist(osuID)
+        Boolean hasSPBPERS = personsDAO.hasSPBPERS(pidm)
         if (!pidm) {
             return notFound().build()
         }
@@ -729,15 +730,19 @@ class PersonsResource extends Resource {
 
         try {
             logger.info("Creating SSN")
-            personsWriteDAO.updateSSN(pidm, ssn)
-            return accepted(new ResourceObject(
+            if (hasSPBPERS) {
+                personsWriteDAO.updateSSN(pidm, ssn)
+            } else {
+                personsWriteDAO.createSSN(pidm, ssn)
+            }
+
+            accepted(new ResourceObject(
                 id: ssn,
                 type: "ssn",
                 attributes: ["ssn": ssn]
-            )
-            ).build()
+            )).build()
         } catch (UnableToExecuteStatementException e) {
-            return badRequest("Unable to execute SQL query").build()
+            internalServerError("Unable to execute SQL query").build()
         }
     }
 }
