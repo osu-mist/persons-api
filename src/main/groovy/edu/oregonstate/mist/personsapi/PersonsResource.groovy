@@ -723,7 +723,7 @@ class PersonsResource extends Resource {
         }
 
         String ssn = resultObject.data['attributes']['ssn']
-        if (!ssn.matches(/^\d{9}$/)) {
+        if (!ssn?.matches(/^\d{9}$/)) {
             return badRequest("SSN must be 9 digits").build()
         }
 
