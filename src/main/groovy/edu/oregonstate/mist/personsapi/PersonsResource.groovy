@@ -714,7 +714,6 @@ class PersonsResource extends Resource {
                        @Valid ResultObject resultObject) {
 
         String pidm = personsDAO.personExist(osuID)
-        Boolean hasSPBPERS = personsDAO.hasSPBPERS(pidm)
         if (!pidm) {
             return notFound().build()
         }
@@ -730,7 +729,7 @@ class PersonsResource extends Resource {
 
         try {
             logger.info("Creating SSN")
-            if (hasSPBPERS) {
+            if (personsDAO.hasSPBPERS(pidm)) {
                 personsWriteDAO.updateSSN(pidm, ssn)
             } else {
                 personsWriteDAO.createSSN(pidm, ssn)
