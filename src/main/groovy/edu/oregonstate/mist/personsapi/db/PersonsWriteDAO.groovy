@@ -37,6 +37,11 @@ public interface PersonsWriteDAO extends Closeable {
     OutParameters updateGraduateJob(@Bind('osuID') String osuID,
                                     @BindJob JobObject job)
 
+    @SqlCall(AbstractPersonsDAO.createSSN)
+    @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
+    OutParameters createSSN(@Bind('pidm') String pidm,
+                            @Bind('ssn') String ssn)
+
     @SqlCall(AbstractPersonsDAO.updateSSN)
     void updateSSN(@Bind('pidm') String pidm,
                    @Bind('ssn') String ssn)

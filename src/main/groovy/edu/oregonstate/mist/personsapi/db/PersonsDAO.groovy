@@ -23,6 +23,9 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)
 
+    @SqlQuery(AbstractPersonsDAO.hasSPBPERS)
+    Boolean hasSPBPERS(@Bind('pidm') String pidm)
+
     @SqlQuery(AbstractPersonsDAO.ssnIsNotNull)
     String ssnIsNotNull(@Bind('osuID') String osuID)
 
