@@ -156,31 +156,26 @@ class PersonsResource extends Resource {
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
     Response createPerson(@Valid ResultObject resultObject) {
-        println('------dump-------')
-        println(resultObject.dump())
-        println('-------------')
         PersonObject person = PersonObject.fromResultObject(resultObject)
-
-        println('-----from-------')
-        println(person.dump())
-        println(person.name.dump())
-        println('-------------')
+        if (!person?.sex || !(person.sex in ["M", "F", "N"])) {
+            return badRequest("Sex is required and must be one of 'M', 'F', 'N'").build()
+        }
 
         String dbFunctionOutput = personsWriteDAO.createPerson(person)
                                                  .getString(PersonsWriteDAO.outParameter)
 
-        println('-------------')
-        println(dbFunctionOutput)
-        println('-------------')
-
         if (!dbFunctionOutput.startsWith("ERROR")) {
-            accepted(new ResultObject(data: new ResourceObject(
-                id: "dbFunctionOutput",
-                type: "person",
-                attributes: person)
-            )).build()
+            def createdPerson = personsStringTemplateDAO.getPersons(
+                null, [dbFunctionOutput], null, null, null, false
+            )
+            if (createdPerson) {
+                ResultObject res = personResultObject(createdPerson?.get(0))
+                accepted(res).build()
+            } else {
+                internalServerError("Person has been created but not found").build()
+            }
         } else {
-            return badRequest(dbFunctionOutput).build()
+            badRequest(dbFunctionOutput).build()
         }
     }
 

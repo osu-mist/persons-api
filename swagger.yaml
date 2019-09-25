@@ -416,7 +416,7 @@ definitions:
         required:
         - name
         - birthDate
-        - sexCode
+        - sex
         properties:
           name:
             properties:
