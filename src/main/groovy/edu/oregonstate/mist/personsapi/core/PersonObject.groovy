@@ -45,11 +45,12 @@ class PersonObject {
 
     public static PersonObject fromResultObject(ResultObject resultObject) {
         try {
+            def attributes = resultObject.data['attributes']
             PersonObject personObject = mapper.convertValue(
-                resultObject.data['attributes'], PersonObject.class
+                attributes, PersonObject.class
             )
-            personObject.name.firstName = resultObject.data['attributes']['name']['firstName']
-            personObject.name.lastName = resultObject.data['attributes']['name']['lastName']
+            personObject.name.firstName = attributes['name']['firstName']
+            personObject.name.lastName = attributes['name']['lastName']
             personObject
         } catch (IllegalArgumentException e) {
             throw new PersonObjectException("Some fields weren't able to map to a person object.")

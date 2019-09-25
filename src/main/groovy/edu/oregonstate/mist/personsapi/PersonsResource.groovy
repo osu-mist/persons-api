@@ -166,8 +166,6 @@ class PersonsResource extends Resource {
                 person.birthDate].contains(null)
             )) {
                 return badRequest("Required fields are missing or are null.").build()
-            } else if (!person.birthDate ==~ /\d{4}\-\d{2}\-\d{2}/) {
-                return badRequest("Bitrh date are not in ISO8601 format: yyyy-MM-dd").build()
             } else if (!(person.sex in ["M", "F", "N"])) {
                 return badRequest("Sex must be one of 'M', 'F', 'N'.").build()
             } else if (!(person.citizen in [null, "FN", "N", "R", "S", "C"])) {
@@ -175,7 +173,8 @@ class PersonsResource extends Resource {
             }
         } catch (PersonObjectException e) {
             return badRequest(
-                "Unable to parse person object or required fields are missing."
+                "Unable to parse person object or required fields are missing. " +
+                "Make sure dates are in ISO8601 format: yyyy-MM-dd"
             ).build()
         }
 
