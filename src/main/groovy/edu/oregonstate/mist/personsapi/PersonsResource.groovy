@@ -169,7 +169,7 @@ class PersonsResource extends Resource {
             } else if (!(person.sex in ["M", "F", "N"])) {
                 return badRequest("Sex must be one of 'M', 'F', 'N'.").build()
             } else if (!(person.citizen in [null, "FN", "N", "R", "S", "C"])) {
-                return badRequest("Ciztizen must be one of 'FN', 'N', 'R', 'S', 'C'.").build()
+                return badRequest("Citizen must be one of 'FN', 'N', 'R', 'S', 'C'.").build()
             }
         } catch (PersonObjectException e) {
             return badRequest(
