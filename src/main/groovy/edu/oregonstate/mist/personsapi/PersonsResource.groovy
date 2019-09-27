@@ -11,6 +11,7 @@ import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
+import edu.oregonstate.mist.personsapi.db.ODSPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
 import edu.oregonstate.mist.personsapi.db.BannerPersonsWriteDAO
 import groovy.transform.TypeChecked
@@ -41,6 +42,7 @@ class PersonsResource extends Resource {
     private final BannerPersonsReadDAO bannerPersonsReadDAO
     private final PersonsStringTemplateDAO personsStringTemplateDAO
     private final BannerPersonsWriteDAO bannerPersonsWriteDAO
+    private final ODSPersonsReadDAO odsPersonsReadDAO
     private PersonUriBuilder personUriBuilder
 
     private static final Integer maxImageWidth = 2000
@@ -62,10 +64,12 @@ class PersonsResource extends Resource {
     PersonsResource(BannerPersonsReadDAO bannerPersonsReadDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
                     BannerPersonsWriteDAO bannerPersonsWriteDAO,
+                    ODSPersonsReadDAO odsPersonsReadDAO,
                     URI endpointUri) {
         this.bannerPersonsReadDAO = bannerPersonsReadDAO
         this.personsStringTemplateDAO = personsStringTemplateDAO
         this.bannerPersonsWriteDAO = bannerPersonsWriteDAO
+        this.odsPersonsReadDAO = odsPersonsReadDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
@@ -636,7 +640,7 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/meal-plans')
     Response getMealPlans(@PathParam('osuID') String osuID) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
-            List<MealPlan> mealPlans = bannerPersonsReadDAO.getMealPlans(osuID, null)
+            List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(osuID, null)
 
             ResultObject resultObject = new ResultObject(
                     data: mealPlans.collect {
@@ -656,7 +660,7 @@ class PersonsResource extends Resource {
     Response getMealPlanByID(@PathParam('osuID') String osuID,
                              @PathParam('mealPlanID') String mealPlanID) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
-            List<MealPlan> mealPlans = bannerPersonsReadDAO.getMealPlans(
+            List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(
                     osuID, mealPlanID)
 
             if (mealPlans) {

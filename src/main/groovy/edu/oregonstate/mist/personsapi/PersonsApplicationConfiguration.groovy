@@ -29,4 +29,14 @@ class PersonsApplicationConfiguration extends Configuration {
     public DataSourceFactory getBannerWriteDataSourceFactory() {
         bannerWriteDatabase
     }
+
+    @Valid
+    @NotNull
+    @JsonProperty("odsReadDatabase")
+    DataSourceFactory odsReadDatabase = new DataSourceFactory()
+
+    @JsonProperty("odsReadDatabase")
+    public DataSourceFactory getODSReadDataSourceFactory() {
+        odsReadDatabase
+    }
 }
