@@ -10,9 +10,9 @@ import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
-import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
-import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsWriteDAO
 import groovy.transform.TypeChecked
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.Logger
@@ -38,9 +38,9 @@ import javax.ws.rs.core.Response
 @PermitAll
 @TypeChecked
 class PersonsResource extends Resource {
-    private final PersonsDAO personsDAO
+    private final BannerPersonsReadDAO personsDAO
     private final PersonsStringTemplateDAO personsStringTemplateDAO
-    private final PersonsWriteDAO personsWriteDAO
+    private final BannerPersonsWriteDAO personsWriteDAO
     private PersonUriBuilder personUriBuilder
 
     private static final Integer maxImageWidth = 2000
@@ -59,9 +59,9 @@ class PersonsResource extends Resource {
 
     private static Logger logger = LoggerFactory.getLogger(this)
 
-    PersonsResource(PersonsDAO personsDAO,
+    PersonsResource(BannerPersonsReadDAO personsDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
-                    PersonsWriteDAO personsWriteDAO,
+                    BannerPersonsWriteDAO personsWriteDAO,
                     URI endpointUri) {
         this.personsDAO = personsDAO
         this.personsStringTemplateDAO = personsStringTemplateDAO
@@ -293,22 +293,22 @@ class PersonsResource extends Resource {
                 if (update) {
                     logger.info("Updating $studentEmploymentType job")
                     dbFunctionOutput = personsWriteDAO.updateStudentJob(osuID, job)
-                            .getString(PersonsWriteDAO.outParameter)
+                            .getString(BannerPersonsWriteDAO.outParameter)
                 } else {
                     logger.info("Creating $studentEmploymentType job")
                     dbFunctionOutput = personsWriteDAO.createStudentJob(osuID, job)
-                            .getString(PersonsWriteDAO.outParameter)
+                            .getString(BannerPersonsWriteDAO.outParameter)
                 }
                 break
             case graduateEmploymentType:
                 if (update) {
                     logger.info("Updating $graduateEmploymentType job")
                     dbFunctionOutput = personsWriteDAO.updateGraduateJob(osuID, job)
-                            .getString(PersonsWriteDAO.outParameter)
+                            .getString(BannerPersonsWriteDAO.outParameter)
                 } else {
                     logger.info("Creating $graduateEmploymentType job")
                     dbFunctionOutput = personsWriteDAO.createGraduateJob(osuID, job)
-                            .getString(PersonsWriteDAO.outParameter)
+                            .getString(BannerPersonsWriteDAO.outParameter)
                 }
                 break
         }

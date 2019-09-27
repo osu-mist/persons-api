@@ -19,7 +19,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.Mapper
 import java.sql.Blob
 import java.time.LocalDate
 
-public interface PersonsDAO extends Closeable {
+public interface BannerPersonsReadDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)
 

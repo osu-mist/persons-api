@@ -9,9 +9,9 @@ import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.PersonsResource
-import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
-import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsWriteDAO
 import groovy.mock.interceptor.StubFor
 import org.junit.Before
 import org.junit.Test
@@ -150,7 +150,7 @@ class PersonsResourceTest {
     }
 
     private static StubFor getPersonsDAOStub() {
-        new StubFor(PersonsDAO)
+        new StubFor(BannerPersonsReadDAO)
     }
 
     private static StubFor getPersonsStringTemplateDAOStub() {
@@ -308,7 +308,7 @@ class PersonsResourceTest {
     private getMockPersonsWriteDAO(String returnMessage) {
         def outParametersStub = getOutParametersStub(returnMessage)
 
-        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+        def personsWriteDAOStub = new StubFor(BannerPersonsWriteDAO)
         personsWriteDAOStub.demand.createGraduateJob { String osuID, JobObject job ->
             outParametersStub.proxyInstance()
         }
@@ -1364,7 +1364,7 @@ class PersonsResourceTest {
     @Test
     void correctDAOMethodsShouldBeCalledForCreateJob() {
         def outParametersStub = getOutParametersStub("")
-        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+        def personsWriteDAOStub = new StubFor(BannerPersonsWriteDAO)
 
         personsWriteDAOStub.demand.with {
             createStudentJob { String osuID, JobObject job ->
@@ -1394,7 +1394,7 @@ class PersonsResourceTest {
     @Test
     void correctDAOMethodsShouldBeCalledForUpdateJob() {
         def outParametersStub = getOutParametersStub("")
-        def personsWriteDAOStub = new StubFor(PersonsWriteDAO)
+        def personsWriteDAOStub = new StubFor(BannerPersonsWriteDAO)
 
         personsWriteDAOStub.demand.with {
             updateStudentJob { String osuID, JobObject job ->

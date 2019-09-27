@@ -1,9 +1,9 @@
 package edu.oregonstate.mist.personsapi
 
 import edu.oregonstate.mist.api.Application
-import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
-import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsWriteDAO
 import io.dropwizard.jdbi.DBIFactory
 import io.dropwizard.setup.Environment
 import org.skife.jdbi.v2.DBI
@@ -25,13 +25,14 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
         DBIFactory factory = new DBIFactory()
         DBI bannerReadJdbi = factory.build(
                 environment, configuration.getBannerReadDataSourceFactory(), "bannerReadJdbi")
-        PersonsDAO personsDAO = bannerReadJdbi.onDemand(PersonsDAO.class)
+        BannerPersonsReadDAO personsDAO = bannerReadJdbi.onDemand(BannerPersonsReadDAO.class)
         PersonsStringTemplateDAO personsStringTemplateDAO = bannerReadJdbi.onDemand(
                 PersonsStringTemplateDAO.class)
 
         DBI bannerWriteJdbi = factory.build(
                 environment, configuration.getBannerWriteDataSourceFactory(), "bannerWriteJdbi")
-        PersonsWriteDAO personsWriteDAO = bannerWriteJdbi.onDemand(PersonsWriteDAO.class)
+        BannerPersonsWriteDAO personsWriteDAO = bannerWriteJdbi.onDemand(
+                BannerPersonsWriteDAO.class)
 
         environment.jersey().register(
             new PersonsResource(personsDAO, personsStringTemplateDAO,
