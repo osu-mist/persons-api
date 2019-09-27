@@ -639,7 +639,7 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/meal-plans')
     Response getMealPlans(@PathParam('osuID') String osuID) {
-        if (bannerPersonsReadDAO.personExist(osuID)) {
+        if (odsPersonsReadDAO.personExist(osuID)) {
             List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(osuID, null)
 
             ResultObject resultObject = new ResultObject(
@@ -659,7 +659,7 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/meal-plans/{mealPlanID}')
     Response getMealPlanByID(@PathParam('osuID') String osuID,
                              @PathParam('mealPlanID') String mealPlanID) {
-        if (bannerPersonsReadDAO.personExist(osuID)) {
+        if (odsPersonsReadDAO.personExist(osuID)) {
             List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(
                     osuID, mealPlanID)
 
