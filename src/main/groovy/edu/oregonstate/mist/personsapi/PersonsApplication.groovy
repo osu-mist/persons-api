@@ -23,15 +23,15 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
         this.setup(configuration, environment)
 
         DBIFactory factory = new DBIFactory()
-        DBI readJdbi = factory.build(environment, configuration.getReadDataSourceFactory(),
-                "readJdbi")
-        PersonsDAO personsDAO = readJdbi.onDemand(PersonsDAO.class)
-        PersonsStringTemplateDAO personsStringTemplateDAO = readJdbi.onDemand(
+        DBI bannerReadJdbi = factory.build(
+                environment, configuration.getBannerReadDataSourceFactory(), "bannerReadJdbi")
+        PersonsDAO personsDAO = bannerReadJdbi.onDemand(PersonsDAO.class)
+        PersonsStringTemplateDAO personsStringTemplateDAO = bannerReadJdbi.onDemand(
                 PersonsStringTemplateDAO.class)
 
-        DBI writeJdbi = factory.build(
-                environment, configuration.getWriteDataSourceFactory(), "writeJdbi")
-        PersonsWriteDAO personsWriteDAO = writeJdbi.onDemand(PersonsWriteDAO.class)
+        DBI bannerWriteJdbi = factory.build(
+                environment, configuration.getBannerWriteDataSourceFactory(), "bannerWriteJdbi")
+        PersonsWriteDAO personsWriteDAO = bannerWriteJdbi.onDemand(PersonsWriteDAO.class)
 
         environment.jersey().register(
             new PersonsResource(personsDAO, personsStringTemplateDAO,
