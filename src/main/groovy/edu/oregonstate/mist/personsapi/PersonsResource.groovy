@@ -38,9 +38,9 @@ import javax.ws.rs.core.Response
 @PermitAll
 @TypeChecked
 class PersonsResource extends Resource {
-    private final BannerPersonsReadDAO personsDAO
+    private final BannerPersonsReadDAO bannerPersonsReadDAO
     private final PersonsStringTemplateDAO personsStringTemplateDAO
-    private final BannerPersonsWriteDAO personsWriteDAO
+    private final BannerPersonsWriteDAO bannerPersonsWriteDAO
     private PersonUriBuilder personUriBuilder
 
     private static final Integer maxImageWidth = 2000
@@ -59,13 +59,13 @@ class PersonsResource extends Resource {
 
     private static Logger logger = LoggerFactory.getLogger(this)
 
-    PersonsResource(BannerPersonsReadDAO personsDAO,
+    PersonsResource(BannerPersonsReadDAO bannerPersonsReadDAO,
                     PersonsStringTemplateDAO personsStringTemplateDAO,
-                    BannerPersonsWriteDAO personsWriteDAO,
+                    BannerPersonsWriteDAO bannerPersonsWriteDAO,
                     URI endpointUri) {
-        this.personsDAO = personsDAO
+        this.bannerPersonsReadDAO = bannerPersonsReadDAO
         this.personsStringTemplateDAO = personsStringTemplateDAO
-        this.personsWriteDAO = personsWriteDAO
+        this.bannerPersonsWriteDAO = bannerPersonsWriteDAO
         this.endpointUri = endpointUri
         this.personUriBuilder = new PersonUriBuilder(endpointUri)
     }
@@ -197,7 +197,7 @@ class PersonsResource extends Resource {
     }
 
     ResourceObject personResourceObject(PersonObject person) {
-        person.previousRecords = personsDAO.getPreviousRecords(person.internalID)
+        person.previousRecords = bannerPersonsReadDAO.getPreviousRecords(person.internalID)
 
         new ResourceObject(
                 id: person.osuID,
@@ -213,8 +213,8 @@ class PersonsResource extends Resource {
     Response getJobs(@PathParam('osuID') String osuID,
                      @QueryParam('positionNumber') String positionNumber,
                      @QueryParam('suffix') String suffix) {
-        if (personsDAO.personExist(osuID)) {
-            List<JobObject> jobs = personsDAO.getJobsById(osuID, positionNumber, suffix)
+        if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<JobObject> jobs = bannerPersonsReadDAO.getJobsById(osuID, positionNumber, suffix)
             ok(jobsResultObject(jobs, osuID)).build()
         } else {
             notFound().build()
@@ -228,7 +228,7 @@ class PersonsResource extends Resource {
     Response createJob(@PathParam('osuID') String osuID,
                        @Valid ResultObject resultObject,
                        @QueryParam('employmentType') String employmentType) {
-        if (!personsDAO.personExist(osuID)) {
+        if (!bannerPersonsReadDAO.personExist(osuID)) {
             return notFound().build()
         }
 
@@ -246,7 +246,7 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/jobs/{jobID: [0-9a-zA-Z-]+}')
     Response getJobById(@PathParam('osuID') String osuID,
                         @PathParam('jobID') String jobID) {
-        if (!personsDAO.personExist(osuID)) {
+        if (!bannerPersonsReadDAO.personExist(osuID)) {
             return notFound().build()
         }
 
@@ -267,7 +267,7 @@ class PersonsResource extends Resource {
                        @PathParam('jobID') String jobID,
                        @Valid ResultObject resultObject,
                        @QueryParam('employmentType') String employmentType) {
-        if (!personsDAO.personExist(osuID) || !getJobObject(osuID, jobID)) {
+        if (!bannerPersonsReadDAO.personExist(osuID) || !getJobObject(osuID, jobID)) {
             return notFound().build()
         }
 
@@ -292,22 +292,22 @@ class PersonsResource extends Resource {
             case studentEmploymentType:
                 if (update) {
                     logger.info("Updating $studentEmploymentType job")
-                    dbFunctionOutput = personsWriteDAO.updateStudentJob(osuID, job)
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
                             .getString(BannerPersonsWriteDAO.outParameter)
                 } else {
                     logger.info("Creating $studentEmploymentType job")
-                    dbFunctionOutput = personsWriteDAO.createStudentJob(osuID, job)
+                    dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
                             .getString(BannerPersonsWriteDAO.outParameter)
                 }
                 break
             case graduateEmploymentType:
                 if (update) {
                     logger.info("Updating $graduateEmploymentType job")
-                    dbFunctionOutput = personsWriteDAO.updateGraduateJob(osuID, job)
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
                             .getString(BannerPersonsWriteDAO.outParameter)
                 } else {
                     logger.info("Creating $graduateEmploymentType job")
-                    dbFunctionOutput = personsWriteDAO.createGraduateJob(osuID, job)
+                    dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
                             .getString(BannerPersonsWriteDAO.outParameter)
                 }
                 break
@@ -338,7 +338,7 @@ class PersonsResource extends Resource {
             return null
         }
 
-        List<JobObject> job = personsDAO.getJobsById(osuID, positionNumber, suffix)
+        List<JobObject> job = bannerPersonsReadDAO.getJobsById(osuID, positionNumber, suffix)
 
         if (!job) {
             null
@@ -386,7 +386,7 @@ class PersonsResource extends Resource {
     }
 
     ResourceObject jobResourceObject(JobObject job, String osuID) {
-        job.laborDistribution = personsDAO.getJobLaborDistribution(osuID,
+        job.laborDistribution = bannerPersonsReadDAO.getJobLaborDistribution(osuID,
                 job.positionNumber, job.suffix)
 
         new ResourceObject(
@@ -456,7 +456,7 @@ class PersonsResource extends Resource {
             addBadRequest("Suffix is required when updating an existing job.")
         }
 
-        if (!update && job.positionNumber && job.suffix && personsDAO.getJobsById(
+        if (!update && job.positionNumber && job.suffix && bannerPersonsReadDAO.getJobsById(
                 osuID, job.positionNumber, job.suffix)) {
             addBadRequest("Person already has a job with the given position number and suffix.")
         }
@@ -501,10 +501,10 @@ class PersonsResource extends Resource {
         }
 
         if (job.supervisorOsuID) {
-            if (!personsDAO.personExist(job.supervisorOsuID)) {
+            if (!bannerPersonsReadDAO.personExist(job.supervisorOsuID)) {
                 addBadRequest("Supervisor OSU ID does not exist.")
             } else if (job.supervisorPositionNumber) {
-                Boolean validSupervisorPosition = personsDAO.isValidSupervisorPosition(
+                Boolean validSupervisorPosition = bannerPersonsReadDAO.isValidSupervisorPosition(
                         job.beginDate,
                         job.supervisorOsuID,
                         job.supervisorPositionNumber,
@@ -519,7 +519,7 @@ class PersonsResource extends Resource {
         }
 
         if (job.positionNumber) {
-            if (!personsDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
+            if (!bannerPersonsReadDAO.isValidPositionNumber(job.positionNumber, job.beginDate)) {
                 addBadRequest("${job.positionNumber} $notValidErrorPhrase position number " +
                         "for the given begin date.")
             }
@@ -529,11 +529,11 @@ class PersonsResource extends Resource {
             }
         }
 
-        if (job.locationID && !personsDAO.isValidLocation(job.locationID)) {
+        if (job.locationID && !bannerPersonsReadDAO.isValidLocation(job.locationID)) {
             addBadRequest("${job.locationID} $notValidErrorPhrase location ID.")
         }
 
-        if (job.timesheetOrganizationCode && !personsDAO.isValidOrganizationCode(
+        if (job.timesheetOrganizationCode && !bannerPersonsReadDAO.isValidOrganizationCode(
                 job.timesheetOrganizationCode)) {
             addBadRequest("${job.timesheetOrganizationCode} $notValidErrorPhrase " +
                     "organization code.")
@@ -558,33 +558,33 @@ class PersonsResource extends Resource {
                 missingEffectiveDate = !it.effectiveDate ? true : missingEffectiveDate
 
                 if (!it.accountIndexCode ||
-                        !personsDAO.isValidAccountIndexCode(it.accountIndexCode)) {
+                        !bannerPersonsReadDAO.isValidAccountIndexCode(it.accountIndexCode)) {
                     //accountIndexCode is required
                     addBadRequest("${it.accountIndexCode} $notValidErrorPhrase accountIndexCode.")
                 }
 
-                if (it.accountCode && !personsDAO.isValidAccountCode(it.accountCode)) {
+                if (it.accountCode && !bannerPersonsReadDAO.isValidAccountCode(it.accountCode)) {
                     addBadRequest("${it.accountCode} $notValidErrorPhrase accountCode.")
                 }
 
-                if (it.activityCode && !personsDAO.isValidActivityCode(it.activityCode)) {
+                if (it.activityCode && !bannerPersonsReadDAO.isValidActivityCode(it.activityCode)) {
                     addBadRequest("${it.activityCode} $notValidErrorPhrase activityCode.")
                 }
 
                 if (it.organizationCode &&
-                        !personsDAO.isValidOrganizationCode(it.organizationCode)) {
+                        !bannerPersonsReadDAO.isValidOrganizationCode(it.organizationCode)) {
                     addBadRequest("${it.organizationCode} $notValidErrorPhrase organizationCode.")
                 }
 
-                if (it.programCode && !personsDAO.isValidProgramCode(it.programCode)) {
+                if (it.programCode && !bannerPersonsReadDAO.isValidProgramCode(it.programCode)) {
                     addBadRequest("${it.programCode} $notValidErrorPhrase programCode.")
                 }
 
-                if (it.fundCode && !personsDAO.isValidFundCode(it.fundCode)) {
+                if (it.fundCode && !bannerPersonsReadDAO.isValidFundCode(it.fundCode)) {
                     addBadRequest("${it.fundCode} $notValidErrorPhrase fundCode.")
                 }
 
-                if (it.locationCode && !personsDAO.isValidLocationCode(it.locationCode)) {
+                if (it.locationCode && !bannerPersonsReadDAO.isValidLocationCode(it.locationCode)) {
                     addBadRequest("${it.locationCode} $notValidErrorPhrase locationCode.")
                 }
             }
@@ -610,14 +610,14 @@ class PersonsResource extends Resource {
     @Produces('image/jpeg')
     @Path('{osuID: [0-9]+}/image')
     Response getImageById(@PathParam('osuID') String osuID, @QueryParam('width') Integer width) {
-        if (personsDAO.personExist(osuID)) {
+        if (bannerPersonsReadDAO.personExist(osuID)) {
             if (width != null && (width <= 0) || (width > maxImageWidth)) {
                 String widthError = 'Width must be value from 1 - ' + maxImageWidth
                 return badRequest(widthError).type(MediaType.APPLICATION_JSON).build()
             }
 
             def res
-            def image = personsDAO.getImageById(osuID)
+            def image = bannerPersonsReadDAO.getImageById(osuID)
             if (image) {
                 res = ImageManipulation.getImageStream(ImageIO.read(image.getBinaryStream()), width)
             } else {
@@ -635,8 +635,8 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/meal-plans')
     Response getMealPlans(@PathParam('osuID') String osuID) {
-        if (personsDAO.personExist(osuID)) {
-            List<MealPlan> mealPlans = personsDAO.getMealPlans(osuID, null)
+        if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<MealPlan> mealPlans = bannerPersonsReadDAO.getMealPlans(osuID, null)
 
             ResultObject resultObject = new ResultObject(
                     data: mealPlans.collect {
@@ -655,8 +655,8 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/meal-plans/{mealPlanID}')
     Response getMealPlanByID(@PathParam('osuID') String osuID,
                              @PathParam('mealPlanID') String mealPlanID) {
-        if (personsDAO.personExist(osuID)) {
-            List<MealPlan> mealPlans = personsDAO.getMealPlans(
+        if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<MealPlan> mealPlans = bannerPersonsReadDAO.getMealPlans(
                     osuID, mealPlanID)
 
             if (mealPlans) {
@@ -677,8 +677,8 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/addresses')
     Response getAddresses(@PathParam('osuID') String osuID,
                           @QueryParam('addressType') String addressType) {
-        if (personsDAO.personExist(osuID)) {
-            List<AddressObject> addresses = personsDAO.getAddresses(osuID, addressType)
+        if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 
             ResultObject resultObject = new ResultObject(
                     data: addresses.collect {
@@ -713,12 +713,12 @@ class PersonsResource extends Resource {
     Response createSSN(@PathParam('osuID') String osuID,
                        @Valid ResultObject resultObject) {
 
-        String pidm = personsDAO.personExist(osuID)
+        String pidm = bannerPersonsReadDAO.personExist(osuID)
         if (!pidm) {
             return notFound().build()
         }
 
-        if (personsDAO.ssnIsNotNull(osuID) == "Y") {
+        if (bannerPersonsReadDAO.ssnIsNotNull(osuID) == "Y") {
             return badRequest("Persons's SSN is not null or in vault").build()
         }
 
@@ -729,10 +729,10 @@ class PersonsResource extends Resource {
 
         try {
             logger.info("Creating SSN")
-            if (personsDAO.hasSPBPERS(pidm)) {
-                personsWriteDAO.updateSSN(pidm, ssn)
+            if (bannerPersonsReadDAO.hasSPBPERS(pidm)) {
+                bannerPersonsWriteDAO.updateSSN(pidm, ssn)
             } else {
-                personsWriteDAO.createSSN(pidm, ssn)
+                bannerPersonsWriteDAO.createSSN(pidm, ssn)
             }
 
             accepted(new ResourceObject(
