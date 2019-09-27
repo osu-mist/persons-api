@@ -12,21 +12,31 @@ class PersonsApplicationConfiguration extends Configuration {
 
     @Valid
     @NotNull
-    @JsonProperty("readDatabase")
-    DataSourceFactory readDatabase = new DataSourceFactory()
+    @JsonProperty("bannerReadDatabase")
+    DataSourceFactory bannerReadDatabase = new DataSourceFactory()
 
-    @JsonProperty("readDatabase")
-    public DataSourceFactory getReadDataSourceFactory() {
-        readDatabase
+    @JsonProperty("bannerReadDatabase")
+    public DataSourceFactory getBannerReadDataSourceFactory() {
+        bannerReadDatabase
     }
 
     @Valid
     @NotNull
-    @JsonProperty("writeDatabase")
-    DataSourceFactory writeDatabase = new DataSourceFactory()
+    @JsonProperty("bannerWriteDatabase")
+    DataSourceFactory bannerWriteDatabase = new DataSourceFactory()
 
-    @JsonProperty("writeDatabase")
-    public DataSourceFactory getWriteDataSourceFactory() {
-        writeDatabase
+    @JsonProperty("bannerWriteDatabase")
+    public DataSourceFactory getBannerWriteDataSourceFactory() {
+        bannerWriteDatabase
+    }
+
+    @Valid
+    @NotNull
+    @JsonProperty("odsReadDatabase")
+    DataSourceFactory odsReadDatabase = new DataSourceFactory()
+
+    @JsonProperty("odsReadDatabase")
+    public DataSourceFactory getODSReadDataSourceFactory() {
+        odsReadDatabase
     }
 }

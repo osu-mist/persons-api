@@ -1,12 +1,10 @@
 package edu.oregonstate.mist.personsapi.db
 
 import edu.oregonstate.mist.personsapi.core.AddressObject
-import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.PreviousRecord
 import edu.oregonstate.mist.personsapi.mapper.AddressMapper
-import edu.oregonstate.mist.personsapi.mapper.MealPlanMapper
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
@@ -19,7 +17,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.Mapper
 import java.sql.Blob
 import java.time.LocalDate
 
-public interface PersonsDAO extends Closeable {
+public interface BannerPersonsReadDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.personExist)
     String personExist(@Bind('osuID') String osuID)
 
@@ -85,11 +83,6 @@ public interface PersonsDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getImageById)
     @Mapper(ImageMapper)
     Blob getImageById(@Bind('osuID') String osuID)
-
-    @SqlQuery(AbstractPersonsDAO.getMealPlans)
-    @Mapper(MealPlanMapper)
-    List<MealPlan> getMealPlans(@Bind('osuID') String osuID,
-                                @Bind('mealPlanID') String mealPlanID)
 
     @SqlQuery(AbstractPersonsDAO.getAddresses)
     @Mapper(AddressMapper)
