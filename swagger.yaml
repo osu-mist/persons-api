@@ -101,7 +101,7 @@ paths:
           # Return a 202 to indicate the record was accepted but not yet created.
           description: Person record accepted.
           schema:
-            $ref: '#/definitions/JobResultObject'
+            $ref: '#/definitions/PersonResultObject'
         400:
           description: Bad request
           schema:
