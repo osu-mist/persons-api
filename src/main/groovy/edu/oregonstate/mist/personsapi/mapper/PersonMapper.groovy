@@ -23,6 +23,8 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
                     lastName: rs.getString('LAST_NAME')
             ),
             birthDate: rs.getDate('BIRTH_DATE'),
+            citizen: rs.getString('CITIZEN'),
+            sex: rs.getString('SEX'),
             email: rs.getString('EMAIL_ADDRESS'),
             username: rs.getString('USERNAME'),
             osuUID: rs.getString('OSUUID'),

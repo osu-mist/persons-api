@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import edu.oregonstate.mist.api.jsonapi.ResultObject
-import groovy.transform.InheritConstructors
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -173,9 +172,6 @@ class JobObject {
         }
     }
 }
-
-@InheritConstructors
-class PersonObjectException extends Exception {}
 
 @JsonIgnoreProperties(ignoreUnknown=true) //when deserializing, ignore unknown fields
 class LaborDistribution {

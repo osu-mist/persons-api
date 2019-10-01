@@ -156,6 +156,50 @@ class PersonsResource extends Resource {
         ok(res).build()
     }
 
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    Response createPerson(@Valid ResultObject resultObject) {
+        PersonObject person
+        try {
+            person = PersonObject.fromResultObject(resultObject)
+            if (([
+                person.name.firstName,
+                person.name.lastName,
+                person.sex,
+                person.birthDate].contains(null)
+            )) {
+                return badRequest("Required fields are missing or are null.").build()
+            } else if (!(person.sex in ["M", "F", "N"])) {
+                return badRequest("Sex must be one of 'M', 'F', 'N'.").build()
+            } else if (!(person.citizen in [null, "FN", "N", "R", "S", "C"])) {
+                return badRequest("Citizen must be one of 'FN', 'N', 'R', 'S', 'C'.").build()
+            }
+        } catch (PersonObjectException e) {
+            return badRequest(
+                "Unable to parse person object or required fields are missing. " +
+                "Make sure dates are in ISO8601 format: yyyy-MM-dd"
+            ).build()
+        }
+
+        String dbFunctionOutput = personsWriteDAO.createPerson(person)
+                                                 .getString(PersonsWriteDAO.outParameter)
+
+        if (!dbFunctionOutput.startsWith("ERROR")) {
+            def createdPerson = personsStringTemplateDAO.getPersons(
+                null, [dbFunctionOutput], null, null, null, false
+            )
+            if (createdPerson) {
+                ResultObject res = personResultObject(createdPerson?.get(0))
+                accepted(res).build()
+            } else {
+                internalServerError("Person has been created but not found.").build()
+            }
+        } else {
+            badRequest(dbFunctionOutput).build()
+        }
+    }
+
     /**
      * Strip accents and convert to uppercase to prepare for DAO.
      * @param name

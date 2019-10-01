@@ -81,6 +81,31 @@ paths:
           description: Bad request
           schema:
             $ref: '#/definitions/Error'
+    post:
+      description: Create a person
+      tags:
+        - persons
+      operationId: postPerson
+      parameters:
+        - name: person
+          in: body
+          description: Result object for a person
+          required: true
+          schema:
+            $ref: '#/definitions/NewPersonResultObject'
+        - $ref: '#/parameters/pretty'
+        - $ref: '#/parameters/authorization'
+      responses:
+        202:
+          # The backend data source needs to do additional processing with the new person record.
+          # Return a 202 to indicate the record was accepted but not yet created.
+          description: Person record accepted.
+          schema:
+            $ref: '#/definitions/JobResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorArray'
   /persons/{osuID}:
     get:
       description: Get general person information
@@ -379,6 +404,54 @@ parameters:
     required: true
     description: '"Bearer [token]" where [token] is your OAuth2 access token'
 definitions:
+  NewPersonResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/NewPersonResourceObject"
+  NewPersonResourceObject:
+    properties:
+      type:
+        $ref: "#/definitions/PersonType"
+      attributes:
+        required:
+        - name
+        - birthDate
+        - sex
+        properties:
+          name:
+            properties:
+              firstName:
+                type: string
+                description: Preferred first name
+              lastName:
+                type: string
+                description: Preferred last name
+              middleName:
+                type: string
+                description: Preferred middle name
+          birthDate:
+            type: string
+            format: date
+            description: Birth date
+            example: "1995-01-20"
+          citizen:
+            type: string
+            enum: [FN, N, R, S, C]
+            description: |
+              Person's citzen code
+              - "FN" - Foreign National
+              - "N" - Non Resident Alien
+              - "R" - Resident Alien
+              - "S" - Substantial Presence Alien
+              - "C" - Citizen
+          sex:
+            type: string
+            enum: [M, F, N]
+            description: |
+              Person's sex code
+              - "M" - Male
+              - "F" - Female
+              - "N" - Non-specified
   PersonResultObject:
     properties:
       data:
@@ -387,8 +460,7 @@ definitions:
             type: string
             description: 9 digit OSU ID
           type:
-            type: string
-            description: person
+            $ref: "#/definitions/PersonType"
           links:
             $ref: "#/definitions/SelfLink"
           attributes:
@@ -746,6 +818,9 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
+  PersonType:
+    type: string
+    example: person
   JobType:
     type: string
     example: job
@@ -862,6 +937,8 @@ definitions:
           type:
             $ref: "#/definitions/SSNType"
           attributes:
+            required:
+              - ssn
             properties:
               ssn:
                 type: string
