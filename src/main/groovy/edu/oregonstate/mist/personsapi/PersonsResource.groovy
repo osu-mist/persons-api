@@ -182,8 +182,8 @@ class PersonsResource extends Resource {
             ).build()
         }
 
-        String dbFunctionOutput = personsWriteDAO.createPerson(person)
-                                                 .getString(PersonsWriteDAO.outParameter)
+        String dbFunctionOutput = bannerPersonsWriteDAO.createPerson(person)
+                                                 .getString(BannerPersonsWriteDAO.outParameter)
 
         if (!dbFunctionOutput.startsWith("ERROR")) {
             def createdPerson = personsStringTemplateDAO.getPersons(
