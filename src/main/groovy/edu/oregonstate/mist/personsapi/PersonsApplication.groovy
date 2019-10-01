@@ -1,9 +1,10 @@
 package edu.oregonstate.mist.personsapi
 
 import edu.oregonstate.mist.api.Application
-import edu.oregonstate.mist.personsapi.db.PersonsDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
+import edu.oregonstate.mist.personsapi.db.ODSPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
-import edu.oregonstate.mist.personsapi.db.PersonsWriteDAO
+import edu.oregonstate.mist.personsapi.db.BannerPersonsWriteDAO
 import io.dropwizard.jdbi.DBIFactory
 import io.dropwizard.setup.Environment
 import org.skife.jdbi.v2.DBI
@@ -23,19 +24,26 @@ class PersonsApplication extends Application<PersonsApplicationConfiguration> {
         this.setup(configuration, environment)
 
         DBIFactory factory = new DBIFactory()
-        DBI readJdbi = factory.build(environment, configuration.getReadDataSourceFactory(),
-                "readJdbi")
-        PersonsDAO personsDAO = readJdbi.onDemand(PersonsDAO.class)
-        PersonsStringTemplateDAO personsStringTemplateDAO = readJdbi.onDemand(
+        DBI bannerReadJdbi = factory.build(
+                environment, configuration.getBannerReadDataSourceFactory(), "bannerReadJdbi")
+        BannerPersonsReadDAO bannerPersonsReadDAO = bannerReadJdbi.onDemand(
+                BannerPersonsReadDAO.class)
+        PersonsStringTemplateDAO personsStringTemplateDAO = bannerReadJdbi.onDemand(
                 PersonsStringTemplateDAO.class)
 
-        DBI writeJdbi = factory.build(
-                environment, configuration.getWriteDataSourceFactory(), "writeJdbi")
-        PersonsWriteDAO personsWriteDAO = writeJdbi.onDemand(PersonsWriteDAO.class)
+        DBI bannerWriteJdbi = factory.build(
+                environment, configuration.getBannerWriteDataSourceFactory(), "bannerWriteJdbi")
+        BannerPersonsWriteDAO bannerPersonsWriteDAO = bannerWriteJdbi.onDemand(
+                BannerPersonsWriteDAO.class)
+
+        DBI odsReadJdbi = factory.build(
+                environment, configuration.getODSReadDataSourceFactory(), "odsReadJdbi")
+        ODSPersonsReadDAO odsPersonsReadDAO = odsReadJdbi.onDemand(
+                ODSPersonsReadDAO.class)
 
         environment.jersey().register(
-            new PersonsResource(personsDAO, personsStringTemplateDAO,
-                    personsWriteDAO, configuration.api.endpointUri)
+            new PersonsResource(bannerPersonsReadDAO, personsStringTemplateDAO,
+                    bannerPersonsWriteDAO, odsPersonsReadDAO, configuration.api.endpointUri)
         )
     }
 

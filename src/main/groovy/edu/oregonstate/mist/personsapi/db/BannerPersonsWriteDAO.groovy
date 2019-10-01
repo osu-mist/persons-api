@@ -10,7 +10,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.OutParameter
 
 import java.sql.Types
 
-public interface PersonsWriteDAO extends Closeable {
+public interface BannerPersonsWriteDAO extends Closeable {
     static final String outParameter = "return_value"
 
     @SqlCall(AbstractPersonsDAO.personNewFunction)
