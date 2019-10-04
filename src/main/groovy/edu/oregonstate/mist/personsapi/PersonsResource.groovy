@@ -467,8 +467,8 @@ class PersonsResource extends Resource {
             job = JobObject.fromResultObject(resultObject)
         } catch (PersonObjectException e) {
             addBadRequest(
-                "Could not parse job object. Please make sure all required fields are included and "
-                + "in the corret format."
+                "Could not parse job object. Please make sure all required fields are included " +
+                "and in the corret format."
             )
             // if we can't deserialize the job object, no need to proceed
             return errors
