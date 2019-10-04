@@ -178,7 +178,7 @@ class PersonsResource extends Resource {
         } catch (PersonObjectException e) {
             return badRequest(
                 "Unable to parse person object or required fields are missing. " +
-                "Make sure dates are in ISO8601 format: yyyy-MM-dd"
+                "Please make sure all required fields are included and in the corret format."
             ).build()
         }
 
@@ -466,8 +466,10 @@ class PersonsResource extends Resource {
         try {
             job = JobObject.fromResultObject(resultObject)
         } catch (PersonObjectException e) {
-            addBadRequest("Could not parse job object. " +
-                    "Make sure dates are in ISO8601 format: yyyy-MM-dd")
+            addBadRequest(
+                "Could not parse job object. Please make sure all required fields are included " +
+                "and in the corret format."
+            )
             // if we can't deserialize the job object, no need to proceed
             return errors
         }

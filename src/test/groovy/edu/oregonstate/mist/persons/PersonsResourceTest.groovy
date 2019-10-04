@@ -32,6 +32,8 @@ class PersonsResourceTest {
     JobObject fakeJob
     ResultObject fakeJobResultObject
     LocalDate sampleDate
+    String jobParsingErrorMessage = "Could not parse job object. Please make sure all " +
+        "required fields are included and in the corret format."
 
     @Before
     void setup() {
@@ -349,14 +351,12 @@ class PersonsResourceTest {
 
     @Test
     void createJobShouldRejectMalformedJobObject() {
-        testCreatingBadJobObject("badObject",
-                "Could not parse job object. Make sure dates are in ISO8601 format: yyyy-MM-dd")
+        testCreatingBadJobObject("badObject", jobParsingErrorMessage)
     }
 
     @Test
     void createJobShouldRejectBadDate() {
-        testCreatingBadJobObject(["beginDate":"5/3/2018"],
-                "Could not parse job object. Make sure dates are in ISO8601 format: yyyy-MM-dd")
+        testCreatingBadJobObject(["beginDate":"5/3/2018"], jobParsingErrorMessage)
     }
 
     @Test
