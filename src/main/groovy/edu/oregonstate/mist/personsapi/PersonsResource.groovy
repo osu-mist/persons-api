@@ -6,6 +6,7 @@ import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.AddressObject
+import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
@@ -759,7 +760,6 @@ class PersonsResource extends Resource {
             return notFound().build()
         }
 
-        logger.info("Creating Address")
         AddressObject address
         try {
             address = AddressObject.fromResultObject(resultObject)
@@ -774,14 +774,19 @@ class PersonsResource extends Resource {
         }
 
         String addressType = resultObject.data['attributes']['addressType']
-        String rowID = bannerPersonsReadDAO.addressTypeExist(pidm, addressType)
+        AddressRecordObject addressRecord = bannerPersonsReadDAO.addressTypeExist(pidm, addressType)
         println('-------------')
         println(resultObject.dump())
         println(address)
-        println(rowID)
+        println(addressRecord.dump())
         println('-------------')
 
+        // if (rowID) {
+        //     logger.info("Address with the same address type exist. Deactivate the current one.")
+        // }
+
         try {
+            logger.info("Creating new address.")
             bannerPersonsWriteDAO.createAddress(pidm, address)
             accepted(new ResultObject(data: new ResourceObject(attributes: address))).build()
         } catch (UnableToExecuteStatementException e) {

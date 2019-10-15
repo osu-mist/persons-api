@@ -1,10 +1,12 @@
 package edu.oregonstate.mist.personsapi.db
 
 import edu.oregonstate.mist.personsapi.core.AddressObject
+import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.PreviousRecord
 import edu.oregonstate.mist.personsapi.mapper.AddressMapper
+import edu.oregonstate.mist.personsapi.mapper.AddressRecordMapper
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
@@ -90,7 +92,8 @@ public interface BannerPersonsReadDAO extends Closeable {
                                      @Bind('addressType') String addressType)
 
     @SqlQuery(AbstractPersonsDAO.addressTypeExist)
-    String addressTypeExist(@Bind('pidm') String pidm,
-                            @Bind('addressType') String addressType)
+    @Mapper(AddressRecordMapper)
+    AddressRecordObject addressTypeExist(@Bind('pidm') String pidm,
+                                         @Bind('addressType') String addressType)
 
 }

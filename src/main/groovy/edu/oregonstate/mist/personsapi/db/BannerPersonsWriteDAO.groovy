@@ -42,6 +42,10 @@ public interface BannerPersonsWriteDAO extends Closeable {
     void createAddress(@Bind('pidm') String pidm,
                        @BindAddress AddressObject address)
 
+    @SqlCall(AbstractPersonsDAO.updateAddress)
+    void updateAddress(@Bind('pidm') String pidm,
+                       @BindAddress AddressObject address)
+
     @SqlCall(AbstractPersonsDAO.createSSN)
     void createSSN(@Bind('pidm') String pidm,
                    @Bind('ssn') String ssn)
