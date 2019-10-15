@@ -89,4 +89,8 @@ public interface BannerPersonsReadDAO extends Closeable {
     List<AddressObject> getAddresses(@Bind('osuID') String osuID,
                                      @Bind('addressType') String addressType)
 
+    @SqlQuery(AbstractPersonsDAO.addressTypeExist)
+    String addressTypeExist(@Bind('pidm') String pidm,
+                            @Bind('addressType') String addressType)
+
 }

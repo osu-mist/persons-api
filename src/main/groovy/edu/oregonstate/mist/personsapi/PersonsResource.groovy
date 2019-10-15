@@ -163,12 +163,14 @@ class PersonsResource extends Resource {
         PersonObject person
         try {
             person = PersonObject.fromResultObject(resultObject)
-            if (([
+            if (!person) {
+                return badRequest("No person object provided").build()
+            } else if ([
                 person.name.firstName,
                 person.name.lastName,
                 person.sex,
                 person.birthDate].contains(null)
-            )) {
+            ) {
                 return badRequest("Required fields are missing or are null.").build()
             } else if (!(person.sex in ["M", "F", "N"])) {
                 return badRequest("Sex must be one of 'M', 'F', 'N'.").build()
@@ -744,6 +746,57 @@ class PersonsResource extends Resource {
         } else {
             notFound().build()
         }
+    }
+
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/addresses')
+    Response createAddress(@PathParam('osuID') String osuID,
+                           @Valid ResultObject resultObject) {
+        String pidm = bannerPersonsReadDAO.personExist(osuID)
+        if (!pidm) {
+            return notFound().build()
+        }
+
+        logger.info("Creating Address")
+        AddressObject address
+        try {
+            address = AddressObject.fromResultObject(resultObject)
+            if (!address) {
+                return badRequest("No address object provided.").build()
+            }
+        } catch (PersonObjectException e) {
+            return badRequest(
+                "Unable to parse address object or required fields are missing. " +
+                "Please make sure all required fields are included and in the corret format."
+            ).build()
+        }
+
+        String addressType = resultObject.data['attributes']['addressType']
+        String rowID = bannerPersonsReadDAO.addressTypeExist(pidm, addressType)
+        println('-------------')
+        println(resultObject.dump())
+        println(address)
+        println(rowID)
+        println('-------------')
+
+        try {
+            bannerPersonsWriteDAO.createAddress(pidm, address)
+            accepted(new ResultObject(data: new ResourceObject(attributes: address))).build()
+        } catch (UnableToExecuteStatementException e) {
+            println('-------------')
+            println(e)
+            println('-------------')
+            internalServerError("Unable to execute SQL query").build()
+        }
+
+        // if (!dbFunctionOutput) {
+        //     accepted(new ResultObject(data: new ResourceObject(attributes: address))).build()
+        // } else {
+        //     logger.error("Unexpected database return value: $dbFunctionOutput")
+        //     internalServerError("Error creating new address: $dbFunctionOutput").build()
+        // }
     }
 
     private ResourceObject getMealPlanResourceObject(
