@@ -991,9 +991,25 @@ definitions:
               example: phone
             attributes:
               properties:
-                primaryPhone:
+                areaCode:
                   type: string
-                  example: '5554443333'
+                  example: 503
+                phoneNumber:
+                  type: string
+                  example: 5554443333
+                phoneExtension:
+                  type: string
+                  example: 20
+                phoneCode:
+                  type: string
+                  example: CM
+                  enum: [RN, MG, VO, RE, RB, VP, VF, RK, CM, EF, RH, EO, PA, MP]
+                intlAccess:
+                  type: string
+                  example: 5554443333
+                activityDate:
+                  type: string
+                  example: 12-MAY-09
   SelfLink:
     properties:
       self:
