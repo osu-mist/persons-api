@@ -91,9 +91,20 @@ public interface BannerPersonsReadDAO extends Closeable {
     List<AddressObject> getAddresses(@Bind('osuID') String osuID,
                                      @Bind('addressType') String addressType)
 
-    @SqlQuery(AbstractPersonsDAO.addressTypeExist)
+    @SqlQuery(AbstractPersonsDAO.hasSameAddressType)
     @Mapper(AddressRecordMapper)
-    AddressRecordObject addressTypeExist(@Bind('pidm') String pidm,
-                                         @Bind('addressType') String addressType)
+    AddressRecordObject hasSameAddressType(@Bind('pidm') String pidm,
+                                           @Bind('addressType') String addressType)
 
+    @SqlQuery(AbstractPersonsDAO.validateAddressType)
+    Boolean isValidAddressType(@Bind('addressType') String addressType)
+
+    @SqlQuery(AbstractPersonsDAO.validateStateCode)
+    Boolean isValidStateCode(@Bind('stateCode') String stateCode)
+
+    @SqlQuery(AbstractPersonsDAO.validateCountyCode)
+    Boolean isValidCountyCode(@Bind('countyCode') String countyCode)
+
+    @SqlQuery(AbstractPersonsDAO.validateNationCode)
+    Boolean isValidNationCode(@Bind('nationCode') String nationCode)
 }

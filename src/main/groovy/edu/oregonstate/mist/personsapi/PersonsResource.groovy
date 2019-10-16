@@ -749,32 +749,56 @@ class PersonsResource extends Resource {
         }
     }
 
+    // Validate new address object
     private List<Error> newAddressErrors(AddressObject address) {
         List<Error> errors = []
-        def addBadRequest = { String message ->
+        Closure addBadRequest = { String message ->
             errors.add(Error.badRequest(message))
         }
 
         [
-            ["addressType", address?.addressType, 2],
-            ["houseNumber", address?.houseNumber, 10],
-            ["addressLine1", address?.addressLine1, 75],
-            ["addressLine2", address?.addressLine2, 75],
-            ["addressLine3", address?.addressLine3, 75],
-            ["addressLine4", address?.addressLine4, 75],
-            ["city", address?.city, 50],
-            ["countyCode", address?.countyCode, 5],
-            ["stateCode", address?.stateCode, 3],
-            ["postalCode", address?.postalCode, 30],
-            ["nationCode", address?.nationCode, 5]
+            [true, "addressType", address?.addressType, 2,
+             { String addressType -> bannerPersonsReadDAO.isValidAddressType(addressType) }
+            ],
+            [false, "houseNumber", address?.houseNumber, 10, null],
+            [false, "addressLine1", address?.addressLine1, 75, null],
+            [false, "addressLine2", address?.addressLine2, 75, null],
+            [false, "addressLine3", address?.addressLine3, 75, null],
+            [false, "addressLine4", address?.addressLine4, 75, null],
+            [true, "city", address?.city, 50, null],
+            [false, "countyCode", address?.countyCode, 5,
+             { String countyCode -> bannerPersonsReadDAO.isValidCountyCode(countyCode) }
+            ],
+            [false, "stateCode", address?.stateCode, 3,
+             { String stateCode -> bannerPersonsReadDAO.isValidStateCode(stateCode) }
+            ],
+            [false, "postalCode", address?.postalCode, 30, null],
+            [false, "nationCode", address?.nationCode, 5,
+             { String nationCode -> bannerPersonsReadDAO.isValidNationCode(nationCode) }
+            ]
         ].each {
-            String fieldName = it.get(0)
-            String field = it.get(1)
-            Integer length = it.get(2)
+            Boolean isRequired = it.get(0)
+            String fieldName = it.get(1)
+            String field = it.get(2)
+            Integer length = it.get(3)
+            Closure validateFunction = it.get(4)
+
+            // Check if requried field is missing
+            if (isRequired && !field) {
+                addBadRequest("Required field $fieldName is missing.")
+            }
+
+            // Check if input field is over the buffer size
             if (field?.length() > length) {
                 addBadRequest("$fieldName can't be more than $length characters.")
             }
+
+            // Check if input field is valid
+            if (field && validateFunction && !validateFunction(field)) {
+                addBadRequest("$fieldName is not valid.")
+            }
         }
+
         errors
     }
 
@@ -807,7 +831,9 @@ class PersonsResource extends Resource {
         }
 
         String addressType = resultObject.data['attributes']['addressType']
-        AddressRecordObject addressRecord = bannerPersonsReadDAO.addressTypeExist(pidm, addressType)
+        AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+            pidm, addressType
+        )
 
         try {
             if (addressRecord?.rowID) {
@@ -831,6 +857,10 @@ class PersonsResource extends Resource {
                 )
             )).build()
         } catch (UnableToExecuteStatementException e) {
+            println('-------------')
+            println(e)
+            println('-------------')
+
             internalServerError("Unable to execute SQL query.").build()
         } catch (Exception e) {
             internalServerError(
