@@ -87,7 +87,7 @@ paths:
         - persons
       operationId: postPerson
       parameters:
-        - name: person
+        - name: personBody
           in: body
           description: Result object for a person
           required: true
@@ -162,7 +162,7 @@ paths:
         - jobs
       operationId: postJob
       parameters:
-        - name: job
+        - name: jobBody
           in: body
           description: Result object for a job
           required: true
@@ -213,7 +213,7 @@ paths:
         - jobs
       operationId: putJob
       parameters:
-        - name: job
+        - name: jobBody
           in: body
           description: Result object for a job
           required: true
@@ -246,7 +246,7 @@ paths:
         - ssn
       operationId: postSSN
       parameters:
-        - name: ssn
+        - name: ssnBody
           in: body
           description: Result object for an SSN
           required: true
@@ -367,6 +367,33 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/AddressesResultObject'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: Create address for a person
+      tags:
+        - addresses
+      operationId: postAddresses
+      parameters:
+        - name: addressBody
+          in: body
+          description: Post body for the new address
+          required: true
+          schema:
+            $ref: '#/definitions/NewAddressResultObject'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/authorization'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddressResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorArray'
         404:
           description: Person not found
           schema:
@@ -823,10 +850,13 @@ definitions:
     example: person
   JobType:
     type: string
-    example: job
+    example: jobs
   SSNType:
     type: string
     example: ssn
+  AddressType:
+    type: string
+    example: addresses
   MealPlansResultObject:
     properties:
       data:
@@ -867,20 +897,66 @@ definitions:
             type: string
             description: Description of place the meal plan was last used
             example: "Java II"
+  NewAddressResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/NewAddressResourceObject"
+  NewAddressResourceObject:
+    properties:
+      type:
+        $ref: "#/definitions/AddressType"
+      attributes:
+        required:
+        - addressType
+        - city
+        properties:
+          addressType:
+            type: string
+            description: Code for the type of address record.
+            example: CM
+          addressLine1:
+            type: string
+            example: "123 Main Street"
+          addressLine2:
+            type: string
+            example: "Apartment 123"
+          addressLine3:
+            type: string
+          addressLine4:
+            type: string
+          houseNumber:
+            type: string
+          city:
+            type: string
+          stateCode:
+            type: string
+            description: State code/abbreviation. This could also represent a province.
+            example: "OR"
+          postalCode:
+            type: string
+            example: "97331"
+          countyCode:
+            type: string
+            example: "41003"
+          nationCode:
+            type: string
   AddressesResultObject:
     properties:
       data:
         type: array
         items:
           $ref: "#/definitions/AddressResourceObject"
+  AddressResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/AddressResourceObject"
   AddressResourceObject:
     properties:
       id:
         type: string
         description: Globally unique ID for the address.
       type:
-        type: string
-        example: addresses
+        $ref: "#/definitions/AddressType"
       attributes:
         properties:
           addressType:

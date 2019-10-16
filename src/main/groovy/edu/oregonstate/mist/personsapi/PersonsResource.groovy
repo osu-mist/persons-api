@@ -857,10 +857,6 @@ class PersonsResource extends Resource {
                 )
             )).build()
         } catch (UnableToExecuteStatementException e) {
-            println('-------------')
-            println(e)
-            println('-------------')
-
             internalServerError("Unable to execute SQL query.").build()
         } catch (Exception e) {
             internalServerError(
