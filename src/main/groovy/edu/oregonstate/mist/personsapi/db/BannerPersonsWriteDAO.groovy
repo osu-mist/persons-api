@@ -2,6 +2,7 @@ package edu.oregonstate.mist.personsapi.db
 
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
 import edu.oregonstate.mist.personsapi.core.AddressObject
+import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import org.skife.jdbi.v2.OutParameters
@@ -42,9 +43,9 @@ public interface BannerPersonsWriteDAO extends Closeable {
     void createAddress(@Bind('pidm') String pidm,
                        @BindAddress AddressObject address)
 
-    @SqlCall(AbstractPersonsDAO.updateAddress)
-    void updateAddress(@Bind('pidm') String pidm,
-                       @BindAddress AddressObject address)
+    @SqlCall(AbstractPersonsDAO.deactivateAddress)
+    void deactivateAddress(@Bind('pidm') String pidm,
+                           @BindAddressRecord AddressRecordObject addressrecord)
 
     @SqlCall(AbstractPersonsDAO.createSSN)
     void createSSN(@Bind('pidm') String pidm,

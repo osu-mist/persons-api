@@ -778,21 +778,19 @@ class PersonsResource extends Resource {
         println('-------------')
         println(resultObject.dump())
         println(address)
-        println(addressRecord.dump())
+        println(pidm)
         println('-------------')
 
-        // if (rowID) {
-        //     logger.info("Address with the same address type exist. Deactivate the current one.")
-        // }
-
         try {
+            if (addressRecord.rowID) {
+                logger.info("Address with the same type exist. Deactivate the current one.")
+                bannerPersonsWriteDAO.deactivateAddress(pidm, addressRecord)
+            }
+
             logger.info("Creating new address.")
             bannerPersonsWriteDAO.createAddress(pidm, address)
             accepted(new ResultObject(data: new ResourceObject(attributes: address))).build()
         } catch (UnableToExecuteStatementException e) {
-            println('-------------')
-            println(e)
-            println('-------------')
             internalServerError("Unable to execute SQL query").build()
         }
 

@@ -13,8 +13,7 @@ public class AddressRecordMapper implements ResultSetMapper<AddressRecordObject>
         new AddressRecordObject(
             rowID: rs.getString('ROWID'),
             addressType: rs.getString('SPRADDR_ATYP_CODE'),
-            city: rs.getString('SPRADDR_CITY'),
-            seqno: rs.getInt('SPRADDR_SEQNO')
+            seqno: rs.getString('SPRADDR_SEQNO')
         )
     }
 }
