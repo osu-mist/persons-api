@@ -371,6 +371,20 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
+  /persons/{osuID}/phones:
+    get:
+      description: Get phone numbers for a person
+      tags:
+        - phones
+      operationId: getPhones
+      parameters:
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/authorization'
+      responses:
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
 parameters:
   osuID:
     name: osuID
