@@ -10,35 +10,21 @@ import java.time.LocalDate
 class AddressObject {
     private static ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
 
-    @JsonIgnore
     String id
-
     String addressType
-
-    @JsonIgnore
     String addressTypeDescription
-    @JsonIgnore
     String addressLine1
-    @JsonIgnore
     String addressLine2
-    @JsonIgnore
     String addressLine3
-    @JsonIgnore
     String addressLine4
-    @JsonIgnore
     String houseNumber
     String city
     String stateCode
-    @JsonIgnore
     String state
     String postalCode
-    @JsonIgnore
     String countyCode
-    @JsonIgnore
     String county
-    @JsonIgnore
     String nationCode
-    @JsonIgnore
     String nation
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
