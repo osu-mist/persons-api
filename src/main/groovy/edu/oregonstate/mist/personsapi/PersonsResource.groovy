@@ -775,11 +775,6 @@ class PersonsResource extends Resource {
 
         String addressType = resultObject.data['attributes']['addressType']
         AddressRecordObject addressRecord = bannerPersonsReadDAO.addressTypeExist(pidm, addressType)
-        println('-------------')
-        println(resultObject.dump())
-        println(address)
-        println(pidm)
-        println('-------------')
 
         try {
             if (addressRecord.rowID) {
@@ -789,17 +784,26 @@ class PersonsResource extends Resource {
 
             logger.info("Creating new address.")
             bannerPersonsWriteDAO.createAddress(pidm, address)
-            accepted(new ResultObject(data: new ResourceObject(attributes: address))).build()
-        } catch (UnableToExecuteStatementException e) {
-            internalServerError("Unable to execute SQL query").build()
-        }
 
-        // if (!dbFunctionOutput) {
-        //     accepted(new ResultObject(data: new ResourceObject(attributes: address))).build()
-        // } else {
-        //     logger.error("Unexpected database return value: $dbFunctionOutput")
-        //     internalServerError("Error creating new address: $dbFunctionOutput").build()
-        // }
+            List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
+
+            if (addresses.size() != 1) {
+                throw new Exception("New record created but more than one records are valid.")
+            }
+            accepted(new ResultObject(
+                data: new ResourceObject(
+                    id: addresses[0].id,
+                    type: "addresses",
+                    attributes: addresses[0]
+                )
+            )).build()
+        } catch (UnableToExecuteStatementException e) {
+            internalServerError("Unable to execute SQL query.").build()
+        } catch (Exception e) {
+            internalServerError(
+                "Internal Server Error, please contact API support team for futher assistance."
+            ).build()
+        }
     }
 
     private ResourceObject getMealPlanResourceObject(

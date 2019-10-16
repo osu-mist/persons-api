@@ -41,7 +41,6 @@ class AddressObject {
     @JsonIgnore
     String nation
 
-    @JsonIgnore
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     LocalDate lastModified
 
@@ -49,9 +48,6 @@ class AddressObject {
         try {
             mapper.convertValue(resultObject.data['attributes'], AddressObject.class)
         } catch (IllegalArgumentException e) {
-            println('-------------')
-            println(e)
-            println('-------------')
             throw new PersonObjectException("Some fields weren't able to map to an address object.")
         } catch (NullPointerException e) {
             throw new PersonObjectException("Could not parse result object.")
