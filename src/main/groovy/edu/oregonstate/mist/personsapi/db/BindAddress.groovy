@@ -24,6 +24,13 @@ public @interface BindAddress {
                     q.bind("city", address.city)
                     q.bind("postalCode", address.postalCode)
                     q.bind("stateCode", address.stateCode)
+                    q.bind("addressLine1", address.addressLine1)
+                    q.bind("addressLine2", address.addressLine2)
+                    q.bind("addressLine3", address.addressLine3)
+                    q.bind("addressLine4", address.addressLine4)
+                    q.bind("houseNumber", address.houseNumber)
+                    q.bind("countyCode", address.countyCode)
+                    q.bind("nationCode", address.nationCode)
                     q.bind("seqno", null)
                     q.bind("return_value", null)
                 }

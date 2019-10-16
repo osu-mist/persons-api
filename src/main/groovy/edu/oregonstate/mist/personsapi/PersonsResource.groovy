@@ -749,6 +749,35 @@ class PersonsResource extends Resource {
         }
     }
 
+    private List<Error> newAddressErrors(AddressObject address) {
+        List<Error> errors = []
+        def addBadRequest = { String message ->
+            errors.add(Error.badRequest(message))
+        }
+
+        [
+            ["addressType", address?.addressType, 2],
+            ["houseNumber", address?.houseNumber, 10],
+            ["addressLine1", address?.addressLine1, 75],
+            ["addressLine2", address?.addressLine2, 75],
+            ["addressLine3", address?.addressLine3, 75],
+            ["addressLine4", address?.addressLine4, 75],
+            ["city", address?.city, 50],
+            ["countyCode", address?.countyCode, 5],
+            ["stateCode", address?.stateCode, 3],
+            ["postalCode", address?.postalCode, 30],
+            ["nationCode", address?.nationCode, 5]
+        ].each {
+            String fieldName = it.get(0)
+            String field = it.get(1)
+            Integer length = it.get(2)
+            if (field?.length() > length) {
+                addBadRequest("$fieldName can't be more than $length characters.")
+            }
+        }
+        errors
+    }
+
     @Timed
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
@@ -759,12 +788,16 @@ class PersonsResource extends Resource {
         if (!pidm) {
             return notFound().build()
         }
-
         AddressObject address
         try {
             address = AddressObject.fromResultObject(resultObject)
             if (!address) {
                 return badRequest("No address object provided.").build()
+            }
+
+            List<Error> errors = newAddressErrors(address)
+            if (errors) {
+                return errorArrayResponse(errors)
             }
         } catch (PersonObjectException e) {
             return badRequest(
@@ -777,7 +810,7 @@ class PersonsResource extends Resource {
         AddressRecordObject addressRecord = bannerPersonsReadDAO.addressTypeExist(pidm, addressType)
 
         try {
-            if (addressRecord.rowID) {
+            if (addressRecord?.rowID) {
                 logger.info("Address with the same type exist. Deactivate the current one.")
                 bannerPersonsWriteDAO.deactivateAddress(pidm, addressRecord)
             }
