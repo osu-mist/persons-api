@@ -909,7 +909,7 @@ definitions:
         required:
         - addressType
         - city
-        properties:
+        properties: &commonAddressAttributes
           addressType:
             type: string
             description: Code for the type of address record.
@@ -959,48 +959,19 @@ definitions:
         $ref: "#/definitions/AddressType"
       attributes:
         properties:
-          addressType:
-            type: string
-            description: Code for the type of address record.
-            example: CM
+          <<: *commonAddressAttributes
           addressTypeDescription:
             type: string
             description: Short description of the address type.
             example: Current Mailing
-          addressLine1:
-            type: string
-            example: "123 Main Street"
-          addressLine2:
-            type: string
-            example: "Apartment 123"
-          addressLine3:
-            type: string
-          addressLine4:
-            type: string
-          houseNumber:
-            type: string
-          city:
-            type: string
-          stateCode:
-            type: string
-            description: State code/abbreviation. This could also represent a province.
-            example: "OR"
           state:
             type: string
             description: Human readable state code. This could also represent a province.
             example: "Oregon"
-          postalCode:
-            type: string
-            example: "97331"
-          countyCode:
-            type: string
-            example: "41003"
           county:
             type: string
             description: Human readable county.
             example: "Benton"
-          nationCode:
-            type: string
           nation:
             type: string
             description: Human readable nation/country name.
