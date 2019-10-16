@@ -381,6 +381,10 @@ paths:
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/authorization'
       responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PhonesResultObject'
         404:
           description: Person not found
           schema:
@@ -973,6 +977,23 @@ definitions:
             type: string
             description: 9 digits SSN
             example: '123456789'
+  PhonesResultObject:
+    properties:
+      data:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: Globally unique Id for the phone numbers
+            type:
+              type: string
+              example: phone
+            attributes:
+              properties:
+                primaryPhone:
+                  type: string
+                  example: '5554443333'
   SelfLink:
     properties:
       self:
