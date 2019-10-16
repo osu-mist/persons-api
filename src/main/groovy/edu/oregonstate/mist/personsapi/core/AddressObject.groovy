@@ -1,9 +1,10 @@
 package edu.oregonstate.mist.personsapi.core
-import edu.oregonstate.mist.api.jsonapi.ResultObject
+
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.databind.ObjectMapper
+import edu.oregonstate.mist.api.jsonapi.ResultObject
 
 import java.time.LocalDate
 
