@@ -16,7 +16,7 @@ public class PhoneMapper implements ResultSetMapper<PhoneObject> {
       phoneExtension: rs.getString('PHONE_EXTENSION'),
       phoneCode: rs.getString('PHONE_CODE'),
       intlAccess: rs.getString('INTL_ACCESS'),
-      activityDate: rs.getString('ACTIVITY_DATE'),
+      activityDate: rs.getDate('ACTIVITY_DATE')?.toLocalDate()
     )
   }
 }

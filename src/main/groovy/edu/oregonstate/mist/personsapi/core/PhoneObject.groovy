@@ -14,5 +14,5 @@ class PhoneObject {
   String phoneExtension
   String phoneCode
   String intlAccess
-  String activityDate
+  LocalDate activityDate
 }
