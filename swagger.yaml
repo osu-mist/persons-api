@@ -368,6 +368,7 @@ paths:
         - phones
       operationId: getPhones
       parameters:
+        - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/authorization'
       responses:
