@@ -10,7 +10,9 @@ import java.time.LocalDate
 class PhoneObject {
   private static ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
 
+  @JsonIgnore
   String id
+
   String phoneNumber
   String phoneExtension
 
