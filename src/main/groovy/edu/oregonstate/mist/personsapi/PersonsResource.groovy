@@ -757,44 +757,44 @@ class PersonsResource extends Resource {
         }
 
         [
-            [true, "addressType", address?.addressType, 2,
+            [true, "addressType", 2,
              { String addressType -> bannerPersonsReadDAO.isValidAddressType(addressType) }
             ],
-            [false, "houseNumber", address?.houseNumber, 10, null],
-            [false, "addressLine1", address?.addressLine1, 75, null],
-            [false, "addressLine2", address?.addressLine2, 75, null],
-            [false, "addressLine3", address?.addressLine3, 75, null],
-            [false, "addressLine4", address?.addressLine4, 75, null],
-            [true, "city", address?.city, 50, null],
-            [false, "countyCode", address?.countyCode, 5,
+            [false, "houseNumber", 10, null],
+            [false, "addressLine1", 75, null],
+            [false, "addressLine2", 75, null],
+            [false, "addressLine3", 75, null],
+            [false, "addressLine4", 75, null],
+            [true, "city", 50, null],
+            [false, "countyCode", 5,
              { String countyCode -> bannerPersonsReadDAO.isValidCountyCode(countyCode) }
             ],
-            [false, "stateCode", address?.stateCode, 3,
+            [false, "stateCode", 3,
              { String stateCode -> bannerPersonsReadDAO.isValidStateCode(stateCode) }
             ],
-            [false, "postalCode", address?.postalCode, 30, null],
-            [false, "nationCode", address?.nationCode, 5,
+            [false, "postalCode", 30, null],
+            [false, "nationCode", 5,
              { String nationCode -> bannerPersonsReadDAO.isValidNationCode(nationCode) }
             ]
         ].each {
             Boolean isRequired = it.get(0)
             String fieldName = it.get(1)
-            String field = it.get(2)
-            Integer length = it.get(3)
-            Closure validateFunction = it.get(4)
+            String fieldValue = address[fieldName]
+            Integer length = it.get(2)
+            Closure validateFunction = it.get(3)
 
             // Check if requried field is missing
-            if (isRequired && !field) {
+            if (isRequired && !fieldValue) {
                 addBadRequest("Required field $fieldName is missing.")
             }
 
             // Check if input field is over the buffer size
-            if (field?.length() > length) {
+            if (fieldValue?.length() > length) {
                 addBadRequest("$fieldName can't be more than $length characters.")
             }
 
             // Check if input field is valid
-            if (field && validateFunction && !validateFunction(field)) {
+            if (fieldValue && validateFunction && !validateFunction(fieldValue)) {
                 addBadRequest("$fieldName is not valid.")
             }
         }
