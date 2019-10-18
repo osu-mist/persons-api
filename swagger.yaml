@@ -1009,7 +1009,7 @@ definitions:
                   example: 5554443333
                 activityDate:
                   type: string
-                  example: 12-MAY-09
+                  example: '2015-10-19'
   SelfLink:
     properties:
       self:
