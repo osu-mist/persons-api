@@ -783,9 +783,9 @@ class PersonsResource extends Resource {
             Integer length = it.get(2)
             Closure validateFunction = it.get(3)
 
-            // Check if requried field is missing
+            // Check if required field is missing
             if (isRequired && !fieldValue) {
-                addBadRequest("Required field $fieldName is missing.")
+                addBadRequest("Required field $fieldName is missing or null.")
             }
 
             // Check if input field is over the buffer size
@@ -826,7 +826,7 @@ class PersonsResource extends Resource {
         } catch (PersonObjectException e) {
             return badRequest(
                 "Unable to parse address object or required fields are missing. " +
-                "Please make sure all required fields are included and in the corret format."
+                "Please make sure all required fields are included and in the correct format."
             ).build()
         }
 
@@ -860,7 +860,7 @@ class PersonsResource extends Resource {
             internalServerError("Unable to execute SQL query.").build()
         } catch (Exception e) {
             internalServerError(
-                "Internal Server Error, please contact API support team for futher assistance."
+                "Internal Server Error, please contact API support team for further assistance."
             ).build()
         }
     }
