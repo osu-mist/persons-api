@@ -11,10 +11,7 @@ class PhoneObject {
   private static ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
 
   String id
-  String areaCode
   String phoneNumber
   String phoneExtension
-  String phoneCode
-  String intlAccess
   LocalDate activityDate
 }
