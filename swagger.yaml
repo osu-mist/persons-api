@@ -349,17 +349,7 @@ paths:
         - addresses
       operationId: getAddresses
       parameters:
-        - in: query
-          name: addressType
-          description: |
-            Filter by address type. Common address types and their descriptions:
-            - "CM" - Current Mailing
-            - "PA" - Student Alternate Contact
-            - "DM" - Department (US Mail)
-            - "RK" - Financial Aid Address
-            - "RH" - Residence Hall
-          required: false
-          type: string
+        - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/authorization'
       responses:
@@ -421,6 +411,18 @@ parameters:
     type: string
     required: true
     description: '"Bearer [token]" where [token] is your OAuth2 access token'
+  addressType:
+    name: addressType
+    in: query
+    description: |
+      Filter by phone type. Common phone types and their descriptions:
+      - "CM" - Current Mailing
+      - "PA" - Student Alternate Contact
+      - "DM" - Department (US Mail)
+      - "RK" - Financial Aid Address
+      - "RH" - Residence Hall
+    required: false
+    type: string
 definitions:
   NewPersonResultObject:
     properties:
