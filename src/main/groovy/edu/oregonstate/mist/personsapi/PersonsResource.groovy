@@ -10,6 +10,7 @@ import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
+import edu.oregonstate.mist.personsapi.core.PhoneObject
 import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.ODSPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
@@ -792,6 +793,29 @@ class PersonsResource extends Resource {
             )).build()
         } catch (UnableToExecuteStatementException e) {
             internalServerError("Unable to execute SQL query").build()
+        }
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/phones')
+    Response getPhones(@PathParam('osuID') String osuID) {
+        if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID)
+
+            ResultObject resultObject = new ResultObject(
+                    data: phones.collect {
+                        new ResourceObject(
+                                id: it.id,
+                                type: "phones",
+                                attributes: it
+                        )
+                    }
+            )
+
+            ok(resultObject).build()
+        } else {
+            notFound().build()
         }
     }
 }
