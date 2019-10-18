@@ -10,12 +10,11 @@ import java.sql.SQLException
 public class PhoneMapper implements ResultSetMapper<PhoneObject> {
   public PhoneObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
     new PhoneObject(
-      id: rs.getString('SPRTELE_PIDM'),
-      areaCode: rs.getString('AREA_CODE'),
-      phoneNumber: rs.getString('PHONE_NUMBER'),
+      id: rs.getString('ID'),
+      phoneNumber: rs.getString('AREA_CODE') + rs.getString('PHONE_NUMBER'),
       phoneExtension: rs.getString('PHONE_EXTENSION'),
-      phoneCode: rs.getString('PHONE_CODE'),
-      intlAccess: rs.getString('INTL_ACCESS'),
+      primaryIndicator: rs.getString('PRIMARY_IND'),
+      addressCode: rs.getString('ADDRESS_CODE'),
       activityDate: rs.getDate('ACTIVITY_DATE')?.toLocalDate()
     )
   }
