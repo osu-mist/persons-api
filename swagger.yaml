@@ -848,6 +848,9 @@ definitions:
   SSNType:
     type: string
     example: ssn
+  PhoneType:
+    type: string
+    example: phone
   MealPlansResultObject:
     properties:
       data:
@@ -980,6 +983,17 @@ definitions:
             type: string
             description: 9 digits SSN
             example: '123456789'
+  newPhoneResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/newPhoneResourceObject"
+  newPhoneResourceObject:
+    properties:
+      type:
+        $ref: "#/definitions/PhoneType"
+      attributes:
+        required:
+          - addressType
   PhonesResultObject:
     properties:
       data:
