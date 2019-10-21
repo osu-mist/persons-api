@@ -18,7 +18,10 @@ class PhoneObject {
   String fullPhoneNumber
   String phoneExtension
   String primaryIndicator
+  String phoneType
+  String phoneTypeDescription
   String addressType
+  String addressTypeDescription
 
   @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
   LocalDate activityDate

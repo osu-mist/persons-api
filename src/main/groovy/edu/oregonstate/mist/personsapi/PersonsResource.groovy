@@ -800,9 +800,10 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/phones')
     Response getPhones(@PathParam('osuID') String osuID,
-                       @QueryParam('addressType') String addressType) {
+                       @QueryParam('addressType') String addressType,
+                       @QueryParam('phoneType') String phoneType) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
-            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType)
+            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             ResultObject resultObject = new ResultObject(
                     data: phones.collect {
