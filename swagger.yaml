@@ -994,6 +994,23 @@ definitions:
       attributes:
         required:
           - addressType
+        properties: &commonPhoneAttributes
+          phoneNumber:
+            type: string
+            example: 5554443333
+          phoneExtension:
+            type: string
+            example: 20
+          primaryIndicator:
+            type: string
+            example: Y
+          addressType:
+            type: string
+            example: CM
+            enum: [RN, MG, VO, RE, RB, VP, VF, RK, CM, EF, RH, EO, PA, MP]
+          activityDate:
+            type: string
+            example: '2015-10-19'
   PhonesResultObject:
     properties:
       data:
