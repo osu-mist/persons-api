@@ -1017,6 +1017,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/PhoneResourceObject"
+  PhoneResultObject:
+    properties:
+      data:
+        $ref: '#/definitions/PhoneResourceObject'
   PhoneResourceObject:
     properties:
       id:
