@@ -1024,6 +1024,16 @@ definitions:
                 activityDate:
                   type: string
                   example: '2015-10-19'
+  PhoneResourceObject:
+    properties:
+      id:
+        type: string
+        description: Globally unique ID for the phones.
+      type:
+        $ref: "#/definitions/PhoneType"
+      attributes:
+        properties:
+          <<: *commonPhoneAttributes
   SelfLink:
     properties:
       self:
