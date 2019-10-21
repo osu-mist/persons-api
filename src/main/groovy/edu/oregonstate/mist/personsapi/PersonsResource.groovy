@@ -830,19 +830,24 @@ class PersonsResource extends Resource {
             ).build()
         }
 
-        String addressType = resultObject.data['attributes']['addressType']
-        AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
-            pidm, addressType
-        )
-
         try {
+            String addressType = resultObject.data['attributes']['addressType']
+            AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+                pidm, addressType
+            )
             if (addressRecord?.rowID) {
                 logger.info("Address with the same type exist. Deactivate the current one.")
                 bannerPersonsWriteDAO.deactivateAddress(pidm, addressRecord)
             }
 
-            logger.info("Creating new address.")
-            bannerPersonsWriteDAO.createAddress(pidm, address)
+            try {
+                logger.info("Creating new address.")
+                bannerPersonsWriteDAO.createAddress(pidm, address)
+            } catch (Exception e) {
+                logger.info("Unable to create new address record. Reactivate the current one.")
+                bannerPersonsWriteDAO.reactivateAddress(pidm, addressRecord)
+                throw new Exception("Unable to create new address record.")
+            }
 
             List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 

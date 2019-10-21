@@ -25,6 +25,7 @@ public @interface BindAddressRecord {
                     q.bind("addressType", addressRecord.addressType)
                     q.bind("seqno", addressRecord.seqno)
                     q.bind("rowID", addressRecord.rowID)
+                    q.bind("nullValue", null)
                 }
             }
         }
