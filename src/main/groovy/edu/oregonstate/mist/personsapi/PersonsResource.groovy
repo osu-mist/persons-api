@@ -819,4 +819,12 @@ class PersonsResource extends Resource {
             notFound().build()
         }
     }
+
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/phones')
+    Response createPhones(@PathParam('osuID') String osuID) {
+      System.out.println('Nice endpoint you got there')
+    }
 }
