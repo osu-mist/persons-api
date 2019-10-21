@@ -94,5 +94,6 @@ public interface BannerPersonsReadDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.getPhones)
     @Mapper(PhoneMapper)
     List<PhoneObject> getPhones(@Bind('osuID') String osuID,
-                                @Bind('addressType') String addressType)
+                                @Bind('addressType') String addressType,
+                                @Bind('phoneType') String phoneType)
 }

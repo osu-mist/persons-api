@@ -369,6 +369,7 @@ paths:
       operationId: getPhones
       parameters:
         - $ref: '#/parameters/addressType'
+        - $ref: '#/parameters/phoneType'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/authorization'
       responses:
@@ -422,6 +423,17 @@ parameters:
       - "DM" - Department (US Mail)
       - "RK" - Financial Aid Address
       - "RH" - Residence Hall
+    required: false
+    type: string
+  phoneType:
+    name: addressType
+    in: query
+    description: |
+      Filter by phone type. Common phone types and their descriptions:
+      - "CM" - Current
+      - "PA" - Student Alternate Contact
+      - "RK" - Financial Aid Address
+      - "MP" - Mobile Phone
     required: false
     type: string
 definitions:
@@ -994,19 +1006,36 @@ definitions:
               example: phone
             attributes:
               properties:
+                areaCode:
+                  type: string
+                  example: 541
                 phoneNumber:
                   type: string
-                  example: 5554443333
+                  example: 4443333
+                fullPhoneNumber:
+                  type: string
+                  description: Combination of area code and phone number
+                  example: 5414443333
                 phoneExtension:
                   type: string
                   example: 20
                 primaryIndicator:
                   type: string
                   example: Y
+                phoneType:
+                  type: string
+                  example: CM
+                  enum: [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
+                phoneTypeDescription:
+                  type: string
+                  example: Current
                 addressType:
                   type: string
                   example: CM
                   enum: [RN, MG, VO, RE, RB, VP, VF, RK, CM, EF, RH, EO, PA, MP]
+                addressTypeDescription:
+                  type: string
+                  example: Current Mailing
                 activityDate:
                   type: string
                   example: '2015-10-19'
