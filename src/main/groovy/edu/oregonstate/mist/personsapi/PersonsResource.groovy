@@ -824,7 +824,8 @@ class PersonsResource extends Resource {
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/phones')
-    Response createPhones(@PathParam('osuID') String osuID) {
+    Response createPhones(@PathParam('osuID') String osuID,
+                          @Valid ResultObject resultObject) {
       System.out.println('Nice endpoint you got there')
     }
 }
