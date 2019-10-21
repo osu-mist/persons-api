@@ -983,11 +983,11 @@ definitions:
             type: string
             description: 9 digits SSN
             example: '123456789'
-  newPhoneResultObject:
+  NewPhoneResultObject:
     properties:
       data:
-        $ref: "#/definitions/newPhoneResourceObject"
-  newPhoneResourceObject:
+        $ref: "#/definitions/NewPhoneResourceObject"
+  NewPhoneResourceObject:
     properties:
       type:
         $ref: "#/definitions/PhoneType"
