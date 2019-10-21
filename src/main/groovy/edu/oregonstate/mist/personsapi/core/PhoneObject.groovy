@@ -13,7 +13,9 @@ class PhoneObject {
   @JsonIgnore
   String id
 
+  String areaCode
   String phoneNumber
+  String fullPhoneNumber
   String phoneExtension
   String primaryIndicator
   String addressType

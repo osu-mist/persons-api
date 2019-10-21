@@ -1023,9 +1023,12 @@ definitions:
         required:
           - addressType
         properties: &commonPhoneAttributes
+          areaCode:
+            type: string
+            example: 541
           phoneNumber:
             type: string
-            example: 5554443333
+            example: 4443333
           phoneExtension:
             type: string
             example: 20
@@ -1053,6 +1056,10 @@ definitions:
       attributes:
         properties:
           <<: *commonPhoneAttributes
+          fullPhoneNumber:
+            type: string
+            description: Full phone number including area code and phone number
+            example: 5554443333
           primaryIndicator:
             type: string
             example: Y
