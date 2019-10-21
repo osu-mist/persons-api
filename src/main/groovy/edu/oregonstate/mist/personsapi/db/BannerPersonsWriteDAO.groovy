@@ -1,6 +1,8 @@
 package edu.oregonstate.mist.personsapi.db
 
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
+import edu.oregonstate.mist.personsapi.core.AddressObject
+import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import org.skife.jdbi.v2.OutParameters
@@ -37,10 +39,21 @@ public interface BannerPersonsWriteDAO extends Closeable {
     OutParameters updateGraduateJob(@Bind('osuID') String osuID,
                                     @BindJob JobObject job)
 
+    @SqlCall(AbstractPersonsDAO.createAddress)
+    void createAddress(@Bind('pidm') String pidm,
+                       @BindAddress AddressObject address)
+
+    @SqlCall(AbstractPersonsDAO.deactivateAddress)
+    void deactivateAddress(@Bind('pidm') String pidm,
+                           @BindAddressRecord AddressRecordObject addressrecord)
+
+    @SqlCall(AbstractPersonsDAO.reactivateAddress)
+    void reactivateAddress(@Bind('pidm') String pidm,
+                           @BindAddressRecord AddressRecordObject addressrecord)
+
     @SqlCall(AbstractPersonsDAO.createSSN)
-    @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
-    OutParameters createSSN(@Bind('pidm') String pidm,
-                            @Bind('ssn') String ssn)
+    void createSSN(@Bind('pidm') String pidm,
+                   @Bind('ssn') String ssn)
 
     @SqlCall(AbstractPersonsDAO.updateSSN)
     void updateSSN(@Bind('pidm') String pidm,

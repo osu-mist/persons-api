@@ -166,7 +166,7 @@ class JobObject {
         try {
             mapper.convertValue(resultObject.data['attributes'], JobObject.class)
         } catch (IllegalArgumentException e) {
-            throw new PersonObjectException("Some fields weren't able to map to a person object.")
+            throw new PersonObjectException("Some fields weren't able to map to a job object.")
         } catch (NullPointerException e) {
             throw new PersonObjectException("Could not parse result object.")
         }
