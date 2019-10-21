@@ -426,7 +426,7 @@ parameters:
     required: false
     type: string
   phoneType:
-    name: addressType
+    name: phoneType
     in: query
     description: |
       Filter by phone type. Common phone types and their descriptions:
