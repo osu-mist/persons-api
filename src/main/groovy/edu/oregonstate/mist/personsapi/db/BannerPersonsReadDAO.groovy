@@ -4,12 +4,14 @@ import edu.oregonstate.mist.personsapi.core.AddressObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.PhoneObject
+import edu.oregonstate.mist.personsapi.core.PhoneRecordObject
 import edu.oregonstate.mist.personsapi.core.PreviousRecord
 import edu.oregonstate.mist.personsapi.mapper.AddressMapper
 import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
 import edu.oregonstate.mist.personsapi.mapper.PhoneMapper
+import edu.oregonstate.mist.personsapi.mapper.PhoneRecordMapper
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
 import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
 import org.skife.jdbi.v2.sqlobject.Bind
