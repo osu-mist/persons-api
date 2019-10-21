@@ -1016,31 +1016,7 @@ definitions:
       data:
         type: array
         items:
-          properties:
-            id:
-              type: string
-              description: Globally unique Id for the phone numbers
-            type:
-              type: string
-              example: phone
-            attributes:
-              properties:
-                phoneNumber:
-                  type: string
-                  example: 5554443333
-                phoneExtension:
-                  type: string
-                  example: 20
-                primaryIndicator:
-                  type: string
-                  example: Y
-                addressType:
-                  type: string
-                  example: CM
-                  enum: [RN, MG, VO, RE, RB, VP, VF, RK, CM, EF, RH, EO, PA, MP]
-                activityDate:
-                  type: string
-                  example: '2015-10-19'
+          $ref: "#/definitions/PhoneResourceObject"
   PhoneResourceObject:
     properties:
       id:
