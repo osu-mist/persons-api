@@ -827,5 +827,24 @@ class PersonsResource extends Resource {
     Response createPhones(@PathParam('osuID') String osuID,
                           @Valid ResultObject resultObject) {
       System.out.println('Nice endpoint you got there')
+
+      String pidm = bannerPersonsReadDAO.personExist(osuID)
+      if (!pidm) {
+        return notFound().build()
+      }
+      PhoneObject phone
+      try {
+        phone = PhoneObject.fromResultObject(resultObject)
+        if (!phone) {
+          return badRequest("No phone object provided.").build()
+        }
+
+        // TODO errors
+      } catch (PersonObjectException e) {
+        return badRequest(
+          "Unable to parse address object or required fields are missing. " +
+          "Please make sure all required fields are included and in the correct format."
+        ).build()
+      }
     }
 }
