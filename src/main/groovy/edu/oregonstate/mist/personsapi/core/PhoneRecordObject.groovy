@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 class PhoneRecordObject {
   private static ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
 
-  String surrogateID
+  String id
   String phoneSeqno
   String phoneType
 }

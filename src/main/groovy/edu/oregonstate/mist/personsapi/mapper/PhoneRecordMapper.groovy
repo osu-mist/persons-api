@@ -10,7 +10,7 @@ import java.sql.SQLException
 public class PhoneRecordMapper implements ResultSetMapper<PhoneRecordObject> {
   public PhoneRecordObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
     new PhoneRecordObject(
-      surrogateID: rs.getString('SURROGATE_ID'),
+      id: rs.getString('id'),
       phoneSeqno: rs.getString('PHONE_SEQNO'),
       phoneType: rs.getString('PHONE_TYPE')
     )

@@ -24,7 +24,7 @@ public @interface BindPhoneRecord {
         ) {
           q.bind("phoneType", phoneRecord.phoneType)
           q.bind("phoneSeqno", phoneRecord.phoneSeqno)
-          q.bind("surrogateID", phoneRecord.surrogateID)
+          q.bind("id", phoneRecord.id)
         }
       }
     }
