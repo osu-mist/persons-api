@@ -1003,7 +1003,7 @@ definitions:
               description: Globally unique Id for the phone numbers
             type:
               type: string
-              example: phone
+              example: phones
             attributes:
               properties:
                 areaCode:
