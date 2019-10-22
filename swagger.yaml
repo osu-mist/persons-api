@@ -1023,9 +1023,8 @@ definitions:
                   description: Extension for the phone number. Can be returned in different formats.
                   example: '20'
                 primaryIndicator:
-                  type: string
+                  type: boolean
                   description: Indicates if this phone number is marked as the primary number.
-                  example: Y
                 phoneType:
                   type: string
                   description: Enum marking which type of phone number this is.
