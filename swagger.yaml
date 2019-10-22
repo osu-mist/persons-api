@@ -425,6 +425,7 @@ parameters:
       - "RH" - Residence Hall
     required: false
     type: string
+    enum: [CM, PA, DM, RK, RH]
   phoneType:
     name: phoneType
     in: query
@@ -436,6 +437,7 @@ parameters:
       - "MP" - Mobile Phone
     required: false
     type: string
+    enum: [CM, PA, RK, MP]
 definitions:
   NewPersonResultObject:
     properties:
