@@ -11,6 +11,7 @@ import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.core.PhoneObject
+import edu.oregonstate.mist.personsapi.core.PhoneRecordObject
 import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.ODSPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
@@ -845,6 +846,25 @@ class PersonsResource extends Resource {
         return badRequest(
           "Unable to parse address object or required fields are missing. " +
           "Please make sure all required fields are included and in the correct format."
+        ).build()
+      }
+
+      String phoneType = resultObject.data['attributes']['phoneType']
+      PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
+        pidm, phoneType
+      )
+
+      try {
+        if (phoneRecord?.id) {
+          System.out.println("phone record with same type found")
+        } else {
+          System.out.println("not found")
+        }
+      } catch (UnableToExecuteStatementException e) {
+        internalServerError("Unable to execute SQL query.").build()
+      } catch (Exception e) {
+        internalServerError(
+          "Internal Server Error, please contact API support team for further assistance."
         ).build()
       }
     }
