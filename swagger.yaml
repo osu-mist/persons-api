@@ -1045,7 +1045,7 @@ definitions:
                   type: string
                   description: Describes the address type enum.
                   example: Current Mailing
-                activityDate:
+                lastModified:
                   type: string
                   description: The date of the most recent change made to this record.
                   example: '2015-10-19'

@@ -24,5 +24,5 @@ class PhoneObject {
   String addressTypeDescription
 
   @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-  LocalDate activityDate
+  LocalDate lastModified
 }
