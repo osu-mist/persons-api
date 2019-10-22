@@ -920,6 +920,22 @@ class PersonsResource extends Resource {
         }
     }
 
+    private List<Error> validateGetPhonesParams(String addressType, String phoneType) {
+        List<Error> errors = []
+        [
+            ["phoneType", phoneType && !bannerPersonsReadDAO.isValidPhoneType(phoneType)],
+            ["addressType", addressType && !bannerPersonsReadDAO.isValidAddressType(addressType)]
+        ].each {
+          String fieldName = it.get(0)
+          Boolean invalid = it.get(1)
+
+          if (invalid) {
+            errors.add(Error.badRequest("Invalid $fieldName parameter"))
+          }
+        }
+        errors
+    }
+
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/phones')
@@ -927,6 +943,12 @@ class PersonsResource extends Resource {
                        @QueryParam('addressType') String addressType,
                        @QueryParam('phoneType') String phoneType) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
+            // validate query parameters
+            List<Error> errors = validateGetPhonesParams(addressType, phoneType)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+
             List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             ResultObject resultObject = new ResultObject(

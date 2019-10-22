@@ -110,6 +110,9 @@ public interface BannerPersonsReadDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.validateNationCode)
     Boolean isValidNationCode(@Bind('nationCode') String nationCode)
 
+    @SqlQuery(AbstractPersonsDAO.validatePhoneType)
+    Boolean isValidPhoneType(@Bind('phoneType') String phoneType)
+
     @SqlQuery(AbstractPersonsDAO.getPhones)
     @Mapper(PhoneMapper)
     List<PhoneObject> getPhones(@Bind('osuID') String osuID,
