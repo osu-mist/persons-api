@@ -15,7 +15,7 @@ public class PhoneMapper implements ResultSetMapper<PhoneObject> {
       phoneNumber: rs.getString('PHONE_NUMBER'),
       fullPhoneNumber: rs.getString('AREA_CODE') + rs.getString('PHONE_NUMBER'),
       phoneExtension: rs.getString('PHONE_EXTENSION'),
-      primaryIndicator: rs.getString('PRIMARY_IND'),
+      primaryIndicator: rs.getBoolean('PRIMARY_IND'),
       phoneType: rs.getString('PHONE_TYPE'),
       phoneTypeDescription: rs.getString('PHONE_TYPE_DESC'),
       addressType: rs.getString('ADDRESS_TYPE'),
