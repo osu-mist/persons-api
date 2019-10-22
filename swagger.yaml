@@ -1008,17 +1008,17 @@ definitions:
               properties:
                 areaCode:
                   type: string
-                  example: 541
+                  example: '541'
                 phoneNumber:
                   type: string
-                  example: 4443333
+                  example: '4443333'
                 fullPhoneNumber:
                   type: string
                   description: Combination of area code and phone number
-                  example: 5414443333
+                  example: '5414443333'
                 phoneExtension:
                   type: string
-                  example: 20
+                  example: '20'
                 primaryIndicator:
                   type: string
                   example: Y
