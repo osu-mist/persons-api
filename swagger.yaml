@@ -1120,21 +1120,26 @@ definitions:
         properties: &commonPhoneAttributes
           areaCode:
             type: string
-            example: 541
+            description: Area code for the phone number.
+            example: '541'
           phoneNumber:
             type: string
-            example: 4443333
+            description: Phone number not including the area code.
+            example: '4443333'
           phoneExtension:
             type: string
-            example: 20
+            description: Extension for the phone number. Can be returned in different formats.
+            example: '20'
           phoneType:
             type: string
+            description: Enum marking which type of phone number this is.
             example: CM
-            enum: [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
+            enum: *PHONETYPEENUM
           addressType:
             type: string
+            description: Enum marking which type of address this phone number matches with.
             example: CM
-            enum: [RN, MG, VO, RE, RB, VP, VF, RK, CM, EF, RH, EO, PA, MP]
+            enum: *ADDRESSTYPEENUM
   PhonesResultObject:
     properties:
       data:
@@ -1155,39 +1160,17 @@ definitions:
       attributes:
         properties:
           <<: *commonPhoneAttributes
-          areaCode:
-            type: string
-            description: Area code for the phone number.
-            example: '541'
-          phoneNumber:
-            type: string
-            description: Phone number not including the area code.
-            example: '4443333'
           fullPhoneNumber:
             type: string
             description: Combination of area code and phone number.
             example: '5414443333'
-          phoneExtension:
-            type: string
-            description: Extension for the phone number. Can be returned in different formats.
-            example: '20'
           primaryIndicator:
             type: boolean
             description: Indicates if this phone number is marked as the primary number.
-          phoneType:
-            type: string
-            description: Enum marking which type of phone number this is.
-            example: CM
-            enum: *PHONETYPEENUM
           phoneTypeDescription:
             type: string
             description: Describes the phone type enum.
             example: Current
-          addressType:
-            type: string
-            description: Enum marking which type of address this phone number matches with.
-            example: CM
-            enum: *ADDRESSTYPEENUM
           addressTypeDescription:
             type: string
             description: Describes the address type enum.
