@@ -1,6 +1,6 @@
 package edu.oregonstate.mist.personsapi.db
 
-import edu.oregonstate.mist.personaspi.core.PhoneObject
+import edu.oregonstate.mist.personsapi.core.PhoneObject
 import org.skife.jdbi.v2.SQLStatement
 import org.skife.jdbi.v2.sqlobject.Binder
 import org.skife.jdbi.v2.sqlobject.BinderFactory
@@ -16,10 +16,10 @@ import java.lang.annotation.Target
 @Retention(RetentionPolicy.RUNTIME)
 @Target([ElementType.PARAMETER])
 public @interface BindPhone {
-  public static class EventBinderFactor implement BinderFactory {
+  public static class EventBinderFactor implements BinderFactory {
     public Binder build(Annotation annotation) {
       new Binder<BindPhone, PhoneObject>() {
-        public void bind(SQLStatement q, BindPhone bind, PhoneObject, phone) {
+        public void bind(SQLStatement q, BindPhone bind, PhoneObject phone) {
           q.bind("id", phone.id)
           q.bind("areaCode", phone.areaCode)
           q.bind("phoneNumber", phone.phoneNumber)
