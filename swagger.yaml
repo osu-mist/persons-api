@@ -456,7 +456,21 @@ parameters:
       - "RH" - Residence Hall
     required: false
     type: string
-    enum: [CM, PA, DM, RK, RH]
+    enum: &ADDRESSTYPEENUM
+      - RN
+      - MG
+      - VO
+      - RE
+      - RB
+      - VP
+      - VF
+      - RK
+      - CM
+      - EF
+      - RH
+      - EO
+      - PA
+      - MP
   phoneType:
     name: phoneType
     in: query
@@ -468,7 +482,21 @@ parameters:
       - "MP" - Mobile Phone
     required: false
     type: string
-    enum: [CM, PA, RK, MP]
+    enum: &PHONETYPEENUM
+      - PA
+      - RN
+      - RB
+      - MG
+      - RE
+      - RK
+      - VO
+      - VP
+      - VF
+      - CM
+      - EO
+      - RH
+      - EF
+      - MP
 definitions:
   NewPersonResultObject:
     properties:
@@ -1084,7 +1112,7 @@ definitions:
                   type: string
                   description: Enum marking which type of phone number this is.
                   example: CM
-                  enum: [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
+                  enum: *PHONETYPEENUM
                 phoneTypeDescription:
                   type: string
                   description: Describes the phone type enum.
@@ -1093,7 +1121,7 @@ definitions:
                   type: string
                   description: Enum marking which type of address this phone number matches with.
                   example: CM
-                  enum: [RN, MG, VO, RE, RB, VP, VF, RK, CM, EF, RH, EO, PA, MP]
+                  enum: *ADDRESSTYPEENUM
                 addressTypeDescription:
                   type: string
                   description: Describes the address type enum.
