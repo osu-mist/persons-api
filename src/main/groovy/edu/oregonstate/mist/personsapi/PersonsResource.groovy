@@ -11,6 +11,7 @@ import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
+import edu.oregonstate.mist.personsapi.core.PhoneObject
 import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.ODSPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
@@ -731,6 +732,11 @@ class PersonsResource extends Resource {
     Response getAddresses(@PathParam('osuID') String osuID,
                           @QueryParam('addressType') String addressType) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<Error> errors = validateTypeParams(addressType, null)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+
             List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 
             ResultObject resultObject = new ResultObject(
@@ -916,6 +922,53 @@ class PersonsResource extends Resource {
             )).build()
         } catch (UnableToExecuteStatementException e) {
             internalServerError("Unable to execute SQL query").build()
+        }
+    }
+
+    private List<Error> validateTypeParams(String addressType, String phoneType) {
+        List<Error> errors = []
+        [
+            ["phoneType", phoneType && !bannerPersonsReadDAO.isValidPhoneType(phoneType)],
+            ["addressType", addressType && !bannerPersonsReadDAO.isValidAddressType(addressType)]
+        ].each {
+          String fieldName = it.get(0)
+          Boolean invalid = it.get(1)
+
+          if (invalid) {
+            errors.add(Error.badRequest("Invalid $fieldName parameter"))
+          }
+        }
+        errors
+    }
+
+    @Timed
+    @GET
+    @Path('{osuID: [0-9]+}/phones')
+    Response getPhones(@PathParam('osuID') String osuID,
+                       @QueryParam('addressType') String addressType,
+                       @QueryParam('phoneType') String phoneType) {
+        if (bannerPersonsReadDAO.personExist(osuID)) {
+            // validate query parameters
+            List<Error> errors = validateTypeParams(addressType, phoneType)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+
+            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
+
+            ResultObject resultObject = new ResultObject(
+                    data: phones.collect {
+                        new ResourceObject(
+                                id: it.id,
+                                type: "phones",
+                                attributes: it
+                        )
+                    }
+            )
+
+            ok(resultObject).build()
+        } else {
+            notFound().build()
         }
     }
 }

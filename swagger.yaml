@@ -349,17 +349,7 @@ paths:
         - addresses
       operationId: getAddresses
       parameters:
-        - in: query
-          name: addressType
-          description: |
-            Filter by address type. Common address types and their descriptions:
-            - "CM" - Current Mailing
-            - "PA" - Student Alternate Contact
-            - "DM" - Department (US Mail)
-            - "RK" - Financial Aid Address
-            - "RH" - Residence Hall
-          required: false
-          type: string
+        - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/authorization'
       responses:
@@ -390,6 +380,30 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/AddressResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorArray'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
+  /persons/{osuID}/phones:
+    get:
+      description: Get phone numbers for a person
+      tags:
+        - phones
+      operationId: getPhones
+      parameters:
+        - $ref: '#/parameters/addressType'
+        - $ref: '#/parameters/phoneType'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/authorization'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PhonesResultObject'
         400:
           description: Bad request
           schema:
@@ -430,6 +444,59 @@ parameters:
     type: string
     required: true
     description: '"Bearer [token]" where [token] is your OAuth2 access token'
+  addressType:
+    name: addressType
+    in: query
+    description: |
+      Filter by phone type. Common phone types and their descriptions:
+      - "CM" - Current Mailing
+      - "PA" - Student Alternate Contact
+      - "DM" - Department (US Mail)
+      - "RK" - Financial Aid Address
+      - "RH" - Residence Hall
+    required: false
+    type: string
+    enum: &ADDRESSTYPEENUM
+      - RN
+      - MG
+      - VO
+      - RE
+      - RB
+      - VP
+      - VF
+      - RK
+      - CM
+      - EF
+      - RH
+      - EO
+      - PA
+      - MP
+  phoneType:
+    name: phoneType
+    in: query
+    description: |
+      Filter by phone type. Common phone types and their descriptions:
+      - "CM" - Current
+      - "PA" - Student Alternate Contact
+      - "RK" - Financial Aid Address
+      - "MP" - Mobile Phone
+    required: false
+    type: string
+    enum: &PHONETYPEENUM
+      - PA
+      - RN
+      - RB
+      - MG
+      - RE
+      - RK
+      - VO
+      - VP
+      - VF
+      - CM
+      - EO
+      - RH
+      - EF
+      - MP
 definitions:
   NewPersonResultObject:
     properties:
@@ -1008,6 +1075,61 @@ definitions:
             type: string
             description: 9 digits SSN
             example: '123456789'
+  PhonesResultObject:
+    properties:
+      data:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: Globally unique Id for the phone numbers
+            type:
+              type: string
+              example: phones
+            attributes:
+              properties:
+                areaCode:
+                  type: string
+                  description: Area code for the phone number.
+                  example: '541'
+                phoneNumber:
+                  type: string
+                  description: Phone number not including the area code.
+                  example: '4443333'
+                fullPhoneNumber:
+                  type: string
+                  description: Combination of area code and phone number.
+                  example: '5414443333'
+                phoneExtension:
+                  type: string
+                  description: Extension for the phone number. Can be returned in different formats.
+                  example: '20'
+                primaryIndicator:
+                  type: boolean
+                  description: Indicates if this phone number is marked as the primary number.
+                phoneType:
+                  type: string
+                  description: Enum marking which type of phone number this is.
+                  example: CM
+                  enum: *PHONETYPEENUM
+                phoneTypeDescription:
+                  type: string
+                  description: Describes the phone type enum.
+                  example: Current
+                addressType:
+                  type: string
+                  description: Enum marking which type of address this phone number matches with.
+                  example: CM
+                  enum: *ADDRESSTYPEENUM
+                addressTypeDescription:
+                  type: string
+                  description: Describes the address type enum.
+                  example: Current Mailing
+                lastModified:
+                  type: string
+                  description: The date of the most recent change made to this record.
+                  example: '2015-10-19'
   SelfLink:
     properties:
       self:
