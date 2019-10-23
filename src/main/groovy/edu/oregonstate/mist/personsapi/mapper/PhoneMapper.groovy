@@ -20,7 +20,7 @@ public class PhoneMapper implements ResultSetMapper<PhoneObject> {
       phoneTypeDescription: rs.getString('PHONE_TYPE_DESC'),
       addressType: rs.getString('ADDRESS_TYPE'),
       addressTypeDescription: rs.getString('ADDRESS_TYPE_DESC'),
-      lastModified: rs.getDate('ACTIVITY_DATE')?.toLocalDate()
+      lastModified: rs.getDate('LAST_MODIFIED')?.toLocalDate()
     )
   }
 }
