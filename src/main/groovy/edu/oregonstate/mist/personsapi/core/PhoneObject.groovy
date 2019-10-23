@@ -18,7 +18,7 @@ class PhoneObject {
   String phoneNumber
   String fullPhoneNumber
   String phoneExtension
-  boolean primaryIndicator
+  Boolean primaryIndicator
   String phoneType
   String phoneTypeDescription
   String addressType
