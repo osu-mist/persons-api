@@ -1130,6 +1130,9 @@ definitions:
             type: string
             description: Extension for the phone number. Can be returned in different formats.
             example: '20'
+          primaryIndicator:
+            type: boolean
+            description: Indicates if this phone number is marked as the primary number.
           phoneType:
             type: string
             description: Enum marking which type of phone number this is.
@@ -1164,9 +1167,6 @@ definitions:
             type: string
             description: Combination of area code and phone number.
             example: '5414443333'
-          primaryIndicator:
-            type: boolean
-            description: Indicates if this phone number is marked as the primary number.
           phoneTypeDescription:
             type: string
             description: Describes the phone type enum.
