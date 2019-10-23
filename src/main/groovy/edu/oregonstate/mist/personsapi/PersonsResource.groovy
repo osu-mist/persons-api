@@ -732,6 +732,11 @@ class PersonsResource extends Resource {
     Response getAddresses(@PathParam('osuID') String osuID,
                           @QueryParam('addressType') String addressType) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<Error> errors = validateTypeParams(addressType, null)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+
             List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 
             ResultObject resultObject = new ResultObject(
@@ -920,7 +925,7 @@ class PersonsResource extends Resource {
         }
     }
 
-    private List<Error> validateGetPhonesParams(String addressType, String phoneType) {
+    private List<Error> validateTypeParams(String addressType, String phoneType) {
         List<Error> errors = []
         [
             ["phoneType", phoneType && !bannerPersonsReadDAO.isValidPhoneType(phoneType)],
@@ -944,7 +949,7 @@ class PersonsResource extends Resource {
                        @QueryParam('phoneType') String phoneType) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             // validate query parameters
-            List<Error> errors = validateGetPhonesParams(addressType, phoneType)
+            List<Error> errors = validateTypeParams(addressType, phoneType)
             if (errors) {
                 return errorArrayResponse(errors)
             }
