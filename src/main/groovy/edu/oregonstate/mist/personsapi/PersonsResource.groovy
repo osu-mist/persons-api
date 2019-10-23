@@ -6,6 +6,7 @@ import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.AddressObject
+import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.MealPlan
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
@@ -165,12 +166,14 @@ class PersonsResource extends Resource {
         PersonObject person
         try {
             person = PersonObject.fromResultObject(resultObject)
-            if (([
+            if (!person) {
+                return badRequest("No person object provided").build()
+            } else if ([
                 person.name.firstName,
                 person.name.lastName,
                 person.sex,
                 person.birthDate].contains(null)
-            )) {
+            ) {
                 return badRequest("Required fields are missing or are null.").build()
             } else if (!(person.sex in ["M", "F", "N"])) {
                 return badRequest("Sex must be one of 'M', 'F', 'N'.").build()
@@ -730,6 +733,11 @@ class PersonsResource extends Resource {
     Response getAddresses(@PathParam('osuID') String osuID,
                           @QueryParam('addressType') String addressType) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
+            List<Error> errors = validateTypeParams(addressType, null)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+
             List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 
             ResultObject resultObject = new ResultObject(
@@ -745,6 +753,127 @@ class PersonsResource extends Resource {
             ok(resultObject).build()
         } else {
             notFound().build()
+        }
+    }
+
+    // Validate new address object
+    private List<Error> newAddressErrors(AddressObject address) {
+        List<Error> errors = []
+        Closure addBadRequest = { String message ->
+            errors.add(Error.badRequest(message))
+        }
+
+        [
+            [true, "addressType", 2,
+             { String addressType -> bannerPersonsReadDAO.isValidAddressType(addressType) }
+            ],
+            [false, "houseNumber", 10, null],
+            [false, "addressLine1", 75, null],
+            [false, "addressLine2", 75, null],
+            [false, "addressLine3", 75, null],
+            [false, "addressLine4", 75, null],
+            [true, "city", 50, null],
+            [false, "countyCode", 5,
+             { String countyCode -> bannerPersonsReadDAO.isValidCountyCode(countyCode) }
+            ],
+            [false, "stateCode", 3,
+             { String stateCode -> bannerPersonsReadDAO.isValidStateCode(stateCode) }
+            ],
+            [false, "postalCode", 30, null],
+            [false, "nationCode", 5,
+             { String nationCode -> bannerPersonsReadDAO.isValidNationCode(nationCode) }
+            ]
+        ].each {
+            Boolean isRequired = it.get(0)
+            String fieldName = it.get(1)
+            String fieldValue = address[fieldName]
+            Integer length = it.get(2)
+            Closure validateFunction = it.get(3)
+
+            // Check if required field is missing
+            if (isRequired && !fieldValue) {
+                addBadRequest("Required field $fieldName is missing or null.")
+            }
+
+            // Check if input field is over the buffer size
+            if (fieldValue?.length() > length) {
+                addBadRequest("$fieldName can't be more than $length characters.")
+            }
+
+            // Check if input field is valid
+            if (fieldValue && validateFunction && !validateFunction(fieldValue)) {
+                addBadRequest("$fieldName is not valid.")
+            }
+        }
+
+        errors
+    }
+
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/addresses')
+    Response createAddress(@PathParam('osuID') String osuID,
+                           @Valid ResultObject resultObject) {
+        String pidm = bannerPersonsReadDAO.personExist(osuID)
+        if (!pidm) {
+            return notFound().build()
+        }
+        AddressObject address
+        try {
+            address = AddressObject.fromResultObject(resultObject)
+            if (!address) {
+                return badRequest("No address object provided.").build()
+            }
+
+            List<Error> errors = newAddressErrors(address)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+        } catch (PersonObjectException e) {
+            return badRequest(
+                "Unable to parse address object or required fields are missing. " +
+                "Please make sure all required fields are included and in the correct format."
+            ).build()
+        }
+
+        try {
+            String addressType = resultObject.data['attributes']['addressType']
+            AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+                pidm, addressType
+            )
+            if (addressRecord?.rowID) {
+                logger.info("Address with the same type exist. Deactivate the current one.")
+                bannerPersonsWriteDAO.deactivateAddress(pidm, addressRecord)
+            }
+
+            try {
+                logger.info("Creating new address.")
+                bannerPersonsWriteDAO.createAddress(pidm, address)
+            } catch (Exception e) {
+                logger.info("Unable to create new address record. Reactivate the current one.")
+                bannerPersonsWriteDAO.reactivateAddress(pidm, addressRecord)
+                throw new Exception("Unable to create new address record.")
+            }
+
+            List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
+
+            if (addresses.size() != 1) {
+                throw new Exception("New record created but more than one records are valid.")
+            }
+            accepted(new ResultObject(
+                data: new ResourceObject(
+                    id: addresses[0].id,
+                    type: "addresses",
+                    attributes: addresses[0]
+                )
+            )).build()
+        } catch (UnableToExecuteStatementException e) {
+            internalServerError("Unable to execute SQL query.").build()
+        } catch (Exception e) {
+            internalServerError(
+                "Internal Server Error, please contact API support team for further assistance."
+            ).build()
         }
     }
 
@@ -797,6 +926,22 @@ class PersonsResource extends Resource {
         }
     }
 
+    private List<Error> validateTypeParams(String addressType, String phoneType) {
+        List<Error> errors = []
+        [
+            ["phoneType", phoneType && !bannerPersonsReadDAO.isValidPhoneType(phoneType)],
+            ["addressType", addressType && !bannerPersonsReadDAO.isValidAddressType(addressType)]
+        ].each {
+          String fieldName = it.get(0)
+          Boolean invalid = it.get(1)
+
+          if (invalid) {
+            errors.add(Error.badRequest("Invalid $fieldName parameter"))
+          }
+        }
+        errors
+    }
+
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/phones')
@@ -804,6 +949,12 @@ class PersonsResource extends Resource {
                        @QueryParam('addressType') String addressType,
                        @QueryParam('phoneType') String phoneType) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
+            // validate query parameters
+            List<Error> errors = validateTypeParams(addressType, phoneType)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+
             List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             ResultObject resultObject = new ResultObject(

@@ -87,7 +87,7 @@ paths:
         - persons
       operationId: postPerson
       parameters:
-        - name: person
+        - name: personBody
           in: body
           description: Result object for a person
           required: true
@@ -162,7 +162,7 @@ paths:
         - jobs
       operationId: postJob
       parameters:
-        - name: job
+        - name: jobBody
           in: body
           description: Result object for a job
           required: true
@@ -213,7 +213,7 @@ paths:
         - jobs
       operationId: putJob
       parameters:
-        - name: job
+        - name: jobBody
           in: body
           description: Result object for a job
           required: true
@@ -246,7 +246,7 @@ paths:
         - ssn
       operationId: postSSN
       parameters:
-        - name: ssn
+        - name: ssnBody
           in: body
           description: Result object for an SSN
           required: true
@@ -321,7 +321,7 @@ paths:
             $ref: '#/definitions/Error'
   /persons/{osuID}/meal-plans/{mealPlanID}:
     get:
-      description: Get meal plans for a person
+      description: Get a specific meal plan for a person
       tags:
         - meal-plans
       operationId: getMealPlanByID
@@ -361,6 +361,33 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
+    post:
+      description: Create address for a person
+      tags:
+        - addresses
+      operationId: postAddresses
+      parameters:
+        - name: addressBody
+          in: body
+          description: Post body for the new address
+          required: true
+          schema:
+            $ref: '#/definitions/NewAddressResultObject'
+        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/authorization'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddressResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorArray'
+        404:
+          description: Person not found
+          schema:
+            $ref: '#/definitions/Error'
   /persons/{osuID}/phones:
     get:
       description: Get phone numbers for a person
@@ -377,6 +404,10 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/PhonesResultObject'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorArray'
         404:
           description: Person not found
           schema:
@@ -453,6 +484,21 @@ parameters:
       - "RH" - Residence Hall
     required: false
     type: string
+    enum: &ADDRESSTYPEENUM
+      - RN
+      - MG
+      - VO
+      - RE
+      - RB
+      - VP
+      - VF
+      - RK
+      - CM
+      - EF
+      - RH
+      - EO
+      - PA
+      - MP
   phoneType:
     name: phoneType
     in: query
@@ -464,6 +510,21 @@ parameters:
       - "MP" - Mobile Phone
     required: false
     type: string
+    enum: &PHONETYPEENUM
+      - PA
+      - RN
+      - RB
+      - MG
+      - RE
+      - RK
+      - VO
+      - VP
+      - VF
+      - CM
+      - EO
+      - RH
+      - EF
+      - MP
 definitions:
   NewPersonResultObject:
     properties:
@@ -884,13 +945,16 @@ definitions:
     example: person
   JobType:
     type: string
-    example: job
+    example: jobs
   SSNType:
     type: string
     example: ssn
   PhoneType:
     type: string
-    example: phone
+    example: phones
+  AddressType:
+    type: string
+    example: addresses
   MealPlansResultObject:
     properties:
       data:
@@ -931,69 +995,88 @@ definitions:
             type: string
             description: Description of place the meal plan was last used
             example: "Java II"
+  NewAddressResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/NewAddressResourceObject"
+  NewAddressResourceObject:
+    properties:
+      type:
+        $ref: "#/definitions/AddressType"
+      attributes:
+        required:
+        - addressType
+        - city
+        properties: &commonAddressAttributes
+          addressType:
+            type: string
+            description: Code for the type of address record.
+            example: CM
+          addressLine1:
+            type: string
+            example: "123 Main Street"
+          addressLine2:
+            type: string
+            example: "Apartment 123"
+          addressLine3:
+            type: string
+          addressLine4:
+            type: string
+          houseNumber:
+            type: string
+          city:
+            type: string
+          stateCode:
+            type: string
+            description: State code/abbreviation. This could also represent a province.
+            example: "OR"
+          postalCode:
+            type: string
+            example: "97331"
+          countyCode:
+            type: string
+            example: "41003"
+          nationCode:
+            type: string
   AddressesResultObject:
     properties:
       data:
         type: array
         items:
-          properties:
-            id:
-              type: string
-              description: Globally unique ID for the address.
-            type:
-              type: string
-              example: addresses
-            attributes:
-              properties:
-                addressType:
-                  type: string
-                  description: Code for the type of address record.
-                  example: CM
-                addressTypeDescription:
-                  type: string
-                  description: Short description of the address type.
-                  example: Current Mailing
-                addressLine1:
-                  type: string
-                  example: "123 Main Street"
-                addressLine2:
-                  type: string
-                  example: "Apartment 123"
-                addressLine3:
-                  type: string
-                addressLine4:
-                  type: string
-                houseNumber:
-                  type: string
-                city:
-                  type: string
-                stateCode:
-                  type: string
-                  description: State code/abbreviation. This could also represent a province.
-                  example: "OR"
-                state:
-                  type: string
-                  description: Human readable state code. This could also represent a province.
-                  example: "Oregon"
-                postalCode:
-                  type: string
-                  example: "97331"
-                countyCode:
-                  type: string
-                  example: "41003"
-                county:
-                  type: string
-                  description: Human readable county.
-                  example: "Benton"
-                nationCode:
-                  type: string
-                nation:
-                  type: string
-                  description: Human readable nation/country name.
-                lastModified:
-                  type: string
-                  format: date
-                  description: The date this address record was last modified.
+          $ref: "#/definitions/AddressResourceObject"
+  AddressResultObject:
+    properties:
+      data:
+        $ref: "#/definitions/AddressResourceObject"
+  AddressResourceObject:
+    properties:
+      id:
+        type: string
+        description: Globally unique ID for the address.
+      type:
+        $ref: "#/definitions/AddressType"
+      attributes:
+        properties:
+          <<: *commonAddressAttributes
+          addressTypeDescription:
+            type: string
+            description: Short description of the address type.
+            example: Current Mailing
+          state:
+            type: string
+            description: Human readable state code. This could also represent a province.
+            example: "Oregon"
+          county:
+            type: string
+            description: Human readable county.
+            example: "Benton"
+          nation:
+            type: string
+            description: Human readable nation/country name.
+          lastModified:
+            type: string
+            format: date
+            description: The date this address record was last modified.
   NewSSNResultObject:
     properties:
       data:
@@ -1072,22 +1155,47 @@ definitions:
       attributes:
         properties:
           <<: *commonPhoneAttributes
+          areaCode:
+            type: string
+            description: Area code for the phone number.
+            example: '541'
+          phoneNumber:
+            type: string
+            description: Phone number not including the area code.
+            example: '4443333'
           fullPhoneNumber:
             type: string
-            description: Full phone number including area code and phone number
-            example: 5554443333
+            description: Combination of area code and phone number.
+            example: '5414443333'
+          phoneExtension:
+            type: string
+            description: Extension for the phone number. Can be returned in different formats.
+            example: '20'
           primaryIndicator:
+            type: boolean
+            description: Indicates if this phone number is marked as the primary number.
+          phoneType:
             type: string
-            example: Y
-          activityDate:
-            type: string
-            example: '2015-10-19'
+            description: Enum marking which type of phone number this is.
+            example: CM
+            enum: *PHONETYPEENUM
           phoneTypeDescription:
             type: string
+            description: Describes the phone type enum.
             example: Current
+          addressType:
+            type: string
+            description: Enum marking which type of address this phone number matches with.
+            example: CM
+            enum: *ADDRESSTYPEENUM
           addressTypeDescription:
             type: string
+            description: Describes the address type enum.
             example: Current Mailing
+          lastModified:
+            type: string
+            description: The date of the most recent change made to this record.
+            example: '2015-10-19'
   SelfLink:
     properties:
       self:
