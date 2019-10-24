@@ -979,8 +979,6 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/phones')
     Response createPhones(@PathParam('osuID') String osuID,
                           @Valid ResultObject resultObject) {
-      System.out.println('Nice endpoint you got there')
-
       String pidm = bannerPersonsReadDAO.personExist(osuID)
       if (!pidm) {
         return notFound().build()
@@ -1001,16 +999,38 @@ class PersonsResource extends Resource {
       }
 
       String phoneType = resultObject.data['attributes']['phoneType']
+      String addressType = resultObject.data['attributes']['addressType']
       PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
         pidm, phoneType
       )
 
       try {
         if (phoneRecord?.id) {
-          System.out.println("phone record with same type found")
-        } else {
-          System.out.println("not found")
+          logger.info("Phone with the same type exists. Deactivate the current one.")
+          bannerPersonsWriteDAO.deactivatePhone(pidm, phoneRecord)
         }
+
+        try {
+          logger.info("Creating new phone.")
+          bannerPersonsWriteDAO.createPhone(pidm, phone)
+        } catch (Exception e) {
+          logger.info("Unable to create new phone record. Reactivating the current one.")
+          bannerPersonsWriteDAO.reactivatePhone(pidm, phoneRecord)
+          throw new Exception("Unable to create new phone record.")
+        }
+
+        List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, phoneType, addressType)
+
+        if (phones.size() != 1) {
+            throw new Exception("New record created but more than one records are valid.")
+        }
+        accepted(new ResultObject(
+            data: new ResourceObject(
+                id: phones[0].id,
+                type: "phones",
+                attributes: phones[0]
+            )
+        )).build()
       } catch (UnableToExecuteStatementException e) {
         internalServerError("Unable to execute SQL query.").build()
       } catch (Exception e) {
