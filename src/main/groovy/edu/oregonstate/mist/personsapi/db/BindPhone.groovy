@@ -24,9 +24,11 @@ public @interface BindPhone {
           q.bind("areaCode", phone.areaCode)
           q.bind("phoneNumber", phone.phoneNumber)
           q.bind("phoneExtension", phone.phoneExtension)
-          q.bind("primaryIndicator", phone.primaryIndicator)
+          q.bind("primaryIndicator", phone.primaryIndicator ? 'Y' : null)
           q.bind("phoneType", phone.phoneType)
           q.bind("addressType", phone.addressType)
+          q.bind("seqno", null)
+          q.bind("return_value", null)
         }
       }
     }
