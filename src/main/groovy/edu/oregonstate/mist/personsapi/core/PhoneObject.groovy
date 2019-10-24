@@ -31,7 +31,7 @@ class PhoneObject {
     try {
         mapper.convertValue(resultObject.data['attributes'], PhoneObject.class)
     } catch (IllegalArgumentException e) {
-        throw new PersonObjectException("Some fields weren't able to map to an address object.")
+        throw new PersonObjectException("Some fields weren't able to map to an phone object.")
     } catch (NullPointerException e) {
         throw new PersonObjectException("Could not parse result object.")
     }
