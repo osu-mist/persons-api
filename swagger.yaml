@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   title: Persons API
   description: Get information about people at OSU.
-  version: "1.0.0"
+  version: '1.0.0'
   license:
     name: GNU Affero General Public License Version 3
     url: http://www.gnu.org/licenses/agpl-3.0.en.html
@@ -477,11 +477,11 @@ parameters:
     in: query
     description: |
       Filter by phone type. Common phone types and their descriptions:
-      - "CM" - Current Mailing
-      - "PA" - Student Alternate Contact
-      - "DM" - Department (US Mail)
-      - "RK" - Financial Aid Address
-      - "RH" - Residence Hall
+      - 'CM' - Current Mailing
+      - 'PA' - Student Alternate Contact
+      - 'DM' - Department (US Mail)
+      - 'RK' - Financial Aid Address
+      - 'RH' - Residence Hall
     required: false
     type: string
     enum: &ADDRESSTYPEENUM
@@ -504,10 +504,10 @@ parameters:
     in: query
     description: |
       Filter by phone type. Common phone types and their descriptions:
-      - "CM" - Current
-      - "PA" - Student Alternate Contact
-      - "RK" - Financial Aid Address
-      - "MP" - Mobile Phone
+      - 'CM' - Current
+      - 'PA' - Student Alternate Contact
+      - 'RK' - Financial Aid Address
+      - 'MP' - Mobile Phone
     required: false
     type: string
     enum: &PHONETYPEENUM
@@ -529,11 +529,11 @@ definitions:
   NewPersonResultObject:
     properties:
       data:
-        $ref: "#/definitions/NewPersonResourceObject"
+        $ref: '#/definitions/NewPersonResourceObject'
   NewPersonResourceObject:
     properties:
       type:
-        $ref: "#/definitions/PersonType"
+        $ref: '#/definitions/PersonType'
       attributes:
         required:
         - name
@@ -555,25 +555,25 @@ definitions:
             type: string
             format: date
             description: Birth date
-            example: "1995-01-20"
+            example: '1995-01-20'
           citizen:
             type: string
             enum: [FN, N, R, S, C]
             description: |
               Person's citzen code
-              - "FN" - Foreign National
-              - "N" - Non Resident Alien
-              - "R" - Resident Alien
-              - "S" - Substantial Presence Alien
-              - "C" - Citizen
+              - 'FN' - Foreign National
+              - 'N' - Non Resident Alien
+              - 'R' - Resident Alien
+              - 'S' - Substantial Presence Alien
+              - 'C' - Citizen
           sex:
             type: string
             enum: [M, F, N]
             description: |
               Person's sex code
-              - "M" - Male
-              - "F" - Female
-              - "N" - Non-specified
+              - 'M' - Male
+              - 'F' - Female
+              - 'N' - Non-specified
   PersonResultObject:
     properties:
       data:
@@ -582,9 +582,9 @@ definitions:
             type: string
             description: 9 digit OSU ID
           type:
-            $ref: "#/definitions/PersonType"
+            $ref: '#/definitions/PersonType'
           links:
-            $ref: "#/definitions/SelfLink"
+            $ref: '#/definitions/SelfLink'
           attributes:
             properties:
               username:
@@ -611,7 +611,7 @@ definitions:
                     osuID:
                       type: string
                       description: 9 digit OSU ID
-                      example: "931234567"
+                      example: '931234567'
                     firstName:
                       type: string
                       description: Previous first name
@@ -672,15 +672,15 @@ definitions:
       data:
         type: array
         items:
-          $ref: "#/definitions/JobResourceObject"
+          $ref: '#/definitions/JobResourceObject'
   JobResultObject:
     properties:
       data:
-        $ref: "#/definitions/JobResourceObject"
+        $ref: '#/definitions/JobResourceObject'
   NewJobResultObject:
     properties:
       data:
-        $ref: "#/definitions/NewJobResourceObject"
+        $ref: '#/definitions/NewJobResourceObject'
   JobResourceObject:
     properties:
       id:
@@ -688,17 +688,17 @@ definitions:
         description: Uniquely identifies a job record for the given person.
         example: C12345-00
       type:
-        $ref: "#/definitions/JobType"
+        $ref: '#/definitions/JobType'
       links:
-        $ref: "#/definitions/SelfLink"
+        $ref: '#/definitions/SelfLink'
       attributes:
-        $ref: "#/definitions/JobAttributes"
+        $ref: '#/definitions/JobAttributes'
   NewJobResourceObject:
     properties:
       type:
-        $ref: "#/definitions/JobType"
+        $ref: '#/definitions/JobType'
       attributes:
-        $ref: "#/definitions/JobAttributes"
+        $ref: '#/definitions/JobAttributes'
   JobAttributes:
     required:
       - positionNumber
@@ -723,17 +723,17 @@ definitions:
         type: string
         format: date
         description: The date this job assignment is effective.
-        example: "2018-12-31"
+        example: '2018-12-31'
       beginDate:
         type: string
         format: date
         description: Begin date of job.
-        example: "2018-12-31"
+        example: '2018-12-31'
       endDate:
         type: string
         format: date
         description: End date of job.
-        example: "2019-01-01"
+        example: '2019-01-01'
       accruesLeave:
         type: boolean
         description: If true, the job accrues leave.
@@ -741,12 +741,12 @@ definitions:
         type: string
         format: date
         description: The date the contract begins.
-        example: "2018-12-31"
+        example: '2018-12-31'
       contractEndDate:
         type: string
         format: date
         description: The date the contract ends.
-        example: "2018-12-31"
+        example: '2018-12-31'
       contractType:
         type: string
         description: Contract type code/ID.
@@ -771,7 +771,7 @@ definitions:
         type: string
         format: date
         description: Date the last change was made to the job record.
-        example: "2018-12-31"
+        example: '2018-12-31'
       changeReasonCode:
         type: string
         description: The reason the last change was made to the job record.
@@ -788,7 +788,7 @@ definitions:
       salaryStep:
         type: string
         format: integer
-        example: "1"
+        example: '1'
       salaryGroupCode:
         type: string
       strsAssignmentCode:
@@ -867,7 +867,7 @@ definitions:
         type: string
         format: date
         description: The date the earnCode became effective for this job.
-        example: "2018-12-31"
+        example: '2018-12-31'
       earnCode:
         type: string
         description: Default earnings code attached to the job and used on timesheet.
@@ -919,7 +919,7 @@ definitions:
               type: string
               format: date
               description: Date this labor distribution becomes effective.
-              example: "2018-12-31"
+              example: '2018-12-31'
             accountIndexCode:
               type: string
               example: ABC123
@@ -960,11 +960,11 @@ definitions:
       data:
         type: array
         items:
-          $ref: "#/definitions/MealPlanResourceObject"
+          $ref: '#/definitions/MealPlanResourceObject'
   MealPlanResultObject:
     properties:
       data:
-        $ref: "#/definitions/MealPlanResourceObject"
+        $ref: '#/definitions/MealPlanResourceObject'
   MealPlanResourceObject:
     properties:
       id:
@@ -974,7 +974,7 @@ definitions:
         type: string
         example: meal-plans
       links:
-          $ref: "#/definitions/SelfLink"
+          $ref: '#/definitions/SelfLink'
       attributes:
         properties:
           mealPlan:
@@ -990,19 +990,19 @@ definitions:
             type: string
             format: date-time
             description: The last time the meal plan was used
-            example: "2017-07-14T16:45:15Z"
+            example: '2017-07-14T16:45:15Z'
           lastUsedLocation:
             type: string
             description: Description of place the meal plan was last used
-            example: "Java II"
+            example: 'Java II'
   NewAddressResultObject:
     properties:
       data:
-        $ref: "#/definitions/NewAddressResourceObject"
+        $ref: '#/definitions/NewAddressResourceObject'
   NewAddressResourceObject:
     properties:
       type:
-        $ref: "#/definitions/AddressType"
+        $ref: '#/definitions/AddressType'
       attributes:
         required:
         - addressType
@@ -1014,10 +1014,10 @@ definitions:
             example: CM
           addressLine1:
             type: string
-            example: "123 Main Street"
+            example: '123 Main Street'
           addressLine2:
             type: string
-            example: "Apartment 123"
+            example: 'Apartment 123'
           addressLine3:
             type: string
           addressLine4:
@@ -1029,13 +1029,13 @@ definitions:
           stateCode:
             type: string
             description: State code/abbreviation. This could also represent a province.
-            example: "OR"
+            example: 'OR'
           postalCode:
             type: string
-            example: "97331"
+            example: '97331'
           countyCode:
             type: string
-            example: "41003"
+            example: '41003'
           nationCode:
             type: string
   AddressesResultObject:
@@ -1043,18 +1043,18 @@ definitions:
       data:
         type: array
         items:
-          $ref: "#/definitions/AddressResourceObject"
+          $ref: '#/definitions/AddressResourceObject'
   AddressResultObject:
     properties:
       data:
-        $ref: "#/definitions/AddressResourceObject"
+        $ref: '#/definitions/AddressResourceObject'
   AddressResourceObject:
     properties:
       id:
         type: string
         description: Globally unique ID for the address.
       type:
-        $ref: "#/definitions/AddressType"
+        $ref: '#/definitions/AddressType'
       attributes:
         properties:
           <<: *commonAddressAttributes
@@ -1065,11 +1065,11 @@ definitions:
           state:
             type: string
             description: Human readable state code. This could also represent a province.
-            example: "Oregon"
+            example: 'Oregon'
           county:
             type: string
             description: Human readable county.
-            example: "Benton"
+            example: 'Benton'
           nation:
             type: string
             description: Human readable nation/country name.
@@ -1082,7 +1082,7 @@ definitions:
       data:
         properties:
           type:
-            $ref: "#/definitions/SSNType"
+            $ref: '#/definitions/SSNType'
           attributes:
             required:
               - ssn
@@ -1097,9 +1097,9 @@ definitions:
         description: 9 digits SSN
         example: '123456789'
       type:
-        $ref: "#/definitions/SSNType"
+        $ref: '#/definitions/SSNType'
       links:
-        $ref: "#/definitions/SelfLink"
+        $ref: '#/definitions/SelfLink'
       attributes:
         properties:
           ssn:
@@ -1109,11 +1109,11 @@ definitions:
   NewPhoneResultObject:
     properties:
       data:
-        $ref: "#/definitions/NewPhoneResourceObject"
+        $ref: '#/definitions/NewPhoneResourceObject'
   NewPhoneResourceObject:
     properties:
       type:
-        $ref: "#/definitions/PhoneType"
+        $ref: '#/definitions/PhoneType'
       attributes:
         required:
           - addressType
@@ -1149,7 +1149,7 @@ definitions:
       data:
         type: array
         items:
-          $ref: "#/definitions/PhoneResourceObject"
+          $ref: '#/definitions/PhoneResourceObject'
   PhoneResultObject:
     properties:
       data:
@@ -1160,7 +1160,7 @@ definitions:
         type: string
         description: Globally unique ID for the phones.
       type:
-        $ref: "#/definitions/PhoneType"
+        $ref: '#/definitions/PhoneType'
       attributes:
         properties:
           <<: *commonPhoneAttributes
@@ -1189,7 +1189,7 @@ definitions:
   ErrorArray:
     type: array
     items:
-      $ref: "#/definitions/Error"
+      $ref: '#/definitions/Error'
   Error:
     properties:
       status:
