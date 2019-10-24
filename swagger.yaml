@@ -1133,6 +1133,7 @@ definitions:
           primaryIndicator:
             type: boolean
             description: Indicates if this phone number is marked as the primary number.
+            example: true
           phoneType:
             type: string
             description: Enum marking which type of phone number this is.
