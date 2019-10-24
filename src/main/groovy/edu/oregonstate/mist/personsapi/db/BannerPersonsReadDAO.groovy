@@ -120,4 +120,9 @@ public interface BannerPersonsReadDAO extends Closeable {
     List<PhoneObject> getPhones(@Bind('osuID') String osuID,
                                 @Bind('addressType') String addressType,
                                 @Bind('phoneType') String phoneType)
+
+    @SqlQuery(AbstractPersonsDAO.hasSamePhoneType)
+    @Mapper(PhoneRecordMapper)
+    PhoneRecordObject hasSamePhoneType(@Bind('pidm') String pidm,
+                                       @Bind('phoneType') String phoneType)
 }
