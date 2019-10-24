@@ -5,6 +5,7 @@ import edu.oregonstate.mist.personsapi.core.AddressObject
 import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.PhoneObject
 import edu.oregonstate.mist.personsapi.core.PhoneRecordObject
 import org.skife.jdbi.v2.OutParameters
 import org.skife.jdbi.v2.sqlobject.Bind
@@ -59,4 +60,12 @@ public interface BannerPersonsWriteDAO extends Closeable {
     @SqlCall(AbstractPersonsDAO.updateSSN)
     void updateSSN(@Bind('pidm') String pidm,
                    @Bind('ssn') String ssn)
+
+    @SqlCall(AbstractPersonsDAO.deactivatePhone)
+    void deactivatePhone(@Bind('pidm') String pidm,
+                         @BindPhoneRecord PhoneRecordObject phoneRecord)
+
+    @SqlCall(AbstractPersonsDAO.reactivatePhone)
+    void reactivatePhone(@Bind('pidm') String pidm,
+                         @BindPhoneRecord PhoneRecordObject phoneRecord)
 }
