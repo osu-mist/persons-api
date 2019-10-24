@@ -979,64 +979,66 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/phones')
     Response createPhones(@PathParam('osuID') String osuID,
                           @Valid ResultObject resultObject) {
-      String pidm = bannerPersonsReadDAO.personExist(osuID)
-      if (!pidm) {
-        return notFound().build()
-      }
-      PhoneObject phone
-      try {
-        phone = PhoneObject.fromResultObject(resultObject)
-        if (!phone) {
-          return badRequest("No phone object provided.").build()
+        String pidm = bannerPersonsReadDAO.personExist(osuID)
+        if (!pidm) {
+            return notFound().build()
+        }
+        PhoneObject phone
+        try {
+            phone = PhoneObject.fromResultObject(resultObject)
+            if (!phone) {
+                return badRequest("No phone object provided.").build()
+            }
+
+            // TODO errors
+        } catch (PersonObjectException e) {
+            return badRequest(
+                "Unable to parse address object or required fields are missing. " +
+                "Please make sure all required fields are included and in the correct format."
+            ).build()
         }
 
-        // TODO errors
-      } catch (PersonObjectException e) {
-        return badRequest(
-          "Unable to parse address object or required fields are missing. " +
-          "Please make sure all required fields are included and in the correct format."
-        ).build()
-      }
-
-      String phoneType = resultObject.data['attributes']['phoneType']
-      String addressType = resultObject.data['attributes']['addressType']
-      PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
-        pidm, phoneType
-      )
-
-      try {
-        if (phoneRecord?.id) {
-          logger.info("Phone with the same type exists. Deactivate the current one.")
-          bannerPersonsWriteDAO.deactivatePhone(pidm, phoneRecord)
-        }
+        String phoneType = resultObject.data['attributes']['phoneType']
+        String addressType = resultObject.data['attributes']['addressType']
+        PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
+            pidm, phoneType
+        )
 
         try {
-          logger.info("Creating new phone.")
-          bannerPersonsWriteDAO.createPhone(pidm, phone)
+            if (phoneRecord?.id) {
+                logger.info("Phone with the same type exists. Deactivate the current one.")
+                bannerPersonsWriteDAO.deactivatePhone(pidm, phoneRecord)
+            }
+
+            try {
+                logger.info("Creating new phone.")
+                bannerPersonsWriteDAO.createPhone(pidm, phone, phoneRecord.addressSeqno)
+            } catch (Exception e) {
+                e.printStackTrace()
+                logger.info("Unable to create new phone record. Reactivating the current one.")
+                bannerPersonsWriteDAO.reactivatePhone(pidm, phoneRecord)
+                throw new Exception("Unable to create new phone record.")
+            }
+
+            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, phoneType, addressType)
+
+            if (phones.size() != 1) {
+                throw new Exception("New record created but more than one records are valid.")
+            }
+            accepted(new ResultObject(
+                data: new ResourceObject(
+                    id: phones[0].id,
+                    type: "phones",
+                    attributes: phones[0]
+                )
+            )).build()
+        } catch (UnableToExecuteStatementException e) {
+            e.printStackTrace()
+            internalServerError("Unable to execute SQL query.").build()
         } catch (Exception e) {
-          logger.info("Unable to create new phone record. Reactivating the current one.")
-          bannerPersonsWriteDAO.reactivatePhone(pidm, phoneRecord)
-          throw new Exception("Unable to create new phone record.")
+            internalServerError(
+                "Internal Server Error, please contact API support team for further assistance."
+            ).build()
         }
-
-        List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, phoneType, addressType)
-
-        if (phones.size() != 1) {
-            throw new Exception("New record created but more than one records are valid.")
-        }
-        accepted(new ResultObject(
-            data: new ResourceObject(
-                id: phones[0].id,
-                type: "phones",
-                attributes: phones[0]
-            )
-        )).build()
-      } catch (UnableToExecuteStatementException e) {
-        internalServerError("Unable to execute SQL query.").build()
-      } catch (Exception e) {
-        internalServerError(
-          "Internal Server Error, please contact API support team for further assistance."
-        ).build()
-      }
     }
 }
