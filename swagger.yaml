@@ -413,7 +413,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     post:
-      description: Update phone numbers for a person
+      description: Create phone numbers for a person
       tags:
         - phones
       operationId: createPhones
