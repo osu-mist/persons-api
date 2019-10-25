@@ -27,7 +27,7 @@ public @interface BindPhone {
           q.bind("primaryIndicator", phone.primaryIndicator ? 'Y' : null)
           q.bind("phoneType", phone.phoneType)
           q.bind("addressType", phone.addressType)
-          q.bind("seqno", null)
+          q.bind("seqnoOut", null)
           q.bind("return_value", null)
         }
       }
