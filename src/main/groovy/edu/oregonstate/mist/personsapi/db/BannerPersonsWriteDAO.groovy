@@ -68,4 +68,9 @@ public interface BannerPersonsWriteDAO extends Closeable {
     @SqlCall(AbstractPersonsDAO.reactivatePhone)
     void reactivatePhone(@Bind('pidm') String pidm,
                          @BindPhoneRecord PhoneRecordObject phoneRecord)
+
+    @SqlCall(AbstractPersonsDAO.createPhone)
+    void createPhone(@Bind('pidm') String pidm,
+                     @BindPhone PhoneObject phone,
+                     @BindAddressRecord AddressRecordObject addressrecord)
 }
