@@ -1003,6 +1003,12 @@ class PersonsResource extends Resource {
         PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
             pidm, phoneType
         )
+        AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+            pidm, addressType
+        )
+        if(!addressRecord) {
+            return badRequest("No address record found with the $addressType address code").build()
+        }
 
         try {
             if (phoneRecord?.id) {
@@ -1012,7 +1018,7 @@ class PersonsResource extends Resource {
 
             try {
                 logger.info("Creating new phone.")
-                bannerPersonsWriteDAO.createPhone(pidm, phone, phoneRecord.addressSeqno)
+                bannerPersonsWriteDAO.createPhone(pidm, phone, addressRecord)
             } catch (Exception e) {
                 e.printStackTrace()
                 logger.info("Unable to create new phone record. Reactivating the current one.")
@@ -1020,7 +1026,7 @@ class PersonsResource extends Resource {
                 throw new Exception("Unable to create new phone record.")
             }
 
-            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, phoneType, addressType)
+            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             if (phones.size() != 1) {
                 throw new Exception("New record created but more than one records are valid.")
