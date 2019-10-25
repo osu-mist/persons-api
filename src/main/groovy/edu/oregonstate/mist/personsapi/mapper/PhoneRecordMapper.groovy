@@ -12,7 +12,8 @@ public class PhoneRecordMapper implements ResultSetMapper<PhoneRecordObject> {
     new PhoneRecordObject(
       id: rs.getString('id'),
       phoneSeqno: rs.getString('PHONE_SEQNO'),
-      phoneType: rs.getString('PHONE_TYPE')
+      phoneType: rs.getString('PHONE_TYPE'),
+      primaryIndicator: rs.getBoolean('PRIMARY_INDICATOR')
     )
   }
 }

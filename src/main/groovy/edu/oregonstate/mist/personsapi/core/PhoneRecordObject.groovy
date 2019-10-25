@@ -11,4 +11,5 @@ class PhoneRecordObject {
   String id
   String phoneSeqno
   String phoneType
+  Boolean primaryIndicator
 }

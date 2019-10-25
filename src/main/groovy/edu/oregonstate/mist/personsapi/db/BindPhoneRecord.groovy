@@ -25,6 +25,7 @@ public @interface BindPhoneRecord {
           q.bind("phoneType", phoneRecord.phoneType)
           q.bind("phoneSeqno", phoneRecord.phoneSeqno)
           q.bind("id", phoneRecord.id)
+          q.bind("primaryIndicator", phoneRecord.primaryIndicator ? 'Y' : null)
         }
       }
     }
