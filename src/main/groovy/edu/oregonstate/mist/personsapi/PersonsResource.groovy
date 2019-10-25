@@ -987,10 +987,10 @@ class PersonsResource extends Resource {
             [true, "phoneType", 2,
              { String phoneType -> bannerPersonsReadDAO.isValidPhoneType(phoneType) }
             ],
-            [false, "areaCode", 10, null],
-            [false, "phoneNumber", 75, null],
-            [false, "phoneExtension", 75, null],
-            [false, "primaryIndicator", 75, null],
+            [false, "areaCode", 3, null],
+            [false, "phoneNumber", 7, null],
+            [false, "phoneExtension", 4, null],
+            [false, "primaryIndicator", 5, null],
         ].each {
             Boolean isRequired = it.get(0)
             String fieldName = it.get(1)
@@ -1034,7 +1034,10 @@ class PersonsResource extends Resource {
                 return badRequest("No phone object provided.").build()
             }
 
-            // TODO errors
+            List<Error> errors = newPhoneErrors(phone)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
         } catch (PersonObjectException e) {
             return badRequest(
                 "Unable to parse address object or required fields are missing. " +
