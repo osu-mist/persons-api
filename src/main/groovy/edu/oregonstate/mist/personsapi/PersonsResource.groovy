@@ -973,6 +973,50 @@ class PersonsResource extends Resource {
         }
     }
 
+    // Validate new phone object
+    private List<Error> newPhoneErrors(PhoneObject phone) {
+        List<Error> errors = []
+        Closure addBadRequest = { String message ->
+            errors.add(Error.badRequest(message))
+        }
+
+        [
+            [true, "addressType", 2,
+             { String addressType -> bannerPersonsReadDAO.isValidAddressType(addressType) }
+            ],
+            [true, "phoneType", 2,
+             { String phoneType -> bannerPersonsReadDAO.isValidPhoneType(phoneType) }
+            ],
+            [false, "areaCode", 10, null],
+            [false, "phoneNumber", 75, null],
+            [false, "phoneExtension", 75, null],
+            [false, "primaryIndicator", 75, null],
+        ].each {
+            Boolean isRequired = it.get(0)
+            String fieldName = it.get(1)
+            String fieldValue = phone[fieldName]
+            Integer length = it.get(2)
+            Closure validateFunction = it.get(3)
+
+            // Check if required field is missing
+            if (isRequired && !fieldValue) {
+                addBadRequest("Required field $fieldName is missing or null.")
+            }
+
+            // Check if input field is over the buffer size
+            if (fieldValue?.length() > length) {
+                addBadRequest("$fieldName can't be more than $length characters.")
+            }
+
+            // Check if input field is valid
+            if (fieldValue && validateFunction && !validateFunction(fieldValue)) {
+                addBadRequest("$fieldName is not valid.")
+            }
+        }
+
+        errors
+    }
+
     @Timed
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
@@ -1042,6 +1086,7 @@ class PersonsResource extends Resource {
             e.printStackTrace()
             internalServerError("Unable to execute SQL query.").build()
         } catch (Exception e) {
+            e.printStackTrace()
             internalServerError(
                 "Internal Server Error, please contact API support team for further assistance."
             ).build()
