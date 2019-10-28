@@ -1,4 +1,5 @@
 package edu.oregonstate.mist.personsapi.core
+
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore

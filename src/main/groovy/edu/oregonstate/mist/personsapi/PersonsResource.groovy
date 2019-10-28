@@ -1040,7 +1040,7 @@ class PersonsResource extends Resource {
             }
         } catch (PersonObjectException e) {
             return badRequest(
-                "Unable to parse address object or required fields are missing. " +
+                "Unable to parse phone object or required fields are missing. " +
                 "Please make sure all required fields are included and in the correct format."
             ).build()
         }
