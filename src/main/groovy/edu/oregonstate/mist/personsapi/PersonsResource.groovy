@@ -987,10 +987,16 @@ class PersonsResource extends Resource {
             [true, "phoneType", 2,
              { String phoneType -> bannerPersonsReadDAO.isValidPhoneType(phoneType) }
             ],
-            [false, "areaCode", 3, null],
-            [false, "phoneNumber", 7, null],
-            [false, "phoneExtension", 4, null],
-            [false, "primaryIndicator", 5, null],
+            [true, "areaCode", 3, 
+             { String areaCode -> areaCode =~ /[0-9]+/ }
+            ],
+            [true, "phoneNumber", 7,
+             { String phoneNumber -> phoneNumber =~ /[0-9]+/ }
+            ],
+            [false, "phoneExtension", 4,
+             { String phoneExtension -> phoneExtension =~ /[0-9]+/ }
+            ],
+            [true, "primaryIndicator", 5, null],
         ].each {
             Boolean isRequired = it.get(0)
             String fieldName = it.get(1)
