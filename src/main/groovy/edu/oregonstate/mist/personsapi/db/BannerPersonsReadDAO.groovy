@@ -125,4 +125,9 @@ public interface BannerPersonsReadDAO extends Closeable {
     @Mapper(PhoneRecordMapper)
     PhoneRecordObject hasSamePhoneType(@Bind('pidm') String pidm,
                                        @Bind('phoneType') String phoneType)
+
+    @SqlQuery(AbstractPersonsDAO.phoneHasSameAddressType)
+    @Mapper(PhoneRecordMapper)
+    PhoneRecordObject phoneHasSameAddressType(@Bind('pidm') String pidm,
+                                              @Bind('addressType') String addressType)
 }
