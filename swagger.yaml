@@ -1122,17 +1122,17 @@ definitions:
             type: string
             description: Area code for the phone number.
             example: '541'
-            pattern: '[0-9]{1-3}'
+            pattern: '^[0-9]{1,3}$'
           phoneNumber:
             type: string
             description: Phone number not including the area code.
             example: '4443333'
-            pattern: '[0-9]{1-7}'
+            pattern: '^[0-9]{1,7}$'
           phoneExtension:
             type: string
             description: Extension for the phone number. Can be returned in different formats.
             example: '20'
-            pattern: '[0-9]{0-4}'
+            pattern: '^[0-9]{0,4}$'
           primaryIndicator:
             type: boolean
             description: Indicates if this phone number is marked as the primary number.
