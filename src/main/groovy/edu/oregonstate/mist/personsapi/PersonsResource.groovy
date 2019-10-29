@@ -1112,19 +1112,26 @@ class PersonsResource extends Resource {
     private void updatePhoneAddrSeqno(String pidm,
                                       AddressRecordObject addressRecord,
                                       PhoneRecordObject phoneRecord) {
+        if (phoneRecord?.id) {
+            logger.info("""
+                Phone record found with the given pidm and address type.
+                Updating address seqno on phone record.
+            """)
+            // query address record to get updated seqno
+            AddressRecordObject updatedAddressRecord = bannerPersonsReadDAO.hasSameAddressType(
+                                                pidm, addressRecord.addressType
             )
-            if (phoneRecord?.id) {
-                logger.info("Phone record found with the given pidm and address type. Updating address seqno on phone record.")
-                // query address record to get updated seqno
-                AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
-                                                    pidm, address.addressType
-                )
 
-                bannerPersonsWriteDAO.updatePhoneAddrSeqno(pidm, addressRecord.seqno, phoneRecord)
             try {
+                bannerPersonsWriteDAO.updatePhoneAddrSeqno(pidm,
+                                                           updatedAddressRecord.seqno,
+                                                           phoneRecord)
+            } catch(Exception e) {
+                logger.info("Unable to update phone record. Rolling back address changes.")
+                bannerPersonsWriteDAO.deleteAddress(pidm, updatedAddressRecord)
+                bannerPersonsWriteDAO.reactivateAddress(pidm, addressRecord)
+                throw new Exception("Unable to update phone record.")
             }
-        } catch(Exception e) {
-            e.printStackTrace()
         }
     }
 }
