@@ -73,4 +73,9 @@ public interface BannerPersonsWriteDAO extends Closeable {
     void createPhone(@Bind('pidm') String pidm,
                      @BindPhone PhoneObject phone,
                      @BindAddressRecord AddressRecordObject addressrecord)
+
+    @SqlCall(AbstractPersonsDAO.updatePhoneAddrSeqno)
+    void updatePhoneAddrSeqno(@Bind('pidm') String pidm,
+                              @Bind('addrSeqno') String addrSeqno,
+                              @BindPhoneRecord PhoneRecordObject phoneRecord)
 }
