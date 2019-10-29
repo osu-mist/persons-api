@@ -861,6 +861,9 @@ class PersonsResource extends Resource {
             if (addresses.size() != 1) {
                 throw new Exception("New record created but more than one records are valid.")
             }
+
+            updatePhoneAddrSeqno(pidm, addresses.get(0))
+
             accepted(new ResultObject(
                 data: new ResourceObject(
                     id: addresses[0].id,
@@ -1099,6 +1102,25 @@ class PersonsResource extends Resource {
             internalServerError(
                 "Internal Server Error, please contact API support team for further assistance."
             ).build()
+        }
+    }
+
+    private void updatePhoneAddrSeqno(String pidm, AddressObject address) {
+        try {
+            PhoneRecordObject phoneRecord = bannerPersonsReadDAO.phoneHasSameAddressType(
+                                                pidm, address.addressType
+            )
+            if (phoneRecord?.id) {
+                logger.info("Phone record found with the given pidm and address type. Updating address seqno on phone record.")
+                // query address record to get updated seqno
+                AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+                                                    pidm, address.addressType
+                )
+
+                bannerPersonsWriteDAO.updatePhoneAddrSeqno(pidm, addressRecord.seqno, phoneRecord)
+            }
+        } catch(Exception e) {
+            e.printStackTrace()
         }
     }
 }
