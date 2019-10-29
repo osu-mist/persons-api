@@ -47,11 +47,11 @@ public interface BannerPersonsWriteDAO extends Closeable {
 
     @SqlCall(AbstractPersonsDAO.deactivateAddress)
     void deactivateAddress(@Bind('pidm') String pidm,
-                           @BindAddressRecord AddressRecordObject addressrecord)
+                           @BindAddressRecord AddressRecordObject addressRecord)
 
     @SqlCall(AbstractPersonsDAO.reactivateAddress)
     void reactivateAddress(@Bind('pidm') String pidm,
-                           @BindAddressRecord AddressRecordObject addressrecord)
+                           @BindAddressRecord AddressRecordObject addressRecord)
 
     @SqlCall(AbstractPersonsDAO.createSSN)
     void createSSN(@Bind('pidm') String pidm,
