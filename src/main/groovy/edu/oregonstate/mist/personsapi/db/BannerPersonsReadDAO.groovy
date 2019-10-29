@@ -5,6 +5,7 @@ import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.PhoneObject
+import edu.oregonstate.mist.personsapi.core.PhoneRecordObject
 import edu.oregonstate.mist.personsapi.core.PreviousRecord
 import edu.oregonstate.mist.personsapi.mapper.AddressMapper
 import edu.oregonstate.mist.personsapi.mapper.AddressRecordMapper
@@ -12,6 +13,7 @@ import edu.oregonstate.mist.personsapi.mapper.ImageMapper
 import edu.oregonstate.mist.personsapi.mapper.JobsMapper
 import edu.oregonstate.mist.personsapi.mapper.LaborDistributionMapper
 import edu.oregonstate.mist.personsapi.mapper.PhoneMapper
+import edu.oregonstate.mist.personsapi.mapper.PhoneRecordMapper
 import edu.oregonstate.mist.contrib.AbstractPersonsDAO
 import edu.oregonstate.mist.personsapi.mapper.PreviousRecordMapper
 import org.skife.jdbi.v2.sqlobject.Bind
@@ -118,4 +120,9 @@ public interface BannerPersonsReadDAO extends Closeable {
     List<PhoneObject> getPhones(@Bind('osuID') String osuID,
                                 @Bind('addressType') String addressType,
                                 @Bind('phoneType') String phoneType)
+
+    @SqlQuery(AbstractPersonsDAO.hasSamePhoneType)
+    @Mapper(PhoneRecordMapper)
+    PhoneRecordObject hasSamePhoneType(@Bind('pidm') String pidm,
+                                       @Bind('phoneType') String phoneType)
 }

@@ -26,4 +26,14 @@ class PhoneObject {
 
   @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
   LocalDate lastModified
+
+  public static PhoneObject fromResultObject(ResultObject resultObject) {
+    try {
+        mapper.convertValue(resultObject.data['attributes'], PhoneObject.class)
+    } catch (IllegalArgumentException e) {
+        throw new PersonObjectException("Some fields weren't able to map to an phone object.")
+    } catch (NullPointerException e) {
+        throw new PersonObjectException("Could not parse result object.")
+    }
+}
 }

@@ -12,6 +12,7 @@ import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PersonObjectException
 import edu.oregonstate.mist.personsapi.core.PhoneObject
+import edu.oregonstate.mist.personsapi.core.PhoneRecordObject
 import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.ODSPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
@@ -969,6 +970,135 @@ class PersonsResource extends Resource {
             ok(resultObject).build()
         } else {
             notFound().build()
+        }
+    }
+
+    // Validate new phone object
+    private List<Error> newPhoneErrors(PhoneObject phone) {
+        List<Error> errors = []
+        Closure addBadRequest = { String message ->
+            errors.add(Error.badRequest(message))
+        }
+
+        [
+            [true, "addressType", 2,
+             { String addressType -> bannerPersonsReadDAO.isValidAddressType(addressType) }
+            ],
+            [true, "phoneType", 2,
+             { String phoneType -> bannerPersonsReadDAO.isValidPhoneType(phoneType) }
+            ],
+            [true, "areaCode", 3, 
+             { String areaCode -> areaCode =~ /^[0-9]{1,3}$/ }
+            ],
+            [true, "phoneNumber", 7,
+             { String phoneNumber -> phoneNumber =~ /^[0-9]{1,7}$/ }
+            ],
+            [false, "phoneExtension", 4,
+             { String phoneExtension -> phoneExtension =~ /^[0-9]{1,4}$/ }
+            ],
+            [true, "primaryIndicator", 5, null],
+        ].each {
+            Boolean isRequired = it.get(0)
+            String fieldName = it.get(1)
+            String fieldValue = phone[fieldName]
+            Integer length = it.get(2)
+            Closure validateFunction = it.get(3)
+
+            // Check if required field is missing
+            if (isRequired && !fieldValue) {
+                addBadRequest("Required field $fieldName is missing or null.")
+            }
+
+            // Check if input field is over the buffer size
+            if (fieldValue?.length() > length) {
+                addBadRequest("$fieldName can't be more than $length characters.")
+            }
+
+            // Check if input field is valid
+            if (fieldValue && validateFunction && !validateFunction(fieldValue)) {
+                addBadRequest("$fieldName is not valid.")
+            }
+        }
+
+        errors
+    }
+
+    @Timed
+    @POST
+    @Consumes (MediaType.APPLICATION_JSON)
+    @Path('{osuID: [0-9]+}/phones')
+    Response createPhones(@PathParam('osuID') String osuID,
+                          @Valid ResultObject resultObject) {
+        String pidm = bannerPersonsReadDAO.personExist(osuID)
+        if (!pidm) {
+            return notFound().build()
+        }
+        PhoneObject phone
+        try {
+            phone = PhoneObject.fromResultObject(resultObject)
+            if (!phone) {
+                return badRequest("No phone object provided.").build()
+            }
+
+            List<Error> errors = newPhoneErrors(phone)
+            if (errors) {
+                return errorArrayResponse(errors)
+            }
+        } catch (PersonObjectException e) {
+            return badRequest(
+                "Unable to parse phone object or required fields are missing. " +
+                "Please make sure all required fields are included and in the correct format."
+            ).build()
+        }
+
+        String phoneType = resultObject.data['attributes']['phoneType']
+        String addressType = resultObject.data['attributes']['addressType']
+        PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
+            pidm, phoneType
+        )
+        AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+            pidm, addressType
+        )
+        if(!addressRecord) {
+            return badRequest("No address record found with the $addressType address code").build()
+        }
+
+        try {
+            if (phoneRecord?.id) {
+                logger.info("Phone with the same type exists. Deactivate the current one.")
+                bannerPersonsWriteDAO.deactivatePhone(pidm, phoneRecord)
+            }
+
+            try {
+                logger.info("Creating new phone.")
+                bannerPersonsWriteDAO.createPhone(pidm, phone, addressRecord)
+            } catch (Exception e) {
+                e.printStackTrace()
+                logger.info("Unable to create new phone record. Reactivating the current one.")
+                bannerPersonsWriteDAO.reactivatePhone(pidm, phoneRecord)
+                throw new Exception("Unable to create new phone record.")
+            }
+
+            List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
+
+            if (phones.size() != 1) {
+                throw new Exception("New record created but more than one records are valid.")
+            }
+            accepted(new ResultObject(
+                data: new ResourceObject(
+                    id: phones[0].id,
+                    type: "phones",
+                    attributes: phones[0]
+                )
+            )).build()
+        } catch (UnableToExecuteStatementException e) {
+            e.printStackTrace()
+            internalServerError("Unable to execute SQL query.").build()
+        } catch (Exception e) {
+            e.printStackTrace()
+            internalServerError(
+                "Internal Server Error, please contact API support team for further assistance."
+            ).build()
         }
     }
 }
