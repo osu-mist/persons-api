@@ -994,7 +994,7 @@ class PersonsResource extends Resource {
              { String phoneNumber -> phoneNumber =~ /^[0-9]{1,7}$/ }
             ],
             [false, "phoneExtension", 4,
-             { String phoneExtension -> phoneExtension =~ /^[0-9]{0,4}$/ }
+             { String phoneExtension -> phoneExtension =~ /^[0-9]{1,4}$/ }
             ],
             [true, "primaryIndicator", 5, null],
         ].each {
