@@ -842,6 +842,10 @@ class PersonsResource extends Resource {
             AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
                 pidm, addressType
             )
+            // query phoneRecord early because deactivateAddress will set the status to inactive
+            PhoneRecordObject phoneRecord = bannerPersonsReadDAO.phoneHasSameAddressType(
+                pidm, addressType
+            )
             if (addressRecord?.rowID) {
                 logger.info("Address with the same type exist. Deactivate the current one.")
                 bannerPersonsWriteDAO.deactivateAddress(pidm, addressRecord)
@@ -862,7 +866,7 @@ class PersonsResource extends Resource {
                 throw new Exception("New record created but more than one records are valid.")
             }
 
-            updatePhoneAddrSeqno(pidm, addresses.get(0))
+            updatePhoneAddrSeqno(pidm, addressRecord, phoneRecord)
 
             accepted(new ResultObject(
                 data: new ResourceObject(
@@ -1105,10 +1109,9 @@ class PersonsResource extends Resource {
         }
     }
 
-    private void updatePhoneAddrSeqno(String pidm, AddressObject address) {
-        try {
-            PhoneRecordObject phoneRecord = bannerPersonsReadDAO.phoneHasSameAddressType(
-                                                pidm, address.addressType
+    private void updatePhoneAddrSeqno(String pidm,
+                                      AddressRecordObject addressRecord,
+                                      PhoneRecordObject phoneRecord) {
             )
             if (phoneRecord?.id) {
                 logger.info("Phone record found with the given pidm and address type. Updating address seqno on phone record.")
@@ -1118,6 +1121,7 @@ class PersonsResource extends Resource {
                 )
 
                 bannerPersonsWriteDAO.updatePhoneAddrSeqno(pidm, addressRecord.seqno, phoneRecord)
+            try {
             }
         } catch(Exception e) {
             e.printStackTrace()
