@@ -988,13 +988,13 @@ class PersonsResource extends Resource {
              { String phoneType -> bannerPersonsReadDAO.isValidPhoneType(phoneType) }
             ],
             [true, "areaCode", 3, 
-             { String areaCode -> areaCode =~ /[0-9]+/ }
+             { String areaCode -> areaCode =~ /^[0-9]{1,3}$/ }
             ],
             [true, "phoneNumber", 7,
-             { String phoneNumber -> phoneNumber =~ /[0-9]+/ }
+             { String phoneNumber -> phoneNumber =~ /^[0-9]{1,7}$/ }
             ],
             [false, "phoneExtension", 4,
-             { String phoneExtension -> phoneExtension =~ /[0-9]+/ }
+             { String phoneExtension -> phoneExtension =~ /^[0-9]{0,4}$/ }
             ],
             [true, "primaryIndicator", 5, null],
         ].each {
