@@ -47,11 +47,15 @@ public interface BannerPersonsWriteDAO extends Closeable {
 
     @SqlCall(AbstractPersonsDAO.deactivateAddress)
     void deactivateAddress(@Bind('pidm') String pidm,
-                           @BindAddressRecord AddressRecordObject addressrecord)
+                           @BindAddressRecord AddressRecordObject addressRecord)
 
     @SqlCall(AbstractPersonsDAO.reactivateAddress)
     void reactivateAddress(@Bind('pidm') String pidm,
-                           @BindAddressRecord AddressRecordObject addressrecord)
+                           @BindAddressRecord AddressRecordObject addressRecord)
+
+    @SqlCall(AbstractPersonsDAO.deleteAddress)
+    void deleteAddress(@Bind('pidm') String pidm,
+                       @BindAddressRecord AddressRecordObject addressRecord)
 
     @SqlCall(AbstractPersonsDAO.createSSN)
     void createSSN(@Bind('pidm') String pidm,
@@ -73,4 +77,9 @@ public interface BannerPersonsWriteDAO extends Closeable {
     void createPhone(@Bind('pidm') String pidm,
                      @BindPhone PhoneObject phone,
                      @BindAddressRecord AddressRecordObject addressrecord)
+
+    @SqlCall(AbstractPersonsDAO.updatePhoneAddrSeqno)
+    void updatePhoneAddrSeqno(@Bind('pidm') String pidm,
+                              @Bind('addrSeqno') String addrSeqno,
+                              @BindPhoneRecord PhoneRecordObject phoneRecord)
 }

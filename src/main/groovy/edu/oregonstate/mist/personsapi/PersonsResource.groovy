@@ -842,6 +842,10 @@ class PersonsResource extends Resource {
             AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
                 pidm, addressType
             )
+            // query phoneRecord early because deactivateAddress will set the status to inactive
+            PhoneRecordObject phoneRecord = bannerPersonsReadDAO.phoneHasSameAddressType(
+                pidm, addressType
+            )
             if (addressRecord?.rowID) {
                 logger.info("Address with the same type exist. Deactivate the current one.")
                 bannerPersonsWriteDAO.deactivateAddress(pidm, addressRecord)
@@ -861,6 +865,9 @@ class PersonsResource extends Resource {
             if (addresses.size() != 1) {
                 throw new Exception("New record created but more than one records are valid.")
             }
+
+            updatePhoneAddrSeqno(pidm, addressRecord, phoneRecord)
+
             accepted(new ResultObject(
                 data: new ResourceObject(
                     id: addresses[0].id,
@@ -1099,6 +1106,32 @@ class PersonsResource extends Resource {
             internalServerError(
                 "Internal Server Error, please contact API support team for further assistance."
             ).build()
+        }
+    }
+
+    private void updatePhoneAddrSeqno(String pidm,
+                                      AddressRecordObject addressRecord,
+                                      PhoneRecordObject phoneRecord) {
+        if (phoneRecord?.id) {
+            logger.info("""
+                Phone record found with the given pidm and address type.
+                Updating address seqno on phone record.
+            """)
+            // query address record to get updated seqno
+            AddressRecordObject updatedAddressRecord = bannerPersonsReadDAO.hasSameAddressType(
+                                                pidm, addressRecord.addressType
+            )
+
+            try {
+                bannerPersonsWriteDAO.updatePhoneAddrSeqno(pidm,
+                                                           updatedAddressRecord.seqno,
+                                                           phoneRecord)
+            } catch(Exception e) {
+                logger.info("Unable to update phone record. Rolling back address changes.")
+                bannerPersonsWriteDAO.deleteAddress(pidm, updatedAddressRecord)
+                bannerPersonsWriteDAO.reactivateAddress(pidm, addressRecord)
+                throw new Exception("Unable to update phone record.")
+            }
         }
     }
 }
