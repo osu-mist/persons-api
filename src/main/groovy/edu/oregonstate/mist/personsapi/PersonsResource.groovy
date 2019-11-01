@@ -1101,7 +1101,9 @@ class PersonsResource extends Resource {
                 data: new ResourceObject(
                     id: phones[0].id,
                     type: "phones",
-                    attributes: phones[0]
+                    attributes: phones[0],
+                    links: ['self': personUriBuilder.phoneUri(
+                        osuID, phones[0].phoneType)]
                 )
             )).build()
         } catch (UnableToExecuteStatementException e) {
