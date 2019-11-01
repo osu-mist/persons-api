@@ -29,6 +29,13 @@ class PersonUriBuilder {
                 .build(osuID, mealPlanID)
     }
 
+    URI addressUri(String osuID, String addressType) {
+        UriBuilder.fromUri(this.endpointUri)
+                .path('persons/{osuID}/addresses')
+                .queryParam('addressType', addressType)
+                .build(osuID)
+    }
+
     URI phoneUri(String osuID, String phoneType) {
         UriBuilder.fromUri(this.endpointUri)
                 .path('persons/{osuID}/phones')
