@@ -969,7 +969,9 @@ class PersonsResource extends Resource {
                         new ResourceObject(
                                 id: it.id,
                                 type: "phones",
-                                attributes: it
+                                attributes: it,
+                                links: ['self': personUriBuilder.phoneUri(
+                                    osuID, it.phoneType)]
                         )
                     }
             )
