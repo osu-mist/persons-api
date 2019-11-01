@@ -87,7 +87,8 @@ class PersonsResource extends Resource {
                   @QueryParam('firstName') String firstName,
                   @QueryParam('lastName') String lastName,
                   @QueryParam('searchOldNames') Boolean searchOldNames,
-                  @QueryParam('searchOldOsuIDs') Boolean searchOldOsuIDs) {
+                  @QueryParam('searchOldOsuIDs') Boolean searchOldOsuIDs,
+                  @Context UriInfo uri) {
         // Check for a bad request.
         Closure<Integer> getSize = { List<String> list -> list.findAll { it }.size() }
 
@@ -157,14 +158,15 @@ class PersonsResource extends Resource {
                     .build()
         }
 
-        ResultObject res = personResultObject(persons)
+        ResultObject res = personResultObject(persons, uri?.getRequestUri())
         ok(res).build()
     }
 
     @Timed
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
-    Response createPerson(@Valid ResultObject resultObject) {
+    Response createPerson(@Valid ResultObject resultObject,
+                          @Context UriInfo uri) {
         PersonObject person
         try {
             person = PersonObject.fromResultObject(resultObject)
@@ -197,7 +199,7 @@ class PersonsResource extends Resource {
                 null, [dbFunctionOutput], null, null, null, false
             )
             if (createdPerson) {
-                ResultObject res = personResultObject(createdPerson?.get(0))
+                ResultObject res = personResultObject(createdPerson?.get(0), uri?.getRequestUri())
                 accepted(res).build()
             } else {
                 internalServerError("Person has been created but not found.").build()
@@ -233,22 +235,25 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Path('{osuID: [0-9]+}')
-    Response getPersonById(@PathParam('osuID') String osuID) {
+    Response getPersonById(@PathParam('osuID') String osuID,
+                           @Context UriInfo uri) {
         def person = personsStringTemplateDAO.getPersons(null, [osuID], null, null, null, false)
         if (person) {
-            ResultObject res = personResultObject(person?.get(0))
+            ResultObject res = personResultObject(person?.get(0), uri?.getRequestUri())
             ok(res).build()
         } else {
             notFound().build()
         }
     }
 
-    ResultObject personResultObject(List<PersonObject> persons) {
-        new ResultObject(data: persons.collect { personResourceObject(it) })
+    ResultObject personResultObject(List<PersonObject> persons, URI selfLink) {
+        new ResultObject(data: persons.collect { personResourceObject(it) },
+                         links: ['self': selfLink])
     }
 
-    ResultObject personResultObject(PersonObject person) {
-        new ResultObject(data: personResourceObject(person))
+    ResultObject personResultObject(PersonObject person, URI selfLink) {
+        new ResultObject(data: personResourceObject(person),
+                         links: ['self': selfLink])
     }
 
     ResourceObject personResourceObject(PersonObject person) {
