@@ -34,8 +34,10 @@ import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.UriInfo
 
 @Path("persons")
 @Produces(MediaType.APPLICATION_JSON)
@@ -954,7 +956,8 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/phones')
     Response getPhones(@PathParam('osuID') String osuID,
                        @QueryParam('addressType') String addressType,
-                       @QueryParam('phoneType') String phoneType) {
+                       @QueryParam('phoneType') String phoneType,
+                       @Context UriInfo uri) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             // validate query parameters
             List<Error> errors = validateTypeParams(addressType, phoneType)
@@ -965,6 +968,7 @@ class PersonsResource extends Resource {
             List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             ResultObject resultObject = new ResultObject(
+                    links: uri.getRequestUri(),
                     data: phones.collect {
                         new ResourceObject(
                                 id: it.id,
