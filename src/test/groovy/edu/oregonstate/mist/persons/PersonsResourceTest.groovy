@@ -1300,7 +1300,7 @@ class PersonsResourceTest {
                 personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
         checkErrorResponse(
-                personsResource.getAddresses("foo", null),
+                personsResource.getAddresses("foo", null, null),
                 404)
     }
 
@@ -1358,7 +1358,7 @@ class PersonsResourceTest {
                     personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
             checkValidResponse(
-                    personsResource.getAddresses("12345678", null),
+                    personsResource.getAddresses("12345678", null, null),
                     200,
                     [addressObject]
             )
