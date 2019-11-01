@@ -968,7 +968,7 @@ class PersonsResource extends Resource {
             List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             ResultObject resultObject = new ResultObject(
-                    links: uri.getRequestUri(),
+                    links: ['self': uri.getRequestUri()],
                     data: phones.collect {
                         new ResourceObject(
                                 id: it.id,
@@ -1041,7 +1041,8 @@ class PersonsResource extends Resource {
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/phones')
     Response createPhones(@PathParam('osuID') String osuID,
-                          @Valid ResultObject resultObject) {
+                          @Valid ResultObject resultObject,
+                          @Context UriInfo uri) {
         String pidm = bannerPersonsReadDAO.personExist(osuID)
         if (!pidm) {
             return notFound().build()
@@ -1098,6 +1099,7 @@ class PersonsResource extends Resource {
                 throw new Exception("New record created but more than one records are valid.")
             }
             accepted(new ResultObject(
+                links: ['self': uri.getRequestUri()],
                 data: new ResourceObject(
                     id: phones[0].id,
                     type: "phones",
