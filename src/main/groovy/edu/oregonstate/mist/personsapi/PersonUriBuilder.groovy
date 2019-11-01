@@ -28,4 +28,11 @@ class PersonUriBuilder {
                 .path('persons/{osuID}/meal-plans/{mealPlanID}')
                 .build(osuID, mealPlanID)
     }
+
+    URI phoneUri(String osuID, String phoneType) {
+        UriBuilder.fromUri(this.endpointUri)
+                .path('persons/{osuID}/phones')
+                .queryParam('phoneType', phoneType)
+                .build(osuID)
+    }
 }
