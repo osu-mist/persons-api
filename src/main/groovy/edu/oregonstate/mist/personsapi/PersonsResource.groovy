@@ -733,7 +733,8 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/addresses')
     Response getAddresses(@PathParam('osuID') String osuID,
-                          @QueryParam('addressType') String addressType) {
+                          @QueryParam('addressType') String addressType,
+                          @Context UriInfo uri) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             List<Error> errors = validateTypeParams(addressType, null)
             if (errors) {
@@ -743,11 +744,14 @@ class PersonsResource extends Resource {
             List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 
             ResultObject resultObject = new ResultObject(
+                    links: ['self': uri?.getRequestUri()],
                     data: addresses.collect {
                         new ResourceObject(
                                 id: it.id,
                                 type: "addresses",
-                                attributes: it
+                                attributes: it,
+                                links: ["self": personUriBuilder.addressUri(
+                                    osuID, it.addressType)]
                         )
                     }
             )
