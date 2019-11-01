@@ -164,48 +164,66 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(null, null, null, null, endpointUri)
 
         // OSU UID can only contain numbers
-        checkErrorResponse(personsResource.list(null, null, 'badOSUUID', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, 'badOSUUID', null, null, null, null, null),
                 400)
 
         // Can't search by names and IDs in the same request
-        checkErrorResponse(personsResource.list(null, null, '123456789', 'Jane', 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, '123456789', 'Jane', 'Doe', null, null, null),
                 400)
-        checkErrorResponse(personsResource.list(null, '931234567', null, 'Jane', 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list(null, '931234567', null, 'Jane', 'Doe', null, null, null),
                 400)
-        checkErrorResponse(personsResource.list('doej', null, null, 'Jane', 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list('doej', null, null, 'Jane', 'Doe', null, null, null),
                 400)
 
         // Only one ID parameter should be included in a request
-        checkErrorResponse(personsResource.list('doej', '93123456', null, null, null, null, null),
+        checkErrorResponse(
+                personsResource.list('doej', '93123456', null, null, null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list('doej', null, '12345678', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list('doej', null, '12345678', null, null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list(null, '931236', '1238', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list(null, '931236', '1238', null, null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list('doej', '931236', '1238', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list('doej', '931236', '1238', null, null, null, null, null),
                 400)
 
         // First and last name must be included together
-        checkErrorResponse(personsResource.list(null, null, null, 'Jane', null, null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, null, 'Jane', null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list(null, null, null, null, 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, 'Doe', null, null, null),
                 400)
 
         // Can't use searchOldNames and searchOldOsuIDs in one request
-        checkErrorResponse(personsResource.list(null, '9322525', null, null, null, true, true), 400)
+        checkErrorResponse(
+                personsResource.list(null, '9322525', null, null, null, true, true, null),
+                400)
 
         // Searching old OSU IDs can only be done with the OSU ID
-        checkErrorResponse(personsResource.list('doej', null, null, null, null, null, true), 400)
-        checkErrorResponse(personsResource.list(null, null, '12345678', null, null, null, true),
+        checkErrorResponse(
+                personsResource.list('doej', null, null, null, null, null, true, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, '12345678', null, null, null, true, null),
                 400)
 
         // Searching old names must include a valid name request
-        checkErrorResponse(personsResource.list(null, null, null, null, null, true, null), 400)
-        checkErrorResponse(personsResource.list(null, null, null, "jane", null, true, null), 400)
-        checkErrorResponse(personsResource.list(null, null, null, null, "doe", true, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, null, true, null, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, "jane", null, true, null, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, "doe", true, null, null), 400)
 
         // The request must include an ID or names
-        checkErrorResponse(personsResource.list(null, null, null, null, null, null, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, null, null, null, null), 400)
     }
 
     @Test
@@ -223,7 +241,7 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(
             stubDAO.proxyInstance(), stubStringTemplateDAO.proxyInstance(), null, null, endpointUri)
-        checkErrorResponse(personsResource.getPersonById('123456789'), 404)
+        checkErrorResponse(personsResource.getPersonById('123456789', null), 404)
         checkErrorResponse(personsResource.getJobs('123456789', null, null), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
@@ -246,9 +264,11 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(stubPersonsDAO.proxyInstance(),
                 stubPersonsStringTemplateDAO.proxyInstance(), null, null, endpointUri)
-        checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
+        checkValidResponse(
+                personsResource.list('johndoe', null, null, null, null, null, null, null),
+                200,
                 [fakePerson])
-        checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
+        checkValidResponse(personsResource.getPersonById('123456789', null), 200, fakePerson)
         checkValidResponse(personsResource.getJobs('123456789', null, null), 200, [fakeJob])
     }
 
