@@ -242,7 +242,7 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(
             stubDAO.proxyInstance(), stubStringTemplateDAO.proxyInstance(), null, null, endpointUri)
         checkErrorResponse(personsResource.getPersonById('123456789', null), 404)
-        checkErrorResponse(personsResource.getJobs('123456789', null, null), 404)
+        checkErrorResponse(personsResource.getJobs('123456789', null, null, null), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
 
@@ -269,7 +269,7 @@ class PersonsResourceTest {
                 200,
                 [fakePerson])
         checkValidResponse(personsResource.getPersonById('123456789', null), 200, fakePerson)
-        checkValidResponse(personsResource.getJobs('123456789', null, null), 200, [fakeJob])
+        checkValidResponse(personsResource.getJobs('123456789', null, null, null), 200, [fakeJob])
     }
 
     private PersonsResource getPersonsResourceWithGoodMockDAOsForNewJob() {
@@ -1243,7 +1243,7 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(
                 personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
-        Response response = personsResource.getJobById("foo", "bar")
+        Response response = personsResource.getJobById("foo", "bar", null)
         checkErrorResponse(response, 404)
     }
 
@@ -1257,7 +1257,7 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(
                 personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
-        Response response = personsResource.getJobById("foo", "foo-bar")
+        Response response = personsResource.getJobById("foo", "foo-bar", null)
         checkErrorResponse(response, 404)
     }
 
