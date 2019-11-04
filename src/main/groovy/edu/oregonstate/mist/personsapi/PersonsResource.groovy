@@ -696,11 +696,13 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/meal-plans')
-    Response getMealPlans(@PathParam('osuID') String osuID) {
+    Response getMealPlans(@PathParam('osuID') String osuID,
+                          @Context UriInfo uri) {
         if (odsPersonsReadDAO.personExist(osuID)) {
             List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(osuID, null)
 
             ResultObject resultObject = new ResultObject(
+                    links: ['self': uri.getRequestUri()],
                     data: mealPlans.collect {
                         getMealPlanResourceObject(it, osuID)
                     }
@@ -716,13 +718,15 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/meal-plans/{mealPlanID}')
     Response getMealPlanByID(@PathParam('osuID') String osuID,
-                             @PathParam('mealPlanID') String mealPlanID) {
+                             @PathParam('mealPlanID') String mealPlanID,
+                             @Context UriInfo uri) {
         if (odsPersonsReadDAO.personExist(osuID)) {
             List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(
                     osuID, mealPlanID)
 
             if (mealPlans) {
                 ResultObject resultObject = new ResultObject(
+                        links: ['self': uri.getRequestUri()],
                         data: getMealPlanResourceObject(mealPlans?.get(0), osuID)
                 )
                 ok(resultObject).build()
