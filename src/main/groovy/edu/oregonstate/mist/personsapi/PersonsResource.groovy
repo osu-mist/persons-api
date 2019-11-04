@@ -272,10 +272,11 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/jobs')
     Response getJobs(@PathParam('osuID') String osuID,
                      @QueryParam('positionNumber') String positionNumber,
-                     @QueryParam('suffix') String suffix) {
+                     @QueryParam('suffix') String suffix,
+                     @Context UriInfo uri) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             List<JobObject> jobs = bannerPersonsReadDAO.getJobsById(osuID, positionNumber, suffix)
-            ok(jobsResultObject(jobs, osuID)).build()
+            ok(jobsResultObject(jobs, osuID, uri?.getRequestUri())).build()
         } else {
             notFound().build()
         }
@@ -287,7 +288,8 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/jobs')
     Response createJob(@PathParam('osuID') String osuID,
                        @Valid ResultObject resultObject,
-                       @QueryParam('employmentType') String employmentType) {
+                       @QueryParam('employmentType') String employmentType,
+                       @Context UriInfo uri) {
         if (!bannerPersonsReadDAO.personExist(osuID)) {
             return notFound().build()
         }
@@ -298,14 +300,15 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID, employmentType, false)
+        createOrUpdateJobInDB(resultObject, osuID, employmentType, false, uri?.getRequestUri())
     }
 
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/jobs/{jobID: [0-9a-zA-Z-]+}')
     Response getJobById(@PathParam('osuID') String osuID,
-                        @PathParam('jobID') String jobID) {
+                        @PathParam('jobID') String jobID,
+                        @Context UriInfo uri) {
         if (!bannerPersonsReadDAO.personExist(osuID)) {
             return notFound().build()
         }
@@ -315,7 +318,7 @@ class PersonsResource extends Resource {
         if (!job) {
             notFound().build()
         } else {
-            ok(jobResultObject(job, osuID)).build()
+            ok(jobResultObject(job, osuID, uri?.getRequestUri())).build()
         }
     }
 
@@ -326,7 +329,8 @@ class PersonsResource extends Resource {
     Response updateJob(@PathParam('osuID') String osuID,
                        @PathParam('jobID') String jobID,
                        @Valid ResultObject resultObject,
-                       @QueryParam('employmentType') String employmentType) {
+                       @QueryParam('employmentType') String employmentType,
+                       @Context UriInfo uri) {
         if (!bannerPersonsReadDAO.personExist(osuID) || !getJobObject(osuID, jobID)) {
             return notFound().build()
         }
@@ -337,13 +341,14 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID, employmentType, true)
+        createOrUpdateJobInDB(resultObject, osuID, employmentType, true, uri?.getRequestUri())
     }
 
     private Response createOrUpdateJobInDB(ResultObject resultObject,
                                            String osuID,
                                            String employmentType,
-                                           Boolean update) {
+                                           Boolean update,
+                                           URI selfLink) {
         JobObject job = JobObject.fromResultObject(resultObject)
 
         String dbFunctionOutput
@@ -376,7 +381,10 @@ class PersonsResource extends Resource {
         //TODO: Should we be checking other conditions besides an null/empty string?
         // null/empty string == success
         if (!dbFunctionOutput) {
-            accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
+            accepted(new ResultObject(
+                links: ['self': selfLink],
+                data: new ResourceObject(attributes: job)
+            )).build()
         } else {
             logger.error("Unexpected database return value: $dbFunctionOutput")
             internalServerError("Error creating new job: $dbFunctionOutput").build()
@@ -437,12 +445,18 @@ class PersonsResource extends Resource {
         positionNumber + jobIDDelimiter + suffix
     }
 
-    ResultObject jobsResultObject(List<JobObject> jobs, String osuID) {
-        new ResultObject(data: jobs.collect { jobResourceObject(it, osuID)})
+    ResultObject jobsResultObject(List<JobObject> jobs, String osuID, URI selfLink) {
+        new ResultObject(
+            links: ['self': selfLink],
+            data: jobs.collect { jobResourceObject(it, osuID)}
+        )
     }
 
-    ResultObject jobResultObject(JobObject job, String osuID) {
-        new ResultObject(data: jobResourceObject(job, osuID))
+    ResultObject jobResultObject(JobObject job, String osuID, URI selfLink) {
+        new ResultObject(
+            links: ['self': selfLink],
+            data: jobResourceObject(job, osuID)
+        )
     }
 
     ResourceObject jobResourceObject(JobObject job, String osuID) {
