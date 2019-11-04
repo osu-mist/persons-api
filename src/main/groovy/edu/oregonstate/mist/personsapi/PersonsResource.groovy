@@ -381,9 +381,17 @@ class PersonsResource extends Resource {
         //TODO: Should we be checking other conditions besides an null/empty string?
         // null/empty string == success
         if (!dbFunctionOutput) {
+            String positionNumber = resultObject.data['attributes']['positionNumber']
+            String suffix = resultObject.data['attributes']['suffix']
             accepted(new ResultObject(
                 links: ['self': selfLink],
-                data: new ResourceObject(attributes: job)
+                data: new ResourceObject(
+                    id: joinJobID(positionNumber, suffix),
+                    type: 'jobs',
+                    attributes: job,
+                    links: ['self': personUriBuilder.personJobsUri(
+                        osuID, positionNumber, suffix)]
+                )
             )).build()
         } else {
             logger.error("Unexpected database return value: $dbFunctionOutput")

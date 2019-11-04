@@ -404,7 +404,8 @@ class PersonsResourceTest {
                 positionNumber: null,
                 beginDate: sampleDate,
                 status: 'Active',
-                effectiveDate: sampleDate
+                effectiveDate: sampleDate,
+                suffix: '00'
         )
 
         ResultObject jobResultObject = new ResultObject(data: new ResourceObject(attributes: job))
@@ -438,7 +439,8 @@ class PersonsResourceTest {
                 supervisorPositionNumber: fakeJob.supervisorPositionNumber,
                 status: 'Active',
                 effectiveDate: sampleDate,
-                hourlyRate: negativeNumber
+                hourlyRate: negativeNumber,
+                suffix: '00'
         )
 
         ResultObject jobResultObject = new ResultObject(data: new ResourceObject(attributes: job))
@@ -478,7 +480,8 @@ class PersonsResourceTest {
             earnCode: null,
             earnCodeEffectiveDate: null,
             earnCodeHours: null,
-            earnCodeShift: null
+            earnCodeShift: null,
+            suffix: '00'
         )
         String expectedMessage = "earnCode, earnCodeEffectiveDate, earnCodeHours, earnCodeShift" +
                                  " should be all null or all not null."
