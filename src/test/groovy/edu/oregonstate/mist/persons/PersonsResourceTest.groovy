@@ -8,6 +8,7 @@ import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
+import edu.oregonstate.mist.personsapi.core.PhoneObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
@@ -1438,6 +1439,36 @@ class PersonsResourceTest {
         checkErrorResponse(
             personsResource.getPhones("foo", null, null),
             404
+        )
+    }
+
+    @Test void getPhonesReturnsExpectedObject() {
+        PhoneObject phoneObject = new PhoneObject(
+            id: "foo",
+            areaCode: "541",
+            phoneNumber: "3334444",
+            fullPhoneNumber: "5413334444",
+            primaryIndicator: true,
+            phoneType: "CM",
+            phoneTypeDescription: "Current",
+            addressType: "CM",
+            addressTypeDescription: "Current Mailing"
+        )
+
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> "12345678" }
+            getPhones() { String osuID, String phoneType, String addressType -> [phoneObject] }
+        }
+
+        PersonsResource personsResource = new PersonsResource(
+            personsDAOStub.proxyInstance(), null, null, null, endpointUri
+        )
+
+        checkValidResponse(
+            personsResource.getPhones("12345678", null, null),
+            200,
+            [phoneObject]
         )
     }
 }
