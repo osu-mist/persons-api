@@ -30,6 +30,7 @@ class PersonsResourceTest {
     private final String studentEmploymentType = "student"
 
     PersonObject fakePerson
+    PhoneObject fakePhone
     JobObject fakeJob
     ResultObject fakeJobResultObject
     LocalDate sampleDate
@@ -55,6 +56,18 @@ class PersonsResourceTest {
                 email: 'johndoe@oregonstate.edu',
                 username: 'johndoe',
                 confidential: false
+        )
+
+        fakePhone = new PhoneObject(
+                id: "foo",
+                areaCode: "541",
+                phoneNumber: "3334444",
+                fullPhoneNumber: "5413334444",
+                primaryIndicator: true,
+                phoneType: "CM",
+                phoneTypeDescription: "Current",
+                addressType: "CM",
+                addressTypeDescription: "Current Mailing"
         )
 
         //sampleDate = Date.parse('yyyy-MM-dd','2018-01-01')
@@ -1470,6 +1483,56 @@ class PersonsResourceTest {
             personsResource.getPhones("12345678", null, null),
             200,
             [phoneObject]
+        )
+    }
+
+    @Test
+    void invalidPhoneCode() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789'}
+            isValidPhoneType { String phoneType -> false }
+            isValidAddressType { String addressType -> true }
+        }
+
+        PhoneObject phone = fakePhone
+
+        PersonsResource personsResource = new PersonsResource(
+            personsDAOStub.proxyInstance(), null, null, null, endpointUri
+        )
+
+        checkErrorResponse(
+            personsResource.createPhones(
+                '123456789',
+                new ResultObject(data: new ResourceObject(attributes: phone))
+            ),
+            400,
+            "phoneType is not valid."
+        )
+    }
+
+    @Test
+    void invalidAddressCode() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.with {
+            personExist(2..2) { String osuID -> '123456789'}
+            isValidPhoneType { String phoneType -> true }
+            isValidAddressType { String addressType -> false }
+        }
+
+        PhoneObject phone = fakePhone
+
+        PersonsResource personsResource = new PersonsResource(
+            personsDAOStub.proxyInstance(), null, null, null, endpointUri
+        )
+
+        checkErrorResponse(
+            personsResource.createPhones(
+                '123456789',
+                new ResultObject(data: new ResourceObject(attributes: phone))
+            ),
+            400,
+            "addressType is not valid."
         )
     }
 }
