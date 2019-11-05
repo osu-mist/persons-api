@@ -966,7 +966,7 @@ class PersonsResource extends Resource {
                     id: "$osuID-ssn",
                     type: "ssn",
                     attributes: ["ssnStatus": bannerPersonsReadDAO.ssnStatus(osuID)],
-                    links: ['self': personUriBuilder.ssnUri(osuID)]
+                    links: ['self': personUriBuilder.ssnUri(osuID, "$osuID-ssn")]
                 ),
                 links: ['self': uri.getRequestUri()]
             )).build()
