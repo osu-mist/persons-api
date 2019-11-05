@@ -1092,20 +1092,24 @@ definitions:
                 pattern: '\d{9}'
   SSNResultObject:
     properties:
-      id:
-        type: string
-        description: 9 digits SSN
-        example: '123456789'
-      type:
-        $ref: '#/definitions/SSNType'
       links:
         $ref: '#/definitions/SelfLink'
-      attributes:
+      data:
         properties:
-          ssn:
+          id:
             type: string
             description: 9 digits SSN
             example: '123456789'
+          type:
+            $ref: '#/definitions/SSNType'
+          links:
+            $ref: '#/definitions/SelfLink'
+          attributes:
+            properties:
+              ssn:
+                type: string
+                description: 9 digits SSN
+                example: '123456789'
   NewPhoneResultObject:
     properties:
       data:
