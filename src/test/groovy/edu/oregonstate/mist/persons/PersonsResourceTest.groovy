@@ -1442,7 +1442,8 @@ class PersonsResourceTest {
         )
     }
 
-    @Test void getPhonesReturnsExpectedObject() {
+    @Test
+    void getPhonesReturnsExpectedObject() {
         PhoneObject phoneObject = new PhoneObject(
             id: "foo",
             areaCode: "541",
