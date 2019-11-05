@@ -1425,4 +1425,19 @@ class PersonsResourceTest {
             )
         }
     }
+
+    @Test
+    void getPhonesReturnsNotFoundIfPersonNotFound() {
+        def personsDAOStub = getPersonsDAOStub()
+        personsDAOStub.demand.personExist(2..2) { String osuID -> null }
+
+        PersonsResource personsResource = new PersonsResource(
+            personsDAOStub.proxyInstance(), null, null, null, endpointUri
+        )
+
+        checkErrorResponse(
+            personsResource.getPhones("foo", null, null),
+            404
+        )
+    }
 }
