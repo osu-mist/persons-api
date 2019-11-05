@@ -936,7 +936,8 @@ class PersonsResource extends Resource {
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/ssn')
     Response createSSN(@PathParam('osuID') String osuID,
-                       @Valid ResultObject resultObject) {
+                       @Valid ResultObject resultObject,
+                       @Context UriInfo uri) {
 
         String pidm = bannerPersonsReadDAO.personExist(osuID)
         if (!pidm) {
@@ -960,10 +961,14 @@ class PersonsResource extends Resource {
                 bannerPersonsWriteDAO.createSSN(pidm, ssn)
             }
 
-            accepted(new ResourceObject(
-                id: ssn,
-                type: "ssn",
-                attributes: ["ssn": ssn]
+            accepted(new ResultObject(
+                data: new ResourceObject(
+                    id: ssn,
+                    type: "ssn",
+                    attributes: ["ssn": ssn],
+                    links: ['self': personUriBuilder.ssnUri(osuID)]
+                ),
+                links: ['self': uri.getRequestUri()]
             )).build()
         } catch (UnableToExecuteStatementException e) {
             internalServerError("Unable to execute SQL query").build()

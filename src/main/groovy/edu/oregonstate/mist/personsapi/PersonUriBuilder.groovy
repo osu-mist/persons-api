@@ -29,6 +29,12 @@ class PersonUriBuilder {
                 .build(osuID, mealPlanID)
     }
 
+    URI ssnUri(String osuID) {
+        UriBuilder.fromUri(this.endpointUri)
+                .path('persons/{osuID}/ssn')
+                .build(osuID)
+    }
+
     URI addressUri(String osuID, String addressType) {
         UriBuilder.fromUri(this.endpointUri)
                 .path('persons/{osuID}/addresses')
