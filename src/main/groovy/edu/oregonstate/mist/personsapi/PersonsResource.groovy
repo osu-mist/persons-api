@@ -963,10 +963,10 @@ class PersonsResource extends Resource {
 
             accepted(new ResultObject(
                 data: new ResourceObject(
-                    id: ssn,
+                    id: "$osuID-ssn",
                     type: "ssn",
-                    attributes: ["ssn": ssn],
-                    links: ['self': personUriBuilder.ssnUri(osuID)]
+                    attributes: ["ssnStatus": bannerPersonsReadDAO.ssnStatus(osuID)],
+                    links: ['self': personUriBuilder.ssnUri(osuID, "$osuID-ssn")]
                 ),
                 links: ['self': uri.getRequestUri()]
             )).build()
@@ -1040,7 +1040,7 @@ class PersonsResource extends Resource {
             [true, "phoneType", 2,
              { String phoneType -> bannerPersonsReadDAO.isValidPhoneType(phoneType) }
             ],
-            [true, "areaCode", 3, 
+            [true, "areaCode", 3,
              { String areaCode -> areaCode =~ /^[0-9]{1,3}$/ }
             ],
             [true, "phoneNumber", 7,

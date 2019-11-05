@@ -1120,10 +1120,13 @@ definitions:
             $ref: '#/definitions/SelfLink'
           attributes:
             properties:
-              ssn:
+              ssnStatus:
                 type: string
-                description: 9 digits SSN
-                example: '123456789'
+                description: SSN status
+                enum:
+                  - vault
+                  - valid
+                  - invalid
   NewPhoneResultObject:
     properties:
       data:
