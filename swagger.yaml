@@ -576,6 +576,8 @@ definitions:
               - 'N' - Non-specified
   PersonResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         properties:
           id:
@@ -669,12 +671,16 @@ definitions:
                   - invalid
   JobsResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         type: array
         items:
           $ref: '#/definitions/JobResourceObject'
   JobResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/JobResourceObject'
   NewJobResultObject:
@@ -957,12 +963,16 @@ definitions:
     example: addresses
   MealPlansResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         type: array
         items:
           $ref: '#/definitions/MealPlanResourceObject'
   MealPlanResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/MealPlanResourceObject'
   MealPlanResourceObject:
@@ -1040,12 +1050,16 @@ definitions:
             type: string
   AddressesResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         type: array
         items:
           $ref: '#/definitions/AddressResourceObject'
   AddressResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/AddressResourceObject'
   AddressResourceObject:
@@ -1092,23 +1106,27 @@ definitions:
                 pattern: '\d{9}'
   SSNResultObject:
     properties:
-      id:
-        type: string
-        description: 9 digits SSN
-        example: '123456789'
-      type:
-        $ref: '#/definitions/SSNType'
       links:
         $ref: '#/definitions/SelfLink'
-      attributes:
+      data:
         properties:
-          ssnStatus:
+          id:
             type: string
-            description: SSN status
-            enum:
-              - vault
-              - valid
-              - invalid
+            description: 9 digits SSN
+            example: '123456789'
+          type:
+            $ref: '#/definitions/SSNType'
+          links:
+            $ref: '#/definitions/SelfLink'
+          attributes:
+            properties:
+              ssnStatus:
+                type: string
+                description: SSN status
+                enum:
+                  - vault
+                  - valid
+                  - invalid
   NewPhoneResultObject:
     properties:
       data:
@@ -1156,12 +1174,16 @@ definitions:
             enum: *ADDRESSTYPEENUM
   PhonesResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         type: array
         items:
           $ref: '#/definitions/PhoneResourceObject'
   PhoneResultObject:
     properties:
+      links:
+        $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/PhoneResourceObject'
   PhoneResourceObject:
