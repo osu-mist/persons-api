@@ -4,11 +4,13 @@ import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.personsapi.core.AddressObject
+import edu.oregonstate.mist.personsapi.core.AddressRecordObject
 import edu.oregonstate.mist.personsapi.core.JobObject
 import edu.oregonstate.mist.personsapi.core.LaborDistribution
 import edu.oregonstate.mist.personsapi.core.Name
 import edu.oregonstate.mist.personsapi.core.PersonObject
 import edu.oregonstate.mist.personsapi.core.PhoneObject
+import edu.oregonstate.mist.personsapi.core.PhoneRecordObject
 import edu.oregonstate.mist.personsapi.PersonsResource
 import edu.oregonstate.mist.personsapi.db.BannerPersonsReadDAO
 import edu.oregonstate.mist.personsapi.db.PersonsStringTemplateDAO
@@ -1534,5 +1536,78 @@ class PersonsResourceTest {
             400,
             "addressType is not valid."
         )
+    }
+
+    private getMockPersonsWriteDAOPhones() {
+        def personsWriteDAOStub = new StubFor(BannerPersonsWriteDAO)
+        personsWriteDAOStub.demand.deactivatePhone { String pidm, PhoneRecordObject phoneRecord -> []}
+        personsWriteDAOStub.demand.createPhone { String pidm, PhoneObject phone, AddressRecordObject addressRecord -> [] }
+
+        personsWriteDAOStub
+    }
+
+    private StubFor getGoodMockPersonsDAOForNewPhone() {
+        def personsDAOStub = getGoodMockPersonsDAO()
+        personsDAOStub.demand.with {
+            getPhones { String osuID, String addressType, String phoneType ->
+                [fakePhone]
+            }
+            personExist(2..2) { String osuID -> '123456789'}
+            isValidPhoneType { String phoneType -> true }
+            isValidAddressType { String addressType -> true }
+            hasSamePhoneType { String pidm, String phoneType -> new PhoneRecordObject() }
+            hasSameAddressType { String pidm, String addressType -> new AddressRecordObject() }
+        }
+
+        personsDAOStub
+    }
+
+    void checkCreatePhoneErrorResponse(PhoneObject phone, String expectedMessage) {
+        PersonsResource personsResource = new PersonsResource(
+            getGoodMockPersonsDAOForNewPhone().proxyInstance(), null, getMockPersonsWriteDAOPhones().proxyInstance(), null, endpointUri
+        )
+
+        checkErrorResponse(
+            personsResource.createPhones(
+                '123456789',
+                new ResultObject(data: new ResourceObject(attributes: phone))
+            ),
+            400,
+            expectedMessage
+        )
+    }
+
+    @Test
+    void testCreatePhoneBodyParams() {
+        PhoneObject phone // = fakePhone
+        phone = new PhoneObject(
+                areaCode: "541",
+                phoneNumber: "3334444",
+                primaryIndicator: true,
+                phoneType: "CM",
+                addressType: "CM",
+        )
+
+        phone.with {
+            areaCode = null
+            checkCreatePhoneErrorResponse(it, 'Required field areaCode is missing or null.')
+            areaCode = "541"
+
+            phoneNumber = null
+            checkCreatePhoneErrorResponse(it, 'Required field phoneNumber is missing or null.')
+            phoneNumber = "3334444"
+
+            primaryIndicator = null
+            checkCreatePhoneErrorResponse(it, 'Required field primaryIndicator is missing or null.')
+            primaryIndicator = true
+
+            phoneType = null
+            checkCreatePhoneErrorResponse(it, 'Required field phoneType is missing or null.')
+            phoneType = "CM"
+
+            addressType = null
+            checkCreatePhoneErrorResponse(it, 'Required field addressType is missing or null.')
+            addressType = "CM"
+        }
     }
 }
