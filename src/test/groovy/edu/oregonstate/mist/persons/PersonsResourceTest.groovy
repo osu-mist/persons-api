@@ -1472,7 +1472,7 @@ class PersonsResourceTest {
         def personsDAOStub = getPersonsDAOStub()
         personsDAOStub.demand.with {
             personExist(2..2) { String osuID -> "12345678" }
-            getPhones() { String osuID, String phoneType, String addressType -> [phoneObject] }
+            getPhones { String osuID, String phoneType, String addressType -> [phoneObject] }
         }
 
         PersonsResource personsResource = new PersonsResource(
