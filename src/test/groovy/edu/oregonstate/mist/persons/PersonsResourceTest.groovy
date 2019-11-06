@@ -1546,11 +1546,11 @@ class PersonsResourceTest {
         personsWriteDAOStub
     }
 
-    private StubFor getGoodMockPersonsDAOForNewPhone() {
+    private StubFor getGoodMockPersonsDAOForNewPhone(PhoneObject phone) {
         def personsDAOStub = getGoodMockPersonsDAO()
         personsDAOStub.demand.with {
             getPhones { String osuID, String addressType, String phoneType ->
-                [fakePhone]
+                [phone]
             }
             personExist(2..2) { String osuID -> '123456789'}
             isValidPhoneType { String phoneType -> true }
@@ -1564,7 +1564,7 @@ class PersonsResourceTest {
 
     void checkCreatePhoneErrorResponse(PhoneObject phone, String expectedMessage) {
         PersonsResource personsResource = new PersonsResource(
-            getGoodMockPersonsDAOForNewPhone().proxyInstance(), null, getMockPersonsWriteDAOPhones().proxyInstance(), null, endpointUri
+            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(), null, getMockPersonsWriteDAOPhones().proxyInstance(), null, endpointUri
         )
 
         checkErrorResponse(
@@ -1588,6 +1588,12 @@ class PersonsResourceTest {
                 addressType: "CM",
         )
 
+        PersonsResource personsResource = new PersonsResource(
+            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(), null, getMockPersonsWriteDAOPhones().proxyInstance(), null, endpointUri
+        )
+
+        ResultObject phoneResult = new ResultObject(data: new ResourceObject(attributes: phone))
+
         phone.with {
             areaCode = null
             checkCreatePhoneErrorResponse(it, 'Required field areaCode is missing or null.')
@@ -1608,6 +1614,15 @@ class PersonsResourceTest {
             addressType = null
             checkCreatePhoneErrorResponse(it, 'Required field addressType is missing or null.')
             addressType = "CM"
+
+            checkValidResponse(
+                personsResource.createPhones(
+                    '123456789',
+                    phoneResult
+                ),
+                202,
+                it
+            )
         }
     }
 }
