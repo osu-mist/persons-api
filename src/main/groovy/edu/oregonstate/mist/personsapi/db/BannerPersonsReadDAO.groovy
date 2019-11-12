@@ -33,6 +33,9 @@ public interface BannerPersonsReadDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.ssnIsNotNull)
     String ssnIsNotNull(@Bind('osuID') String osuID)
 
+    @SqlQuery(AbstractPersonsDAO.ssnStatus)
+    String ssnStatus(@Bind('osuID') String osuID)
+
     @SqlQuery(AbstractPersonsDAO.validatePositionNumber)
     Boolean isValidPositionNumber(@Bind('positionNumber') String positionNumber,
                                   @Bind('jobBeginDate') LocalDate jobBeginDate)

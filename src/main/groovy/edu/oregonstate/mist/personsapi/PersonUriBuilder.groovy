@@ -28,4 +28,24 @@ class PersonUriBuilder {
                 .path('persons/{osuID}/meal-plans/{mealPlanID}')
                 .build(osuID, mealPlanID)
     }
+
+    URI ssnUri(String osuID, String ssnID) {
+        UriBuilder.fromUri(this.endpointUri)
+                .path('persons/{osuID}/ssn/{ssnID}')
+                .build(osuID, ssnID)
+    }
+
+    URI addressUri(String osuID, String addressType) {
+        UriBuilder.fromUri(this.endpointUri)
+                .path('persons/{osuID}/addresses')
+                .queryParam('addressType', addressType)
+                .build(osuID)
+    }
+
+    URI phoneUri(String osuID, String phoneType) {
+        UriBuilder.fromUri(this.endpointUri)
+                .path('persons/{osuID}/phones')
+                .queryParam('phoneType', phoneType)
+                .build(osuID)
+    }
 }
