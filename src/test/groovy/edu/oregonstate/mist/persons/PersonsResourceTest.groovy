@@ -1498,7 +1498,7 @@ class PersonsResourceTest {
         )
 
         checkErrorResponse(
-            personsResource.getPhones("foo", null, null),
+            personsResource.getPhones("foo", null, null, null),
             404
         )
     }
@@ -1528,7 +1528,7 @@ class PersonsResourceTest {
         )
 
         checkValidResponse(
-            personsResource.getPhones("12345678", null, null),
+            personsResource.getPhones("12345678", null, null, null),
             200,
             [phoneObject]
         )
@@ -1552,7 +1552,8 @@ class PersonsResourceTest {
         checkErrorResponse(
             personsResource.createPhones(
                 '123456789',
-                new ResultObject(data: new ResourceObject(attributes: phone))
+                new ResultObject(data: new ResourceObject(attributes: phone)),
+                null
             ),
             400,
             "phoneType is not valid."
@@ -1577,7 +1578,8 @@ class PersonsResourceTest {
         checkErrorResponse(
             personsResource.createPhones(
                 '123456789',
-                new ResultObject(data: new ResourceObject(attributes: phone))
+                new ResultObject(data: new ResourceObject(attributes: phone)),
+                null
             ),
             400,
             "addressType is not valid."
@@ -1616,7 +1618,8 @@ class PersonsResourceTest {
         checkErrorResponse(
             personsResource.createPhones(
                 '123456789',
-                new ResultObject(data: new ResourceObject(attributes: phone))
+                new ResultObject(data: new ResourceObject(attributes: phone)),
+                null
             ),
             400,
             expectedMessage
@@ -1664,7 +1667,8 @@ class PersonsResourceTest {
             checkValidResponse(
                 personsResource.createPhones(
                     '123456789',
-                    phoneResult
+                    phoneResult,
+                    null
                 ),
                 202,
                 it
