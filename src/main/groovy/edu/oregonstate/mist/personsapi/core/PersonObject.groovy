@@ -73,4 +73,5 @@ class Name {
     String firstName
     String middleName
     String lastName
+    String preferredName
 }
