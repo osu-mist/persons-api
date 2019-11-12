@@ -20,7 +20,8 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             name: new Name(
                     firstName: rs.getString('FIRST_NAME'),
                     middleName: rs.getString('MIDDLE_NAME'),
-                    lastName: rs.getString('LAST_NAME')
+                    lastName: rs.getString('LAST_NAME'),
+                    preferredName: rs.getString('PREFERRED_NAME')
             ),
             birthDate: rs.getDate('BIRTH_DATE'),
             citizen: rs.getString('CITIZEN'),

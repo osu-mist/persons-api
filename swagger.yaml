@@ -598,13 +598,16 @@ definitions:
                 description: Unique identifier in the Directory API
               firstName:
                 type: string
-                description: Preferred first name
+                description: First name
               middleName:
                 type: string
-                description: Preferred middle name
+                description: Middle name
               lastName:
                 type: string
-                description: Preferred last name
+                description: Last name
+              preferredName:
+                type: string
+                description: Preferred name
               previousRecords:
                 type: array
                 description: Previous records associated with the person
@@ -616,13 +619,16 @@ definitions:
                       example: '931234567'
                     firstName:
                       type: string
-                      description: Previous first name
+                      description: First name
                     middleName:
                       type: string
-                      description: Previous middle name
+                      description: Middle name
                     lastName:
                       type: string
-                      description: Previous last name
+                      description: Last name
+                    preferredName:
+                      type: string
+                      description: Preferred name
               email:
                 type: string
                 description: Primary email address
