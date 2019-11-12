@@ -1588,8 +1588,12 @@ class PersonsResourceTest {
 
     private getMockPersonsWriteDAOPhones() {
         def personsWriteDAOStub = new StubFor(BannerPersonsWriteDAO)
-        personsWriteDAOStub.demand.deactivatePhone { String pidm, PhoneRecordObject phoneRecord -> []}
-        personsWriteDAOStub.demand.createPhone { String pidm, PhoneObject phone, AddressRecordObject addressRecord -> [] }
+        personsWriteDAOStub.demand.deactivatePhone {
+            String pidm, PhoneRecordObject phoneRecord -> []
+        }
+        personsWriteDAOStub.demand.createPhone {
+            String pidm, PhoneObject phone, AddressRecordObject addressRecord -> []
+        }
 
         personsWriteDAOStub
     }
@@ -1612,7 +1616,11 @@ class PersonsResourceTest {
 
     void checkCreatePhoneErrorResponse(PhoneObject phone, String expectedMessage) {
         PersonsResource personsResource = new PersonsResource(
-            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(), null, getMockPersonsWriteDAOPhones().proxyInstance(), null, endpointUri
+            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(), 
+            null,
+            getMockPersonsWriteDAOPhones().proxyInstance(),
+            null,
+            endpointUri
         )
 
         checkErrorResponse(
@@ -1638,7 +1646,11 @@ class PersonsResourceTest {
         )
 
         PersonsResource personsResource = new PersonsResource(
-            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(), null, getMockPersonsWriteDAOPhones().proxyInstance(), null, endpointUri
+            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(),
+            null,
+            getMockPersonsWriteDAOPhones().proxyInstance(),
+            null,
+            endpointUri
         )
 
         ResultObject phoneResult = new ResultObject(data: new ResourceObject(attributes: phone))
