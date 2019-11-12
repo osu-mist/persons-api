@@ -1543,8 +1543,6 @@ class PersonsResourceTest {
             isValidAddressType { String addressType -> true }
         }
 
-        PhoneObject phone = fakePhone
-
         PersonsResource personsResource = new PersonsResource(
             personsDAOStub.proxyInstance(), null, null, null, endpointUri
         )
@@ -1552,7 +1550,7 @@ class PersonsResourceTest {
         checkErrorResponse(
             personsResource.createPhones(
                 '123456789',
-                new ResultObject(data: new ResourceObject(attributes: phone)),
+                new ResultObject(data: new ResourceObject(attributes: fakePhone)),
                 null
             ),
             400,
@@ -1569,8 +1567,6 @@ class PersonsResourceTest {
             isValidAddressType { String addressType -> false }
         }
 
-        PhoneObject phone = fakePhone
-
         PersonsResource personsResource = new PersonsResource(
             personsDAOStub.proxyInstance(), null, null, null, endpointUri
         )
@@ -1578,7 +1574,7 @@ class PersonsResourceTest {
         checkErrorResponse(
             personsResource.createPhones(
                 '123456789',
-                new ResultObject(data: new ResourceObject(attributes: phone)),
+                new ResultObject(data: new ResourceObject(attributes: fakePhone)),
                 null
             ),
             400,
@@ -1636,8 +1632,7 @@ class PersonsResourceTest {
 
     @Test
     void testCreatePhoneBodyParams() {
-        PhoneObject phone // = fakePhone
-        phone = new PhoneObject(
+        PhoneObject phone = new PhoneObject(
                 areaCode: "541",
                 phoneNumber: "3334444",
                 primaryIndicator: true,
