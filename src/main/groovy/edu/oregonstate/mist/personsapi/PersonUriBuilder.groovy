@@ -53,7 +53,7 @@ class PersonUriBuilder {
     URI topLevelUri(UriInfo uri) {
         UriBuilder builder = UriBuilder.fromUri(this.endpointUri)
 
-        if(uri) {
+        if (uri) {
                 builder.path(uri.getPath())
 
             uri.getQueryParameters().each {
