@@ -180,48 +180,66 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(null, null, null, null, endpointUri)
 
         // OSU UID can only contain numbers
-        checkErrorResponse(personsResource.list(null, null, 'badOSUUID', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, 'badOSUUID', null, null, null, null, null),
                 400)
 
         // Can't search by names and IDs in the same request
-        checkErrorResponse(personsResource.list(null, null, '123456789', 'Jane', 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, '123456789', 'Jane', 'Doe', null, null, null),
                 400)
-        checkErrorResponse(personsResource.list(null, '931234567', null, 'Jane', 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list(null, '931234567', null, 'Jane', 'Doe', null, null, null),
                 400)
-        checkErrorResponse(personsResource.list('doej', null, null, 'Jane', 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list('doej', null, null, 'Jane', 'Doe', null, null, null),
                 400)
 
         // Only one ID parameter should be included in a request
-        checkErrorResponse(personsResource.list('doej', '93123456', null, null, null, null, null),
+        checkErrorResponse(
+                personsResource.list('doej', '93123456', null, null, null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list('doej', null, '12345678', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list('doej', null, '12345678', null, null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list(null, '931236', '1238', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list(null, '931236', '1238', null, null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list('doej', '931236', '1238', null, null, null, null),
+        checkErrorResponse(
+                personsResource.list('doej', '931236', '1238', null, null, null, null, null),
                 400)
 
         // First and last name must be included together
-        checkErrorResponse(personsResource.list(null, null, null, 'Jane', null, null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, null, 'Jane', null, null, null, null),
                 400)
-        checkErrorResponse(personsResource.list(null, null, null, null, 'Doe', null, null),
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, 'Doe', null, null, null),
                 400)
 
         // Can't use searchOldNames and searchOldOsuIDs in one request
-        checkErrorResponse(personsResource.list(null, '9322525', null, null, null, true, true), 400)
+        checkErrorResponse(
+                personsResource.list(null, '9322525', null, null, null, true, true, null),
+                400)
 
         // Searching old OSU IDs can only be done with the OSU ID
-        checkErrorResponse(personsResource.list('doej', null, null, null, null, null, true), 400)
-        checkErrorResponse(personsResource.list(null, null, '12345678', null, null, null, true),
+        checkErrorResponse(
+                personsResource.list('doej', null, null, null, null, null, true, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, '12345678', null, null, null, true, null),
                 400)
 
         // Searching old names must include a valid name request
-        checkErrorResponse(personsResource.list(null, null, null, null, null, true, null), 400)
-        checkErrorResponse(personsResource.list(null, null, null, "jane", null, true, null), 400)
-        checkErrorResponse(personsResource.list(null, null, null, null, "doe", true, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, null, true, null, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, "jane", null, true, null, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, "doe", true, null, null), 400)
 
         // The request must include an ID or names
-        checkErrorResponse(personsResource.list(null, null, null, null, null, null, null), 400)
+        checkErrorResponse(
+                personsResource.list(null, null, null, null, null, null, null, null), 400)
     }
 
     @Test
@@ -239,8 +257,8 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(
             stubDAO.proxyInstance(), stubStringTemplateDAO.proxyInstance(), null, null, endpointUri)
-        checkErrorResponse(personsResource.getPersonById('123456789'), 404)
-        checkErrorResponse(personsResource.getJobs('123456789', null, null), 404)
+        checkErrorResponse(personsResource.getPersonById('123456789', null), 404)
+        checkErrorResponse(personsResource.getJobs('123456789', null, null, null), 404)
         checkErrorResponse(personsResource.getImageById('123456789', null), 404)
     }
 
@@ -262,10 +280,12 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = new PersonsResource(stubPersonsDAO.proxyInstance(),
                 stubPersonsStringTemplateDAO.proxyInstance(), null, null, endpointUri)
-        checkValidResponse(personsResource.list('johndoe', null, null, null, null, null, null), 200,
+        checkValidResponse(
+                personsResource.list('johndoe', null, null, null, null, null, null, null),
+                200,
                 [fakePerson])
-        checkValidResponse(personsResource.getPersonById('123456789'), 200, fakePerson)
-        checkValidResponse(personsResource.getJobs('123456789', null, null), 200, [fakeJob])
+        checkValidResponse(personsResource.getPersonById('123456789', null), 200, fakePerson)
+        checkValidResponse(personsResource.getJobs('123456789', null, null, null), 200, [fakeJob])
     }
 
     private PersonsResource getPersonsResourceWithGoodMockDAOsForNewJob() {
@@ -347,7 +367,7 @@ class PersonsResourceTest {
         PersonsResource personsResource = getPersonsResourceWithGoodMockDAOsForNewJob()
 
         Response response = personsResource.createJob(
-                "hello", fakeJobResultObject, graduateEmploymentType
+                "hello", fakeJobResultObject, graduateEmploymentType, null
         )
         checkValidResponse(response, 202, fakeJob)
     }
@@ -360,7 +380,7 @@ class PersonsResourceTest {
                 personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
         Response response = personsResource.createJob(
-                "foo", new ResultObject(), graduateEmploymentType
+                "foo", new ResultObject(), graduateEmploymentType, null
         )
         checkErrorResponse(response, 404)
     }
@@ -389,7 +409,7 @@ class PersonsResourceTest {
         ResultObject badJobResultObject = new ResultObject(data: new ResourceObject(
                 attributes: resourceObjectAttributes))
         Response response = personsResource.createJob(
-                "123456789", badJobResultObject,graduateEmploymentType
+                "123456789", badJobResultObject, graduateEmploymentType, null
         )
         checkErrorResponse(response, 400, expectedMessage)
     }
@@ -400,7 +420,8 @@ class PersonsResourceTest {
                 positionNumber: null,
                 beginDate: sampleDate,
                 status: 'Active',
-                effectiveDate: sampleDate
+                effectiveDate: sampleDate,
+                suffix: '00'
         )
 
         ResultObject jobResultObject = new ResultObject(data: new ResourceObject(attributes: job))
@@ -418,7 +439,7 @@ class PersonsResourceTest {
             effectiveDate = sampleDate
 
             checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
-                    "123", jobResultObject, graduateEmploymentType), 202, it)
+                    "123", jobResultObject, graduateEmploymentType, null), 202, it)
         }
     }
 
@@ -434,7 +455,8 @@ class PersonsResourceTest {
                 supervisorPositionNumber: fakeJob.supervisorPositionNumber,
                 status: 'Active',
                 effectiveDate: sampleDate,
-                hourlyRate: negativeNumber
+                hourlyRate: negativeNumber,
+                suffix: '00'
         )
 
         ResultObject jobResultObject = new ResultObject(data: new ResourceObject(attributes: job))
@@ -460,7 +482,7 @@ class PersonsResourceTest {
             paysPerYear = positiveNumber
 
             checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
-                    "123", jobResultObject, graduateEmploymentType), 202, it)
+                    "123", jobResultObject, graduateEmploymentType, null), 202, it)
         }
     }
 
@@ -474,7 +496,8 @@ class PersonsResourceTest {
             earnCode: null,
             earnCodeEffectiveDate: null,
             earnCodeHours: null,
-            earnCodeShift: null
+            earnCodeShift: null,
+            suffix: '00'
         )
         String expectedMessage = "earnCode, earnCodeEffectiveDate, earnCodeHours, earnCodeShift" +
                                  " should be all null or all not null."
@@ -483,7 +506,7 @@ class PersonsResourceTest {
 
         job.with {
             checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
-                "123", jobResultObject, graduateEmploymentType), 202, it)
+                "123", jobResultObject, graduateEmploymentType, null), 202, it)
 
             earnCode = fakeJob.earnCode
             checkCreateJobErrorMessageResponse(it, expectedMessage)
@@ -496,7 +519,7 @@ class PersonsResourceTest {
 
             earnCodeShift = fakeJob.earnCodeShift
             checkValidResponse(getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
-                "123", jobResultObject, graduateEmploymentType), 202, it)
+                "123", jobResultObject, graduateEmploymentType, null), 202, it)
         }
     }
 
@@ -513,7 +536,8 @@ class PersonsResourceTest {
                         "123",
                         "foo-bar",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "Suffix is required when updating an existing job."
         )
@@ -577,7 +601,8 @@ class PersonsResourceTest {
                 getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 expectedMessage
         )
@@ -610,7 +635,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "Supervisor OSU ID does not exist."
         )
@@ -643,7 +669,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "Supervisor does not have an active position with position number " +
                         "${fakeJob.supervisorPositionNumber} for the given begin date."
@@ -675,7 +702,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.positionNumber} is not a valid position number for the given begin date."
         )
@@ -706,7 +734,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "Person already has a job with the given position number and suffix."
         )
@@ -737,7 +766,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.locationID} is not a valid location ID."
         )
@@ -768,7 +798,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.timesheetOrganizationCode} is not a valid organization code."
         )
@@ -806,7 +837,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "Total sum of labor distribution percentages must equal 100."
         )
@@ -838,7 +870,7 @@ class PersonsResourceTest {
 
         PersonsResource personsResource = getPersonsResourceWithGoodMockDAOsForNewJob()
         Response response = personsResource.createJob(
-                "hello", newJobResultObject, graduateEmploymentType
+                "hello", newJobResultObject, graduateEmploymentType, null
         )
 
         checkValidResponse(response, 202, job)
@@ -867,7 +899,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.laborDistribution[0].accountIndexCode} is not a valid accountIndexCode."
         )
@@ -912,7 +945,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.laborDistribution[0].accountCode} is not a valid accountCode."
         )
@@ -957,7 +991,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.laborDistribution[0].activityCode} is not a valid activityCode."
         )
@@ -1009,7 +1044,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.laborDistribution[0].organizationCode} is not a valid organizationCode."
         )
@@ -1054,7 +1090,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.laborDistribution[0].programCode} is not a valid programCode."
         )
@@ -1099,7 +1136,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.laborDistribution[0].fundCode} is not a valid fundCode."
         )
@@ -1144,7 +1182,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "${fakeJob.laborDistribution[0].locationCode} is not a valid locationCode."
         )
@@ -1197,7 +1236,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         new ResultObject(data: new ResourceObject(attributes: job)),
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 400,
                 "effectiveDate must be the same for each labor distribution."
         )
@@ -1226,7 +1266,8 @@ class PersonsResourceTest {
                 personsResource.createJob(
                         "123",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 500,
                 "Error creating new job: $personsWriteDAOResponse"
         )
@@ -1239,7 +1280,7 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(
                 personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
-        Response response = personsResource.getJobById("foo", "bar")
+        Response response = personsResource.getJobById("foo", "bar", null)
         checkErrorResponse(response, 404)
     }
 
@@ -1253,7 +1294,7 @@ class PersonsResourceTest {
         PersonsResource personsResource = new PersonsResource(
                 personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
-        Response response = personsResource.getJobById("foo", "foo-bar")
+        Response response = personsResource.getJobById("foo", "foo-bar", null)
         checkErrorResponse(response, 404)
     }
 
@@ -1273,7 +1314,8 @@ class PersonsResourceTest {
                         "123",
                         "foo-bar",
                         fakeJobResultObject,
-                        graduateEmploymentType),
+                        graduateEmploymentType,
+                        null),
                 404
         )
     }
@@ -1290,7 +1332,8 @@ class PersonsResourceTest {
                     getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
                             "123456789",
                             fakeJobResultObject,
-                            it),
+                            it,
+                            null),
                     400,
                     expectedMessage
             )
@@ -1300,7 +1343,8 @@ class PersonsResourceTest {
                             "123",
                             "foo-bar",
                             fakeJobResultObject,
-                            it),
+                            it,
+                            null),
                     400,
                     expectedMessage
             )
@@ -1316,7 +1360,7 @@ class PersonsResourceTest {
                 personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
         checkErrorResponse(
-                personsResource.getAddresses("foo", null),
+                personsResource.getAddresses("foo", null, null),
                 404)
     }
 
@@ -1337,7 +1381,8 @@ class PersonsResourceTest {
                 getPersonsResourceWithGoodMockDAOsForNewJob().createJob(
                         "123456789",
                         invalidStudentJobResultObject,
-                        studentEmploymentType),
+                        studentEmploymentType,
+                        null),
                 400,
                 expectedMessage
         )
@@ -1347,7 +1392,8 @@ class PersonsResourceTest {
                         "123",
                         "foo-bar",
                         invalidStudentJobResultObject,
-                        studentEmploymentType),
+                        studentEmploymentType,
+                        null),
                 400,
                 expectedMessage
         )
@@ -1374,7 +1420,7 @@ class PersonsResourceTest {
                     personsDAOStub.proxyInstance(), null, null, null, endpointUri)
 
             checkValidResponse(
-                    personsResource.getAddresses("12345678", null),
+                    personsResource.getAddresses("12345678", null, null),
                     200,
                     [addressObject]
             )
@@ -1404,7 +1450,7 @@ class PersonsResourceTest {
             )
 
             checkValidResponse(
-                    personsResource.createJob("foo", fakeJobResultObject, it),
+                    personsResource.createJob("foo", fakeJobResultObject, it, null),
                     202,
                     fakeJob
             )
@@ -1435,7 +1481,7 @@ class PersonsResourceTest {
             )
 
             checkValidResponse(
-                    personsResource.updateJob("foo", "foo-bar", fakeJobResultObject, it),
+                    personsResource.updateJob("foo", "foo-bar", fakeJobResultObject, it, null),
                     202,
                     fakeJob
             )

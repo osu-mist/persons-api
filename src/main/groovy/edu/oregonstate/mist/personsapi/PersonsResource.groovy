@@ -34,8 +34,10 @@ import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.UriInfo
 
 @Path("persons")
 @Produces(MediaType.APPLICATION_JSON)
@@ -85,7 +87,8 @@ class PersonsResource extends Resource {
                   @QueryParam('firstName') String firstName,
                   @QueryParam('lastName') String lastName,
                   @QueryParam('searchOldNames') Boolean searchOldNames,
-                  @QueryParam('searchOldOsuIDs') Boolean searchOldOsuIDs) {
+                  @QueryParam('searchOldOsuIDs') Boolean searchOldOsuIDs,
+                  @Context UriInfo uri) {
         // Check for a bad request.
         Closure<Integer> getSize = { List<String> list -> list.findAll { it }.size() }
 
@@ -155,14 +158,15 @@ class PersonsResource extends Resource {
                     .build()
         }
 
-        ResultObject res = personResultObject(persons)
+        ResultObject res = personResultObject(persons, personUriBuilder.topLevelUri(uri))
         ok(res).build()
     }
 
     @Timed
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
-    Response createPerson(@Valid ResultObject resultObject) {
+    Response createPerson(@Valid ResultObject resultObject,
+                          @Context UriInfo uri) {
         PersonObject person
         try {
             person = PersonObject.fromResultObject(resultObject)
@@ -195,7 +199,9 @@ class PersonsResource extends Resource {
                 null, [dbFunctionOutput], null, null, null, false
             )
             if (createdPerson) {
-                ResultObject res = personResultObject(createdPerson?.get(0))
+                ResultObject res = personResultObject(
+                    createdPerson?.get(0),
+                    personUriBuilder.topLevelUri(uri))
                 accepted(res).build()
             } else {
                 internalServerError("Person has been created but not found.").build()
@@ -231,22 +237,25 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Path('{osuID: [0-9]+}')
-    Response getPersonById(@PathParam('osuID') String osuID) {
+    Response getPersonById(@PathParam('osuID') String osuID,
+                           @Context UriInfo uri) {
         def person = personsStringTemplateDAO.getPersons(null, [osuID], null, null, null, false)
         if (person) {
-            ResultObject res = personResultObject(person?.get(0))
+            ResultObject res = personResultObject(person?.get(0), personUriBuilder.topLevelUri(uri))
             ok(res).build()
         } else {
             notFound().build()
         }
     }
 
-    ResultObject personResultObject(List<PersonObject> persons) {
-        new ResultObject(data: persons.collect { personResourceObject(it) })
+    ResultObject personResultObject(List<PersonObject> persons, URI selfLink) {
+        new ResultObject(data: persons.collect { personResourceObject(it) },
+                         links: ['self': selfLink])
     }
 
-    ResultObject personResultObject(PersonObject person) {
-        new ResultObject(data: personResourceObject(person))
+    ResultObject personResultObject(PersonObject person, URI selfLink) {
+        new ResultObject(data: personResourceObject(person),
+                         links: ['self': selfLink])
     }
 
     ResourceObject personResourceObject(PersonObject person) {
@@ -265,10 +274,11 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/jobs')
     Response getJobs(@PathParam('osuID') String osuID,
                      @QueryParam('positionNumber') String positionNumber,
-                     @QueryParam('suffix') String suffix) {
+                     @QueryParam('suffix') String suffix,
+                     @Context UriInfo uri) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             List<JobObject> jobs = bannerPersonsReadDAO.getJobsById(osuID, positionNumber, suffix)
-            ok(jobsResultObject(jobs, osuID)).build()
+            ok(jobsResultObject(jobs, osuID, personUriBuilder.topLevelUri(uri))).build()
         } else {
             notFound().build()
         }
@@ -280,7 +290,8 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/jobs')
     Response createJob(@PathParam('osuID') String osuID,
                        @Valid ResultObject resultObject,
-                       @QueryParam('employmentType') String employmentType) {
+                       @QueryParam('employmentType') String employmentType,
+                       @Context UriInfo uri) {
         if (!bannerPersonsReadDAO.personExist(osuID)) {
             return notFound().build()
         }
@@ -291,14 +302,20 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID, employmentType, false)
+        createOrUpdateJobInDB(
+            resultObject,
+            osuID,
+            employmentType,
+            false,
+            personUriBuilder.topLevelUri(uri))
     }
 
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/jobs/{jobID: [0-9a-zA-Z-]+}')
     Response getJobById(@PathParam('osuID') String osuID,
-                        @PathParam('jobID') String jobID) {
+                        @PathParam('jobID') String jobID,
+                        @Context UriInfo uri) {
         if (!bannerPersonsReadDAO.personExist(osuID)) {
             return notFound().build()
         }
@@ -308,7 +325,7 @@ class PersonsResource extends Resource {
         if (!job) {
             notFound().build()
         } else {
-            ok(jobResultObject(job, osuID)).build()
+            ok(jobResultObject(job, osuID, personUriBuilder.topLevelUri(uri))).build()
         }
     }
 
@@ -319,7 +336,8 @@ class PersonsResource extends Resource {
     Response updateJob(@PathParam('osuID') String osuID,
                        @PathParam('jobID') String jobID,
                        @Valid ResultObject resultObject,
-                       @QueryParam('employmentType') String employmentType) {
+                       @QueryParam('employmentType') String employmentType,
+                       @Context UriInfo uri) {
         if (!bannerPersonsReadDAO.personExist(osuID) || !getJobObject(osuID, jobID)) {
             return notFound().build()
         }
@@ -330,13 +348,19 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID, employmentType, true)
+        createOrUpdateJobInDB(
+            resultObject,
+            osuID,
+            employmentType,
+            true,
+            personUriBuilder.topLevelUri(uri))
     }
 
     private Response createOrUpdateJobInDB(ResultObject resultObject,
                                            String osuID,
                                            String employmentType,
-                                           Boolean update) {
+                                           Boolean update,
+                                           URI selfLink) {
         JobObject job = JobObject.fromResultObject(resultObject)
 
         String dbFunctionOutput
@@ -369,7 +393,18 @@ class PersonsResource extends Resource {
         //TODO: Should we be checking other conditions besides an null/empty string?
         // null/empty string == success
         if (!dbFunctionOutput) {
-            accepted(new ResultObject(data: new ResourceObject(attributes: job))).build()
+            String positionNumber = resultObject.data['attributes']['positionNumber']
+            String suffix = resultObject.data['attributes']['suffix']
+            accepted(new ResultObject(
+                links: ['self': selfLink],
+                data: new ResourceObject(
+                    id: joinJobID(positionNumber, suffix),
+                    type: 'jobs',
+                    attributes: job,
+                    links: ['self': personUriBuilder.personJobsUri(
+                        osuID, positionNumber, suffix)]
+                )
+            )).build()
         } else {
             logger.error("Unexpected database return value: $dbFunctionOutput")
             internalServerError("Error creating new job: $dbFunctionOutput").build()
@@ -430,12 +465,18 @@ class PersonsResource extends Resource {
         positionNumber + jobIDDelimiter + suffix
     }
 
-    ResultObject jobsResultObject(List<JobObject> jobs, String osuID) {
-        new ResultObject(data: jobs.collect { jobResourceObject(it, osuID)})
+    ResultObject jobsResultObject(List<JobObject> jobs, String osuID, URI selfLink) {
+        new ResultObject(
+            links: ['self': selfLink],
+            data: jobs.collect { jobResourceObject(it, osuID)}
+        )
     }
 
-    ResultObject jobResultObject(JobObject job, String osuID) {
-        new ResultObject(data: jobResourceObject(job, osuID))
+    ResultObject jobResultObject(JobObject job, String osuID, URI selfLink) {
+        new ResultObject(
+            links: ['self': selfLink],
+            data: jobResourceObject(job, osuID)
+        )
     }
 
     ResourceObject jobResourceObject(JobObject job, String osuID) {
@@ -689,11 +730,13 @@ class PersonsResource extends Resource {
     @Timed
     @GET
     @Path('{osuID: [0-9]+}/meal-plans')
-    Response getMealPlans(@PathParam('osuID') String osuID) {
+    Response getMealPlans(@PathParam('osuID') String osuID,
+                          @Context UriInfo uri) {
         if (odsPersonsReadDAO.personExist(osuID)) {
             List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(osuID, null)
 
             ResultObject resultObject = new ResultObject(
+                    links: ['self': personUriBuilder.topLevelUri(uri)],
                     data: mealPlans.collect {
                         getMealPlanResourceObject(it, osuID)
                     }
@@ -709,13 +752,15 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/meal-plans/{mealPlanID}')
     Response getMealPlanByID(@PathParam('osuID') String osuID,
-                             @PathParam('mealPlanID') String mealPlanID) {
+                             @PathParam('mealPlanID') String mealPlanID,
+                             @Context UriInfo uri) {
         if (odsPersonsReadDAO.personExist(osuID)) {
             List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(
                     osuID, mealPlanID)
 
             if (mealPlans) {
                 ResultObject resultObject = new ResultObject(
+                        links: ['self': personUriBuilder.topLevelUri(uri)],
                         data: getMealPlanResourceObject(mealPlans?.get(0), osuID)
                 )
                 ok(resultObject).build()
@@ -731,7 +776,8 @@ class PersonsResource extends Resource {
     @GET
     @Path('{osuID: [0-9]+}/addresses')
     Response getAddresses(@PathParam('osuID') String osuID,
-                          @QueryParam('addressType') String addressType) {
+                          @QueryParam('addressType') String addressType,
+                          @Context UriInfo uri) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             List<Error> errors = validateTypeParams(addressType, null)
             if (errors) {
@@ -741,11 +787,14 @@ class PersonsResource extends Resource {
             List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 
             ResultObject resultObject = new ResultObject(
+                    links: ['self': personUriBuilder.topLevelUri(uri)],
                     data: addresses.collect {
                         new ResourceObject(
                                 id: it.id,
                                 type: "addresses",
-                                attributes: it
+                                attributes: it,
+                                links: ["self": personUriBuilder.addressUri(
+                                    osuID, it.addressType)]
                         )
                     }
             )
@@ -814,7 +863,8 @@ class PersonsResource extends Resource {
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/addresses')
     Response createAddress(@PathParam('osuID') String osuID,
-                           @Valid ResultObject resultObject) {
+                           @Valid ResultObject resultObject,
+                           @Context UriInfo uri) {
         String pidm = bannerPersonsReadDAO.personExist(osuID)
         if (!pidm) {
             return notFound().build()
@@ -869,10 +919,12 @@ class PersonsResource extends Resource {
             updatePhoneAddrSeqno(pidm, addressRecord, phoneRecord)
 
             accepted(new ResultObject(
+                links: ["self": personUriBuilder.topLevelUri(uri)],
                 data: new ResourceObject(
                     id: addresses[0].id,
                     type: "addresses",
-                    attributes: addresses[0]
+                    attributes: addresses[0],
+                    links: ["self": personUriBuilder.addressUri(osuID, addressType)]
                 )
             )).build()
         } catch (UnableToExecuteStatementException e) {
@@ -899,7 +951,8 @@ class PersonsResource extends Resource {
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/ssn')
     Response createSSN(@PathParam('osuID') String osuID,
-                       @Valid ResultObject resultObject) {
+                       @Valid ResultObject resultObject,
+                       @Context UriInfo uri) {
 
         String pidm = bannerPersonsReadDAO.personExist(osuID)
         if (!pidm) {
@@ -923,10 +976,14 @@ class PersonsResource extends Resource {
                 bannerPersonsWriteDAO.createSSN(pidm, ssn)
             }
 
-            accepted(new ResourceObject(
-                id: ssn,
-                type: "ssn",
-                attributes: ["ssn": ssn]
+            accepted(new ResultObject(
+                data: new ResourceObject(
+                    id: "$osuID-ssn",
+                    type: "ssn",
+                    attributes: ["ssnStatus": bannerPersonsReadDAO.ssnStatus(osuID)],
+                    links: ['self': personUriBuilder.ssnUri(osuID, "$osuID-ssn")]
+                ),
+                links: ['self': personUriBuilder.topLevelUri(uri)]
             )).build()
         } catch (UnableToExecuteStatementException e) {
             internalServerError("Unable to execute SQL query").build()
@@ -954,7 +1011,8 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}/phones')
     Response getPhones(@PathParam('osuID') String osuID,
                        @QueryParam('addressType') String addressType,
-                       @QueryParam('phoneType') String phoneType) {
+                       @QueryParam('phoneType') String phoneType,
+                       @Context UriInfo uri) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             // validate query parameters
             List<Error> errors = validateTypeParams(addressType, phoneType)
@@ -965,11 +1023,14 @@ class PersonsResource extends Resource {
             List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             ResultObject resultObject = new ResultObject(
+                    links: ['self': personUriBuilder.topLevelUri(uri)],
                     data: phones.collect {
                         new ResourceObject(
                                 id: it.id,
                                 type: "phones",
-                                attributes: it
+                                attributes: it,
+                                links: ['self': personUriBuilder.phoneUri(
+                                    osuID, it.phoneType)]
                         )
                     }
             )
@@ -994,7 +1055,7 @@ class PersonsResource extends Resource {
             [true, "phoneType", 2,
              { String phoneType -> bannerPersonsReadDAO.isValidPhoneType(phoneType) }
             ],
-            [true, "areaCode", 3, 
+            [true, "areaCode", 3,
              { String areaCode -> areaCode =~ /^[0-9]{1,3}$/ }
             ],
             [true, "phoneNumber", 7,
@@ -1035,7 +1096,8 @@ class PersonsResource extends Resource {
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/phones')
     Response createPhones(@PathParam('osuID') String osuID,
-                          @Valid ResultObject resultObject) {
+                          @Valid ResultObject resultObject,
+                          @Context UriInfo uri) {
         String pidm = bannerPersonsReadDAO.personExist(osuID)
         if (!pidm) {
             return notFound().build()
@@ -1092,10 +1154,13 @@ class PersonsResource extends Resource {
                 throw new Exception("New record created but more than one records are valid.")
             }
             accepted(new ResultObject(
+                links: ['self': personUriBuilder.topLevelUri(uri)],
                 data: new ResourceObject(
                     id: phones[0].id,
                     type: "phones",
-                    attributes: phones[0]
+                    attributes: phones[0],
+                    links: ['self': personUriBuilder.phoneUri(
+                        osuID, phones[0].phoneType)]
                 )
             )).build()
         } catch (UnableToExecuteStatementException e) {
