@@ -1,6 +1,7 @@
 package edu.oregonstate.mist.personsapi
 
 import javax.ws.rs.core.UriBuilder
+import javax.ws.rs.core.UriInfo
 
 class PersonUriBuilder {
     URI endpointUri
@@ -47,5 +48,20 @@ class PersonUriBuilder {
                 .path('persons/{osuID}/phones')
                 .queryParam('phoneType', phoneType)
                 .build(osuID)
+    }
+
+    URI topLevelUri(UriInfo uri) {
+        UriBuilder builder = UriBuilder.fromUri(this.endpointUri)
+
+        if(uri) {
+                builder.path(uri.getPath())
+
+            uri.getQueryParameters().each {
+                builder.queryParam(it.key, it.value[0])
+            }
+
+        }
+
+        builder.build()
     }
 }
