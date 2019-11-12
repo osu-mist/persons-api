@@ -158,7 +158,7 @@ class PersonsResource extends Resource {
                     .build()
         }
 
-        ResultObject res = personResultObject(persons, uri?.getRequestUri())
+        ResultObject res = personResultObject(persons, personUriBuilder.topLevelUri(uri))
         ok(res).build()
     }
 
@@ -199,7 +199,9 @@ class PersonsResource extends Resource {
                 null, [dbFunctionOutput], null, null, null, false
             )
             if (createdPerson) {
-                ResultObject res = personResultObject(createdPerson?.get(0), uri?.getRequestUri())
+                ResultObject res = personResultObject(
+                    createdPerson?.get(0),
+                    personUriBuilder.topLevelUri(uri))
                 accepted(res).build()
             } else {
                 internalServerError("Person has been created but not found.").build()
@@ -239,7 +241,7 @@ class PersonsResource extends Resource {
                            @Context UriInfo uri) {
         def person = personsStringTemplateDAO.getPersons(null, [osuID], null, null, null, false)
         if (person) {
-            ResultObject res = personResultObject(person?.get(0), uri?.getRequestUri())
+            ResultObject res = personResultObject(person?.get(0), personUriBuilder.topLevelUri(uri))
             ok(res).build()
         } else {
             notFound().build()
@@ -276,7 +278,7 @@ class PersonsResource extends Resource {
                      @Context UriInfo uri) {
         if (bannerPersonsReadDAO.personExist(osuID)) {
             List<JobObject> jobs = bannerPersonsReadDAO.getJobsById(osuID, positionNumber, suffix)
-            ok(jobsResultObject(jobs, osuID, uri?.getRequestUri())).build()
+            ok(jobsResultObject(jobs, osuID, personUriBuilder.topLevelUri(uri))).build()
         } else {
             notFound().build()
         }
@@ -300,7 +302,12 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID, employmentType, false, uri?.getRequestUri())
+        createOrUpdateJobInDB(
+            resultObject,
+            osuID,
+            employmentType,
+            false,
+            personUriBuilder.topLevelUri(uri))
     }
 
     @Timed
@@ -318,7 +325,7 @@ class PersonsResource extends Resource {
         if (!job) {
             notFound().build()
         } else {
-            ok(jobResultObject(job, osuID, uri?.getRequestUri())).build()
+            ok(jobResultObject(job, osuID, personUriBuilder.topLevelUri(uri))).build()
         }
     }
 
@@ -341,7 +348,12 @@ class PersonsResource extends Resource {
             return errorArrayResponse(errors)
         }
 
-        createOrUpdateJobInDB(resultObject, osuID, employmentType, true, uri?.getRequestUri())
+        createOrUpdateJobInDB(
+            resultObject,
+            osuID,
+            employmentType,
+            true,
+            personUriBuilder.topLevelUri(uri))
     }
 
     private Response createOrUpdateJobInDB(ResultObject resultObject,
@@ -724,7 +736,7 @@ class PersonsResource extends Resource {
             List<MealPlan> mealPlans = odsPersonsReadDAO.getMealPlans(osuID, null)
 
             ResultObject resultObject = new ResultObject(
-                    links: ['self': uri.getRequestUri()],
+                    links: ['self': personUriBuilder.topLevelUri(uri)],
                     data: mealPlans.collect {
                         getMealPlanResourceObject(it, osuID)
                     }
@@ -748,7 +760,7 @@ class PersonsResource extends Resource {
 
             if (mealPlans) {
                 ResultObject resultObject = new ResultObject(
-                        links: ['self': uri.getRequestUri()],
+                        links: ['self': personUriBuilder.topLevelUri(uri)],
                         data: getMealPlanResourceObject(mealPlans?.get(0), osuID)
                 )
                 ok(resultObject).build()
@@ -775,7 +787,7 @@ class PersonsResource extends Resource {
             List<AddressObject> addresses = bannerPersonsReadDAO.getAddresses(osuID, addressType)
 
             ResultObject resultObject = new ResultObject(
-                    links: ['self': uri?.getRequestUri()],
+                    links: ['self': personUriBuilder.topLevelUri(uri)],
                     data: addresses.collect {
                         new ResourceObject(
                                 id: it.id,
@@ -851,7 +863,8 @@ class PersonsResource extends Resource {
     @Consumes (MediaType.APPLICATION_JSON)
     @Path('{osuID: [0-9]+}/addresses')
     Response createAddress(@PathParam('osuID') String osuID,
-                           @Valid ResultObject resultObject) {
+                           @Valid ResultObject resultObject,
+                           @Context UriInfo uri) {
         String pidm = bannerPersonsReadDAO.personExist(osuID)
         if (!pidm) {
             return notFound().build()
@@ -906,10 +919,12 @@ class PersonsResource extends Resource {
             updatePhoneAddrSeqno(pidm, addressRecord, phoneRecord)
 
             accepted(new ResultObject(
+                links: ["self": personUriBuilder.topLevelUri(uri)],
                 data: new ResourceObject(
                     id: addresses[0].id,
                     type: "addresses",
-                    attributes: addresses[0]
+                    attributes: addresses[0],
+                    links: ["self": personUriBuilder.addressUri(osuID, addressType)]
                 )
             )).build()
         } catch (UnableToExecuteStatementException e) {
@@ -968,7 +983,7 @@ class PersonsResource extends Resource {
                     attributes: ["ssnStatus": bannerPersonsReadDAO.ssnStatus(osuID)],
                     links: ['self': personUriBuilder.ssnUri(osuID, "$osuID-ssn")]
                 ),
-                links: ['self': uri.getRequestUri()]
+                links: ['self': personUriBuilder.topLevelUri(uri)]
             )).build()
         } catch (UnableToExecuteStatementException e) {
             internalServerError("Unable to execute SQL query").build()
@@ -1008,7 +1023,7 @@ class PersonsResource extends Resource {
             List<PhoneObject> phones = bannerPersonsReadDAO.getPhones(osuID, addressType, phoneType)
 
             ResultObject resultObject = new ResultObject(
-                    links: ['self': uri.getRequestUri()],
+                    links: ['self': personUriBuilder.topLevelUri(uri)],
                     data: phones.collect {
                         new ResourceObject(
                                 id: it.id,
@@ -1139,7 +1154,7 @@ class PersonsResource extends Resource {
                 throw new Exception("New record created but more than one records are valid.")
             }
             accepted(new ResultObject(
-                links: ['self': uri.getRequestUri()],
+                links: ['self': personUriBuilder.topLevelUri(uri)],
                 data: new ResourceObject(
                     id: phones[0].id,
                     type: "phones",
