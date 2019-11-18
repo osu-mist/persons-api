@@ -367,6 +367,7 @@ class PersonsResource extends Resource {
 
         // Terminate job if change reason code is either TERME or TERMJ
         if (['TERME', 'TERMJ'].contains(job?.changeReasonCode)) {
+            logger.info("Terminating job")
             dbFunctionOutput = bannerPersonsWriteDAO.terminateJob(osuID, job)
                 .getString(BannerPersonsWriteDAO.outParameter)
         } else {
