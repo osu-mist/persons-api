@@ -365,29 +365,35 @@ class PersonsResource extends Resource {
 
         String dbFunctionOutput
 
-        switch (employmentType) {
-            case studentEmploymentType:
-                if (update) {
-                    logger.info("Updating $studentEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                } else {
-                    logger.info("Creating $studentEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                }
-                break
-            case graduateEmploymentType:
-                if (update) {
-                    logger.info("Updating $graduateEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                } else {
-                    logger.info("Creating $graduateEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                }
-                break
+        // Terminate job if change reason code is either TERME or TERMJ
+        if (['TERME', 'TERMJ'].contains(job?.changeReasonCode)) {
+            dbFunctionOutput = bannerPersonsWriteDAO.terminateJob(osuID, job)
+                .getString(BannerPersonsWriteDAO.outParameter)
+        } else {
+            switch (employmentType) {
+                case studentEmploymentType:
+                    if (update) {
+                        logger.info("Updating $studentEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    } else {
+                        logger.info("Creating $studentEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    }
+                    break
+                case graduateEmploymentType:
+                    if (update) {
+                        logger.info("Updating $graduateEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    } else {
+                        logger.info("Creating $graduateEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    }
+                    break
+            }
         }
 
         //TODO: Should we be checking other conditions besides an null/empty string?
