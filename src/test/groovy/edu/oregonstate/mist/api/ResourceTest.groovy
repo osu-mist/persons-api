@@ -10,7 +10,7 @@ class ResourceTest {
     private Resource resource
     private MockUriInfo uriInfo
     private String resourceEndpoint = "test"
-    
+
     @Before
     public void setup() {
         URI uri = new URI('https://api.oregonstate.edu/v1/')

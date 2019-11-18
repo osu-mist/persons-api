@@ -322,6 +322,7 @@ class PersonsResourceTest {
             isValidActivityCode { String activityCode -> true }
             isValidProgramCode { String programCode -> true }
             isValidFundCode { String fundCode -> true }
+            isValidChangeReasonCode { String changeReasonCode -> true }
         }
 
         personsDAOStub
@@ -1612,7 +1613,7 @@ class PersonsResourceTest {
 
     void checkCreatePhoneErrorResponse(PhoneObject phone, String expectedMessage) {
         PersonsResource personsResource = new PersonsResource(
-            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(), 
+            getGoodMockPersonsDAOForNewPhone(phone).proxyInstance(),
             null,
             getMockPersonsWriteDAOPhones().proxyInstance(),
             null,
