@@ -73,6 +73,9 @@ public interface BannerPersonsReadDAO extends Closeable {
     @SqlQuery(AbstractPersonsDAO.validateLocationCode)
     Boolean isValidLocationCode(@Bind('locationCode') String locationCode)
 
+    @SqlQuery(AbstractPersonsDAO.validateChangeReasonCode)
+    Boolean isValidChangeReasonCode(@Bind('changeReasonCode') String changeReasonCode)
+
     @SqlQuery(AbstractPersonsDAO.getPreviousRecords)
     @Mapper(PreviousRecordMapper)
     List<PreviousRecord> getPreviousRecords(@Bind('id') String internalID)

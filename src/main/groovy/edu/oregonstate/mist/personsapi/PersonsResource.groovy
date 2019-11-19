@@ -362,32 +362,45 @@ class PersonsResource extends Resource {
                                            Boolean update,
                                            URI selfLink) {
         JobObject job = JobObject.fromResultObject(resultObject)
-
+        String changeReasonCode = job?.changeReasonCode
         String dbFunctionOutput
 
-        switch (employmentType) {
-            case studentEmploymentType:
-                if (update) {
-                    logger.info("Updating $studentEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                } else {
-                    logger.info("Creating $studentEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                }
-                break
-            case graduateEmploymentType:
-                if (update) {
-                    logger.info("Updating $graduateEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                } else {
-                    logger.info("Creating $graduateEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
-                            .getString(BannerPersonsWriteDAO.outParameter)
-                }
-                break
+        // Terminate job if change reason code is either TERME or TERMJ
+        if (['TERME', 'TERMJ'].contains(changeReasonCode)) {
+            logger.info("Terminating job")
+            dbFunctionOutput = bannerPersonsWriteDAO.terminateJob(osuID, job)
+                .getString(BannerPersonsWriteDAO.outParameter)
+        } else {
+            if (!bannerPersonsReadDAO.isValidChangeReasonCode(changeReasonCode)) {
+                // TODO: set changeReasonCode to null for now if the input changeReasonCode is
+                // invalid since it's currently an optional parameter. An error should be thrown
+                // when changeReasonCode become a required parameter.
+                job.changeReasonCode = null
+            }
+            switch (employmentType) {
+                case studentEmploymentType:
+                    if (update) {
+                        logger.info("Updating $studentEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    } else {
+                        logger.info("Creating $studentEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    }
+                    break
+                case graduateEmploymentType:
+                    if (update) {
+                        logger.info("Updating $graduateEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    } else {
+                        logger.info("Creating $graduateEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                    }
+                    break
+            }
         }
 
         //TODO: Should we be checking other conditions besides an null/empty string?
