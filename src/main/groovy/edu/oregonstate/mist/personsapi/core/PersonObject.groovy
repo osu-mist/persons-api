@@ -27,6 +27,9 @@ class PersonObject {
 
     @JsonUnwrapped
     Name name
+    String displayFirstName
+    String displayMiddleName
+    String displayLastName
     List<PreviousRecord> previousRecords
     String citizen
     String sex
@@ -73,5 +76,4 @@ class Name {
     String firstName
     String middleName
     String lastName
-    String preferredName
 }

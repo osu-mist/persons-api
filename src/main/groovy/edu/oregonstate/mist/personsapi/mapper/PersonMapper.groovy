@@ -18,11 +18,13 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             osuID: rs.getString('OSU_ID'),
             internalID: rs.getString('INTERNAL_ID'),
             name: new Name(
-                    firstName: rs.getString('FIRST_NAME'),
-                    middleName: rs.getString('MIDDLE_NAME'),
-                    lastName: rs.getString('LAST_NAME'),
-                    preferredName: rs.getString('PREFERRED_NAME')
+                firstName: rs.getString('FIRST_NAME'),
+                middleName: rs.getString('MIDDLE_NAME'),
+                lastName: rs.getString('LAST_NAME')
             ),
+            displayFirstName: rs.getString('DISPLAY_FIRST_NAME'),
+            displayMiddleName: rs.getString('DISPLAY_MIDDLE_NAME'),
+            displayLastName: rs.getString('DISPLAY_LAST_NAME'),
             birthDate: rs.getDate('BIRTH_DATE'),
             citizen: rs.getString('CITIZEN'),
             sex: rs.getString('SEX'),

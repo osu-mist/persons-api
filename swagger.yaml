@@ -544,13 +544,13 @@ definitions:
             properties:
               firstName:
                 type: string
-                description: Preferred first name
+                description: First name
               lastName:
                 type: string
-                description: Preferred last name
+                description: Last name
               middleName:
                 type: string
-                description: Preferred middle name
+                description: Middle name
           birthDate:
             type: string
             format: date
@@ -605,9 +605,15 @@ definitions:
               lastName:
                 type: string
                 description: Last name
-              preferredName:
+              displayFirstName:
                 type: string
-                description: Preferred name
+                description: Display first name
+              displayMiddleName:
+                type: string
+                description: Display middle name
+              displayLastName:
+                type: string
+                description: Display last name
               previousRecords:
                 type: array
                 description: Previous records associated with the person
