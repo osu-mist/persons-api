@@ -17,11 +17,14 @@ class PersonUriBuilder {
     }
 
     URI personJobsUri(String osuID, String positionNumber, String suffix) {
-        UriBuilder.fromUri(this.endpointUri)
-                  .path('persons/{osuID}/jobs')
-                  .queryParam("positionNumber", positionNumber)
-                  .queryParam("suffix", suffix)
-                  .build(osuID)
+        UriBuilder uri = UriBuilder.fromUri(this.endpointUri)
+                            .path('persons/{osuID}/jobs')
+                            .queryParam("positionNumber", positionNumber)
+        // suffix could be null for hourly appointments
+        if (suffix) {
+            uri.queryParam("suffix", suffix)
+        }
+        uri.build(osuID)
     }
 
     URI mealPlanUri(String osuID, String mealPlanID) {
