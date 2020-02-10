@@ -382,6 +382,16 @@ class PersonsResource extends Resource {
                     logger.info("Labor change. Updating $employmentType job")
                     dbFunctionOutput = bannerPersonsWriteDAO.updateLaborChangeJob(osuID, job)
                         .getString(BannerPersonsWriteDAO.outParameter)
+                } else if (employmentType == studentEmploymentType) {
+                    // TODO: This must be removed once the updateJob SP is completed.
+                    logger.info("Updating $studentEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
+                } else if (employmentType == graduateEmploymentType) {
+                    // TODO: This must be removed once the updateJob SP is completed.
+                    logger.info("Updating $graduateEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
                 }
                 // TODO: SP hasn't be released yet. Need to test this part once it's done.
                 // else {
@@ -392,28 +402,14 @@ class PersonsResource extends Resource {
             } else {
                 switch (employmentType) {
                 case studentEmploymentType:
-                    // TODO: This must be removed once the updateJob SP is completed.
-                    if (update) {
-                        logger.info("Updating $studentEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    } else {
-                        logger.info("Creating $studentEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    }
+                    logger.info("Creating $studentEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
                     break
                 case graduateEmploymentType:
-                    // TODO: This must be removed once the updateJob SP is completed.
-                    if (update) {
-                        logger.info("Updating $graduateEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    } else {
-                        logger.info("Creating $graduateEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    }
+                    logger.info("Creating $graduateEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
                     break
                 }
             }
