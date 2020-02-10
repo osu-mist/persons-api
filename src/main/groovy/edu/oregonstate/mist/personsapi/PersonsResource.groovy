@@ -415,7 +415,7 @@ class PersonsResource extends Resource {
                                 .getString(BannerPersonsWriteDAO.outParameter)
                     }
                     break
-            }
+                }
             }
         }
 
