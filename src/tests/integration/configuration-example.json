@@ -1,0 +1,26 @@
+{
+  "local_test": true,
+  "api": {
+    "local_base_url": "https://localhost:8080/api/v1",
+    "base_url": "https://api.oregonstate.edu/v1"
+  },
+  "auth": {
+    "basic_auth": {
+      "username": "username",
+      "password": "password"
+    },
+    "oauth2": {
+      "token_api_url": "https://api.oregonstate.edu/oauth2/token",
+      "client_id": "client_id",
+      "client_secret": "client_secret"
+    }
+  },
+  "test_cases": {
+    "valid_pet_ids": [
+      "57e1aab0-c50b-11e9-a7bd-1fb8646e6a06",
+      "757f4d20-c50b-11e9-a7bd-1fb8646e6a06",
+      "79b8ff30-c50b-11e9-a7bd-1fb8646e6a06"
+     ],
+    "invalid_pet_ids": ["999", "-1", "invalid_id"]
+  }
+}

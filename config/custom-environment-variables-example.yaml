@@ -1,0 +1,14 @@
+server:
+  hostname: 'API_HOSTNAME'
+  port: 'PORT'
+  adminPort: 'ADMIN_PORT'
+
+authentication:
+  username: 'USER'
+  password: 'PASSWD'
+
+dataSources:
+  oracledb:
+    connectString: 'DB_URL'
+    user: 'DB_USER'
+    password: 'DB_PASSWD'
