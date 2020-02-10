@@ -377,8 +377,22 @@ class PersonsResource extends Resource {
                 // when changeReasonCode become a required parameter.
                 job.changeReasonCode = null
             }
-            switch (employmentType) {
+            if (update) {
+                if (changeReasonCode == 'LCHNG') {
+                    logger.info("Labor change. Updating $employmentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateLaborChangeJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
+                }
+                // TODO: SP hasn't be released yet. Need to test this part once it's done.
+                // else {
+                //     logger.info("Updating $employmentType job")
+                //     dbFunctionOutput = bannerPersonsWriteDAO.updateJob(osuID, job)
+                //         .getString(BannerPersonsWriteDAO.outParameter)
+                // }
+            } else {
+                switch (employmentType) {
                 case studentEmploymentType:
+                    // TODO: This must be removed once the updateJob SP is completed.
                     if (update) {
                         logger.info("Updating $studentEmploymentType job")
                         dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
@@ -390,6 +404,7 @@ class PersonsResource extends Resource {
                     }
                     break
                 case graduateEmploymentType:
+                    // TODO: This must be removed once the updateJob SP is completed.
                     if (update) {
                         logger.info("Updating $graduateEmploymentType job")
                         dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
@@ -400,6 +415,7 @@ class PersonsResource extends Resource {
                                 .getString(BannerPersonsWriteDAO.outParameter)
                     }
                     break
+            }
             }
         }
 
