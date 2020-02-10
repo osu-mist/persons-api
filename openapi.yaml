@@ -12,7 +12,7 @@ externalDocs:
 host: api.oregonstate.edu
 schemes:
   - https
-basePath: /v1
+basePath: /v2
 produces:
   - application/json
 consumes:
