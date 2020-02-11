@@ -1,16 +1,13 @@
 /* eslint-disable no-unused-vars */
 import { errorHandler } from 'errors/errors';
-
-import { getConnection } from '../db/oracledb/connection';
+import { getPerson } from '../db/oracledb/persons-dao';
+import { serializePerson } from '../serializers/persons-serializer';
 
 const get = async (req, res) => {
-  const connection = await getConnection();
-  try {
-    console.log('get person endpoint');
-    return 'garbage';
-  } catch (err) {
-    return errorHandler(res, err);
-  }
+  console.log('get person endpoint');
+  const rawPerson = await getPerson(5);
+  const serializedPerson = serializePerson(rawPerson);
+  return res.send(serializedPerson);
 };
 
 const post = async (req, res) => {

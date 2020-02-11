@@ -14,6 +14,8 @@ const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
 const serializePerson = (rawPerson) => {
   const topLevelSelfLink = resourcePathLink(personResourceUrl, rawPerson.Id);
+
+  return rawPerson;
 };
 
 export {
