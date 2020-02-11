@@ -1,0 +1,4 @@
+[submodule "src/api/v2/db/oracledb/contrib"]
+	path = src/api/v2/db/oracledb/contrib
+    url = git@github.sig.oregonstate.edu:ecs-data/persons-api-contrib.git
+    branch = feature/CO-1193-create-base-endpoint
