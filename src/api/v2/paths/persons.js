@@ -11,12 +11,7 @@ const get = async (req, res) => {
 };
 
 const post = async (req, res) => {
-  try {
-    console.log('post person endpoint');
-    return 'test';
-  } catch (err) {
-    return errorHandler(res, err);
-  }
+  // todo
 };
 
 export {
