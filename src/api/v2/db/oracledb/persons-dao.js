@@ -9,11 +9,12 @@ const getPerson = async (osuId) => {
   try {
     console.log('getPerson');
     const { rows } = await connection.execute(contrib.getPerson(), {
-      osuUID: '932776660',
-      onid: 'ruefa',
-      firstName: 'alexander',
-      lastName: 'ruef',
-      searchOldVersions: '0',
+      osuUID: null,
+      onid: null,
+      firstName: null,
+      lastName: null,
+      searchOldVersions: null,
+      osuIds: (osuId),
     });
     console.log(rows);
     return rows;
