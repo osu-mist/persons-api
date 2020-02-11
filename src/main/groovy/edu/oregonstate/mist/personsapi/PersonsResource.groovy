@@ -377,29 +377,41 @@ class PersonsResource extends Resource {
                 // when changeReasonCode become a required parameter.
                 job.changeReasonCode = null
             }
-            switch (employmentType) {
+            if (update) {
+                if (changeReasonCode == 'LCHNG') {
+                    logger.info("Labor change. Updating $employmentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateLaborChangeJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
+                } else if (employmentType == studentEmploymentType) {
+                    // TODO: This must be removed once the updateJob SP is completed.
+                    logger.info("Updating $studentEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
+                } else if (employmentType == graduateEmploymentType) {
+                    // TODO: This must be removed once the updateJob SP is completed.
+                    logger.info("Updating $graduateEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
+                }
+                // TODO: SP hasn't be released yet. Need to test this part once it's done.
+                // else {
+                //     logger.info("Updating $employmentType job")
+                //     dbFunctionOutput = bannerPersonsWriteDAO.updateJob(osuID, job)
+                //         .getString(BannerPersonsWriteDAO.outParameter)
+                // }
+            } else {
+                switch (employmentType) {
                 case studentEmploymentType:
-                    if (update) {
-                        logger.info("Updating $studentEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    } else {
-                        logger.info("Creating $studentEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    }
+                    logger.info("Creating $studentEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
                     break
                 case graduateEmploymentType:
-                    if (update) {
-                        logger.info("Updating $graduateEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    } else {
-                        logger.info("Creating $graduateEmploymentType job")
-                        dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
-                                .getString(BannerPersonsWriteDAO.outParameter)
-                    }
+                    logger.info("Creating $graduateEmploymentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
+                        .getString(BannerPersonsWriteDAO.outParameter)
                     break
+                }
             }
         }
 
