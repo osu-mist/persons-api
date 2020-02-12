@@ -239,7 +239,7 @@ class PersonsResource extends Resource {
     @Path('{osuID: [0-9]+}')
     Response getPersonById(@PathParam('osuID') String osuID,
                            @Context UriInfo uri) {
-        def person = personsStringTemplateDAO.getPersons(null, [osuID], null, null, null, false)
+        def person = personsStringTemplateDAO.getPersonById(osuID)
         if (person) {
             ResultObject res = personResultObject(person?.get(0), personUriBuilder.topLevelUri(uri))
             ok(res).build()
