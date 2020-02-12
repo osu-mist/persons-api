@@ -23,7 +23,6 @@ const serializePerson = (rawPerson) => {
     topLevelSelfLink,
     enableDataLinks: true,
   };
-  console.log(rawPerson);
 
   serializedPerson.links = { topLevelSelfLink };
   serializedPerson.data = { attributes: rawPerson };
