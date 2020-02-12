@@ -9,13 +9,29 @@ import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
 
 const personResourceProp = openapi.definitions.PersonResultObject.properties.data.properties;
 const personResourceType = personResourceProp.type.example;
+const personResourceKeys = _.keys(personResourceProp.attributes.properties);
 const personResourcePath = 'person';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
 const serializePerson = (rawPerson) => {
-  const topLevelSelfLink = resourcePathLink(personResourceUrl, rawPerson.Id);
+  const serializedPerson = {};
+  const topLevelSelfLink = resourcePathLink(personResourceUrl, rawPerson.osuId);
+  const serializerArgs = {
+    identifierField: 'OSU_ID',
+    resourceKeys: personResourceKeys,
+    resourcePath: personResourcePath,
+    topLevelSelfLink,
+    enableDataLinks: true,
+  };
+  console.log(rawPerson);
 
-  return rawPerson;
+  serializedPerson.links = { topLevelSelfLink };
+  serializedPerson.data = { attributes: rawPerson };
+
+  return new JsonApiSerializer(
+    personResourceType,
+    serializerOptions(serializerArgs, personResourcePath, topLevelSelfLink),
+  ).serialize(rawPerson);
 };
 
 export {
