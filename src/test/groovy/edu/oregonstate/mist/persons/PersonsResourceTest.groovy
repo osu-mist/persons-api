@@ -254,6 +254,7 @@ class PersonsResourceTest {
         def stubStringTemplateDAO = getPersonsStringTemplateDAOStub()
         stubStringTemplateDAO.demand.getPersons { String onid, List<String> osuIDs, String osuUID,
                                  String firstName, String lastName, searchOldVersions -> null }
+        stubStringTemplateDAO.demand.getPersonById { String osuID -> null }
 
         PersonsResource personsResource = new PersonsResource(
             stubDAO.proxyInstance(), stubStringTemplateDAO.proxyInstance(), null, null, endpointUri)
@@ -277,6 +278,8 @@ class PersonsResourceTest {
                                                                String osuUID, String firstName,
                                                                String lastName, searchOldVersions ->
             [fakePerson] }
+
+        stubPersonsStringTemplateDAO.demand.getPersonById { String osuID -> [fakePerson] }
 
         PersonsResource personsResource = new PersonsResource(stubPersonsDAO.proxyInstance(),
                 stubPersonsStringTemplateDAO.proxyInstance(), null, null, endpointUri)

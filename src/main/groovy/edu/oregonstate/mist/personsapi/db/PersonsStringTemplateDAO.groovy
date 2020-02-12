@@ -25,4 +25,8 @@ public interface PersonsStringTemplateDAO extends Closeable {
                                   @Bind('firstName') String firstName,
                                   @Bind('lastName') String lastName,
                                   @Bind('searchOldVersions') Boolean searchOldVersions)
+
+    @SqlQuery(AbstractPersonsDAO.getPersonById)
+    @Mapper(PersonMapper)
+    List<PersonObject> getPersonById(@Bind('osuID') String osuID)
 }
