@@ -14,18 +14,15 @@ const personResourcePath = 'person';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
 const serializePerson = (rawPerson) => {
-  const serializedPerson = {};
-  const topLevelSelfLink = resourcePathLink(personResourceUrl, rawPerson.osuId);
+  // const topLevelSelfLink = resourcePathLink(personResourceUrl, rawPerson.osuId);
+  const topLevelSelfLink = paramsLink(personResourceUrl, { osuId: rawPerson.osuId });
   const serializerArgs = {
-    identifierField: 'OSU_ID',
+    identifierField: 'osuId',
     resourceKeys: personResourceKeys,
     resourcePath: personResourcePath,
     topLevelSelfLink,
     enableDataLinks: true,
   };
-
-  serializedPerson.links = { topLevelSelfLink };
-  serializedPerson.data = { attributes: rawPerson };
 
   return new JsonApiSerializer(
     personResourceType,
