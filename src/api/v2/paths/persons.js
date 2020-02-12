@@ -5,7 +5,8 @@ import { serializePerson } from '../serializers/persons-serializer';
 
 const get = async (req, res) => {
   console.log('get person endpoint');
-  const rawPerson = await getPerson(5);
+  const { osuID } = req.query;
+  const rawPerson = await getPerson(osuID[0]);
   const serializedPerson = serializePerson(rawPerson);
   return res.send(serializedPerson);
 };
