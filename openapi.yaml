@@ -31,19 +31,19 @@ paths:
           description: ONID login name
           type: string
         - in: query
-          name: osuID
+          name: osuId
           required: false
           description: >
             OSU ID of one or more persons. Multiple IDs can be retrieved
             in a single request by separating with a comma. IDs that are not
             able to be found will not be returned in the response.
-            Example: /persons?osuID=1,2,3
+            Example: /persons?osuId=1,2,3
           type: array
           items:
             type: string
           collectionFormat: csv
         - in: query
-          name: osuUID
+          name: osuUid
           required: false
           description: OSUUID of a person. Public identifier given in Directory API
           type: number
@@ -65,7 +65,7 @@ paths:
           description: If true, searching by name will also search old names associated with the person.
           type: boolean
         - in: query
-          name: searchOldOsuIDs
+          name: searchOldOsuIds
           required: false
           default: false
           description: If true, searching by OSU ID will also search old OSU ID's associated with the person.
@@ -106,14 +106,14 @@ paths:
           description: Bad request
           schema:
             $ref: '#/definitions/ErrorArray'
-  /persons/{osuID}:
+  /persons/{osuId}:
     get:
       description: Get general person information
       tags:
         - persons
-      operationId: getPersonByID
+      operationId: getPersonById
       parameters:
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
@@ -125,7 +125,7 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/jobs:
+  /persons/{osuId}/jobs:
     get:
       description: Get jobs associated with a person
       tags:
@@ -144,7 +144,7 @@ paths:
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
           required: false
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
@@ -169,7 +169,7 @@ paths:
           schema:
             $ref: '#/definitions/NewJobResultObject'
         - $ref: '#/parameters/employmentType'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
@@ -187,15 +187,15 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/jobs/{jobID}:
+  /persons/{osuId}/jobs/{jobId}:
     get:
       description: Get a specific job associated with a person.
       tags:
         - jobs
       operationId: getJob
       parameters:
-        - $ref: '#/parameters/jobID'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/jobId'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
@@ -220,8 +220,8 @@ paths:
           schema:
             $ref: '#/definitions/NewJobResultObject'
         - $ref: '#/parameters/employmentType'
-        - $ref: '#/parameters/jobID'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/jobId'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
@@ -239,7 +239,7 @@ paths:
           description: Person or job not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/ssn:
+  /persons/{osuId}/ssn:
     post:
       description: Create person's SSN
       tags:
@@ -252,7 +252,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/NewSSNResultObject'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
@@ -268,7 +268,7 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/image:
+  /persons/{osuId}/image:
     get:
       description: |
         Get an ID card image for a person. If the person exists but doesn't have
@@ -285,7 +285,7 @@ paths:
           description: Resizes image to a pixel value for width while keeping original aspect ratio
           required: false
           type: integer
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
       responses:
@@ -301,14 +301,14 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/meal-plans:
+  /persons/{osuId}/meal-plans:
     get:
       description: Get meal plans for a person
       tags:
         - meal-plans
       operationId: getMealPlans
       parameters:
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/authorization'
       responses:
         200:
@@ -319,19 +319,19 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/meal-plans/{mealPlanID}:
+  /persons/{osuId}/meal-plans/{mealPlanId}:
     get:
       description: Get a specific meal plan for a person
       tags:
         - meal-plans
-      operationId: getMealPlanByID
+      operationId: getMealPlanById
       parameters:
         - in: path
-          name: mealPlanID
+          name: mealPlanId
           description: ID of meal plan
           required: true
           type: string
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/authorization'
       responses:
         200:
@@ -342,7 +342,7 @@ paths:
           description: Person or meal plan not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/addresses:
+  /persons/{osuId}/addresses:
     get:
       description: Get addresses for a person
       tags:
@@ -350,7 +350,7 @@ paths:
       operationId: getAddresses
       parameters:
         - $ref: '#/parameters/addressType'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/authorization'
       responses:
         200:
@@ -373,7 +373,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/NewAddressResultObject'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/authorization'
       responses:
         200:
@@ -388,7 +388,7 @@ paths:
           description: Person not found
           schema:
             $ref: '#/definitions/Error'
-  /persons/{osuID}/phones:
+  /persons/{osuId}/phones:
     get:
       description: Get phone numbers for a person
       tags:
@@ -397,7 +397,7 @@ paths:
       parameters:
         - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/phoneType'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/authorization'
       responses:
         200:
@@ -424,7 +424,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/NewPhoneResultObject'
-        - $ref: '#/parameters/osuID'
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/authorization'
       responses:
         200:
@@ -441,14 +441,14 @@ paths:
             $ref: '#/definitions/Error'
 
 parameters:
-  osuID:
-    name: osuID
+  osuId:
+    name: osuId
     in: path
     required: true
     description: OSU ID of person
     type: string
-  jobID:
-    name: jobID
+  jobId:
+    name: jobId
     in: path
     description: ID of the specific job to be updated
     required: true
@@ -592,7 +592,7 @@ definitions:
               username:
                 type: string
                 description: ONID login name
-              osuUID:
+              osuUid:
                 type: number
                 format: integer
                 description: Unique identifier in the Directory API
@@ -619,7 +619,7 @@ definitions:
                 description: Previous records associated with the person
                 items:
                   properties:
-                    osuID:
+                    osuId:
                       type: string
                       description: 9 digit OSU ID
                       example: '931234567'
@@ -721,7 +721,7 @@ definitions:
     required:
       - positionNumber
       - beginDate
-      - supervisorOsuID
+      - supervisorOsuId
       - supervisorPositionNumber
       - effectiveDate
     properties:
@@ -768,7 +768,7 @@ definitions:
       contractType:
         type: string
         description: Contract type code/ID.
-      locationID:
+      locationId:
         type: string
         description: Location ID of where job will be performed.
       status:
@@ -811,7 +811,7 @@ definitions:
         type: string
       strsAssignmentCode:
         type: string
-      supervisorOsuID:
+      supervisorOsuId:
         type: string
         description: OSU ID of the supervisor for the job.
       supervisorLastName:
