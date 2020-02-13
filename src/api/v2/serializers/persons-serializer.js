@@ -29,7 +29,6 @@ const serializePerson = (rawPerson, querys) => {
 };
 
 const serializePersons = (rawPersons, querys) => {
-  console.log(querys.osuId.join(','));
   const topLevelSelfLink = paramsLink(personResourceUrl, { osuId: querys.osuId.join(',') });
   const serializerArgs = {
     identifierField: 'osuId',
