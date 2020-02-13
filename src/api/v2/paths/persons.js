@@ -5,8 +5,8 @@ import { getPerson } from '../db/oracledb/persons-dao';
 const get = async (req, res) => {
   console.log('get person endpoint');
   try {
-    const { osuId } = req.query;
-    const result = await getPerson(osuId[0]);
+    const { query } = req;
+    const result = await getPerson(query);
     return res.send(result);
   } catch (err) {
     return errorHandler(res, err);
