@@ -4,7 +4,6 @@ import _ from 'lodash';
 
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
-import { paginate } from 'utils/paginator';
 import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
 
 const personResourceProp = openapi.definitions.PersonResultObject.properties.data.properties;
@@ -13,9 +12,8 @@ const personResourceKeys = _.keys(personResourceProp.attributes.properties);
 const personResourcePath = 'person';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
-const serializePerson = (rawPerson) => {
-  // const topLevelSelfLink = resourcePathLink(personResourceUrl, rawPerson.osuId);
-  const topLevelSelfLink = paramsLink(personResourceUrl, { osuId: rawPerson.osuId });
+const serializePerson = (rawPerson, querys) => {
+  const topLevelSelfLink = paramsLink(personResourceUrl, querys);
   const serializerArgs = {
     identifierField: 'osuId',
     resourceKeys: personResourceKeys,
@@ -30,6 +28,24 @@ const serializePerson = (rawPerson) => {
   ).serialize(rawPerson);
 };
 
+const serializePersons = (rawPersons, querys) => {
+  console.log(querys.osuId.join(','));
+  const topLevelSelfLink = paramsLink(personResourceUrl, { osuId: querys.osuId.join(',') });
+  const serializerArgs = {
+    identifierField: 'osuId',
+    resourceKeys: personResourceKeys,
+    resourcePath: personResourcePath,
+    topLevelSelfLink,
+    enableDataLinks: true,
+  };
+
+  return new JsonApiSerializer(
+    personResourceType,
+    serializerOptions(serializerArgs, personResourcePath, topLevelSelfLink),
+  ).serialize(rawPersons);
+};
+
 export {
   serializePerson,
+  serializePersons,
 };
