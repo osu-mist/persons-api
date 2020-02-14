@@ -12,6 +12,7 @@ import { getPerson } from '../db/oracledb/persons-dao';
 const get = async (req, res) => {
   try {
     const { query } = req;
+    // set osuId to empty array so array functions can be called
     query.osuId = query.osuId || [];
     const result = await getPerson(query);
     return res.send(result);

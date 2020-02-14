@@ -14,7 +14,6 @@ import { serializePersons } from '../../serializers/persons-serializer';
 const getPerson = async (querys) => {
   const connection = await getConnection();
   try {
-    console.log(querys);
     const { rows } = await connection.execute(contrib.getPerson(querys.osuId), {
       osuUid: querys.osuUid,
       onid: querys.onid,
@@ -22,12 +21,16 @@ const getPerson = async (querys) => {
       lastName: querys.lastName ? querys.lastName.toUpperCase() : null,
       searchOldVersions: querys.searchOldVersions || 0,
     });
+
+    // massage data if any is returned
     if (rows.length > 0) {
+      // get previous record data
       const internalIds = _.map(rows, 'internalId');
       const { rows: previousRecords } = await connection.execute(
         contrib.getPreviousRecords(internalIds),
       );
       const previousRecordsMap = _.groupBy(previousRecords, 'osuId');
+
       _.forEach(rows, (rawPerson) => {
         rawPerson.previousRecords = previousRecordsMap[rawPerson.osuId] || [];
         rawPerson.currentEmployee = rawPerson.employeeStatus === 'A';
