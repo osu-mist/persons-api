@@ -12,22 +12,6 @@ const personResourceKeys = _.keys(personResourceProp.attributes.properties);
 const personResourcePath = 'person';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
-const serializePerson = (rawPerson, querys) => {
-  const topLevelSelfLink = paramsLink(personResourceUrl, { osuId: querys.osuId.join(',') });
-  const serializerArgs = {
-    identifierField: 'osuId',
-    resourceKeys: personResourceKeys,
-    resourcePath: personResourcePath,
-    topLevelSelfLink,
-    enableDataLinks: true,
-  };
-
-  return new JsonApiSerializer(
-    personResourceType,
-    serializerOptions(serializerArgs, personResourcePath, topLevelSelfLink),
-  ).serialize(rawPerson);
-};
-
 const serializePersons = (rawPersons, querys) => {
   const topLevelSelfLink = paramsLink(personResourceUrl, {
     osuId: querys.osuId.length > 0 ? querys.osuId.join(',') : null,
@@ -51,6 +35,5 @@ const serializePersons = (rawPersons, querys) => {
 };
 
 export {
-  serializePerson,
   serializePersons,
 };
