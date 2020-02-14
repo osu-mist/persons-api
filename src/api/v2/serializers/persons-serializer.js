@@ -12,6 +12,13 @@ const personResourceKeys = _.keys(personResourceProp.attributes.properties);
 const personResourcePath = 'person';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
+/**
+ * Takes raw person data and serializes it into json api standards
+ *
+ * @param {object[]} rawPersons Raw person data from data source
+ * @param {object} querys Query parameters from request
+ * @returns {object} Serialized person resource data
+ */
 const serializePersons = (rawPersons, querys) => {
   const topLevelSelfLink = paramsLink(personResourceUrl, {
     osuId: querys.osuId.length > 0 ? querys.osuId.join(',') : null,
