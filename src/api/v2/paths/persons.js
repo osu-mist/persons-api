@@ -2,6 +2,13 @@
 import { errorHandler } from 'errors/errors';
 import { getPerson } from '../db/oracledb/persons-dao';
 
+/**
+ * Base person endpoint
+ *
+ * @param {object} req request
+ * @param {object} res response
+ * @returns {Promise<object>} response
+ */
 const get = async (req, res) => {
   try {
     const { query } = req;
@@ -13,6 +20,13 @@ const get = async (req, res) => {
   }
 };
 
+/**
+ * Post person endpoint
+ *
+ * @param {object} req request
+ * @param {object} res response
+ * @returns {Promise<object>} response
+ */
 const post = async (req, res) => {
   // todo
 };
