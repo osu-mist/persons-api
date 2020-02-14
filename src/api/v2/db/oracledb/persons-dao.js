@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
-import { serializePerson, serializePersons } from '../../serializers/persons-serializer';
+import { serializePersons } from '../../serializers/persons-serializer';
 
 const getPerson = async (querys) => {
   const connection = await getConnection();
@@ -16,26 +16,23 @@ const getPerson = async (querys) => {
       lastName: querys.lastName ? querys.lastName.toUpperCase() : null,
       searchOldVersions: querys.searchOldVersions || 0,
     });
-    if (rows.length < 1) {
-      return serializePersons(rows, querys);
+    if (rows.length > 0) {
+      const internalIds = _.map(rows, 'internalId');
+      const { rows: previousRecords } = await connection.execute(
+        contrib.getPreviousRecords(internalIds),
+      );
+      const previousRecordsMap = _.groupBy(previousRecords, 'osuId');
+      _.forEach(rows, (rawPerson) => {
+        rawPerson.previousRecords = previousRecordsMap[rawPerson.osuId] || [];
+        rawPerson.currentEmployee = rawPerson.employeeStatus === 'A';
+        rawPerson.currentStudent = rawPerson.studentStatus === 'Y';
+      });
     }
 
-    const internalIds = _.map(rows, 'internalId');
-    const { rows: previousRecords } = await connection.execute(
-      contrib.getPreviousRecords(internalIds),
-    );
-    const previousRecordsMap = _.groupBy(previousRecords, 'osuId');
-    _.forEach(rows, (rawPerson) => {
-      rawPerson.previousRecords = previousRecordsMap[rawPerson.osuId] || [];
-      rawPerson.currentEmployee = rawPerson.employeeStatus === 'A';
-      rawPerson.currentStudent = rawPerson.studentStatus === 'Y';
-    });
-
-    if (rows.length > 1) {
-      return serializePerson(rows, querys);
+    if (rows.length === 1) {
+      return serializePersons(rows[0], querys);
     }
-
-    return serializePerson(rows[0], querys);
+    return serializePersons(rows, querys);
   } finally {
     connection.close();
   }
