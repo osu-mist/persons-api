@@ -8,13 +8,13 @@ import { serializePerson, serializePersons } from '../../serializers/persons-ser
 const getPerson = async (querys) => {
   const connection = await getConnection();
   try {
-    console.log('getPerson dao');
+    console.log(querys);
     const { rows } = await connection.execute(contrib.getPerson(querys.osuId), {
-      osuUID: null,
-      onid: null,
-      firstName: null,
-      lastName: null,
-      searchOldVersions: null,
+      osuUID: querys.osuUID,
+      onid: querys.onid,
+      firstName: querys.firstName,
+      lastName: querys.lastName,
+      searchOldVersions: querys.searchOldVersions,
     });
     if (rows.length < 1) {
       return serializePersons(rows, querys);
