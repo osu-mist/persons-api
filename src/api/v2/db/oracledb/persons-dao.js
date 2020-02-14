@@ -5,6 +5,12 @@ import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 import { serializePersons } from '../../serializers/persons-serializer';
 
+/**
+ * Queries data source for raw person data and passes it to the serializer
+ *
+ * @param {object} querys Query parameters from request
+ * @returns {object} Serialized person resource from person-serializer
+ */
 const getPerson = async (querys) => {
   const connection = await getConnection();
   try {
