@@ -13,7 +13,7 @@ const personResourcePath = 'person';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
 const serializePerson = (rawPerson, querys) => {
-  const topLevelSelfLink = paramsLink(personResourceUrl, querys);
+  const topLevelSelfLink = paramsLink(personResourceUrl, { osuId: querys.osuId.join(',') });
   const serializerArgs = {
     identifierField: 'osuId',
     resourceKeys: personResourceKeys,
@@ -29,7 +29,13 @@ const serializePerson = (rawPerson, querys) => {
 };
 
 const serializePersons = (rawPersons, querys) => {
-  const topLevelSelfLink = paramsLink(personResourceUrl, { osuId: querys.osuId.join(',') });
+  const topLevelSelfLink = paramsLink(personResourceUrl, {
+    osuId: querys.osuId.length > 0 ? querys.osuId.join(',') : null,
+    firstName: querys.firstName,
+    lastName: querys.lastName,
+    osuUid: querys.osuUid,
+    onid: querys.onid,
+  });
   const serializerArgs = {
     identifierField: 'osuId',
     resourceKeys: personResourceKeys,
