@@ -10,11 +10,11 @@ const getPerson = async (querys) => {
   try {
     console.log(querys);
     const { rows } = await connection.execute(contrib.getPerson(querys.osuId), {
-      osuUID: querys.osuUID,
+      osuUid: querys.osuUid,
       onid: querys.onid,
-      firstName: querys.firstName,
-      lastName: querys.lastName,
-      searchOldVersions: querys.searchOldVersions,
+      firstName: querys.lastName ? querys.firstName.toUpperCase() : null,
+      lastName: querys.lastName ? querys.lastName.toUpperCase() : null,
+      searchOldVersions: querys.searchOldVersions || 0,
     });
     if (rows.length < 1) {
       return serializePersons(rows, querys);
