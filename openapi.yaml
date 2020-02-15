@@ -18,7 +18,7 @@ produces:
 consumes:
   - application/json
 paths:
-  /persons/{osuID}:
+  /persons/{osuId}:
     get:
       description: Get general person information
       tags:
@@ -31,7 +31,7 @@ paths:
         200:
           description: Successful response
           schema:
-            $ref: '#/definitions/PersonResultObject'
+            $ref: '#/definitions/PersonResult'
         404:
           description: Person not found
           schema:
@@ -53,6 +53,29 @@ definitions:
   PersonType:
     type: string
     example: person
+  PersonResource:
+    type: object
+    properties:
+      id:
+        type: string
+        description: OSU ID of a person
+        pattern: '^\d{9}$'
+      type:
+        $ref: '#/definitions/PersonType'
+      attributes:
+        type: object
+        properties:
+          firstName:
+            type: string
+            description: First name of person
+            example: Alex
+  PersonResult:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/SelfLink'
+      data:
+        $ref: '#/definitions/PersonResource'
   SelfLink:
     properties:
       self:
