@@ -25,6 +25,24 @@ security:
   - Oauth2:
     - full
 paths:
+  /persons:
+    post:
+      description: Post person
+      tags:
+        - persons
+      operationId: getPersons
+      parameters:
+        - $ref: '#/parameters/osuId'
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/PersonPostBody'
+      responses:
+        '202':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PersonResult'
   /persons/{osuId}:
     get:
       description: Get general person information
@@ -80,16 +98,18 @@ definitions:
         pattern: '^\d{9}$'
       type:
         $ref: '#/definitions/PersonType'
+      links:
+        $ref: '#/definitions/SelfLink'
       attributes:
         type: object
         properties:
-          firstName:
+          firstName: &firstName
             type: string
             description: First name of person
-          lastName:
+          lastName: &lastName
             type: string
             description: Last name of person
-          middleName:
+          middleName: &middleName
             type: string
             description: Middle name of person
           displayFirstName:
@@ -107,10 +127,10 @@ definitions:
           email:
             type: string
             description: Primary email address
-          birthDate:
+          birthDate: &birthDay
             type: string
             description: Birthday of person
-          citizen:
+          citizen: &citizen
             type: string
             enum: [FN, N, R, S, C]
             description: |
@@ -120,7 +140,7 @@ definitions:
               - 'R' - Resident Alien
               - 'S' - Substantial Presence Alien
               - 'C' - Citizen
-          sex:
+          sex: &sex
             type: string
             description: |
               Person's sex code
@@ -161,6 +181,26 @@ definitions:
         $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/PersonResource'
+  PersonPostBody:
+    properties:
+      data:
+        type: object
+        properties:
+          type:
+            $ref: '#/definitions/PersonType'
+          attributes:
+            type: object
+            required:
+            - firstName
+            - birthDate
+            - sex
+            properties:
+              firstName: *firstName
+              lastName: *lastName
+              middleName: *middleName
+              birthDay: *birthDay
+              citizen: *citizen
+              sex: *sex
   SelfLink:
     properties:
       self:
