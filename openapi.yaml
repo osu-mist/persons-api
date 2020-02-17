@@ -68,7 +68,77 @@ definitions:
           firstName:
             type: string
             description: First name of person
-            example: Alex
+          lastName:
+            type: string
+            description: Last name of person
+          middleName:
+            type: string
+            description: Middle name of person
+          displayFirstName:
+            type: string
+            description: Preferred first name
+          displayMiddleName:
+            type: string
+            description: Preferred middle name
+          displayLastName:
+            type: string
+            description: Preferred last name
+          onid:
+            type: string
+            description: ONID username
+          pidm:
+            type: string
+            description: PIDM ID
+          email:
+            type: string
+            description: Primary email address
+          birthDate:
+            type: string
+            description: Birthday of person
+          citizen:
+            type: string
+            enum: [FN, N, R, S, C]
+            description: |
+              Person's citizen code
+              - 'FN' - Foreign National
+              - 'N' - Non Resident Alien
+              - 'R' - Resident Alien
+              - 'S' - Substantial Presence Alien
+              - 'C' - Citizen
+          sex:
+            type: string
+            description: |
+              Person's sex code
+              - 'M' - Male
+              - 'F' - Female
+              - 'N' - Non-specified
+          confidential:
+            type: string
+            description: If true, the person has opted in to being required to be listed as confidential
+          currentStudent:
+            type: boolean
+            description: True if person is a current student
+          currentEmployee:
+            type: boolean
+            description: True if person is a current employee
+          employeeStatus:
+            type: boolean
+            enum: ['A', 'B', 'L', 'F', 'P', 'T']
+            description: >
+              The status of the employee:
+              A - Active
+              B - Leave without pay and with benefits
+              L - Leave without pay and without benefits
+              F - Leave with pay and with benefits
+              P - Leave with partial pay and with benefits
+              T - Terminated
+          ssnStatus:
+            type: string
+            enum:
+              - vault
+              - valid
+              - invalid
+            description: SSN status
   PersonResult:
     type: object
     properties:
