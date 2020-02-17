@@ -63,6 +63,33 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+  /persons/{osuId}/image:
+    get:
+      description: Get a person's image
+      tags:
+        - images
+      operationId: getImageById
+      produces:
+        - image/jpeg
+        - application/json
+      parameters:
+        - in: query
+          name: width
+          description: Resizes image to a pixel value for width while keeping original aspect ratio
+          required: false
+          type: integer
+        - $ref: '#/parameters/osuId'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: file
+          headers:
+            Content-type:
+              type: string
+              description: image/jpeg
+        '404':
+          $ref: '#/responses/404'
 parameters:
   osuId:
     name: osuId
