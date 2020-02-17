@@ -32,7 +32,6 @@ paths:
         - persons
       operationId: getPersons
       parameters:
-        - $ref: '#/parameters/osuId'
         - in: body
           name: body
           required: true
@@ -43,6 +42,10 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/PersonResult'
+        '400':
+          $ref: '#/responses/400'
+        '500':
+          $ref: '#/responses/500'
   /persons/{osuId}:
     get:
       description: Get general person information
