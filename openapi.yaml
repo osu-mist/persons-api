@@ -32,14 +32,16 @@ paths:
         - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/authorization'
       responses:
-        200:
+        '200':
           description: Successful response
           schema:
             $ref: '#/definitions/PersonResult'
-        404:
+        '404':
           description: Person not found
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/ErrorResult'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   osuId:
     name: osuId
@@ -53,6 +55,15 @@ parameters:
     type: string
     required: true
     description: '"Bearer [token]" where [token] is your OAuth2 access token'
+responses:
+  '400':
+     description: Bad request
+     schema:
+       $ref: '#/definitions/ErrorResult'
+  '500':
+     description: Internal server error
+     schema:
+       $ref: '#/definitions/ErrorResult'
 definitions:
   PersonType:
     type: string
@@ -156,24 +167,33 @@ definitions:
         type: string
         format: url
         description: Self link of resource
-  ErrorArray:
-    type: array
-    items:
-      $ref: '#/definitions/Error'
-  Error:
+  ErrorObject:
     properties:
       status:
-        type: integer
-        description: HTTP status code.
-      developerMessage:
         type: string
-        description: An error string aimed at developers.
-      userMesage:
+        description: HTTP status code
+        example: '123'
+      title:
         type: string
-        description: An error string aimed at end users.
+        description: A short, user readable summary of the error
+        example: Not Found
       code:
-        type: integer
-        description: Error code.
-      details:
         type: string
-        description: A link to further information about the error.
+        description: An application-specific error code
+        example: '1234'
+      detail:
+        type: string
+        description: A long description of the error that may contain instance-specific details
+      links:
+        properties:
+          about:
+            type: string
+            format: url
+            description: A link to further information about the error
+            example: https://developer.oregonstate.edu/documentation/error-reference#1234
+  ErrorResult:
+    properties:
+      errors:
+        type: array
+        items:
+          $ref: '#/definitions/ErrorObject'
