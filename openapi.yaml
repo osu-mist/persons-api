@@ -104,9 +104,6 @@ definitions:
           onid:
             type: string
             description: ONID username
-          pidm:
-            type: string
-            description: PIDM ID
           email:
             type: string
             description: Primary email address
