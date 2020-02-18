@@ -121,6 +121,88 @@ definitions:
   PersonType:
     type: string
     example: person
+  PersonCommonAttributes:
+    type: object
+    required:
+    - firstName
+    - lastName
+    - birthDate
+    - sex
+    properties:
+      firstName:
+        type: string
+        description: First name of person
+      lastName:
+        type: string
+        description: Last name of person
+      middleName:
+        type: string
+        description: Middle name of person
+      birthDate:
+        type: string
+        description: Birthday of person
+      citizen:
+        type: string
+        enum: [FN, N, R, S, C]
+        description: |
+          Person's citizen code
+          - `FN` - Foreign National
+          - `N` - Non Resident Alien
+          - `R` - Resident Alien
+          - `S` - Substantial Presence Alien
+          - `C` - Citizen
+      sex:
+        type: string
+        description: |
+          Person's sex code
+          - `M` - Male
+          - `F` - Female
+          - `N` - Non-specified
+  PersonAttributes:
+    type: object
+    properties:
+      displayFirstName:
+        type: string
+        description: Preferred first name
+      displayMiddleName:
+        type: string
+        description: Preferred middle name
+      displayLastName:
+        type: string
+        description: Preferred last name
+      onid:
+        type: string
+        description: ONID username
+      email:
+        type: string
+        description: Primary email address
+      isConfidential:
+        type: boolean
+        description: If true, the person has opted in to being required to be listed as confidential
+      isCurrentStudent:
+        type: boolean
+        description: True if person is a current student
+      isCurrentEmployee:
+        type: boolean
+        description: True if person is a current employee
+      employeeStatus:
+        type: string
+        enum: [A, B, L, F, P, T]
+        description: |
+          The status of the employee:
+          `A` - Active
+          `B` - Leave without pay and with benefits
+          `L` - Leave without pay and without benefits
+          `F` - Leave with pay and with benefits
+          `P` - Leave with partial pay and with benefits
+          `T` - Terminated
+      ssnStatus:
+        type: string
+        enum:
+          - vault
+          - valid
+          - invalid
+        description: SSN status
   PersonResource:
     type: object
     properties:
@@ -133,79 +215,9 @@ definitions:
       links:
         $ref: '#/definitions/SelfLink'
       attributes:
-        type: object
-        properties:
-          firstName: &firstName
-            type: string
-            description: First name of person
-          lastName: &lastName
-            type: string
-            description: Last name of person
-          middleName: &middleName
-            type: string
-            description: Middle name of person
-          displayFirstName:
-            type: string
-            description: Preferred first name
-          displayMiddleName:
-            type: string
-            description: Preferred middle name
-          displayLastName:
-            type: string
-            description: Preferred last name
-          onid:
-            type: string
-            description: ONID username
-          email:
-            type: string
-            description: Primary email address
-          birthDate: &birthDay
-            type: string
-            description: Birthday of person
-          citizen: &citizen
-            type: string
-            enum: [FN, N, R, S, C]
-            description: |
-              Person's citizen code
-              - `FN` - Foreign National
-              - `N` - Non Resident Alien
-              - `R` - Resident Alien
-              - `S` - Substantial Presence Alien
-              - `C` - Citizen
-          sex: &sex
-            type: string
-            description: |
-              Person's sex code
-              - `M` - Male
-              - `F` - Female
-              - `N` - Non-specified
-          isConfidential:
-            type: boolean
-            description: If true, the person has opted in to being required to be listed as confidential
-          isCurrentStudent:
-            type: boolean
-            description: True if person is a current student
-          isCurrentEmployee:
-            type: boolean
-            description: True if person is a current employee
-          employeeStatus:
-            type: string
-            enum: [A, B, L, F, P, T]
-            description: |
-              The status of the employee:
-              `A` - Active
-              `B` - Leave without pay and with benefits
-              `L` - Leave without pay and without benefits
-              `F` - Leave with pay and with benefits
-              `P` - Leave with partial pay and with benefits
-              `T` - Terminated
-          ssnStatus:
-            type: string
-            enum:
-              - vault
-              - valid
-              - invalid
-            description: SSN status
+        allOf:
+          - $ref: '#/definitions/PersonCommonAttributes'
+          - $ref: '#/definitions/PersonAttributes'
   PersonResult:
     type: object
     properties:
@@ -221,19 +233,7 @@ definitions:
           type:
             $ref: '#/definitions/PersonType'
           attributes:
-            type: object
-            required:
-            - firstName
-            - lastName
-            - birthDate
-            - sex
-            properties:
-              firstName: *firstName
-              lastName: *lastName
-              middleName: *middleName
-              birthDay: *birthDay
-              citizen: *citizen
-              sex: *sex
+            $ref: '#/definitions/PersonCommonAttributes'
   SelfLink:
     properties:
       self:
