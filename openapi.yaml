@@ -167,18 +167,18 @@ definitions:
             enum: [FN, N, R, S, C]
             description: |
               Person's citizen code
-              - 'FN' - Foreign National
-              - 'N' - Non Resident Alien
-              - 'R' - Resident Alien
-              - 'S' - Substantial Presence Alien
-              - 'C' - Citizen
+              - `FN` - Foreign National
+              - `N` - Non Resident Alien
+              - `R` - Resident Alien
+              - `S` - Substantial Presence Alien
+              - `C` - Citizen
           sex: &sex
             type: string
             description: |
               Person's sex code
-              - 'M' - Male
-              - 'F' - Female
-              - 'N' - Non-specified
+              - `M` - Male
+              - `F` - Female
+              - `N` - Non-specified
           confidential:
             type: string
             description: If true, the person has opted in to being required to be listed as confidential
@@ -191,14 +191,14 @@ definitions:
           employeeStatus:
             type: boolean
             enum: ['A', 'B', 'L', 'F', 'P', 'T']
-            description: >
+            description: |
               The status of the employee:
-              A - Active
-              B - Leave without pay and with benefits
-              L - Leave without pay and without benefits
-              F - Leave with pay and with benefits
-              P - Leave with partial pay and with benefits
-              T - Terminated
+              `A` - Active
+              `B` - Leave without pay and with benefits
+              `L` - Leave without pay and without benefits
+              `F` - Leave with pay and with benefits
+              `P` - Leave with partial pay and with benefits
+              `T` - Terminated
           ssnStatus:
             type: string
             enum:
