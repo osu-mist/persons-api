@@ -179,17 +179,17 @@ definitions:
               - `M` - Male
               - `F` - Female
               - `N` - Non-specified
-          confidential:
-            type: string
+          isConfidential:
+            type: boolean
             description: If true, the person has opted in to being required to be listed as confidential
-          currentStudent:
+          isCurrentStudent:
             type: boolean
             description: True if person is a current student
-          currentEmployee:
+          isCurrentEmployee:
             type: boolean
             description: True if person is a current employee
           employeeStatus:
-            type: boolean
+            type: string
             enum: [A, B, L, F, P, T]
             description: |
               The status of the employee:
