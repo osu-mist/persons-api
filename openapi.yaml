@@ -224,6 +224,7 @@ definitions:
             type: object
             required:
             - firstName
+            - lastName
             - birthDate
             - sex
             properties:
