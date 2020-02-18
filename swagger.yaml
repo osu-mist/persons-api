@@ -796,7 +796,7 @@ definitions:
       fullTimeEquivalency:
         type: number
         format: float
-        description: Full time eqivalency where full time = 1
+        description: Full time equivalency where full time = 1
         example: 0.49
       appointmentPercent:
         type: number
