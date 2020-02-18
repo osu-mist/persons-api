@@ -145,7 +145,7 @@ definitions:
         type: string
         format: date
         description: Birthday of person
-        example: 1970-1-1
+        example: 1970-1-21
       citizen:
         type: string
         enum: [FN, N, R, S, C]
@@ -244,6 +244,84 @@ definitions:
             $ref: '#/definitions/PersonType'
           attributes:
             $ref: '#/definitions/PersonCommonAttributes'
+  JobPutAttributes:
+    type: object
+    properties:
+      positionNumber:
+        type: string
+        description: Identifies a position
+        example: C12345
+      suffix:
+        type: string
+        description: |
+          Used to uniquely identify a job record for persons who have
+          multiple jobs that share the same position number.
+          For updating existing jobs, this field is required.
+      effectiveDate:
+        type: string
+        format: date
+        description: The date this job assignment is effective.
+        example: 1970-1-21
+      beginDate:
+        type: string
+        format: date
+        description: Begin date of job.
+        example: 1970-1-21
+      endDate:
+        type: string
+        format: date
+        description: End date of job.
+        example: 1971-2-15
+      accruesLeaveInd:
+        type: boolean
+        description: If true, the job accrues leave time.
+      contractBeginDate:
+        type: string
+        format: date
+        description: The date the contract begins.
+        example: 1970-1-21
+      contractEndDate:
+        type: string
+        format: date
+        description: The date the contract ends.
+        example: 1971-2-21
+      contractType:
+        type: string
+        enum: [P, S, O]
+        description: |
+          Contract type code/Id.
+          `P` - Primary
+          `S` - Secondary
+          `O` - Overload
+      locationId:
+        type: string
+        description: Location Id of where job will be performed.
+      status:
+        type: string
+        description: Job status.
+        enum:
+          - Active
+          - Leave without pay but with benefits
+          - Leave without pay and benefits
+          - Leave with full pay and benefits
+          - Leave with partial pay and benefits
+          - Terminated
+      description:
+        type: string
+        description: Description of job.
+      personnelChangeDate:
+        type: string
+        format: date
+        description: Date the last change was made to the job record.
+        example: 1970-1-1
+      changeReasonCode:
+        type: string
+        description: The reason the last change was made to the job record.
+      fullTimeEquivalency:
+        type: number
+        format: float
+        description: Full time equivalency where full time = 1
+        example: 0.25
   SelfLink:
     properties:
       self:
