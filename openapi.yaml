@@ -190,7 +190,7 @@ definitions:
             description: True if person is a current employee
           employeeStatus:
             type: boolean
-            enum: ['A', 'B', 'L', 'F', 'P', 'T']
+            enum: [A, B, L, F, P, T]
             description: |
               The status of the employee:
               `A` - Active
