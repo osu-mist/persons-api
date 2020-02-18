@@ -132,15 +132,20 @@ definitions:
       firstName:
         type: string
         description: First name of person
+        example: John
       lastName:
         type: string
         description: Last name of person
+        example: Smith
       middleName:
         type: string
         description: Middle name of person
+        example: Adam
       birthDate:
         type: string
+        format: date
         description: Birthday of person
+        example: 1970-1-1
       citizen:
         type: string
         enum: [FN, N, R, S, C]
@@ -164,18 +169,23 @@ definitions:
       displayFirstName:
         type: string
         description: Preferred first name
+        example: John
       displayMiddleName:
         type: string
         description: Preferred middle name
+        example: Adam
       displayLastName:
         type: string
         description: Preferred last name
+        example: Smith
       onid:
         type: string
         description: ONID username
+        example: smithj
       email:
         type: string
         description: Primary email address
+        example: john.smith@example.com
       isConfidential:
         type: boolean
         description: If true, the person has opted in to being required to be listed as confidential
