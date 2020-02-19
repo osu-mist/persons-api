@@ -63,6 +63,19 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+  /persons/{osuId}/jobs:
+    get:
+      description: Get jobs associated with a person
+      tags:
+        - jobs
+      operationId: getJobs
+      parameters:
+        - $ref: '#/parameters/osuId'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/JobResult'
   /persons/{osuId}/image:
     get:
       description: Get a person's image
@@ -121,6 +134,9 @@ definitions:
   PersonType:
     type: string
     example: person
+  JobType:
+    type: string
+    example: job
   PersonCommonAttributes:
     type: object
     required:
@@ -244,7 +260,7 @@ definitions:
             $ref: '#/definitions/PersonType'
           attributes:
             $ref: '#/definitions/PersonCommonAttributes'
-  JobPutAttributes:
+  JobAttributes:
     type: object
     properties:
       positionNumber:
@@ -491,6 +507,28 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
+  JobResource:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Uniquely identifies a job record for the given person.
+        example: C12345-00
+      type:
+        $ref: '#/definitions/JobType'
+      links:
+        $ref: '#/definitions/SelfLink'
+      attributes:
+        $ref: '#/definitions/JobAttributes'
+  JobResult:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/SelfLink'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/JobResource'
   SelfLink:
     properties:
       self:
