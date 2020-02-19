@@ -84,7 +84,7 @@ paths:
       description: Update a job record for a person
       tags:
         - jobs
-      operationId: putJob
+      operationId: postJob
       parameters:
         - name: body
           in: body
@@ -93,6 +93,50 @@ paths:
             $ref: '#/definitions/JobPostBody'
         - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/employmentType'
+      responses:
+        '202':
+          description: Job record accepted.
+          schema:
+            $ref: '#/definitions/JobResult'
+        '400':
+          $ref: '#/responses/400'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+  /person/{osuId}/jobs/{jobId}:
+    get:
+      description: Get a specific job associated with a person
+      tags:
+        - jobs
+      operationId: getJob
+      parameters:
+        - $ref: '#/parameters/osuId'
+        - $ref: '#/parameters/jobId'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/JobResult'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    put:
+      description: Update a job record for a person
+      tags: 
+        - jobs
+      operationId: putJob
+      parameters:
+        - name: body
+          in: body
+          description: Result object for a job
+          required: true
+          schema:
+            $ref: '#/definitions/JobPutBody'
+        - $ref: '#/parameters/employmentType'
+        - $ref: '#/parameters/osuId'
+        - $ref: '#/parameters/jobId'
       responses:
         '202':
           description: Job record accepted.
@@ -137,6 +181,12 @@ parameters:
     in: path
     required: true
     description: OSU ID of a person
+    type: string
+  jobId:
+    name: jobId
+    in: path
+    description: ID of the specific job to be updated
+    required: true
     type: string
   employmentType:
     name: employmentType
@@ -295,19 +345,19 @@ definitions:
             $ref: '#/definitions/PersonType'
           attributes:
             $ref: '#/definitions/PersonCommonAttributes'
-  JobAttributes:
+  JobPostAttributes:
     type: object
+    required:
+      - positionNumber
+      - beginDate
+      - supervisorOsuId
+      - supervisorPositionNumber
+      - effectiveDate
     properties:
       positionNumber:
         type: string
         description: Identifies a position
         example: C12345
-      suffix:
-        type: string
-        description: |
-          Used to uniquely identify a job record for persons who have
-          multiple jobs that share the same position number.
-          For updating existing jobs, this field is required.
       effectiveDate:
         type: string
         format: date
@@ -542,6 +592,20 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
+  JobPutAttributes:
+    type: object
+    required: [suffix]
+    properties:
+      suffix:
+        type: string
+        description: |
+          Used to uniquely identify a job record for persons who have
+          multiple jobs that share the same position number.
+          For updating existing jobs, this field is required.
+  JobAttributes:
+    allOf:
+      - $ref: '#/definitions/JobPutAttributes'
+      - $ref: '#/definitions/JobPostAttributes'
   JobResource:
     type: object
     properties:
@@ -572,6 +636,7 @@ definitions:
       data:
         $ref: '#/definitions/JobResource'
   JobPostBody:
+    type: object
     properties:
       data:
         type: object
@@ -579,13 +644,19 @@ definitions:
           type:
             $ref: '#/definitions/JobType'
           attributes:
-            required:
-              - positionNumber
-              - beginDate
-              - supervisorOsuId
-              - supervisorPositionNumber
-              - effectiveDate
-            $ref: '#/definitions/JobAttributes'
+            $ref: '#/definitions/JobPostAttributes'
+  JobPutBody:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          type:
+            $ref: '#/definitions/JobType'
+          attributes:
+            allOf:
+              - $ref: '#/definitions/JobPutAttributes'
+              - $ref: '#/definitions/JobPostAttributes'
   SelfLink:
     properties:
       self:
