@@ -426,6 +426,71 @@ definitions:
         type: string
         description: Default earnings code attached to the job and used on timesheet.
         example: REG
+      earnCodeHours:
+        type: number
+        format: float
+        description: Hours/units defaulted on timesheets for earnCode.
+        example: 173.33
+      earnCodeShift:
+        type: string
+        description: Shift code used as a default on timesheet for earnCode.
+      useTemporarySsn:
+        type: boolean
+        description: When creating or updating a job, this field indicates the employee needs a temporary social security number assigned.
+      employeeInformationReleaseInd:
+        type: boolean
+        description: Indicates the employee has consented to having their employment information shared.
+      salaryInformationReleaseInd:
+        type: boolean
+        description: Indicates the employee accepted or denied to have their salary information shared.
+      salaryInformationReleaseDate:
+        type: string
+        format: date
+        description: The date that the employee accepted or denied to have their salary information shared.
+      retirementCode:
+        type: string
+        description: Retirement code
+      i9FormCode:
+        type: string
+        description: |
+          Code to indicate the status of the employee's I9 form.
+          `R` - Received
+          `N` - Not Received
+          `T` - Temporary
+          `E` - Exempt
+      laborDistribution:
+        type: array
+        items:
+          required:
+            - effectiveDate
+            - accountIndexCode
+            - distributionPercent
+          properties:
+            effectiveDate:
+              type: string
+              format: date
+              description: Date this labor distribution becomes effective.
+              example: 1970-1-1
+            accountIndexCode:
+              type: string
+              example: ABC123
+            fundCode:
+              type: string
+            organizationCode:
+              type: string
+            accountCode:
+              type: string
+            programCode:
+              type: string
+            activityCode:
+              type: string
+            locationCode:
+              type: string
+            distributionPercent:
+              type: number
+              format: float
+              description: Percentage of labor applied to this fund.
+              example: 49.9
   SelfLink:
     properties:
       self:
