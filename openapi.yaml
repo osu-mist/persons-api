@@ -75,7 +75,31 @@ paths:
         '200':
           description: Successful response
           schema:
+            $ref: '#/definitions/JobSetResult'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
+    post:
+      description: Update a job record for a person
+      tags:
+        - jobs
+      operationId: putJob
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/JobPostBody'
+        - $ref: '#/parameters/osuId'
+        - $ref: '#/parameters/employmentType'
+      responses:
+        '202':
+          description: Job record accepted.
+          schema:
             $ref: '#/definitions/JobResult'
+        '400':
+          $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
         '500':
@@ -114,6 +138,13 @@ parameters:
     required: true
     description: OSU ID of a person
     type: string
+  employmentType:
+    name: employmentType
+    in: query
+    description: The type of employment that the job record should be processed as.
+    required: true
+    type: string
+    enum: [student, graduate]
 responses:
   '400':
     description: Bad request
@@ -524,7 +555,7 @@ definitions:
         $ref: '#/definitions/SelfLink'
       attributes:
         $ref: '#/definitions/JobAttributes'
-  JobResult:
+  JobSetResult:
     type: object
     properties:
       links:
@@ -533,6 +564,28 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/JobResource'
+  JobResult:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/SelfLink'
+      data:
+        $ref: '#/definitions/JobResource'
+  JobPostBody:
+    properties:
+      data:
+        type: object
+        properties:
+          type:
+            $ref: '#/definitions/JobType'
+          attributes:
+            required:
+              - positionNumber
+              - beginDate
+              - supervisorOsuId
+              - supervisorPositionNumber
+              - effectiveDate
+            $ref: '#/definitions/JobAttributes'
   SelfLink:
     properties:
       self:
