@@ -130,7 +130,7 @@ paths:
       parameters:
         - name: body
           in: body
-          description: Result object for a job
+          description: Put body for a job
           required: true
           schema:
             $ref: '#/definitions/JobPutBody'
