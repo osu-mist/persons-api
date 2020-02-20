@@ -240,7 +240,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/AddressPostBody'
-        - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/osuId'
       responses:
         '200':
@@ -413,7 +412,7 @@ definitions:
   PhoneType:
     type: string
     example: phones
-  PersonCommonAttributes:
+  PersonPostAttributes:
     type: object
     required:
     - firstName
@@ -518,7 +517,7 @@ definitions:
         $ref: '#/definitions/SelfLink'
       attributes:
         allOf:
-          - $ref: '#/definitions/PersonCommonAttributes'
+          - $ref: '#/definitions/PersonPostAttributes'
           - $ref: '#/definitions/PersonAttributes'
   PersonResult:
     type: object
@@ -535,7 +534,7 @@ definitions:
           type:
             $ref: '#/definitions/PersonType'
           attributes:
-            $ref: '#/definitions/PersonCommonAttributes'
+            $ref: '#/definitions/PersonPostAttributes'
   JobPostAttributes:
     type: object
     required:
