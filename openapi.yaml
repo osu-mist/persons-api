@@ -403,6 +403,9 @@ definitions:
   JobType:
     type: string
     example: job
+  SsnType:
+    type: string
+    example: ssn
   MealPlanType:
     type: string
     example: meal-plans
@@ -847,6 +850,25 @@ definitions:
             allOf:
               - $ref: '#/definitions/JobPutAttributes'
               - $ref: '#/definitions/JobPostAttributes'
+  SsnPostAttributes:
+    type: object
+    required:
+      - ssn
+    properties:
+      ssn:
+        type: string
+        description: 9 digits SSN
+        example: '123456789'
+  SsnAttributes:
+    type: object
+    properties:
+      ssnStatus:
+        type: string
+        description: SSN status
+        enum:
+          - vault
+          - valid
+          - invalid
   MealPlanAttributes:
     type: object
     properties:
