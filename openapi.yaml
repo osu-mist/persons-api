@@ -266,6 +266,9 @@ definitions:
   MealPlanType:
     type: string
     example: meal-plans
+  AddressType:
+    type: string
+    example: addresses
   PersonCommonAttributes:
     type: object
     required:
@@ -750,6 +753,64 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/MealPlanResource'
+  AddressPostAttributes:
+    type: object
+    properties:
+      adressType:
+        type: string
+        description: Code for the type of address record.
+        example: CM
+      addressLine1:
+        type: string
+        example: '123 Main Street'
+      addressLine2:
+        type: string
+        example: 'Apartment 4'
+      addressLine3:
+        type: string
+      addressLine4:
+        type: string
+      houseNumber:
+        type: string
+        example: '620'
+      city:
+        type: string
+        example: Corvallis
+      stateCode:
+        type: string
+        description: State code/abbreviation. This could also represent a province.
+        example: OR
+      postalCode:
+        type: string
+        example: '97331'
+      countyCode:
+        type: string
+        example: '41003'
+      nationCode:
+        type: string
+  AddressAttributes:
+    type: object
+    properties:
+      addressTypeDescription:
+        type: string
+        description: Short description of the address type.
+        example: Current Mailing
+      state:
+        type: string
+        description: Human readable state code. This could also represent a province.
+        example: Oregon
+      county:
+        type: string
+        description: Human readable county.
+        example: Benton
+      nation:
+        type: string
+        description: Human readable nation/country name.
+        example: Albania
+      lastModified:
+        type: string
+        format: date
+        description: The date this address record was last modified.
   SelfLink:
     properties:
       self:
