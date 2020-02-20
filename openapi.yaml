@@ -905,6 +905,57 @@ definitions:
         $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/AddressResource'
+  PhonePostAttributes:
+    type: object
+    properties:
+      areaCode:
+        type: string
+        description: Area code for the phone number.
+        example: '541'
+        pattern: '^[0-9]{1,3}$'
+      phoneNumber:
+        type: string
+        description: Extension for the phone number. Can be returned in different formats.
+        example: '4443333'
+        pattern: '^[0-9]{1,7}$'
+      phoneExtension:
+        type: string
+        description: Extension for the phone number. Can be returned in different formats.
+        example: '20'
+        pattern: '^[0-9]{1,4}$'
+      primaryIndicator:
+        type: boolean
+        description: Indicates if this phone number is marked as the primary number.
+        example: true
+      phoneType:
+        type: string
+        description: Enum marking which type of address this phone number matches with.
+        example: CM
+        enum: [REPLACEME]
+      addressType:
+        type: string
+        description: Enum marking which type of address this phone number matches with.
+        example: CM
+        enum: [REPLACEME]
+  PhoneAttributes:
+    type: object
+    properties:
+      fullPhoneNumber:
+        type: string
+        description: Combination of area code and phone number.
+        example: '5414443333'
+      phoneTypeDescription:
+        type: string
+        description: Describes the phone type enum.
+        example: Current
+      addressTypeDescription:
+        type: string
+        description: Describes the address type enum.
+        example: Current Mailing
+      lastModified:
+        type: string
+        description: The date of the most recent change made to this record.
+        example: '2015-10-19'
   SelfLink:
     properties:
       self:
