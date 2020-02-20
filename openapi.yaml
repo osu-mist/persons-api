@@ -234,6 +234,12 @@ paths:
         - addresses
       operationId: postAddresses
       parameters:
+        - name: body
+          in: body
+          description: Post body for new address
+          required: true
+          schema:
+            $ref: '#/definitions/AddressPostBody'
         - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/osuId'
       responses:
@@ -893,8 +899,11 @@ definitions:
           $ref: '#/definitions/MealPlanResource'
   AddressPostAttributes:
     type: object
+    required:
+      - addressType
+      - city
     properties:
-      adressType:
+      addressType:
         type: string
         description: Code for the type of address record.
         example: CM
@@ -979,6 +988,16 @@ definitions:
         $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/AddressResource'
+  AddressPostBody:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          type:
+            $ref: '#/definitions/AddressType'
+          attributes:
+            $ref: '#/definitions/AddressPostAttributes'
   PhonePostAttributes:
     type: object
     required:
