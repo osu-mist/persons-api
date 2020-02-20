@@ -266,6 +266,30 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+    post:
+      description: Create phone number for a person
+      tags:
+        - phones
+      operationId: createPhones
+      parameters:
+        - name: body
+          in: body
+          description: Post body for the new phone
+          required: true
+          schema:
+            $ref: '#/definitions/PhonePostBody'
+        - $ref: '#/parameters/osuId'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PhoneResult'
+        '400':
+          $ref: '#/responses/400'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   osuId:
     name: osuId
@@ -957,6 +981,12 @@ definitions:
         $ref: '#/definitions/AddressResource'
   PhonePostAttributes:
     type: object
+    required:
+      - addressType
+      - phoneType
+      - areaCode
+      - phoneNumber
+      - primaryIndicator
     properties:
       areaCode:
         type: string
@@ -1036,6 +1066,16 @@ definitions:
         $ref: '#/definitions/SelfLink'
       data:
         $ref: '#/definitions/PhoneResource'
+  PhonePostBody:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          type:
+            $ref: '#/definitions/PhoneType'
+          attributes:
+            $ref: '#/definitions/PhonePostAttributes'
   SelfLink:
     properties:
       self:
