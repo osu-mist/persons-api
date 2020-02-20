@@ -1001,6 +1001,22 @@ definitions:
         allOf:
           - $ref: '#/definitions/PhonePostAttributes'
           - $ref: '#/definitions/PhoneAttributes'
+  PhoneSetResult:
+    type: object
+    properties:
+      link:
+        $ref: '#/definitions/SelfLink'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/PhoneResource'
+  PhoneResult:
+    type: object
+    properties:
+      link:
+        $ref: '#/definitions/SelfLink'
+      data:
+        $ref: '#/definitions/PhoneResource'
   SelfLink:
     properties:
       self:
