@@ -1244,7 +1244,7 @@ definitions:
       developerMessage:
         type: string
         description: An error string aimed at developers.
-      userMesage:
+      userMessage:
         type: string
         description: An error string aimed at end users.
       code:
