@@ -869,6 +869,26 @@ definitions:
           - vault
           - valid
           - invalid
+  SsnResource:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 9 digits SSN
+        example: '123456789'
+      type:
+        $ref: '#/definitions/SsnType'
+      links:
+        $ref: '#/definitions/SelfLink'
+      attributes:
+          $ref: '#/definitions/SsnAttributes'
+  SsnResult:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/SelfLink'
+      data:
+        $ref: '#/definitions/SsnResource'
   MealPlanAttributes:
     type: object
     properties:
