@@ -210,6 +210,24 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+  /persons/{osuId}/address:
+    get:
+      description: Get addresses for a person
+      tags:
+        - addresses
+      operationId: getAddresses
+      parameters:
+        - $ref: '#/parameters/osuId'
+        - $ref: '#/parameters/addressType'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddressSetResult'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   osuId:
     name: osuId
@@ -236,6 +254,33 @@ parameters:
     required: true
     type: string
     enum: [student, graduate]
+  addressType:
+    name: addressType
+    in: query
+    type: string
+    required: false
+    enum:
+      - RN
+      - MG
+      - VO
+      - RE
+      - RB
+      - VP
+      - VF
+      - RK
+      - CM
+      - EF
+      - RH
+      - EO
+      - PA
+      - MP
+    description: |
+      Filter by address type. Common address types and their description:
+      - `CM` - Current Mailing
+      - `PA` - Student Alternate Contact
+      - `DM` - Department (US Mail)
+      - `RK` - Financial Aid Address
+      - `RH` - Residence Hall
 responses:
   '400':
     description: Bad request
