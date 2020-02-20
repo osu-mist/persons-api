@@ -247,6 +247,25 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+  /persons/{osuId}/phones:
+    get:
+      description: Get phone numbers for a person
+      tags:
+        - phones
+      operationId: getPhones
+      parameters:
+        - $ref: '#/parameters/addressType'
+        - $ref: '#/parameters/phoneType'
+        - $ref: '#/parameters/osuId'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/PhoneSetResult'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   osuId:
     name: osuId
