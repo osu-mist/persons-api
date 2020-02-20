@@ -278,21 +278,23 @@ parameters:
     in: query
     type: string
     required: false
-    enum:
-      - RN
-      - MG
-      - VO
-      - RE
-      - RB
-      - VP
-      - VF
-      - RK
-      - CM
-      - EF
-      - RH
-      - EO
+    enum: &addressTypeEnums
       - PA
-      - MP
+      - RN
+      - RB
+      - RE
+      - RK
+      - VO
+      - VP
+      - XX
+      - CM
+      - DM
+      - EO
+      - RH
+      - PR
+      - MA
+      - SV
+      - JA
     description: |
       Filter by address type. Common address types and their description:
       - `CM` - Current Mailing
@@ -300,6 +302,32 @@ parameters:
       - `DM` - Department (US Mail)
       - `RK` - Financial Aid Address
       - `RH` - Residence Hall
+  phoneType:
+    name: phoneType
+    in: query
+    type: string
+    required: false
+    enum: &phoneTypeEnums
+      - PA
+      - RN
+      - RB
+      - MG
+      - RE
+      - RK
+      - VO
+      - VP
+      - VF
+      - CM
+      - EO
+      - RH
+      - EF
+      - MP
+    description: |
+      Filter by phone type. Common phone types and their descriptions:
+      - `CM` - Current
+      - `PA` - Student Alternate Contact
+      - `RK` - Financial Aid Address
+      - `MP` - Mobile Phone
 responses:
   '400':
     description: Bad request
