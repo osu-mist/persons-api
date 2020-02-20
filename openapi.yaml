@@ -361,6 +361,9 @@ definitions:
   AddressType:
     type: string
     example: addresses
+  PhoneType:
+    type: string
+    example: phones
   PersonCommonAttributes:
     type: object
     required:
@@ -984,6 +987,20 @@ definitions:
         type: string
         description: The date of the most recent change made to this record.
         example: '2015-10-19'
+  PhoneResource:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Globally unique ID for the phone
+      type:
+        $ref: '#/definitions/PhoneType'
+      links:
+        $ref: '#/definitions/SelfLink'
+      attributes:
+        allOf:
+          - $ref: '#/definitions/PhonePostAttributes'
+          - $ref: '#/definitions/PhoneAttributes'
   SelfLink:
     properties:
       self:
