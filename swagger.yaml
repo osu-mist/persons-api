@@ -485,20 +485,22 @@ parameters:
     required: false
     type: string
     enum: &ADDRESSTYPEENUM
-      - RN
-      - MG
-      - VO
-      - RE
-      - RB
-      - VP
-      - VF
-      - RK
-      - CM
-      - EF
-      - RH
-      - EO
       - PA
-      - MP
+      - RN
+      - RB
+      - RE
+      - RK
+      - VO
+      - VP
+      - XX
+      - CM
+      - DM
+      - EO
+      - RH
+      - PR
+      - MA
+      - SV
+      - JA
   phoneType:
     name: phoneType
     in: query
