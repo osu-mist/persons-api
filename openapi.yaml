@@ -959,12 +959,12 @@ definitions:
         type: string
         description: Enum marking which type of address this phone number matches with.
         example: CM
-        enum: [REPLACEME]
+        enum: *phoneTypeEnums
       addressType:
         type: string
         description: Enum marking which type of address this phone number matches with.
         example: CM
-        enum: [REPLACEME]
+        enum: *addressTypeEnums
   PhoneAttributes:
     type: object
     properties:
