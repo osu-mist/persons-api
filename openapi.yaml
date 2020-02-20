@@ -228,6 +228,25 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+    post:
+      description: Create address for a person
+      tags:
+        - addresses
+      operationId: postAddresses
+      parameters:
+        - $ref: '#/parameters/addressType'
+        - $ref: '#/parameters/osuId'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddressResult'
+        '400':
+          $ref: '#/responses/400'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   osuId:
     name: osuId
