@@ -476,7 +476,7 @@ parameters:
     name: addressType
     in: query
     description: |
-      Filter by phone type. Common phone types and their descriptions:
+      Filter by address type. Common address types and their descriptions:
       - 'CM' - Current Mailing
       - 'PA' - Student Alternate Contact
       - 'DM' - Department (US Mail)
