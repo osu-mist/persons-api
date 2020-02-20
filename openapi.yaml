@@ -811,6 +811,36 @@ definitions:
         type: string
         format: date
         description: The date this address record was last modified.
+  AddressResource:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Globally unique ID for the address
+      type:
+        $ref: '#/definitions/AddressType'
+      links:
+        $ref: '#/definitions/SelfLink'
+      attributes:
+        allOf:
+          - $ref: '#/definitions/AddressPostAttributes'
+          - $ref: '#/definitions/AddressAttributes'
+  AddressSetResult:
+    type: object
+    properties:
+      links:  
+        $ref: '#/definitions/SelfLink'
+      data:
+        type: array
+        items:  
+          $ref: '#/definitions/AddressResource'
+  AddressResult:
+    type: object
+    properties:
+      links:  
+        $ref: '#/definitions/SelfLink'
+      data:
+        $ref: '#/definitions/AddressResource'
   SelfLink:
     properties:
       self:
