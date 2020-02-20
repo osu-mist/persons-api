@@ -562,7 +562,7 @@ definitions:
             type: string
             enum: [FN, N, R, S, C]
             description: |
-              Person's citzen code
+              Person's citizen code
               - 'FN' - Foreign National
               - 'N' - Non Resident Alien
               - 'R' - Resident Alien
