@@ -70,6 +70,7 @@ paths:
         - jobs
       operationId: getJobs
       parameters:
+        - $ref: '#/parameters/osuId'
         - name: positionNumber
           in: query
           type: string
@@ -81,7 +82,6 @@ paths:
           description: |
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
-        - $ref: '#/parameters/osuId'
       responses:
         '200':
           description: Successful response
@@ -194,12 +194,12 @@ paths:
         - image/jpeg
         - application/json
       parameters:
+        - $ref: '#/parameters/osuId'
         - in: query
           name: width
           description: Resizes image to a pixel value for width while keeping original aspect ratio
           required: false
           type: integer
-        - $ref: '#/parameters/osuId'
       responses:
         '200':
           description: Successful response
@@ -218,12 +218,12 @@ paths:
         - meal-plans
       operationId: getMealPlans
       parameters:
+        - $ref: '#/parameters/osuId'
         - name: mealPlan
           in: query
           type: string
           required: false
           description: Filter results by meal plan name.
-        - $ref: '#/parameters/osuId'
       responses:
         '200':
           description: Successful response
