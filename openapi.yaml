@@ -259,6 +259,36 @@ paths:
       operationId: getAddresses
       parameters:
         - $ref: '#/parameters/osuId'
+        - name: city
+          in: query
+          type: string
+          required: false
+          description: Filter results by city.
+        - name: county
+          in: query
+          type: string
+          required: false
+          description: Filter results by county.
+        - name: state
+          in: query
+          type: string
+          required: false
+          description: Filter results by state.
+        - name: stateCode
+          in: query
+          type: string
+          required: false
+          description: Filter results by state code.
+        - name: nation
+          in: query
+          type: string
+          required: false
+          description: Filter results by nation.
+        - name: nationCode
+          in: query
+          type: string
+          required: false
+          description: Filter results by nation code.
         - $ref: '#/parameters/addressType'
       responses:
         '200':
