@@ -218,6 +218,11 @@ paths:
         - meal-plans
       operationId: getMealPlans
       parameters:
+        - name: mealPlan
+          in: query
+          type: string
+          required: false
+          description: Filter results by meal plan name.
         - $ref: '#/parameters/osuId'
       responses:
         '200':
