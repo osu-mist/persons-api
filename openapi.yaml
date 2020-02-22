@@ -371,6 +371,23 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+  /persons/{osuId}/emails:
+    get:
+      description: Get emails for a person
+      tags:
+        - emails
+      operationId: getEmails
+      parameters:
+        - $ref: '#/parameters/osuId'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/EmailSetResult'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   osuId:
     name: osuId
@@ -491,6 +508,9 @@ definitions:
   PhoneType:
     type: string
     example: phones
+  EmailType:
+    type: string
+    example: emails
   PersonPostAttributes:
     type: object
     required:
