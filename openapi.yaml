@@ -115,7 +115,7 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
-  /person/{osuId}/jobs/{jobId}:
+  /persons/{osuId}/jobs/{jobId}:
     get:
       description: Get a specific job associated with a person
       tags:
