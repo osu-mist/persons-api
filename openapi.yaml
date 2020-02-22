@@ -330,9 +330,14 @@ paths:
         - phones
       operationId: getPhones
       parameters:
+        - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/phoneType'
-        - $ref: '#/parameters/osuId'
+        - name: primary
+          in: query
+          type: string
+          required: false
+          description: Filter on primary or non-primary phone numbers
       responses:
         '200':
           description: Successful response
