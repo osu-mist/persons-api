@@ -1222,6 +1222,64 @@ definitions:
             $ref: '#/definitions/PhoneType'
           attributes:
             $ref: '#/definitions/PhonePostAttributes'
+  EmailAttributes:
+    type: object
+    properties:
+      emailType:
+        type: string
+        enum:
+          - ONID
+          - STU
+          - VEND
+          - VWEB
+          - EMPL
+          - VPAY
+          - EMER
+        description: |
+          Type of email
+          - `STU` - Non-directory Student
+          - `ONID` - Student
+          - `VEND` - Vendor
+          - `VWEB` - Vendor
+          - `EMPL` - Employee
+          - `VPAY` - Vendor Pay
+          - `EMER` - Emergency Contact Persons Email for Student
+      emailAddress:
+        type: string
+        description: Email address for a person
+        example: john.smith@example.com
+      comment:
+        type: string
+        description: Comment associated with this email
+      preferredInd:
+        type: boolean
+        description: Indicator for a preferred email
+      lastActivityDate:
+        type: string
+        format: date
+        description: Date of last activity for this email
+        example: '1970-1-1'
+  EmailResource:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique ID for an email address
+      type:
+        $ref: '#/definitions/EmailType'
+      links:
+        $ref: '#/definitions/SelfLink'
+      attributes:
+        $ref: '#/definitions/EmailAttributes'
+  EmailSetResult:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/SelfLink'
+      data: 
+        type: array
+        items:
+          $ref: '#/definitions/EmailResource'
   SelfLink:
     properties:
       self:
