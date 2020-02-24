@@ -379,6 +379,27 @@ paths:
       operationId: getEmails
       parameters:
         - $ref: '#/parameters/osuId'
+        - name: emailType
+          in: query
+          type: string
+          required: false
+          enum: &emailTypeEnums
+            - ONID
+            - STU
+            - VEND
+            - VWEB
+            - EMPL
+            - VPAY
+            - EMER
+          description: |
+            Type of email
+            - `STU` - Non-directory Student
+            - `ONID` - Student
+            - `VEND` - Vendor
+            - `VWEB` - Vendor
+            - `EMPL` - Employee
+            - `VPAY` - Vendor Pay
+            - `EMER` - Emergency Contact Persons Email for Student
       responses:
         '200':
           description: Successful response
@@ -1247,14 +1268,7 @@ definitions:
     properties:
       emailType:
         type: string
-        enum:
-          - ONID
-          - STU
-          - VEND
-          - VWEB
-          - EMPL
-          - VPAY
-          - EMER
+        enum: *emailTypeEnums
         description: |
           Type of email
           - `STU` - Non-directory Student
