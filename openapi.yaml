@@ -409,6 +409,29 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
+    post:
+      description: Create an email address for a person
+      tags:
+        - emails
+      operationId: createEmails
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EmailPostBody'
+        - $ref: '#/parameters/osuId'
+      responses:
+        '202':
+          description: Email successfully created
+          schema:
+            $ref: '#/definitions/EmailResult'
+        '400':
+          $ref: '#/responses/400'
+        '404':
+          $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
 parameters:
   osuId:
     name: osuId
@@ -1263,8 +1286,11 @@ definitions:
             $ref: '#/definitions/PhoneType'
           attributes:
             $ref: '#/definitions/PhonePostAttributes'
-  EmailAttributes:
+  EmailPostAttributes:
     type: object
+    required:
+      - emailType
+      - emailAddress
     properties:
       emailType:
         type: string
@@ -1288,6 +1314,9 @@ definitions:
       preferredInd:
         type: boolean
         description: Indicator for a preferred email
+  EmailAttributes:
+    type: object
+    properties:
       lastActivityDate:
         type: string
         format: date
@@ -1304,7 +1333,16 @@ definitions:
       links:
         $ref: '#/definitions/SelfLink'
       attributes:
-        $ref: '#/definitions/EmailAttributes'
+        allOf:
+          - $ref: '#/definitions/EmailPostAttributes'
+          - $ref: '#/definitions/EmailAttributes'
+  EmailResult:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/SelfLink'
+      data: 
+        $ref: '#/definitions/EmailResource'
   EmailSetResult:
     type: object
     properties:
@@ -1314,6 +1352,16 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EmailResource'
+  EmailPostBody:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          type:
+            $ref: '#/definitions/EmailType'
+          attributes:
+            $ref: '#/definitions/EmailPostAttributes'
   SelfLink:
     properties:
       self:
