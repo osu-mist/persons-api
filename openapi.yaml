@@ -427,27 +427,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/EmailSetResult'
-        '404':
-          $ref: '#/responses/404'
-        '500':
-          $ref: '#/responses/500'
-    post:
-      description: Create an email address for a person
-      tags:
-        - emails
-      operationId: createEmails
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/EmailPostBody'
-        - $ref: '#/parameters/osuId'
-      responses:
-        '202':
-          description: Email successfully created
-          schema:
-            $ref: '#/definitions/EmailResult'
         '400':
           $ref: '#/responses/400'
         '404':
