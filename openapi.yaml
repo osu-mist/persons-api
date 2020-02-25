@@ -44,6 +44,8 @@ paths:
             $ref: '#/definitions/PersonResult'
         '400':
           $ref: '#/responses/400'
+        '409':
+          $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
   /persons/{osuId}:
@@ -113,6 +115,8 @@ paths:
           $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
+        '409':
+          $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
   /persons/{osuId}/jobs/{jobId}:
@@ -157,6 +161,8 @@ paths:
           $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
+        '409':
+          $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
   /persons/{osuId}/ssn:
@@ -182,6 +188,8 @@ paths:
           $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
+        '409':
+          $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
   /persons/{osuId}/image:
@@ -209,8 +217,12 @@ paths:
             Content-type:
               type: string
               description: image/jpeg
+        '400':
+          $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
+        '500':
+          $ref: '#/responses/500'
   /persons/{osuId}/meal-plans:
     get:
       description: Get meal plans for a person
@@ -229,6 +241,8 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/MealPlanSetResult'
+        '400':
+          $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
         '500':
@@ -295,6 +309,8 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/AddressSetResult'
+        '400':
+          $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
         '500':
@@ -321,6 +337,8 @@ paths:
           $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
+        '409':
+          $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
   /persons/{osuId}/phones:
@@ -343,6 +361,8 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/PhoneSetResult'
+        '400':
+          $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
         '500':
@@ -369,6 +389,8 @@ paths:
           $ref: '#/responses/400'
         '404':
           $ref: '#/responses/404'
+        '409':
+          $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
   /persons/{osuId}/emails:
@@ -520,6 +542,10 @@ responses:
       $ref: '#/definitions/ErrorResult'
   '404':
     description: Resource not found
+    schema:
+      $ref: '#/definitions/ErrorResult'
+  '409':
+    description: Type conflict
     schema:
       $ref: '#/definitions/ErrorResult'
   '500':
