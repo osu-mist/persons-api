@@ -22,7 +22,7 @@ produces:
 consumes:
   - application/json
 security:
-  - Oauth2:
+  - OAuth2:
     - full
 paths:
   /persons:
