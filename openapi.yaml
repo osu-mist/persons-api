@@ -73,12 +73,12 @@ paths:
       operationId: getJobs
       parameters:
         - $ref: '#/parameters/osuId'
-        - name: positionNumber
+        - name: filter[positionNumber]
           in: query
           type: string
           description: Filter by position ID.
           required: false
-        - name: suffix
+        - name: filter[suffix]
           in: query
           type: string
           required: false
@@ -233,7 +233,7 @@ paths:
       operationId: getMealPlans
       parameters:
         - $ref: '#/parameters/osuId'
-        - name: mealPlanName
+        - name: filter[mealPlanName]
           in: query
           type: string
           required: false
@@ -285,22 +285,22 @@ paths:
       operationId: getAddresses
       parameters:
         - $ref: '#/parameters/osuId'
-        - name: city
+        - name: filter[city]
           in: query
           type: string
           required: false
           description: Filter results by city.
-        - name: county
+        - name: filter[county]
           in: query
           type: string
           required: false
           description: Filter results by county.
-        - name: state
+        - name: filter[state]
           in: query
           type: string
           required: false
           description: Filter results by state.
-        - name: stateCode
+        - name: filter[stateCode]
           in: query
           type: string
           required: false
@@ -387,12 +387,12 @@ paths:
             - BY
             - ENG
           description: Filter results by state code.
-        - name: nation
+        - name: filter[nation]
           in: query
           type: string
           required: false
           description: Filter results by nation.
-        - name: nationCode
+        - name: filter[nationCode]
           in: query
           type: string
           required: false
@@ -445,7 +445,7 @@ paths:
         - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/phoneType'
-        - name: primary
+        - name: filter[primary]
           in: query
           type: boolean
           required: false
@@ -495,7 +495,7 @@ paths:
       operationId: getEmails
       parameters:
         - $ref: '#/parameters/osuId'
-        - name: emailType
+        - name: filter[emailType]
           in: query
           type: string
           required: false
