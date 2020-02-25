@@ -27,19 +27,19 @@ security:
 paths:
   /persons:
     post:
-      description: Post person
+      description: Create a person
       tags:
         - persons
-      operationId: getPersons
+      operationId: postPersons
       parameters:
-        - in: body
-          name: body
+        - name: personBody
+          in: body
           required: true
           schema:
             $ref: '#/definitions/PersonPostBody'
       responses:
         '202':
-          description: Successful response
+          description: Person record accepted.
           schema:
             $ref: '#/definitions/PersonResult'
         '400':
@@ -81,6 +81,7 @@ paths:
         - name: suffix
           in: query
           type: string
+          required: false
           description: |
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
@@ -94,18 +95,17 @@ paths:
         '500':
           $ref: '#/responses/500'
     post:
-      description: Update a job record for a person
+      description: Create a job record for a person
       tags:
         - jobs
       operationId: postJob
       parameters:
-        - name: body
+        - name: jobBody
           in: body
           required: true
           schema:
             $ref: '#/definitions/JobPostBody'
         - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/employmentType'
       responses:
         '202':
           description: Job record accepted.
@@ -137,19 +137,18 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
-    put:
+    patch:
       description: Update a job record for a person
       tags: 
         - jobs
-      operationId: putJob
+      operationId: patchJob
       parameters:
-        - name: body
+        - name: jobBody
           in: body
-          description: Put body for a job
+          description: patch body for a job
           required: true
           schema:
-            $ref: '#/definitions/JobPutBody'
-        - $ref: '#/parameters/employmentType'
+            $ref: '#/definitions/JobPatchBody'
         - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/jobId'
       responses:
@@ -172,7 +171,7 @@ paths:
         - ssn
       operationId: postSsn
       parameters:
-        - name: body
+        - name: ssnBody
           in: body
           description: SSN post body
           required: true
@@ -192,7 +191,7 @@ paths:
           $ref: '#/responses/409'
         '500':
           $ref: '#/responses/500'
-  /persons/{osuId}/image:
+  /persons/{osuId}/images:
     get:
       description: Get a person's image
       tags:
@@ -205,6 +204,9 @@ paths:
         - $ref: '#/parameters/osuId'
         - in: query
           name: width
+          maximum: 2000
+          minimum: 1
+          default: 100
           description: Resizes image to a pixel value for width while keeping original aspect ratio
           required: false
           type: integer
@@ -231,11 +233,21 @@ paths:
       operationId: getMealPlans
       parameters:
         - $ref: '#/parameters/osuId'
-        - name: mealPlan
+        - name: mealPlanName
           in: query
           type: string
           required: false
           description: Filter results by meal plan name.
+        - name: filter[balance]
+          in: query
+          type: string
+          required: false
+          description: Filter results based on the remaining balance.
+        - name: filter[lastUsedLocation]
+          in: query
+          type: string
+          required: false
+          description: Filter results based on the last location the meal-plan was used.
       responses:
         '200':
           description: Successful response
@@ -265,7 +277,7 @@ paths:
           $ref: '#/responses/404'
         '500':
           $ref: '#/responses/500'
-  /persons/{osuId}/address:
+  /persons/{osuId}/addresses:
     get:
       description: Get addresses for a person
       tags:
@@ -401,9 +413,9 @@ paths:
       description: Create address for a person
       tags:
         - addresses
-      operationId: postAddresses
+      operationId: postAddress
       parameters:
-        - name: body
+        - name: addressBody
           in: body
           description: Post body for new address
           required: true
@@ -435,7 +447,7 @@ paths:
         - $ref: '#/parameters/phoneType'
         - name: primary
           in: query
-          type: string
+          type: boolean
           required: false
           description: Filter on primary or non-primary phone numbers
       responses:
@@ -453,9 +465,9 @@ paths:
       description: Create phone number for a person
       tags:
         - phones
-      operationId: createPhones
+      operationId: postPhone
       parameters:
-        - name: body
+        - name: phoneBody
           in: body
           description: Post body for the new phone
           required: true
@@ -522,6 +534,7 @@ parameters:
     required: true
     description: OSU ID of a person
     type: string
+    pattern: '^\d{9}$'
   jobId:
     name: jobId
     in: path
@@ -535,14 +548,16 @@ parameters:
     required: true
     type: string
   employmentType:
-    name: employmentType
+    name: filter[employmentType]
     in: query
     description: The type of employment that the job record should be processed as.
     required: true
     type: string
-    enum: [student, graduate]
+    enum: &employmentTypeEnums
+    - student
+    - graduate
   addressType:
-    name: addressType
+    name: filter[addressType]
     in: query
     type: string
     required: false
@@ -571,7 +586,7 @@ parameters:
       - `RK` - Financial Aid Address
       - `RH` - Residence Hall
   phoneType:
-    name: phoneType
+    name: filter[phoneType]
     in: query
     type: string
     required: false
@@ -769,6 +784,7 @@ definitions:
     type: object
     required:
       - positionNumber
+      - employmentType
       - beginDate
       - supervisorOsuId
       - supervisorPositionNumber
@@ -776,8 +792,12 @@ definitions:
     properties:
       positionNumber:
         type: string
-        description: Identifies a position
+        description: Identifies a position.
         example: C12345
+      employmentType:
+        type: string
+        enum: *employmentTypeEnums
+        description: Type of employment.
       effectiveDate:
         type: string
         format: date
@@ -1012,7 +1032,7 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
-  JobPutAttributes:
+  JobPatchAttributes:
     type: object
     required: [suffix]
     properties:
@@ -1024,7 +1044,7 @@ definitions:
           For updating existing jobs, this field is required.
   JobAttributes:
     allOf:
-      - $ref: '#/definitions/JobPutAttributes'
+      - $ref: '#/definitions/JobPatchAttributes'
       - $ref: '#/definitions/JobPostAttributes'
   JobResource:
     type: object
@@ -1065,7 +1085,7 @@ definitions:
             $ref: '#/definitions/JobType'
           attributes:
             $ref: '#/definitions/JobPostAttributes'
-  JobPutBody:
+  JobPatchBody:
     type: object
     properties:
       data:
@@ -1075,7 +1095,7 @@ definitions:
             $ref: '#/definitions/JobType'
           attributes:
             allOf:
-              - $ref: '#/definitions/JobPutAttributes'
+              - $ref: '#/definitions/JobPatchAttributes'
               - $ref: '#/definitions/JobPostAttributes'
   SsnPostAttributes:
     type: object
