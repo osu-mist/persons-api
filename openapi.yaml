@@ -679,9 +679,15 @@ definitions:
       data:
         $ref: '#/definitions/PersonResource'
   PersonPostBody:
+    type: object
+    required:
+      - data
     properties:
       data:
         type: object
+        required:
+          - type
+          - attributes
         properties:
           type:
             $ref: '#/definitions/PersonType'
@@ -956,13 +962,15 @@ definitions:
     allOf:
       - $ref: '#/definitions/JobPatchAttributes'
       - $ref: '#/definitions/JobPostAttributes'
+  JobId:  
+    type: string
+    description: Uniquely identifies a job record for the given person.
+    example: C12345-00
   JobResource:
     type: object
     properties:
       id:
-        type: string
-        description: Uniquely identifies a job record for the given person.
-        example: C12345-00
+        $ref: '#/definitions/JobId'
       type:
         $ref: '#/definitions/JobType'
       links:
@@ -987,9 +995,14 @@ definitions:
         $ref: '#/definitions/JobResource'
   JobPostBody:
     type: object
+    required:
+      - data
     properties:
       data:
         type: object
+        required:
+          - type
+          - attributes
         properties:
           type:
             $ref: '#/definitions/JobType'
@@ -997,10 +1010,18 @@ definitions:
             $ref: '#/definitions/JobPostAttributes'
   JobPatchBody:
     type: object
+    required:
+      - data
     properties:
       data:
         type: object
+        required:
+          - id
+          - type
+          - attributes
         properties:
+          id:
+            $ref: '#/definitions/JobId'
           type:
             $ref: '#/definitions/JobType'
           attributes:
@@ -1018,9 +1039,14 @@ definitions:
         example: '123456789'
   SsnPostBody:
     type: object
+    required:
+      - data
     properties:
       data:
         type: object
+        required:
+          - type
+          - attributes
         properties:
           type:
             $ref: '#/definitions/SsnType'
@@ -1173,9 +1199,14 @@ definitions:
         $ref: '#/definitions/AddressResource'
   AddressPostBody:
     type: object
+    required:
+      - data
     properties:
       data:
         type: object
+        required:
+          - type
+          - attributes
         properties:
           type:
             $ref: '#/definitions/AddressType'
@@ -1269,9 +1300,14 @@ definitions:
         $ref: '#/definitions/PhoneResource'
   PhonePostBody:
     type: object
+    required:
+      - data
     properties:
       data:
         type: object
+        required:
+          - type
+          - attributes
         properties:
           type:
             $ref: '#/definitions/PhoneType'
