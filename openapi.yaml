@@ -558,25 +558,25 @@ securityDefinitions:
 definitions:
   PersonType:
     type: string
-    example: person
+    enum: [person]
   JobType:
     type: string
-    example: job
+    enum: [job]
   SsnType:
     type: string
-    example: ssn
+    enum: [ssn]
   MealPlanType:
     type: string
-    example: meal-plans
+    enum: [meal-plans]
   AddressType:
     type: string
-    example: addresses
+    enum: [addresses]
   PhoneType:
     type: string
-    example: phones
+    enum: [phones]
   EmailType:
     type: string
-    example: emails
+    enum: [emails]
   PersonPostAttributes:
     type: object
     required:
