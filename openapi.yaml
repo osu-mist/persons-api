@@ -590,7 +590,7 @@ definitions:
         type: string
         format: date
         description: Birthday of person
-        example: 1970-1-21
+        example: '1970-1-21'
       citizen:
         type: string
         enum: [FN, N, R, S, C]
@@ -712,17 +712,17 @@ definitions:
         type: string
         format: date
         description: The date this job assignment is effective.
-        example: 1970-1-21
+        example: '1970-1-21'
       beginDate:
         type: string
         format: date
         description: Begin date of job.
-        example: 1970-1-21
+        example: '1970-1-21'
       endDate:
         type: string
         format: date
         description: End date of job.
-        example: 1971-2-15
+        example: '1971-2-15'
       accruesLeaveInd:
         type: boolean
         description: If true, the job accrues leave time.
@@ -730,12 +730,12 @@ definitions:
         type: string
         format: date
         description: The date the contract begins.
-        example: 1970-1-21
+        example: '1970-1-21'
       contractEndDate:
         type: string
         format: date
         description: The date the contract ends.
-        example: 1971-2-21
+        example: '1971-2-21'
       contractType:
         type: string
         enum: [P, S, O]
@@ -764,7 +764,7 @@ definitions:
         type: string
         format: date
         description: Date the last change was made to the job record.
-        example: 1970-1-1
+        example: '1970-1-1'
       changeReasonCode:
         type: string
         description: The reason the last change was made to the job record.
@@ -900,7 +900,7 @@ definitions:
         type: string
         format: date
         description: The date that the employee accepted or denied to have their salary information shared.
-        example: 1970-1-1
+        example: '1970-1-1'
       retirementCode:
         type: string
         description: Retirement code
@@ -924,7 +924,7 @@ definitions:
               type: string
               format: date
               description: Date this labor distribution becomes effective.
-              example: 1970-1-1
+              example: '1970-1-1'
             accountIndexCode:
               type: string
               example: ABC123
@@ -1173,7 +1173,7 @@ definitions:
         type: string
         format: date
         description: The date this address record was last modified.
-        example: 1970-1-1
+        example: '1970-1-1'
   AddressResource:
     type: object
     properties:
@@ -1269,7 +1269,7 @@ definitions:
         type: string
         format: date
         description: The date of the most recent change made to this record.
-        example: 2015-10-19
+        example: '2015-10-19'
   PhoneResource:
     type: object
     properties:
