@@ -1363,13 +1363,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/EmailPostAttributes'
           - $ref: '#/definitions/EmailAttributes'
-  EmailResult:
-    type: object
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data: 
-        $ref: '#/definitions/EmailResource'
   EmailSetResult:
     type: object
     properties:
@@ -1379,16 +1372,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EmailResource'
-  EmailPostBody:
-    type: object
-    properties:
-      data:
-        type: object
-        properties:
-          type:
-            $ref: '#/definitions/EmailType'
-          attributes:
-            $ref: '#/definitions/EmailPostAttributes'
   SelfLink:
     properties:
       self:
