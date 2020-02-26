@@ -304,93 +304,13 @@ paths:
           in: query
           type: string
           required: false
-          enum: 
-            - DE
-            - NJ
-            - PA
-            - DC
-            - NY
-            - CA
-            - VA
-            - NC
-            - TX
-            - FL
-            - HI
-            - WV
-            - MT
-            - GA
-            - MD
-            - OH
-            - IN
-            - AK
-            - AL
-            - AR
-            - AZ
-            - CO
-            - CT
-            - IA
-            - ID
-            - IL
-            - KS
-            - KY
-            - LA
-            - MA
-            - ME
-            - MI
-            - MN
-            - MO
-            - MS
-            - ND
-            - NE
-            - NH
-            - NM
-            - NV
-            - OK
-            - OR
-            - RI
-            - SC
-            - SD
-            - TN
-            - UT
-            - VT
-            - WA
-            - WI
-            - WY
-            - VI
-            - TT
-            - PR
-            - GU
-            - CZ
-            - AS
-            - BC
-            - NT
-            - AB
-            - ON
-            - SK
-            - NB
-            - NF
-            - NS
-            - PE
-            - PQ
-            - MP
-            - FM
-            - MH
-            - PW
-            - MB
-            - YT
-            - AP
-            - AE
-            - AA
-            - FC
-            - FR
-            - NU
-            - BY
-            - ENG
+          enum: &stateCodeEnums [DE, NJ, PA, DC, NY, CA, VA, NC, TX, FL, HI, WV, MT, GA, MD, OH, IN, AK, AL, AR, AZ, CO, CT, IA, ID, IL, KS, KY, LA, MA, ME, MI, MN, MO, MS, ND, NE, NH, NM, NV, OK, OR, RI, SC, SD, TN, UT, VT, WA, WI, WY, VI, TT, PR, GU, CZ, AS, BC, NT, AB, ON, SK, NB, NF, NS, PE, PQ, MP, FM, MH, PW, MB, YT, AP, AE, AA, FC, FR, NU, BY, ENG]
           description: Filter results by state code.
         - name: filter[nation]
           in: query
           type: string
           required: false
+          enum: &nationCodeEnums [FPL, ARE, ARW, KSA, QSG, ESL, GES, CSD, KSY, HTT, ETG, JUY, JVE, KYD, AZM, FAL, GAD, JAR, HBS, KBH, PBT, ABI, QBU, LCA, BCG, OTW, OCN, ICR, GDK, ISV, AET, NPF, BGA, SGL, HHT, GIS, KIQ, HJM, AKE, DLS, CLY, GMC, HMQ, AMZ, NPG, ENE, MNZ, JPY, HAI, HAG, EBJ, FBY, MCX, NCK, JFK, NGU, HLC, FAM, FMD, FEE, FLT, OMO, FHR, DNA, JGY, GDE, HPM, QVN, QBN, CEH, RHM, HKN, NNR, NPN, BST, NTK, FMK, FSR, FTX, FTI, QMM, AER, FBO, FAJ, NSB, FUA, FRU, FGE, FBA, GAT, FYU, LBM, RBV, BCF, MCC, HCU, HDO, QTP, CEG, JGF, GGR, HGD, EGN, OHK, KIR, KIL, KJO, KLB, GLU, AMG, GMT, AYO, IMX, OMN, GNL, NNC, ENG, OKP, PPK, JPE, KQA, FRO, ESN, ADJ, DZA, HVC, KOM, JSR, ATZ, CTN, NTV, GGB, NVU, NWF, FBG, QID, GIT, GPT, AZW, FSK, BCM, DBW, EGW, EML, FHU, FKZ, GCH, GLI, GSM, HBB, HVG, IGT, KAE, KKW, NFJ, QKH, QPH, NUM, KGZ, FKK, HBL, COD, ASO, PLK, GSE, DSZ, QTH, KTR, GVA, NWS, BZR, PAF, CDZ, BAO, MAU, PBD, GBE, IBZ, JBO, JBR, PIO, BTD, JCL, JCO, ECV, KCY, JEC, BGQ, GFI, GFR, EGM, HGP, IHN, GIE, ECI, OJP, OKR, ELR, AMW, CMA, AMU, QMY, PNP, INI, GNO, IPA, LUS, RAQ, HAW, EBF, HKY, AKM, HDM, GFO, RTF, FKG, FUZ, FLV, PMV, FSI, HAN, EGH, PIN, EMR, AUG, KYE, NTO, GGI, NKI, HMS, NNU, ASC, HTC, FEZ, FMW, NNF, QLA, IAN, KWE, FTM, HMF, FKV]
           description: Filter results by nation.
         - name: filter[nationCode]
           in: query
