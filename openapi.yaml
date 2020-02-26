@@ -304,22 +304,12 @@ paths:
           type: string
           required: false
           description: Filter results by county.
-        - name: filter[state]
-          in: query
-          type: string
-          required: false
-          description: Filter results by state.
         - name: filter[stateCode]
           in: query
           type: string
           required: false
           enum: &stateCodeEnums [DE, NJ, PA, DC, NY, CA, VA, NC, TX, FL, HI, WV, MT, GA, MD, OH, IN, AK, AL, AR, AZ, CO, CT, IA, ID, IL, KS, KY, LA, MA, ME, MI, MN, MO, MS, ND, NE, NH, NM, NV, OK, OR, RI, SC, SD, TN, UT, VT, WA, WI, WY, VI, TT, PR, GU, CZ, AS, BC, NT, AB, ON, SK, NB, NF, NS, PE, PQ, MP, FM, MH, PW, MB, YT, AP, AE, AA, FC, FR, NU, BY, ENG]
           description: Filter results by state code.
-        - name: filter[nation]
-          in: query
-          type: string
-          required: false
-          description: Filter results by nation.
         - name: filter[nationCode]
           in: query
           type: string
