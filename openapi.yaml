@@ -615,10 +615,6 @@ definitions:
         type: string
         description: ONID username
         example: smithj
-      email:
-        type: string
-        description: Primary email address
-        example: john.smith@example.com
       isConfidential:
         type: boolean
         description: If true, the person has opted in to being required to be listed as confidential
