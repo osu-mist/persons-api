@@ -683,14 +683,77 @@ definitions:
             $ref: '#/definitions/PersonType'
           attributes:
             $ref: '#/definitions/PersonPostAttributes'
+  SupervisorAttributes:
+    type: object
+    required:
+      - osuId
+      - positionNumber
+    properties:
+      osuId:
+        type: string
+        description: OSU ID of the supervisor for the job.
+        pattern: '^\d{9}$'
+      firstName:
+        type: string
+        description: First name of the supervisor for the job.
+        example: John
+      lastName:
+        type: string
+        description: Last name of the supervisor for the job.
+        example: Smith
+      email:
+        type: string
+        format: email
+        description: The primary email of the supervisor for the job.
+        example: john.smith@example.com
+      positionNumber:
+        type: string
+        description: Position number for the supervisor.
+        example: C12345
+      suffix:
+        type: string
+        description: Suffix of the supervisor.
+  TimesheetAttributes:
+    type: object
+    properties:
+      code:
+        type: string
+        description: Organization code where the time sheet is sent for the job.
+        example: '123456'
+      description:
+        type: string
+        description: Organization title where timesheet is sent for the job.
+      predCode:
+        type: string
+        description: The next higher organizational code of the current timesheet organization.
+        example: '123456'
+      predDescription:
+        type: string
+        description: The next higher organizational title of the current timesheet organization.
+  HomeOrganizationAttributes:
+    type: object
+    properties:
+      code:
+        type: string
+        description: The home organization code of the employee.
+        example: '123456'
+      description:
+        type: string
+        description: The home organization title of the employee.
+      predCode:
+        type: string
+        description: The next higher organizational code of the current home organization.
+        example: '123456'
+      predDescription:
+        type: string
+        description: The next higher organizational title of the current home organization.
   JobPostAttributes:
     type: object
     required:
       - positionNumber
       - employmentType
       - beginDate
-      - supervisorOsuId
-      - supervisorPositionNumber
+      - supervisor
       - effectiveDate
     properties:
       positionNumber:
@@ -783,58 +846,12 @@ definitions:
         type: string
         description: STRS assignment code for the job.
         example: '12'
-      supervisorOsuId:
-        type: string
-        description: OSU ID of the supervisor for the job.
-        pattern: '^\d{9}$'
-      supervisorFirstName:
-        type: string
-        description: First name of the supervisor for the job.
-        example: John
-      supervisorLastName:
-        type: string
-        description: Last name of the supervisor for the job.
-        example: Smith
-      supervisorEmail:
-        type: string
-        format: email
-        description: The primary email of the supervisor for the job.
-        example: john.smith@example.com
-      supervisorPositionNumber:
-        type: string
-        description: Position number for the supervisor.
-        example: C12345
-      supervisorSuffix:
-        type: string
-        description: Suffix of the supervisor.
-      timesheetOrganizationCode:
-        type: string
-        description: Organization code where the time sheet is sent for the job.
-        example: '123456'
-      timesheetOrganizationDesc:
-        type: string
-        description: Organization title where timesheet is sent for the job.
-      timesheetOrganizationPredCode:
-        type: string
-        description: The next higher organizational code of the current timesheet organization.
-        example: '123456'
-      timesheetOrganizationPredDesc:
-        type: string
-        description: The next higher organizational title of the current timesheet organization.
-      homeOrganizationCode:
-        type: string
-        description: The home organization code of the employee.
-        example: '123456'
-      homeOrganizationDesc:
-        type: string
-        description: The home organization title of the employee.
-      homeOrganizationPredCode:
-        type: string
-        description: The next higher organizational code of the current home organization.
-        example: '123456'
-      homeOrganizationPredDesc:
-        type: string
-        description: The next higher organizational title of the current home organization.
+      supervisor:
+        $ref: '#/definitions/SupervisorAttributes'
+      timesheet:
+        $ref: '#/definitions/TimesheetAttributes'
+      homeOrganization:
+        $ref: '#/definitions/HomeOrganizationAttributes'
       hourlyRate:
         type: number
         format: float
