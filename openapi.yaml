@@ -30,7 +30,7 @@ paths:
       description: Create a person
       tags:
         - persons
-      operationId: postPersons
+      operationId: postPerson
       parameters:
         - name: personBody
           in: body
@@ -124,7 +124,7 @@ paths:
       description: Get a specific job associated with a person
       tags:
         - jobs
-      operationId: getJob
+      operationId: getJobById
       parameters:
         - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/jobId'
@@ -141,7 +141,7 @@ paths:
       description: Update a job record for a person
       tags: 
         - jobs
-      operationId: patchJob
+      operationId: patchJobById
       parameters:
         - name: jobBody
           in: body
@@ -196,7 +196,7 @@ paths:
       description: Get a person's image
       tags:
         - images
-      operationId: getImageById
+      operationId: getImages
       produces:
         - image/jpeg
         - application/json
