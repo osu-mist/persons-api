@@ -39,7 +39,8 @@ paths:
             $ref: '#/definitions/PersonPostBody'
       responses:
         '202':
-          description: Person record accepted.
+          description: The backend data source needs to do additional processing 
+            with the new person record. Person record accepted but not yet created.
           schema:
             $ref: '#/definitions/PersonResult'
         '400':
@@ -85,6 +86,7 @@ paths:
           description: |
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
+        - $ref: '#/parameters/employmentType'
       responses:
         '200':
           description: Successful response
@@ -108,7 +110,8 @@ paths:
         - $ref: '#/parameters/osuId'
       responses:
         '202':
-          description: Job record accepted.
+          description: The backend data source needs to do additional processing 
+            with the new job record. Job record accepted but not yet created.
           schema:
             $ref: '#/definitions/JobResult'
         '400':
@@ -153,7 +156,8 @@ paths:
         - $ref: '#/parameters/jobId'
       responses:
         '202':
-          description: Job record accepted.
+          description: The backend data source needs to do additional processing 
+            with the updated job record. Job record accepted but not yet updated.
           schema:
             $ref: '#/definitions/JobResult'
         '400':
@@ -180,7 +184,8 @@ paths:
         - $ref: '#/parameters/osuId'
       responses:
         '202':
-          description: SSN record accepted.
+          description: The backend data source needs to do additional processing 
+            with the new SSN record. SSN record accepted but not yet created.
           schema:
             $ref: '#/definitions/SsnResult'
         '400':
@@ -238,9 +243,10 @@ paths:
           type: string
           required: false
           description: Filter results by meal plan name.
-        - name: filter[balance]
+        - name: filter[balance][neq,gt,gte,lt,lte]
           in: query
-          type: string
+          type: number
+          format: float
           required: false
           description: Filter results based on the remaining balance.
         - name: filter[lastUsedLocation]
@@ -248,6 +254,12 @@ paths:
           type: string
           required: false
           description: Filter results based on the last location the meal-plan was used.
+        - name: filter[lastUsedDateTime][gt,gte,lt,lte]
+          in: query
+          type: string
+          format: date-time
+          required: false
+          description: Filter results based on the last date and time the meal-plan was used.
       responses:
         '200':
           description: Successful response
@@ -417,7 +429,10 @@ paths:
         - $ref: '#/parameters/osuId'
         - name: filter[emailType]
           in: query
-          type: string
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
           required: false
           enum: &emailTypeEnums
             - ONID
@@ -436,6 +451,10 @@ paths:
             - `EMPL` - Employee
             - `VPAY` - Vendor Pay
             - `EMER` - Emergency Contact Persons Email for Student
+        - name: filter[preferredInd]
+          in: query
+          type: boolean
+          description: Filter on preferred email addresses
       responses:
         '200':
           description: Successful response
@@ -470,8 +489,8 @@ parameters:
   employmentType:
     name: filter[employmentType]
     in: query
-    description: The type of employment that the job record should be processed as.
-    required: true
+    description: Filter based on the jobs type of employment
+    required: false
     type: string
     enum: &employmentTypeEnums
     - student
@@ -481,23 +500,7 @@ parameters:
     in: query
     type: string
     required: false
-    enum: &addressTypeEnums
-      - PA
-      - RN
-      - RB
-      - RE
-      - RK
-      - VO
-      - VP
-      - XX
-      - CM
-      - DM
-      - EO
-      - RH
-      - PR
-      - MA
-      - SV
-      - JA
+    enum: &addressTypeEnums [PA, RN, RB, RE, RK, VO, VP, XX, CM, DM, EO, RH, PR, MA, SV, JA]
     description: |
       Filter by address type. Common address types and their description:
       - `CM` - Current Mailing
@@ -510,21 +513,7 @@ parameters:
     in: query
     type: string
     required: false
-    enum: &phoneTypeEnums
-      - PA
-      - RN
-      - RB
-      - MG
-      - RE
-      - RK
-      - VO
-      - VP
-      - VF
-      - CM
-      - EO
-      - RH
-      - EF
-      - MP
+    enum: &phoneTypeEnums [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
     description: |
       Filter by phone type. Common phone types and their descriptions:
       - `CM` - Current
@@ -541,7 +530,7 @@ responses:
     schema:
       $ref: '#/definitions/ErrorResult'
   '409':
-    description: Type conflict
+    description: Type or ID conflict
     schema:
       $ref: '#/definitions/ErrorResult'
   '500':
@@ -614,6 +603,7 @@ definitions:
           - `C` - Citizen
       sex:
         type: string
+        enum: [M, F, N]
         description: |
           Person's sex code
           - `M` - Male
@@ -799,10 +789,11 @@ definitions:
       strsAssignmentCode:
         type: string
         description: STRS assignment code for the job.
-        example: 12
+        example: '12'
       supervisorOsuId:
         type: string
         description: OSU ID of the supervisor for the job.
+        pattern: '^\d{9}$'
       supervisorFirstName:
         type: string
         description: First name of the supervisor for the job.
@@ -813,6 +804,7 @@ definitions:
         example: Smith
       supervisorEmail:
         type: string
+        format: email
         description: The primary email of the supervisor for the job.
         example: john.smith@example.com
       supervisorPositionNumber:
@@ -825,28 +817,28 @@ definitions:
       timesheetOrganizationCode:
         type: string
         description: Organization code where the time sheet is sent for the job.
-        example: 123456
+        example: '123456'
       timesheetOrganizationDesc:
         type: string
         description: Organization title where timesheet is sent for the job.
       timesheetOrganizationPredCode:
         type: string
         description: The next higher organizational code of the current timesheet organization.
-        example: 123456
+        example: '123456'
       timesheetOrganizationPredDesc:
         type: string
         description: The next higher organizational title of the current timesheet organization.
       homeOrganizationCode:
         type: string
         description: The home organization code of the employee.
-        example: 123456
+        example: '123456'
       homeOrganizationDesc:
         type: string
         description: The home organization title of the employee.
       homeOrganizationPredCode:
         type: string
         description: The next higher organizational code of the current home organization.
-        example: 123456
+        example: '123456'
       homeOrganizationPredDesc:
         type: string
         description: The next higher organizational title of the current home organization.
@@ -908,6 +900,7 @@ definitions:
         type: string
         format: date
         description: The date that the employee accepted or denied to have their salary information shared.
+        example: 1970-1-1
       retirementCode:
         type: string
         description: Retirement code
@@ -1078,7 +1071,7 @@ definitions:
         format: float
         description: Remaining balance on meal plan in USD.
         example: 3.50
-      lastUsedDate:
+      lastUsedDateTime:
         type: string
         format: date-time
         description: The last time the meal plan was used.
@@ -1086,13 +1079,14 @@ definitions:
       lastUsedLocation:
         type: string
         description: Description of the place the meal plan was last used.
-        example: 'Java II'
+        example: Java II
   MealPlanResource:
     type: object
     properties:
       id: 
         type: string
         description: Meal plan ID
+        example: '26'
       type:
         $ref: '#/definitions/MealPlanType'
       links:
@@ -1123,14 +1117,14 @@ definitions:
     properties:
       addressType:
         type: string
+        enum: *addressTypeEnums
         description: Code for the type of address record.
-        example: CM
       addressLine1:
         type: string
-        example: '123 Main Street'
+        example: 123 Main Street
       addressLine2:
         type: string
-        example: 'Apartment 4'
+        example: Apartment 4
       addressLine3:
         type: string
       addressLine4:
@@ -1143,6 +1137,7 @@ definitions:
         example: Corvallis
       stateCode:
         type: string
+        enum: *stateCodeEnums
         description: State code/abbreviation. This could also represent a province.
         example: OR
       postalCode:
@@ -1153,6 +1148,8 @@ definitions:
         example: '41003'
       nationCode:
         type: string
+        enum: *nationCodeEnums
+        description: Code for the nation of the address
   AddressAttributes:
     type: object
     properties:
@@ -1176,6 +1173,7 @@ definitions:
         type: string
         format: date
         description: The date this address record was last modified.
+        example: 1970-1-1
   AddressResource:
     type: object
     properties:
@@ -1247,12 +1245,10 @@ definitions:
       phoneType:
         type: string
         description: Enum marking which type of address this phone number matches with.
-        example: CM
         enum: *phoneTypeEnums
       addressType:
         type: string
         description: Enum marking which type of address this phone number matches with.
-        example: CM
         enum: *addressTypeEnums
   PhoneAttributes:
     type: object
@@ -1271,8 +1267,9 @@ definitions:
         example: Current Mailing
       lastModified:
         type: string
+        format: date
         description: The date of the most recent change made to this record.
-        example: '2015-10-19'
+        example: 2015-10-19
   PhoneResource:
     type: object
     properties:
@@ -1333,6 +1330,7 @@ definitions:
           - `EMER` - Emergency Contact Persons Email for Student
       emailAddress:
         type: string
+        format: email
         description: Email address for a person
         example: john.smith@example.com
       comment:
@@ -1355,6 +1353,7 @@ definitions:
       id:
         type: string
         description: Unique ID for an email address
+        example: '918179'
       type:
         $ref: '#/definitions/EmailType'
       links:
