@@ -1132,6 +1132,7 @@ definitions:
     type: object
     required:
       - addressType
+      - addressLine1
       - city
     properties:
       addressType:
