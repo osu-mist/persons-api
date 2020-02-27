@@ -579,10 +579,11 @@ definitions:
   PersonPostAttributes:
     type: object
     required:
-    - firstName
-    - lastName
-    - birthDate
-    - sex
+      - firstName
+      - lastName
+      - birthDate
+      - sex
+    additionalProperties: false
     properties:
       firstName:
         type: string
@@ -691,12 +692,14 @@ definitions:
     type: object
     required:
       - data
+    additionalProperties: false
     properties:
       data:
         type: object
         required:
           - type
           - attributes
+        additionalProperties: false
         properties:
           type:
             $ref: '#/definitions/PersonType'
@@ -707,6 +710,7 @@ definitions:
     required:
       - osuId
       - positionNumber
+    additionalProperties: false
     properties:
       osuId:
         type: string
@@ -774,6 +778,7 @@ definitions:
       - beginDate
       - supervisor
       - effectiveDate
+    additionalProperties: false
     properties:
       positionNumber:
         type: string
@@ -1044,7 +1049,7 @@ definitions:
         required:
           - id
           - type
-          - attributes
+        additionalProperties: false
         properties:
           id:
             $ref: '#/definitions/JobId'
@@ -1058,6 +1063,7 @@ definitions:
     type: object
     required:
       - ssn
+    additionalProperties: false
     properties:
       ssn:
         type: string
@@ -1067,12 +1073,14 @@ definitions:
     type: object
     required:
       - data
+    additionalProperties: false
     properties:
       data:
         type: object
         required:
           - type
           - attributes
+        additionalProperties: false
         properties:
           type:
             $ref: '#/definitions/SsnType'
@@ -1134,6 +1142,7 @@ definitions:
       - addressType
       - addressLine1
       - city
+    additionalProperties: false
     properties:
       addressType:
         type: string
@@ -1228,12 +1237,14 @@ definitions:
     type: object
     required:
       - data
+    additionalProperties: false
     properties:
       data:
         type: object
         required:
           - type
           - attributes
+        additionalProperties: false
         properties:
           type:
             $ref: '#/definitions/AddressType'
@@ -1247,6 +1258,7 @@ definitions:
       - areaCode
       - phoneNumber
       - primaryIndicator
+    additionalProperties: false
     properties:
       areaCode:
         type: string
@@ -1329,12 +1341,14 @@ definitions:
     type: object
     required:
       - data
+    additionalProperties: false
     properties:
       data:
         type: object
         required:
           - type
           - attributes
+        additionalProperties: false
         properties:
           type:
             $ref: '#/definitions/PhoneType'
@@ -1345,6 +1359,7 @@ definitions:
     required:
       - emailType
       - emailAddress
+    additionalProperties: false
     properties:
       emailType:
         type: string
