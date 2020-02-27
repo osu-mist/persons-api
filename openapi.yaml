@@ -83,7 +83,7 @@ paths:
           in: query
           type: string
           required: false
-          description: |
+          description: >
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
         - $ref: '#/parameters/employmentType'
@@ -1084,7 +1084,7 @@ definitions:
     properties:
       suffix:
         type: string
-        description: |
+        description: >
           Used to uniquely identify a job record for persons who have
           multiple jobs that share the same position number.
           For updating existing jobs, this field is required.
