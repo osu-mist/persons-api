@@ -490,11 +490,22 @@ parameters:
     enum: &addressTypeEnums [PA, RN, RB, RE, RK, VO, VP, XX, CM, DM, EO, RH, PR, MA, SV, JA]
     description: |
       Filter by address type. Common address types and their description:
-      - `CM` - Current Mailing
       - `PA` - Student Alternate Contact
-      - `DM` - Department (US Mail)
+      - `RN` - Geographic Origin-First Admit
+      - `RB` - Research Billing
+      - `RE` - Billing Address
       - `RK` - Financial Aid Address
+      - `VO` - Vendor Order
+      - `VP` - Vendor Payment
+      - `XX` - Reserved for TGRFEED Use Only
+      - `CM` - Current Mailing
+      - `DM` - Department (US Mail)
+      - `EO` - Employee Office (Directory)
       - `RH` - Residence Hall
+      - `PR` - Payroll W2 Address
+      - `MA` - Reserved for SRTLOAD Use Only
+      - `SV` - International -SEVIS
+      - `JA` - Job Application (HR use only)
   phoneType:
     name: filter[phoneType]
     in: query
@@ -503,9 +514,19 @@ parameters:
     enum: &phoneTypeEnums [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
     description: |
       Filter by phone type. Common phone types and their descriptions:
-      - `CM` - Current
       - `PA` - Student Alternate Contact
+      - `RN` - Geographic Origin-First Admit
+      - `RB` - Research Billing
+      - `MG` - Mailing Address (Grades)
+      - `RE` - Billing Phone
       - `RK` - Financial Aid Address
+      - `VO` - Vendor Order
+      - `VP` - Vendor Payment
+      - `VF` - Vendor Fax
+      - `CM` - Current
+      - `EO` - Employee Office (Directory)
+      - `RH` - Residence Hall
+      - `EF` - Employee Office Fax
       - `MP` - Mobile Phone
 responses:
   '400':
