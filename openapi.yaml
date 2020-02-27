@@ -603,15 +603,21 @@ definitions:
         description: Birthday of person
         example: '1970-1-21'
       citizen:
-        type: string
-        enum: [FN, N, R, S, C]
-        description: |
-          Person's citizen code
-          - `FN` - Foreign National
-          - `N` - Non Resident Alien
-          - `R` - Resident Alien
-          - `S` - Substantial Presence Alien
-          - `C` - Citizen
+        type: object
+        properties:
+          code:
+            type: string
+            enum: [FN, N, R, S, C]
+            description: |
+              Person's citizen code
+              - `FN` - Foreign National
+              - `N` - Non Resident Alien
+              - `R` - Resident Alien
+              - `S` - Substantial Presence Alien
+              - `C` - Citizen
+          description:
+            type: string
+            description: Description field for the code
       sex:
         type: string
         enum: [M, F, N]
@@ -649,16 +655,23 @@ definitions:
         type: boolean
         description: True if person is a current employee
       employeeStatus:
-        type: string
-        enum: [A, B, L, F, P, T]
-        description: |
-          The status of the employee:
-          `A` - Active
-          `B` - Leave without pay and with benefits
-          `L` - Leave without pay and without benefits
-          `F` - Leave with pay and with benefits
-          `P` - Leave with partial pay and with benefits
-          `T` - Terminated
+        type: object
+        properties:
+          code:
+            type: string
+            enum: [A, B, L, F, P, T]
+            description: |
+              The status of the employee:
+              - `A` - Active
+              - `B` - Leave without pay and with benefits
+              - `L` - Leave without pay and without benefits
+              - `F` - Leave with pay and with benefits
+              - `P` - Leave with partial pay and with benefits
+              - `T` - Terminated
+          description:
+            type: string
+            description: Description of employee status code
+            example: Active
       ssnStatus:
         type: string
         enum:
@@ -736,40 +749,6 @@ definitions:
       suffix:
         type: string
         description: Suffix of the supervisor.
-  TimesheetAttributes:
-    type: object
-    properties:
-      code:
-        type: string
-        description: Organization code where the time sheet is sent for the job.
-        example: '123456'
-      description:
-        type: string
-        description: Organization title where timesheet is sent for the job.
-      predCode:
-        type: string
-        description: The next higher organizational code of the current timesheet organization.
-        example: '123456'
-      predDescription:
-        type: string
-        description: The next higher organizational title of the current timesheet organization.
-  HomeOrganizationAttributes:
-    type: object
-    properties:
-      code:
-        type: string
-        description: The home organization code of the employee.
-        example: '123456'
-      description:
-        type: string
-        description: The home organization title of the employee.
-      predCode:
-        type: string
-        description: The next higher organizational code of the current home organization.
-        example: '123456'
-      predDescription:
-        type: string
-        description: The next higher organizational title of the current home organization.
   JobPostAttributes:
     type: object
     required:
@@ -862,20 +841,68 @@ definitions:
         type: string
         format: integer
         example: 1
-      salaryGroupCode:
-        type: string
-        description: Salary group code for the job.
-        example: 12345A
-      strsAssignmentCode:
-        type: string
-        description: STRS assignment code for the job.
-        example: '12'
+      salaryGroup:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Salary group code for the job.
+            example: 12345A
+          description:
+            type: string
+            description: Description for salary group code
+      strsAssignment:
+        type: object
+        properties:
+          code:
+            type: string
+            description: STRS assignment code for the job.
+            example: '12'
+          description:
+            type: string
+            description: Description for the strsAssignment code
       supervisor:
         $ref: '#/definitions/SupervisorAttributes'
-      timesheet:
-        $ref: '#/definitions/TimesheetAttributes'
-      homeOrganization:
-        $ref: '#/definitions/HomeOrganizationAttributes'
+      timesheetCode:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Organization code where the time sheet is sent for the job.
+            example: '123456'
+          description:
+            type: string
+            description: Organization title where timesheet is sent for the job.
+      timesheetPredCode:
+        type: object
+        properties:
+          code:
+            type: string
+            description: The next higher organizational code of the current timesheet organization.
+            example: '123456'
+          description:
+            type: string
+            description: The next higher organizational title of the current timesheet organization.
+      homeOrganizationCode:
+        type: object
+        properties:
+          code:
+            type: string
+            description: The home organization code of the employee.
+            example: '123456'
+          description:
+            type: string
+            description: The home organization title of the employee.
+      homeOrganizationPredCode:
+        type: object
+        properties:
+          code:
+            type: string
+            description: The next higher organizational code of the current home organization.
+            example: '123456'
+          description:
+            type: string
+            description: The next higher organizational title of the current home organization.
       hourlyRate:
         type: number
         format: float
@@ -896,23 +923,41 @@ definitions:
         format: float
         description: The number of pays per calendar year.
         example: 12.0
-      employeeClassificationCode:
-        type: string
-        description: The employee class attached to the job, based on the Employee Class entered on the Position Form (NBAPOSN).
-        example: CA
-      employerCode:
-        type: string
-        description: Employer identification code.
-        example: ORST
+      employeeClassification:
+        type: object
+        properties:
+          code:
+            type: string
+            description: The employee class attached to the job, based on the Employee Class entered on the Position Form (NBAPOSN).
+            example: CA
+          description:
+            type: string
+            description: Description of the employee classification code
+      employerIdentification:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Employer identification code.
+            example: ORST
+          description:
+            type: string
+            description: Description of employer identification code
       annualSalary:
         type: number
         format: float
         description: Annual salary for the job.
         example: 30000.50
       earnCode:
-        type: string
-        description: Default earnings code attached to the job and used on timesheet.
-        example: REG
+        type: object
+        properties:
+          code:
+            type: string
+            description: Default earnings code attached to the job and used on timesheet.
+            example: REG
+          description:
+            type: string
+            description: Description of earn code
       earnCodeHours:
         type: number
         format: float
@@ -935,17 +980,29 @@ definitions:
         format: date
         description: The date that the employee accepted or denied to have their salary information shared.
         example: '1970-1-1'
-      retirementCode:
-        type: string
-        description: Retirement code
-      i9FormCode:
-        type: string
-        description: |
-          Code to indicate the status of the employee's I9 form.
-          `R` - Received
-          `N` - Not Received
-          `T` - Temporary
-          `E` - Exempt
+      retirement:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Retirement code
+          description:
+            type: string
+            description: Description of retirement code
+      i9Form:
+        type: object
+        properties:
+          code:
+            type: string
+            description: |
+              Code to indicate the status of the employee's I9 form.
+              - `R` - Received
+              - `N` - Not Received
+              - `T` - Temporary
+              - `E` - Exempt
+          description:
+            type: string
+            description: Description of i9Form code
       laborDistribution:
         type: array
         items:
@@ -959,21 +1016,63 @@ definitions:
               format: date
               description: Date this labor distribution becomes effective.
               example: '1970-1-1'
-            accountIndexCode:
-              type: string
-              example: ABC123
-            fundCode:
-              type: string
-            organizationCode:
-              type: string
-            accountCode:
-              type: string
-            programCode:
-              type: string
-            activityCode:
-              type: string
-            locationCode:
-              type: string
+            accountIndex:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: ABC123
+                description:
+                  type: string
+                  description: Description of account index code
+            fund:
+              type: object
+              properties:
+                code:
+                  type: string
+                description:
+                  type: string
+                  description: Description of fund code
+            organization:
+              type: object
+              properties:
+                code:
+                  type: string
+                description:
+                  type: string
+                  description: Description of organization code
+            account:
+              type: object
+              properties:
+                code:
+                  type: string
+                description:
+                  type: string
+                  description: Description of account code
+            program:
+              type: object
+              properties:
+                code:
+                  type: string
+                description:
+                  type: string
+                  description: Description of program code
+            activity:
+              type: object
+              properties:
+                code:
+                  type: string
+                description:
+                  type: string
+                  description: Description of activity code
+            location:
+              type: object
+              properties:
+                code:
+                  type: string
+                description:
+                  type: string
+                  description: Description of location code
             distributionPercent:
               type: number
               format: float
@@ -1362,17 +1461,23 @@ definitions:
     additionalProperties: false
     properties:
       emailType:
-        type: string
-        enum: *emailTypeEnums
-        description: |
-          Type of email
-          - `STU` - Non-directory Student
-          - `ONID` - Student
-          - `VEND` - Vendor
-          - `VWEB` - Vendor
-          - `EMPL` - Employee
-          - `VPAY` - Vendor Pay
-          - `EMER` - Emergency Contact Persons Email for Student
+        type: object
+        properties:
+          code:
+            type: string
+            enum: *emailTypeEnums
+            description: |
+              Type of email
+              - `STU` - Non-directory Student
+              - `ONID` - Student
+              - `VEND` - Vendor
+              - `VWEB` - Vendor
+              - `EMPL` - Employee
+              - `VPAY` - Vendor Pay
+              - `EMER` - Emergency Contact Persons Email for Student
+          description:
+            type: string
+            description: Description of email code
       emailAddress:
         type: string
         format: email
