@@ -235,23 +235,25 @@ paths:
       operationId: getMealPlans
       parameters:
         - $ref: '#/parameters/osuId'
-        - name: filter[mealPlanName]
-          in: query
-          type: string
-          required: false
-          description: Filter results by meal plan name.
-        - name: filter[balance][neq,gt,gte,lt,lte]
+        - name: filter[balance][gt]
           in: query
           type: number
           format: float
           required: false
           description: Filter results based on the remaining balance.
-        - name: filter[lastUsedLocation]
+        - name: filter[balance][gte]
+          in: query
+          type: number
+          format: float
+          required: false
+          description: Filter results based on the remaining balance.
+        - name: filter[lastUsedDateTime][gt]
           in: query
           type: string
+          format: date-time
           required: false
-          description: Filter results based on the last location the meal-plan was used.
-        - name: filter[lastUsedDateTime][gt,gte,lt,lte]
+          description: Filter results based on the last date and time the meal-plan was used.
+        - name: filter[lastUsedDateTime][gte]
           in: query
           type: string
           format: date-time
