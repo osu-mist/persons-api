@@ -480,10 +480,13 @@ parameters:
     in: query
     description: Filter based on the jobs type of employment
     required: false
-    type: string
+    type: array
     enum: &employmentTypeEnums
-    - student
-    - graduate
+      - student
+      - graduate
+    items:
+      collectionFormat: csv
+      type: string
   addressType:
     name: filter[addressType]
     in: query
