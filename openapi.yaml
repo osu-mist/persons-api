@@ -816,9 +816,9 @@ definitions:
         enum: [P, S, O]
         description: |
           Contract type code/Id.
-          `P` - Primary
-          `S` - Secondary
-          `O` - Overload
+          - `P` - Primary
+          - `S` - Secondary
+          - `O` - Overload
       locationId:
         type: string
         description: Location Id of where job will be performed.
