@@ -843,7 +843,7 @@ definitions:
           - Leave with full pay and benefits
           - Leave with partial pay and benefits
           - Terminated
-      description:
+      jobDescription:
         type: string
         description: Description of job.
       personnelChangeDate:
