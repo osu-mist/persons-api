@@ -376,7 +376,7 @@ paths:
         - $ref: '#/parameters/osuId'
         - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/phoneType'
-        - name: filter[primary]
+        - name: filter[primaryInd]
           in: query
           type: boolean
           required: false
@@ -1393,7 +1393,7 @@ definitions:
       - phoneType
       - areaCode
       - phoneNumber
-      - primaryIndicator
+      - primaryInd
     additionalProperties: false
     properties:
       areaCode:
@@ -1411,7 +1411,7 @@ definitions:
         description: Extension for the phone number. Can be returned in different formats.
         example: '20'
         pattern: '^[0-9]{1,4}$'
-      primaryIndicator:
+      primaryInd:
         type: boolean
         description: Indicates if this phone number is marked as the primary number.
         example: true
