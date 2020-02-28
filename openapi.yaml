@@ -86,6 +86,18 @@ paths:
           description: >
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
+        - name: filter[status]
+          in: query
+          type: string
+          enum: &jobStatusEnums
+            - Active
+            - Leave without pay but with benefits
+            - Leave without pay and benefits
+            - Leave with full pay and benefits
+            - Leave with partial pay and benefits
+            - Terminated
+          required: false
+          description: Filter by the status of the job
         - name: filter[locationId]
           in: query
           type: string
@@ -846,13 +858,7 @@ definitions:
       status:
         type: string
         description: Job status.
-        enum:
-          - Active
-          - Leave without pay but with benefits
-          - Leave without pay and benefits
-          - Leave with full pay and benefits
-          - Leave with partial pay and benefits
-          - Terminated
+        enum: *jobStatusEnums
       jobDescription:
         type: string
         description: Description of job.
