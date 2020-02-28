@@ -77,8 +77,8 @@ paths:
         - name: filter[positionNumber]
           in: query
           type: string
-          description: Filter by position ID.
           required: false
+          description: Filter by position ID.
         - name: filter[suffix]
           in: query
           type: string
@@ -443,7 +443,7 @@ paths:
           type: array
           items:
             type: string
-          collectionFormat: csv
+            collectionFormat: csv
           required: false
           enum: &emailTypeEnums
             - ONID
@@ -455,8 +455,8 @@ paths:
             - EMER
           description: |
             Type of email
-            - `STU` - Non-directory Student
             - `ONID` - Student
+            - `STU` - Non-directory Student
             - `VEND` - Vendor
             - `VWEB` - Vendor
             - `EMPL` - Employee
@@ -540,7 +540,7 @@ parameters:
     required: false
     enum: &phoneTypeEnums [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
     description: |
-      Filter by phone type. Common phone types and their descriptions:
+      Filter by phone type. Phone types and their descriptions:
       - `PA` - Student Alternate Contact
       - `RN` - Geographic Origin-First Admit
       - `RB` - Research Billing
@@ -821,13 +821,19 @@ definitions:
         description: The date the contract ends.
         example: '1971-2-21'
       contractType:
-        type: string
-        enum: [P, S, O]
-        description: |
-          Contract type code/Id.
-          - `P` - Primary
-          - `S` - Secondary
-          - `O` - Overload
+        type: object
+        properties:
+          code:
+            type: string
+            enum: [P, S, O]
+            description: |
+              Contract type code/Id.
+              - `P` - Primary
+              - `S` - Secondary
+              - `O` - Overload
+          description:
+            type: string
+            description: Description of contract code
       location:
         type: object
         properties:
@@ -1568,7 +1574,7 @@ definitions:
     properties:
       self:
         type: string
-        format: url
+        format: uri
         description: Self link of resource
   ErrorObject:
     properties:
@@ -1591,7 +1597,7 @@ definitions:
         properties:
           about:
             type: string
-            format: url
+            format: uri
             description: A link to further information about the error
             example: https://developer.oregonstate.edu/documentation/error-reference#1234
   ErrorResult:
