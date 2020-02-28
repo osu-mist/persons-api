@@ -806,9 +806,33 @@ definitions:
           - `P` - Primary
           - `S` - Secondary
           - `O` - Overload
-      locationId:
-        type: string
-        description: Location Id of where job will be performed.
+      location:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Location Id of where job will be performed.
+          description:
+            type: string
+            description: Description of location code
+      campus:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Id of campus where this job will be performed.
+          description:
+            type: string
+            description: Description of campus code
+      college:
+        type: object
+        properties:
+          code:
+            type: string
+            description: Id of college this job belongs to.
+          description:
+            type: string
+            description: Description of college code
       status:
         type: string
         description: Job status.
