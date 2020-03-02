@@ -239,10 +239,6 @@ paths:
           description: Successful response
           schema:
             type: file
-          headers:
-            Content-type:
-              type: string
-              description: image/jpeg
         '400':
           $ref: '#/responses/400'
         '404':
