@@ -599,13 +599,15 @@ definitions:
   EmailType:
     type: string
     enum: [emails]
-  PersonPostAttributes:
+  PersonPostRequired:
     type: object
     required:
       - firstName
       - lastName
       - birthDate
       - sex
+  PersonPostAttributes:
+    type: object
     additionalProperties: false
     properties:
       firstName:
@@ -740,7 +742,9 @@ definitions:
           type:
             $ref: '#/definitions/PersonType'
           attributes:
-            $ref: '#/definitions/PersonPostAttributes'
+            allOf:
+              - $ref: '#/definitions/PersonPostRequired'
+              - $ref: '#/definitions/PersonPostAttributes'
   SupervisorAttributes:
     type: object
     required:
@@ -1258,12 +1262,14 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/MealPlanResource'
-  AddressPostAttributes:
+  AddressPostRequired:
     type: object
     required:
       - addressType
       - addressLine1
       - city
+  AddressPostAttributes:
+    type: object
     additionalProperties: false
     properties:
       addressType:
@@ -1371,8 +1377,10 @@ definitions:
           type:
             $ref: '#/definitions/AddressType'
           attributes:
-            $ref: '#/definitions/AddressPostAttributes'
-  PhonePostAttributes:
+            allOf:
+              - $ref: '#/definitions/AddressPostRequired'
+              - $ref: '#/definitions/AddressPostAttributes'
+  PhonePostRequired:
     type: object
     required:
       - addressType
@@ -1380,6 +1388,8 @@ definitions:
       - areaCode
       - phoneNumber
       - primaryInd
+  PhonePostAttributes:
+    type: object
     additionalProperties: false
     properties:
       areaCode:
@@ -1475,7 +1485,9 @@ definitions:
           type:
             $ref: '#/definitions/PhoneType'
           attributes:
-            $ref: '#/definitions/PhonePostAttributes'
+            allOf:
+              - $ref: '#/definitions/PhonePostRequired'
+              - $ref: '#/definitions/PhonePostAttributes'
   EmailPostAttributes:
     type: object
     required:
