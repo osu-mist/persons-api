@@ -772,7 +772,7 @@ definitions:
       suffix:
         type: string
         description: Suffix of the supervisor.
-  JobPostAttributes:
+  JobPostRequired:
     type: object
     required:
       - positionNumber
@@ -780,8 +780,16 @@ definitions:
       - beginDate
       - supervisor
       - effectiveDate
+  JobAttributes:
+    type: object
     additionalProperties: false
     properties:
+      suffix:
+        type: string
+        description: >
+          Used to uniquely identify a job record for persons who have
+          multiple jobs that share the same position number.
+          For updating existing jobs, this field is required.
       positionNumber:
         type: string
         description: Identifies a position.
@@ -1107,20 +1115,6 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
-  JobPatchAttributes:
-    type: object
-    required: [suffix]
-    properties:
-      suffix:
-        type: string
-        description: >
-          Used to uniquely identify a job record for persons who have
-          multiple jobs that share the same position number.
-          For updating existing jobs, this field is required.
-  JobAttributes:
-    allOf:
-      - $ref: '#/definitions/JobPatchAttributes'
-      - $ref: '#/definitions/JobPostAttributes'
   JobId:  
     type: string
     description: Uniquely identifies a job record for the given person.
@@ -1166,7 +1160,9 @@ definitions:
           type:
             $ref: '#/definitions/JobType'
           attributes:
-            $ref: '#/definitions/JobPostAttributes'
+            allOf:
+              - $ref: '#/definitions/JobPostRequired'
+              - $ref: '#/definitions/JobAttributes'
   JobPatchBody:
     type: object
     required:
@@ -1184,9 +1180,7 @@ definitions:
           type:
             $ref: '#/definitions/JobType'
           attributes:
-            allOf:
-              - $ref: '#/definitions/JobPatchAttributes'
-              - $ref: '#/definitions/JobPostAttributes'
+              $ref: '#/definitions/JobAttributes'
   SsnPostAttributes:
     type: object
     required:
