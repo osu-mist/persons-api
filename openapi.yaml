@@ -230,6 +230,8 @@ paths:
         - $ref: '#/parameters/osuId'
         - in: query
           name: width
+          # Maximum of 2000 is chosen due to it being a sufficiently
+          # large size and the response size starts to balloon at this value
           maximum: 2000
           minimum: 1
           default: 100
