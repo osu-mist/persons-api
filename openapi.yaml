@@ -503,10 +503,10 @@ parameters:
     description: Filter based on the jobs type of employment
     required: false
     type: array
-    enum: &employmentTypeEnums
-      - student
-      - graduate
     items:
+      enum: &employmentTypeEnums
+        - student
+        - graduate
       collectionFormat: csv
       type: string
   addressType:
