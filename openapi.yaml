@@ -1293,6 +1293,7 @@ definitions:
       ssn:
         type: string
         description: 9 digits SSN
+        pattern: '^\d{9}$'
         example: '123456789'
   SsnPostBody:
     type: object
