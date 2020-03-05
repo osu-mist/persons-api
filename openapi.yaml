@@ -86,18 +86,25 @@ paths:
           description: >
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
-        - name: filter[status]
+        - name: filter[statusCode]
           in: query
           type: string
           enum: &jobStatusEnums
-            - Active
-            - Leave without pay but with benefits
-            - Leave without pay and benefits
-            - Leave with full pay and benefits
-            - Leave with partial pay and benefits
-            - Terminated
+            - A
+            - B
+            - L
+            - F
+            - P
+            - T
           required: false
-          description: Filter by the status of the job
+          description: |
+            Filter by the status of the job
+            - `A` - Active
+            - `B` - Leave without pay but with benefits
+            - `L` - Leave without pay and benefits
+            - `F` - Leave with full pay and benefits
+            - `P` - Leave with partial pay and benefits
+            - `T` - Terminated
         - name: filter[campusCode]
           in: query
           type: string
@@ -858,9 +865,12 @@ definitions:
             type: string
             description: ID of campus where this job will be performed.
       status:
-        type: string
-        description: Job status.
-        enum: *jobStatusEnums
+        type: object
+        properties:
+          code:
+            type: string
+            description: Job status.
+            enum: *jobStatusEnums
       jobDescription:
         type: string
         description: Description of job.
@@ -1093,6 +1103,12 @@ definitions:
           description:
             type: string
             description: Description of campus code
+      status:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of status code
       changeReason:
         type: object
         properties:
