@@ -889,46 +889,52 @@ definitions:
             description: Description for the strsAssignment code
       supervisor:
         $ref: '#/definitions/SupervisorAttributes'
-      timesheetCode:
+      timesheet:
         type: object
         properties:
-          code:
-            type: string
-            description: Organization code where the time sheet is sent for the job.
-            example: '123456'
-          description:
-            type: string
-            description: Organization title where timesheet is sent for the job.
-      timesheetPredCode:
+          current:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Organization code where the time sheet is sent for the job.
+                example: '123456'
+              description:
+                type: string
+                description: Organization title where timesheet is sent for the job.
+          predecessor:
+            type: object
+            properties:
+              code:
+                type: string
+                description: The next higher organizational code of the current timesheet organization.
+                example: '123456'
+              description:
+                type: string
+                description: The next higher organizational title of the current timesheet organization.
+      homeOrganization:
         type: object
         properties:
-          code:
-            type: string
-            description: The next higher organizational code of the current timesheet organization.
-            example: '123456'
-          description:
-            type: string
-            description: The next higher organizational title of the current timesheet organization.
-      homeOrganizationCode:
-        type: object
-        properties:
-          code:
-            type: string
-            description: The home organization code of the employee.
-            example: '123456'
-          description:
-            type: string
-            description: The home organization title of the employee.
-      homeOrganizationPredCode:
-        type: object
-        properties:
-          code:
-            type: string
-            description: The next higher organizational code of the current home organization.
-            example: '123456'
-          description:
-            type: string
-            description: The next higher organizational title of the current home organization.
+          current:
+            type: object
+            properties:
+              code:
+                type: string
+                description: The home organization code of the employee.
+                example: '123456'
+              description:
+                type: string
+                description: The home organization title of the employee.
+          predecessor:
+            type: object
+            properties:
+              code:
+                type: string
+                description: The next higher organizational code of the current home organization.
+                example: '123456'
+              description:
+                type: string
+                description: The next higher organizational title of the current home organization.
       hourlyRate:
         type: number
         format: float
