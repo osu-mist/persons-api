@@ -1356,7 +1356,7 @@ definitions:
   AddressSetResult:
     type: object
     properties:
-      links:  
+      links:
         $ref: '#/definitions/SelfLink'
       data:
         type: array
