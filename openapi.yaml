@@ -98,7 +98,7 @@ paths:
             - Terminated
           required: false
           description: Filter by the status of the job
-        - name: filter[campusId]
+        - name: filter[campusCode]
           in: query
           type: string
           required: false
