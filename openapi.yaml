@@ -877,20 +877,6 @@ definitions:
         format: float
         description: FTE presented as a whole percentage.
         example: 25
-      salaryStep:
-        type: string
-        format: integer
-        example: 1
-      salaryGroup:
-        type: object
-        properties:
-          code:
-            type: string
-            description: Salary group code for the job.
-            example: 12345A
-          description:
-            type: string
-            description: Description for salary group code
       strsAssignment:
         type: object
         properties:
@@ -953,6 +939,28 @@ definitions:
         format: float
         description: Hours per payment for the job.
         example: 173.33
+      salary:
+        type: object
+        properties:
+          annual:
+            type: number
+            format: float
+            description: Annual salary for the job.
+            example: 30000.50
+          step:
+            type: number
+            format: integer
+            example: 1
+          group:
+            type: object
+            properties:
+              code:
+                type: string
+                description: Salary group code for the job.
+                example: 12345A
+              description:
+                type: string
+                description: Description for salary group code
       assignmentSalary:
         type: number
         format: float
@@ -983,11 +991,6 @@ definitions:
           description:
             type: string
             description: Description of employer identification code
-      annualSalary:
-        type: number
-        format: float
-        description: Annual salary for the job.
-        example: 30000.50
       earnCode:
         type: object
         properties:
