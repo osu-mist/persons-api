@@ -672,15 +672,12 @@ definitions:
         type: string
         description: ONID username
         example: smithj
-      isConfidential:
+      confidentialInd:
         type: boolean
         description: If true, the person has opted in to being required to be listed as confidential
-      isCurrentStudent:
+      currentStudentInd:
         type: boolean
         description: True if person is a current student
-      isCurrentEmployee:
-        type: boolean
-        description: True if person is a current employee
       employeeStatus:
         type: object
         properties:
@@ -1009,7 +1006,7 @@ definitions:
       earnCodeShift:
         type: string
         description: Shift code used as a default on timesheet for earnCode.
-      useTemporarySsn:
+      useTemporarySsnInd:
         type: boolean
         description: When creating or updating a job, this field indicates the employee needs a temporary social security number assigned.
       employeeInformationReleaseInd:
