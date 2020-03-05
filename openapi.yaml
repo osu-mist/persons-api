@@ -269,7 +269,7 @@ paths:
           format: float
           required: false
           description: Filter results based on the remaining balance.
-        - name: filter[lastUsedDateTime][gt]
+        - name: filter[lastUsedDateTime][lte]
           in: query
           type: string
           format: date-time
