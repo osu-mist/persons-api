@@ -1324,15 +1324,18 @@ definitions:
         format: float
         description: Remaining balance on meal plan in USD.
         example: 3.50
-      lastUsedDateTime:
-        type: string
-        format: date-time
-        description: The last time the meal plan was used.
-        example: '2017-07-14T16:45:15Z'
-      lastUsedLocation:
-        type: string
-        description: Description of the place the meal plan was last used.
-        example: Java II
+      lastUsed:
+        type: object
+        properties:
+          dateTime:
+            type: string
+            format: date-time
+            description: The last time the meal plan was used.
+            example: '2017-07-14T16:45:15Z'
+          location:
+            type: string
+            description: Description of the place the meal plan was last used.
+            example: Java II
   MealPlanResource:
     type: object
     properties:
