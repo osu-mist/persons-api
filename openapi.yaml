@@ -786,6 +786,14 @@ definitions:
       - beginDate
       - supervisor
       - effectiveDate
+    properties:
+      laborDistribution:
+        type: array
+        items:
+          required:
+            - effectiveDate
+            - accountIndexCode
+            - distributionPercent
   JobPostAttributes:
     type: object
     additionalProperties: false
@@ -1022,10 +1030,6 @@ definitions:
       laborDistribution:
         type: array
         items:
-          required:
-            - effectiveDate
-            - accountIndexCode
-            - distributionPercent
           properties:
             effectiveDate:
               type: string
@@ -1264,8 +1268,8 @@ definitions:
             $ref: '#/definitions/JobType'
           attributes:
             allOf:
-              - $ref: '#/definitions/JobPostRequired'
               - $ref: '#/definitions/JobPostAttributes'
+              - $ref: '#/definitions/JobPostRequired'
   JobPatchBody:
     type: object
     required:
