@@ -642,9 +642,6 @@ definitions:
               - `R` - Resident Alien
               - `S` - Substantial Presence Alien
               - `C` - Citizen
-          description:
-            type: string
-            description: Description field for the code
       sex:
         type: string
         enum: [M, F, N]
@@ -703,6 +700,12 @@ definitions:
           - valid
           - invalid
         description: SSN status
+      citizen:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description field for the code
   PersonResource:
     type: object
     properties:
@@ -783,7 +786,7 @@ definitions:
       - beginDate
       - supervisor
       - effectiveDate
-  JobAttributes:
+  JobPostAttributes:
     type: object
     additionalProperties: false
     properties:
@@ -840,18 +843,12 @@ definitions:
               - `P` - Primary
               - `S` - Secondary
               - `O` - Overload
-          description:
-            type: string
-            description: Description of contract code
       campus:
         type: object
         properties:
           code:
             type: string
-            description: Id of campus where this job will be performed.
-          description:
-            type: string
-            description: Description of campus code
+            description: ID of campus where this job will be performed.
       status:
         type: string
         description: Job status.
@@ -863,10 +860,13 @@ definitions:
         type: string
         format: date
         description: Date the last change was made to the job record.
-        example: '1970-1-1'
-      changeReasonCode:
-        type: string
-        description: The reason the last change was made to the job record.
+        example: '1970-01-01'
+      changeReason:
+        type: object
+        properties:
+          code:
+            type: string
+            description: The reason the last change was made to the job record.
       fullTimeEquivalency:
         type: number
         format: float
@@ -884,9 +884,6 @@ definitions:
             type: string
             description: STRS assignment code for the job.
             example: '12'
-          description:
-            type: string
-            description: Description for the strsAssignment code
       supervisor:
         $ref: '#/definitions/SupervisorAttributes'
       timesheet:
@@ -899,9 +896,6 @@ definitions:
                 type: string
                 description: Organization code where the time sheet is sent for the job.
                 example: '123456'
-              description:
-                type: string
-                description: Organization title where timesheet is sent for the job.
           predecessor:
             type: object
             properties:
@@ -909,9 +903,6 @@ definitions:
                 type: string
                 description: The next higher organizational code of the current timesheet organization.
                 example: '123456'
-              description:
-                type: string
-                description: The next higher organizational title of the current timesheet organization.
       homeOrganization:
         type: object
         properties:
@@ -922,9 +913,6 @@ definitions:
                 type: string
                 description: The home organization code of the employee.
                 example: '123456'
-              description:
-                type: string
-                description: The home organization title of the employee.
           predecessor:
             type: object
             properties:
@@ -932,9 +920,6 @@ definitions:
                 type: string
                 description: The next higher organizational code of the current home organization.
                 example: '123456'
-              description:
-                type: string
-                description: The next higher organizational title of the current home organization.
       hourlyRate:
         type: number
         format: float
@@ -953,6 +938,16 @@ definitions:
             format: float
             description: Annual salary for the job.
             example: 30000.50
+          assignment:
+            type: number
+            format: float
+            description: The salary to be paid each pay period.
+            example: 1670.83
+          paysPerYear:
+            type: number
+            format: float
+            description: The number of pays per calendar year.
+            example: 12.0
           step:
             type: number
             format: integer
@@ -964,19 +959,6 @@ definitions:
                 type: string
                 description: Salary group code for the job.
                 example: 12345A
-              description:
-                type: string
-                description: Description for salary group code
-      assignmentSalary:
-        type: number
-        format: float
-        description: The salary to be paid each pay period.
-        example: 1670.83
-      paysPerYear:
-        type: number
-        format: float
-        description: The number of pays per calendar year.
-        example: 12.0
       employeeClassification:
         type: object
         properties:
@@ -984,9 +966,6 @@ definitions:
             type: string
             description: The employee class attached to the job, based on the Employee Class entered on the Position Form (NBAPOSN).
             example: CA
-          description:
-            type: string
-            description: Description of the employee classification code
       employerIdentification:
         type: object
         properties:
@@ -994,27 +973,21 @@ definitions:
             type: string
             description: Employer identification code.
             example: ORST
-          description:
-            type: string
-            description: Description of employer identification code
-      earnCode:
+      earningCode:
         type: object
         properties:
+          hours:
+            type: number
+            format: float
+            description: Hours/units defaulted on timesheets for earnCode.
+            example: 173.33
+          shift:
+            type: string
+            description: Shift code used as a default on timesheet for earnCode.
           code:
             type: string
             description: Default earnings code attached to the job and used on timesheet.
             example: REG
-          description:
-            type: string
-            description: Description of earn code
-      earnCodeHours:
-        type: number
-        format: float
-        description: Hours/units defaulted on timesheets for earnCode.
-        example: 173.33
-      earnCodeShift:
-        type: string
-        description: Shift code used as a default on timesheet for earnCode.
       useTemporarySsnInd:
         type: boolean
         description: When creating or updating a job, this field indicates the employee needs a temporary social security number assigned.
@@ -1035,9 +1008,6 @@ definitions:
           code:
             type: string
             description: Retirement code
-          description:
-            type: string
-            description: Description of retirement code
       i9Form:
         type: object
         properties:
@@ -1049,9 +1019,6 @@ definitions:
               - `N` - Not Received
               - `T` - Temporary
               - `E` - Exempt
-          description:
-            type: string
-            description: Description of i9Form code
       laborDistribution:
         type: array
         items:
@@ -1071,62 +1038,184 @@ definitions:
                 code:
                   type: string
                   example: ABC123
+            fund:
+              type: object
+              properties:
+                code:
+                  type: string
+            organization:
+              type: object
+              properties:
+                code:
+                  type: string
+            account:
+              type: object
+              properties:
+                code:
+                  type: string
+            program:
+              type: object
+              properties:
+                code:
+                  type: string
+            activity:
+              type: object
+              properties:
+                code:
+                  type: string
+            location:
+              type: object
+              properties:
+                code:
+                  type: string
+            distributionPercent:
+              type: number
+              format: float
+              description: Percentage of labor applied to this fund.
+              example: 49.9
+  JobAttributes:
+    type: object
+    additionalProperties: false
+    properties:
+      contractType:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of contract code
+      campus:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of campus code
+      changeReason:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of change reason code
+      strsAssignment:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description for the strsAssignment code
+      timesheet:
+        type: object
+        properties:
+          current:
+            type: object
+            properties:
+              description:
+                type: string
+                description: Organization title where timesheet is sent for the job.
+          predecessor:
+            type: object
+            properties:
+              description:
+                type: string
+                description: The next higher organizational title of the current timesheet organization.
+      homeOrganization:
+        type: object
+        properties:
+          current:
+            type: object
+            properties:
+              description:
+                type: string
+                description: The home organization title of the employee.
+          predecessor:
+            type: object
+            properties:
+              description:
+                type: string
+                description: The next higher organizational title of the current home organization.
+      salary:
+        type: object
+        properties:
+          group:
+            type: object
+            properties:
+              description:
+                type: string
+                description: Description for salary group code
+      employeeClassification:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of the employee classification code
+      employerIdentification:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of employer identification code
+      earningCode:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of earn code
+      retirement:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of retirement code
+      i9Form:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Description of i9Form code
+      laborDistribution:
+        type: array
+        items:
+          properties:
+            accountIndex:
+              type: object
+              properties:
                 description:
                   type: string
                   description: Description of account index code
             fund:
               type: object
               properties:
-                code:
-                  type: string
                 description:
                   type: string
                   description: Description of fund code
             organization:
               type: object
               properties:
-                code:
-                  type: string
                 description:
                   type: string
                   description: Description of organization code
             account:
               type: object
               properties:
-                code:
-                  type: string
                 description:
                   type: string
                   description: Description of account code
             program:
               type: object
               properties:
-                code:
-                  type: string
                 description:
                   type: string
                   description: Description of program code
             activity:
               type: object
               properties:
-                code:
-                  type: string
                 description:
                   type: string
                   description: Description of activity code
             location:
               type: object
               properties:
-                code:
-                  type: string
                 description:
                   type: string
                   description: Description of location code
-            distributionPercent:
-              type: number
-              format: float
-              description: Percentage of labor applied to this fund.
-              example: 49.9
   JobId:  
     type: string
     description: Uniquely identifies a job record for the given person.
@@ -1141,7 +1230,9 @@ definitions:
       links:
         $ref: '#/definitions/SelfLink'
       attributes:
-        $ref: '#/definitions/JobAttributes'
+        allOf:
+          - $ref: '#/definitions/JobPostAttributes'
+          - $ref: '#/definitions/JobAttributes'
   JobSetResult:
     type: object
     properties:
@@ -1174,7 +1265,7 @@ definitions:
           attributes:
             allOf:
               - $ref: '#/definitions/JobPostRequired'
-              - $ref: '#/definitions/JobAttributes'
+              - $ref: '#/definitions/JobPostAttributes'
   JobPatchBody:
     type: object
     required:
@@ -1192,7 +1283,7 @@ definitions:
           type:
             $ref: '#/definitions/JobType'
           attributes:
-              $ref: '#/definitions/JobAttributes'
+              $ref: '#/definitions/JobPostAttributes'
   SsnPostAttributes:
     type: object
     required:
@@ -1281,9 +1372,12 @@ definitions:
     additionalProperties: false
     properties:
       addressType:
-        type: string
-        enum: *addressTypeEnums
-        description: Code for the type of address record.
+        type: object
+        properties:
+          code:
+            type: string
+            enum: *addressTypeEnums
+            description: Code for the type of address record.
       addressLine1:
         type: string
         example: 123 Main Street
@@ -1318,10 +1412,13 @@ definitions:
   AddressAttributes:
     type: object
     properties:
-      addressTypeDescription:
-        type: string
-        description: Short description of the address type.
-        example: Current Mailing
+      addressType:
+        type: object
+        properties:
+          description:
+            type: string
+            description: Short description of the address type.
+            example: Current Mailing
       state:
         type: string
         description: Human readable state code. This could also represent a province.
