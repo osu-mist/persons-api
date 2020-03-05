@@ -628,7 +628,7 @@ definitions:
         type: string
         format: date
         description: Birthday of person
-        example: '1970-1-21'
+        example: '1970-01-21'
       citizen:
         type: object
         properties:
@@ -805,17 +805,17 @@ definitions:
         type: string
         format: date
         description: The date this job assignment is effective.
-        example: '1970-1-21'
+        example: '1970-01-21'
       beginDate:
         type: string
         format: date
         description: Begin date of job.
-        example: '1970-1-21'
+        example: '1970-01-21'
       endDate:
         type: string
         format: date
         description: End date of job.
-        example: '1971-2-15'
+        example: '1971-02-15'
       accruesLeaveInd:
         type: boolean
         description: If true, the job accrues leave time.
@@ -823,12 +823,12 @@ definitions:
         type: string
         format: date
         description: The date the contract begins.
-        example: '1970-1-21'
+        example: '1970-01-21'
       contractEndDate:
         type: string
         format: date
         description: The date the contract ends.
-        example: '1971-2-21'
+        example: '1971-02-21'
       contractType:
         type: object
         properties:
@@ -1028,7 +1028,7 @@ definitions:
         type: string
         format: date
         description: The date that the employee accepted or denied to have their salary information shared.
-        example: '1970-1-1'
+        example: '1970-01-01'
       retirement:
         type: object
         properties:
@@ -1064,7 +1064,7 @@ definitions:
               type: string
               format: date
               description: Date this labor distribution becomes effective.
-              example: '1970-1-1'
+              example: '1970-01-01'
             accountIndex:
               type: object
               properties:
@@ -1338,7 +1338,7 @@ definitions:
         type: string
         format: date
         description: The date this address record was last modified.
-        example: '1970-1-1'
+        example: '1970-01-01'
   AddressResource:
     type: object
     properties:
@@ -1539,7 +1539,7 @@ definitions:
         type: string
         format: date
         description: Date of last activity for this email
-        example: '1970-1-1'
+        example: '1970-01-01'
   EmailResource:
     type: object
     properties:
