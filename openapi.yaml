@@ -675,6 +675,7 @@ components:
           example: Smith
         middleName:
           type: string
+          nullable: true
           description: Middle name of person
           example: Adam
         birthDate:
@@ -687,6 +688,7 @@ components:
           properties:
             code:
               type: string
+              nullable: true
               enum: [FN, N, R, S, C]
               description: |
                 Person's citizen code
@@ -697,6 +699,7 @@ components:
                 - `C` - Citizen
         sex:
           type: string
+          nullable: true
           enum:
             [M, F, N]
           description: |
@@ -709,32 +712,39 @@ components:
       properties:
         displayFirstName:
           type: string
+          nullable: true
           description: Preferred first name
           example: John
         displayMiddleName:
           type: string
+          nullable: true
           description: Preferred middle name
           example: Adam
         displayLastName:
           type: string
+          nullable: true
           description: Preferred last name
           example: Smith
         onid:
           type: string
+          nullable: true
           description: ONID username
           example: smithj
         confidentialInd:
           type: boolean
+          nullable: true
           description: If true, the person has opted in to being required to be listed as
             confidential
         currentStudentInd:
           type: boolean
+          nullable: true
           description: True if person is a current student
         employeeStatus:
           type: object
           properties:
             code:
               type: string
+              nullable: true
               enum:
                 [A, B, L, F, P, T]
               description: |
@@ -747,10 +757,12 @@ components:
                 - `T` - Terminated
             description:
               type: string
+              nullable: true
               description: Description of employee status code
               example: Active
         ssnStatus:
           type: string
+          nullable: true
           enum:
             [vault, valid, invalid]
           description: SSN status
@@ -759,6 +771,7 @@ components:
           properties:
             description:
               type: string
+              nullable: true
               description: Description field for the code
     PersonResource:
       type: object
@@ -823,6 +836,7 @@ components:
         email:
           type: string
           format: email
+          nullable: true
           description: The primary email of the supervisor for the job.
           example: john.smith@example.com
         positionNumber:
@@ -831,6 +845,7 @@ components:
           example: C12345
         suffix:
           type: string
+          nullable: true
           description: Suffix of the supervisor.
     JobPostRequired:
       type: object
@@ -854,6 +869,7 @@ components:
       properties:
         suffix:
           type: string
+          nullable: true
           description: >
             Used to uniquely identify a job record for persons who have multiple
             jobs that share the same position number. For updating existing
@@ -878,6 +894,7 @@ components:
           example: '1970-01-21'
         endDate:
           type: string
+          nullable: true
           format: date
           description: End date of job.
           example: '1971-02-15'
@@ -886,16 +903,19 @@ components:
           description: If true, the job accrues leave time.
         contractBeginDate:
           type: string
+          nullable: true
           format: date
           description: The date the contract begins.
           example: '1970-01-21'
         contractEndDate:
           type: string
+          nullable: true
           format: date
           description: The date the contract ends.
           example: '1971-02-21'
         contractType:
           type: object
+          nullable: true
           properties:
             code:
               type: string
@@ -908,6 +928,7 @@ components:
                 - `O` - Overload
         campus:
           type: object
+          nullable: true
           properties:
             code:
               type: string
@@ -921,25 +942,30 @@ components:
               enum: *statusCodeEnums
         jobDescription:
           type: string
+          nullable: true
           description: Description of job.
         personnelChangeDate:
           type: string
+          nullable: true
           format: date
           description: Date the last change was made to the job record.
           example: '1970-01-01'
         changeReason:
           type: object
+          nullable: true
           properties:
             code:
               type: string
               description: The reason the last change was made to the job record.
         fullTimeEquivalency:
           type: number
+          nullable: true
           format: float
           description: Full time equivalency where full time = 1.
           example: 0.25
         appointmentPercent:
           type: number
+          nullable: true
           format: float
           description: FTE presented as a whole percentage.
           example: 25
@@ -948,6 +974,7 @@ components:
           properties:
             code:
               type: string
+              nullable: true
               description: STRS assignment code for the job.
               example: '12'
         supervisor:
@@ -960,6 +987,7 @@ components:
               properties:
                 code:
                   type: string
+                  nullable: true
                   description: Organization code where the time sheet is sent for the job.
                   example: '123456'
             predecessor:
@@ -967,6 +995,7 @@ components:
               properties:
                 code:
                   type: string
+                  nullable: true
                   description: The next higher organizational code of the current timesheet
                     organization.
                   example: '123456'
@@ -978,6 +1007,7 @@ components:
               properties:
                 code:
                   type: string
+                  nullable: true
                   description: The home organization code of the employee.
                   example: '123456'
             predecessor:
@@ -985,16 +1015,19 @@ components:
               properties:
                 code:
                   type: string
+                  nullable: true
                   description: The next higher organizational code of the current home
                     organization.
                   example: '123456'
         hourlyRate:
           type: number
+          nullable: true
           format: float
           description: Hourly pay rate of the job.
           example: 12.85
         hoursPerPay:
           type: number
+          nullable: true
           format: float
           description: Hours per payment for the job.
           example: 173.33
@@ -1003,25 +1036,30 @@ components:
           properties:
             annual:
               type: number
+              nullable: true
               format: float
               description: Annual salary for the job.
               example: 30000.5
             assignment:
               type: number
+              nullable: true
               format: float
               description: The salary to be paid each pay period.
               example: 1670.83
             paysPerYear:
               type: number
+              nullable: true
               format: float
               description: The number of pays per calendar year.
               example: 12
             step:
               type: number
+              nullable: true
               format: integer
               example: 1
             group:
               type: object
+              nullable: true
               properties:
                 code:
                   type: string
@@ -1032,6 +1070,7 @@ components:
           properties:
             code:
               type: string
+              nullable: true
               description: The employee class attached to the job, based on the Employee
                 Class entered on the Position Form (NBAPOSN).
               example: CA
@@ -1040,6 +1079,7 @@ components:
           properties:
             code:
               type: string
+              nullable: true
               description: Employer identification code.
               example: ORST
         earningCode:
@@ -1047,14 +1087,17 @@ components:
           properties:
             hours:
               type: number
+              nullable: true
               format: float
               description: Hours/units defaulted on timesheets for earnCode.
               example: 173.33
             shift:
               type: string
+              nullable: true
               description: Shift code used as a default on timesheet for earnCode.
             code:
               type: string
+              nullable: true
               description: Default earnings code attached to the job and used on timesheet.
               example: REG
         useTemporarySsnInd:
@@ -1071,6 +1114,7 @@ components:
             information shared.
         salaryInformationReleaseDate:
           type: string
+          nullable: true
           format: date
           description: The date that the employee accepted or denied to have their salary
             information shared.
@@ -1080,12 +1124,14 @@ components:
           properties:
             code:
               type: string
+              nullable: true
               description: Retirement code
         i9Form:
           type: object
           properties:
             code:
               type: string
+              nullable: true
               description: |
                 Code to indicate the status of the employee's I9 form.
                 - `R` - Received
@@ -1112,31 +1158,37 @@ components:
                 properties:
                   code:
                     type: string
+                    nullable: true
               organization:
                 type: object
                 properties:
                   code:
                     type: string
+                    nullable: true
               account:
                 type: object
                 properties:
                   code:
                     type: string
+                    nullable: true
               program:
                 type: object
                 properties:
                   code:
                     type: string
+                    nullable: true
               activity:
                 type: object
                 properties:
                   code:
                     type: string
+                    nullable: true
               location:
                 type: object
                 properties:
                   code:
                     type: string
+                    nullable: true
               distributionPercent:
                 type: number
                 format: float
@@ -1151,30 +1203,35 @@ components:
           properties:
             description:
               type: string
+              nullable: true
               description: Description of contract code
         campus:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of campus code
         status:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of status code
         changeReason:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of change reason code
         strsAssignment:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description for the strsAssignment code
         timesheet:
           type: object
@@ -1184,12 +1241,14 @@ components:
               properties:
                 description:
                   type: string
+                  nullable: true
                   description: Organization title where timesheet is sent for the job.
             predecessor:
               type: object
               properties:
                 description:
                   type: string
+                  nullable: true
                   description: The next higher organizational title of the current
                     timesheet organization.
         homeOrganization:
@@ -1200,12 +1259,14 @@ components:
               properties:
                 description:
                   type: string
+                  nullable: true
                   description: The home organization title of the employee.
             predecessor:
               type: object
               properties:
                 description:
                   type: string
+                  nullable: true
                   description: The next higher organizational title of the current home
                     organization.
         salary:
@@ -1216,36 +1277,42 @@ components:
               properties:
                 description:
                   type: string
+                  nullable: true
                   description: Description for salary group code
         employeeClassification:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of the employee classification code
         employerIdentification:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of employer identification code
         earningCode:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of earn code
         retirement:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of retirement code
         i9Form:
           type: object
           properties:
             description:
               type: string
+              nullable: true
               description: Description of i9Form code
         laborDistribution:
           type: array
@@ -1256,42 +1323,49 @@ components:
                 properties:
                   description:
                     type: string
+                    nullable: true
                     description: Description of account index code
               fund:
                 type: object
                 properties:
                   description:
                     type: string
+                    nullable: true
                     description: Description of fund code
               organization:
                 type: object
                 properties:
                   description:
                     type: string
+                    nullable: true
                     description: Description of organization code
               account:
                 type: object
                 properties:
                   description:
                     type: string
+                    nullable: true
                     description: Description of account code
               program:
                 type: object
                 properties:
                   description:
                     type: string
+                    nullable: true
                     description: Description of program code
               activity:
                 type: object
                 properties:
                   description:
                     type: string
+                    nullable: true
                     description: Description of activity code
               location:
                 type: object
                 properties:
                   description:
                     type: string
+                    nullable: true
                     description: Description of location code
     JobId:
       type: string
@@ -1406,11 +1480,13 @@ components:
           properties:
             dateTime:
               type: string
+              nullable: true
               format: date-time
               description: The last time the meal plan was used.
               example: '2017-07-14T16:45:15Z'
             location:
               type: string
+              nullable: true
               description: Description of the place the meal plan was last used.
               example: Java II
     MealPlanResource:
@@ -1464,30 +1540,39 @@ components:
           example: 123 Main Street
         addressLine2:
           type: string
+          nullable: true
           example: Apartment 4
         addressLine3:
           type: string
+          nullable: true
         addressLine4:
           type: string
+          nullable: true
         houseNumber:
           type: string
+          nullable: true
           example: '620'
         city:
           type: string
+          nullable: true
           example: Corvallis
         stateCode:
           type: string
+          nullable: true
           enum: *stateCodeEnums
           description: State code/abbreviation. This could also represent a province.
           example: OR
         postalCode:
           type: string
+          nullable: true
           example: '97331'
         countyCode:
           type: string
+          nullable: true
           example: '41003'
         nationCode:
           type: string
+          nullable: true
           enum: *nationCodeEnums
           description: Code for the nation of the address
     AddressAttributes:
@@ -1498,22 +1583,27 @@ components:
           properties:
             description:
               type: string
+              nullable: true
               description: Short description of the address type.
               example: Current Mailing
         state:
           type: string
+          nullable: true
           description: Human readable state code. This could also represent a province.
           example: Oregon
         county:
           type: string
+          nullable: true
           description: Human readable county.
           example: Benton
         nation:
           type: string
+          nullable: true
           description: Human readable nation/country name.
           example: Albania
         lastModified:
           type: string
+          nullable: true
           format: date
           description: The date this address record was last modified.
           example: '1970-01-01'
@@ -1590,6 +1680,7 @@ components:
           pattern: ^[0-9]{1,7}$
         phoneExtension:
           type: string
+          nullable: true
           description: Extension for the phone number. Can be returned in different formats.
           example: '20'
           pattern: ^[0-9]{1,4}$
@@ -1634,6 +1725,7 @@ components:
               example: Current Mailing
         lastModified:
           type: string
+          nullable: true
           format: date
           description: The date of the most recent change made to this record.
           example: '2015-10-19'
@@ -1718,12 +1810,14 @@ components:
           example: john.smith@example.com
         comment:
           type: string
+          nullable: true
           description: Comment associated with this email
         preferredInd:
           type: boolean
           description: Indicator for a preferred email
         lastActivityDate:
           type: string
+          nullable: true
           format: date
           description: Date of last activity for this email
           example: '1970-01-01'
