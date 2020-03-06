@@ -1598,13 +1598,19 @@ components:
           description: Indicates if this phone number is marked as the primary number.
           example: true
         phoneType:
-          type: string
-          description: Enum marking which type of address this phone number matches with.
-          enum: *phoneTypeEnums
+          type: object
+          properties:
+            code:
+              type: string
+              description: Enum marking which type of address this phone number matches with.
+              enum: *phoneTypeEnums
         addressType:
-          type: string
-          description: Enum marking which type of address this phone number matches with.
-          enum: *addressTypeEnums
+          type: object
+          properties:
+            code:
+              type: string
+              description: Enum marking which type of address this phone number matches with.
+              enum: *addressTypeEnums
     PhoneAttributes:
       type: object
       properties:
@@ -1612,14 +1618,20 @@ components:
           type: string
           description: Combination of area code and phone number.
           example: '5414443333'
-        phoneTypeDescription:
-          type: string
-          description: Describes the phone type enum.
-          example: Current
-        addressTypeDescription:
-          type: string
-          description: Describes the address type enum.
-          example: Current Mailing
+        phoneType:
+          type: object
+          properties:
+            description:
+              type: string
+              description: Describes the phone type enum.
+              example: Current
+        addressType:
+          type: object
+          properties:
+            description:
+              type: string
+              description: Describes the address type enum.
+              example: Current Mailing
         lastModified:
           type: string
           format: date
