@@ -1617,7 +1617,7 @@ definitions:
             allOf:
               - $ref: '#/definitions/PhonePostRequired'
               - $ref: '#/definitions/PhonePostAttributes'
-  EmailPostAttributes:
+  EmailAttributes:
     type: object
     required:
       - emailType
@@ -1653,9 +1653,6 @@ definitions:
       preferredInd:
         type: boolean
         description: Indicator for a preferred email
-  EmailAttributes:
-    type: object
-    properties:
       lastActivityDate:
         type: string
         format: date
@@ -1673,9 +1670,7 @@ definitions:
       links:
         $ref: '#/definitions/SelfLink'
       attributes:
-        allOf:
-          - $ref: '#/definitions/EmailPostAttributes'
-          - $ref: '#/definitions/EmailAttributes'
+        $ref: '#/definitions/EmailAttributes'
   EmailSetResult:
     type: object
     properties:
