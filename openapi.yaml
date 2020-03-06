@@ -451,15 +451,15 @@ paths:
           items:
             type: string
             collectionFormat: csv
+            enum: &emailTypeEnums
+              - ONID
+              - STU
+              - VEND
+              - VWEB
+              - EMPL
+              - VPAY
+              - EMER
           required: false
-          enum: &emailTypeEnums
-            - ONID
-            - STU
-            - VEND
-            - VWEB
-            - EMPL
-            - VPAY
-            - EMER
           description: |
             Type of email
             - `ONID` - Student
