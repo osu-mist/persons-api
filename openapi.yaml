@@ -297,8 +297,7 @@ paths:
         - name: filter[lastUsedDateTime][gte]
           in: query
           required: false
-          description: Filter results based on the last date and time the meal-plan was
-            used.
+          description: Filter results based on the last date and time the meal-plan was used.
           schema:
             type: string
             format: date-time
