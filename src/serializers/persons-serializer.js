@@ -6,9 +6,6 @@ import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
 import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
 
-console.log('-------------------------');
-console.log(openapi.components.schemas.PersonResult);
-console.log('-------------------------');
 const personResourceProp = openapi.components.schemas.PersonResult.properties.data.properties;
 const personResourceType = personResourceProp.type.example;
 const personResourceKeys = _.keys(personResourceProp.attributes.properties);
