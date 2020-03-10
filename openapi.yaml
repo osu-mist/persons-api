@@ -1,111 +1,50 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
   title: Persons API
   description: Get information about people at OSU.
-  version: '2.0.0'
+  version: v2
   license:
     name: GNU Affero General Public License Version 3
     url: http://www.gnu.org/licenses/agpl-3.0.en.html
+  contact:
+    name: IS Data Architecture Team
+    url: https://is.oregonstate.edu/data-architecture
+    email: isdataarchitecture@oregonstate.edu
+servers:
+  - url: https://api.oregonstate.edu/v2
 externalDocs:
   description: GitHub Repository
   url: https://github.com/osu-mist/persons-api
-host: api.oregonstate.edu
-schemes:
-  - https
-basePath: /v2
-produces:
-  - application/json
-consumes:
-  - application/json
+security:
+  - OAuth2:
+    - full
 paths:
   /persons:
-    get:
-      description: Get general personal information, query by various identifiers
-      tags:
-        - persons
-      operationId: getPersons
-      parameters:
-        - in: query
-          name: onid
-          required: false
-          description: ONID login name
-          type: string
-        - in: query
-          name: osuId
-          required: false
-          description: >
-            OSU ID of one or more persons. Multiple IDs can be retrieved
-            in a single request by separating with a comma. IDs that are not
-            able to be found will not be returned in the response.
-            Example: /persons?osuId=1,2,3
-          type: array
-          items:
-            type: string
-          collectionFormat: csv
-        - in: query
-          name: osuUid
-          required: false
-          description: OSUUID of a person. Public identifier given in Directory API
-          type: number
-          format: integer
-        - in: query
-          name: firstName
-          required: false
-          description: First name of a person, for fuzzy name searching.
-          type: string
-        - in: query
-          name: lastName
-          required: false
-          description: Last name of a person, for fuzzy name searching.
-          type: string
-        - in: query
-          name: searchOldNames
-          required: false
-          default: false
-          description: If true, searching by name will also search old names associated with the person.
-          type: boolean
-        - in: query
-          name: searchOldOsuIds
-          required: false
-          default: false
-          description: If true, searching by OSU ID will also search old OSU ID's associated with the person.
-          type: boolean
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
-      responses:
-        200:
-          description: Successful response
-          schema:
-            $ref: '#/definitions/PersonResultObject'
-        400:
-          description: Bad request
-          schema:
-            $ref: '#/definitions/Error'
     post:
       description: Create a person
       tags:
         - persons
       operationId: postPerson
-      parameters:
-        - name: personBody
-          in: body
-          description: Result object for a person
-          required: true
-          schema:
-            $ref: '#/definitions/NewPersonResultObject'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonPostBody'
+        required: true
       responses:
-        202:
-          # The backend data source needs to do additional processing with the new person record.
-          # Return a 202 to indicate the record was accepted but not yet created.
-          description: Person record accepted.
-          schema:
-            $ref: '#/definitions/PersonResultObject'
-        400:
-          description: Bad request
-          schema:
-            $ref: '#/definitions/ErrorArray'
+        '202':
+          description: The backend data source needs to do additional processing with the
+            new person record. Person record accepted but not yet created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}:
     get:
       description: Get general person information
@@ -113,18 +52,18 @@ paths:
         - persons
       operationId: getPersonById
       parameters:
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/PersonResultObject'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResult'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}/jobs:
     get:
       description: Get jobs associated with a person
@@ -132,175 +71,199 @@ paths:
         - jobs
       operationId: getJobs
       parameters:
-        - name: positionNumber
+        - $ref: '#/components/parameters/osuId'
+        - name: filter[positionNumber]
           in: query
-          type: string
-          description: Filter by position ID.
           required: false
-        - name: suffix
+          description: Filter by position ID.
+          schema:
+            type: string
+        - name: filter[suffix]
           in: query
-          type: string
-          description: |
+          required: false
+          description: >
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
+          schema:
+            type: string
+        - name: filter[statusCode]
+          in: query
           required: false
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+          description: |
+            Filter by the status of the job
+            - `A` - Active
+            - `B` - Leave without pay but with benefits
+            - `L` - Leave without pay and benefits
+            - `F` - Leave with full pay and benefits
+            - `P` - Leave with partial pay and benefits
+            - `T` - Terminated
+          schema:
+            type: string
+            enum:
+              &statusCodeEnums [A, B, L, F, P, T]
+        - name: filter[campusCode]
+          in: query
+          required: false
+          description: |
+            Filter results by campus ID. Common campus IDs:
+            - `02A` - Corvallis
+            - `09A` - Bend
+            - `21B` - Newport
+            - `31E` - Eastern
+            - `26C` - Portland
+          schema:
+            type: string
+            enum: ['47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '33D', '33E', '33F', '33G', '34A', '34B', '34C', '34D', '34E', '34F', '34G', '34H', '34I', '35A', '35B', '36A', '36B', '36C', '36D', '36E', '36F', '36G', '36H', '36I', '37', '40', '41', '42', '43', '44', '45', '46', '29E', '29F', '29G', '30A', '30B', '30C', '30D', '30E', '30F', '30G', '30H', '30I', '30J', '30K', '30L', '31A', '31B', '31C', '31D', '31E', '31F', '31G', '31H', '32A', '32B', '32C', '32D', '33A', '33B', '33C', '24M', '24N', '24O', '24P', '24Q', '24R', '24S', '25A', '25B', '25C', '25D', '25E', '26A', '26B', '26C', '26D', '26E', '27A', '27B', '27C', '27D', '27E', '28A', '28B', '28C', '29A', '29B', '29C', '29D', '21B', '21C', '21D', '21E', '22A', '22B', '22C', '22D', '22E', '22F', '22G', '22H', '22I', '23A', '23B', '23C', '23D', '23E', '23F', '24A', '24B', '24C', '24D', '24E', '24F', '24G', '24H', '24I', '24J', '24K', '24L', '15E', '15F', '15G', '15H', '15I', '15J', '16A', '16B', '16C', '17A', '17B', '18A', '18B', '18C', '18D', '18E', '19A', '19B', '19C', '20A', '20B', '20C', '20D', '20E', '20F', '20G', '20H', '20I', '21A', '10F', '10G', '10H', '10I', '10J', '10K', '11A', '11B', '11C', '12A', '12B', '12C', '12D', '12E', '12F', '12G', '12H', '12I', '13A', '13B', '13C', '13D', '13E', '14A', '14B', '15A', '15B', '15C', '15D', '01A', '01B', '01C', '01D', '01E', '01F', '01G', '01H', '01I', '02A', '02B', '02C', '03A', '03B', '03C', '03D', '03E', '03F', '03G', '03H', '03I', '03J', '03K', '03L', '04A', '04B', '04C', '04D', '04E', '05A', '05B', '05C', '05D', '05E', '05F', '05G', '05H', '06A', '06B', '06C', '06D', '06E', '06F', '06G', '06H', '06I', '07A', '08A', '08B', '08C', '09A', '09B', '09C', '10A', '10B', '10C', '10D', '10E', '87', '88', '89', '16D', '34J', '20J', '03M', '02D', '02E', '07B', '13F', '25F', '06J', '05I', '03N', '34K', '20K', '34L', '24T', '10L', '09D', '09E', '27F', '20L', '37A', '27G', '22J']
+        - $ref: '#/components/parameters/employmentType'
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/JobsResultObject'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobSetResult'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
     post:
       description: Create a job record for a person
       tags:
         - jobs
       operationId: postJob
       parameters:
-        - name: jobBody
-          in: body
-          description: Result object for a job
-          required: true
-          schema:
-            $ref: '#/definitions/NewJobResultObject'
-        - $ref: '#/parameters/employmentType'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPostBody'
+        required: true
       responses:
-        202:
-          # The backend data source needs to do additional processing with the new job record.
-          # Return a 202 to indicate the record was accepted but not yet created.
-          description: Job record accepted.
-          schema:
-            $ref: '#/definitions/JobResultObject'
-        400:
-          description: Bad request
-          schema:
-            $ref: '#/definitions/ErrorArray'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+        '202':
+          description: The backend data source needs to do additional processing with the
+            new job record. Job record accepted but not yet created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}/jobs/{jobId}:
     get:
-      description: Get a specific job associated with a person.
+      description: Get a specific job associated with a person
       tags:
         - jobs
-      operationId: getJob
+      operationId: getJobById
       parameters:
-        - $ref: '#/parameters/jobId'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/jobId'
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/JobResultObject'
-        404:
-          description: Person or job not found
-          schema:
-            $ref: '#/definitions/Error'
-    put:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResult'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
       description: Update a job record for a person
       tags:
         - jobs
-      operationId: putJob
+      operationId: patchJobById
       parameters:
-        - name: jobBody
-          in: body
-          description: Result object for a job
-          required: true
-          schema:
-            $ref: '#/definitions/NewJobResultObject'
-        - $ref: '#/parameters/employmentType'
-        - $ref: '#/parameters/jobId'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/jobId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPatchBody'
+        description: patch body for a job
+        required: true
       responses:
-        202:
-          # The backend data source needs to do additional processing with the new job record.
-          # Return a 202 to indicate the record was accepted but not yet created.
-          description: Job record accepted.
-          schema:
-            $ref: '#/definitions/JobResultObject'
-        400:
-          description: Bad request
-          schema:
-            $ref: '#/definitions/ErrorArray'
-        404:
-          description: Person or job not found
-          schema:
-            $ref: '#/definitions/Error'
+        '202':
+          description: The backend data source needs to do additional processing with the
+            updated job record. Job record accepted but not yet updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}/ssn:
     post:
-      description: Create person's SSN
+      description: Create a person's SSN
       tags:
         - ssn
-      operationId: postSSN
+      operationId: postSsn
       parameters:
-        - name: ssnBody
-          in: body
-          description: Result object for an SSN
-          required: true
-          schema:
-            $ref: '#/definitions/NewSSNResultObject'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SsnPostBody'
+        description: SSN post body
+        required: true
       responses:
-        202:
-          description: SSN record accepted.
-          schema:
-            $ref: '#/definitions/SSNResultObject'
-        400:
-          description: Bad request
-          schema:
-            $ref: '#/definitions/ErrorArray'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
-  /persons/{osuId}/image:
+        '204':
+          description: SSN accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+  /persons/{osuId}/images:
     get:
-      description: |
-        Get an ID card image for a person. If the person exists but doesn't have
-        an ID card image, a default image will be returned.
+      description: Get a person's image
       tags:
         - images
-      operationId: getImage
-      produces:
-        - image/jpeg
-        - application/json
+      operationId: getImages
       parameters:
+        - $ref: '#/components/parameters/osuId'
         - in: query
           name: width
-          description: Resizes image to a pixel value for width while keeping original aspect ratio
+          description: Resizes image to a pixel value for width while keeping original
+            aspect ratio
           required: false
-          type: integer
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 2000
+            default: 100
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            type: file
-          headers:
-              Content-type:
+          content:
+            image/jpeg:
+              schema:
                 type: string
-                description: image/jpeg
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+                format: binary
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}/meal-plans:
     get:
       description: Get meal plans for a person
@@ -308,17 +271,49 @@ paths:
         - meal-plans
       operationId: getMealPlans
       parameters:
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+        - name: filter[balance][gt]
+          in: query
+          required: false
+          description: Filter results based on the remaining balance.
+          schema:
+            type: number
+            format: float
+        - name: filter[balance][gte]
+          in: query
+          required: false
+          description: Filter results based on the remaining balance.
+          schema:
+            type: number
+            format: float
+        - name: filter[lastUsedDateTime][lte]
+          in: query
+          required: false
+          description: Filter results based on the last date and time the meal-plan was
+            used.
+          schema:
+            type: string
+            format: date-time
+        - name: filter[lastUsedDateTime][gte]
+          in: query
+          required: false
+          description: Filter results based on the last date and time the meal-plan was used.
+          schema:
+            type: string
+            format: date-time
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/MealPlansResultObject'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MealPlanSetResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}/meal-plans/{mealPlanId}:
     get:
       description: Get a specific meal plan for a person
@@ -326,22 +321,19 @@ paths:
         - meal-plans
       operationId: getMealPlanById
       parameters:
-        - in: path
-          name: mealPlanId
-          description: ID of meal plan
-          required: true
-          type: string
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/mealPlanId'
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/MealPlanResultObject'
-        404:
-          description: Person or meal plan not found
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MealPlanResult'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}/addresses:
     get:
       description: Get addresses for a person
@@ -349,45 +341,78 @@ paths:
         - addresses
       operationId: getAddresses
       parameters:
-        - $ref: '#/parameters/addressType'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+        - name: filter[city]
+          in: query
+          required: false
+          description: Filter results by city.
+          schema:
+            type: string
+        - name: filter[county]
+          in: query
+          required: false
+          description: Filter results by county.
+          schema:
+            type: string
+        - name: filter[stateCode]
+          in: query
+          required: false
+          description: Filter results by state code.
+          schema:
+            type: string
+            enum:
+              &stateCodeEnums [DE, NJ, PA, DC, NY, CA, VA, NC, TX, FL, HI, WV, MT, GA, MD, OH, IN, AK, AL, AR, AZ, CO, CT, IA, ID, IL, KS, KY, LA, MA, ME, MI, MN, MO, MS, ND, NE, NH, NM, NV, OK, OR, RI, SC, SD, TN, UT, VT, WA, WI, WY, VI, TT, PR, GU, CZ, AS, BC, NT, AB, ON, SK, NB, NF, NS, PE, PQ, MP, FM, MH, PW, MB, YT, AP, AE, AA, FC, FR, NU, BY, ENG]
+        - name: filter[nationCode]
+          in: query
+          required: false
+          description: Filter results by nation code.
+          schema:
+            type: string
+            enum:
+              &nationCodeEnums [FPL, ARE, ARW, KSA, QSG, ESL, GES, CSD, KSY, HTT, ETG, JUY, JVE, KYD, AZM, FAL, GAD, JAR, HBS, KBH, PBT, ABI, QBU, LCA, BCG, OTW, OCN, ICR, GDK, ISV, AET, NPF, BGA, SGL, HHT, GIS, KIQ, HJM, AKE, DLS, CLY, GMC, HMQ, AMZ, NPG, ENE, MNZ, JPY, HAI, HAG, EBJ, FBY, MCX, NCK, JFK, NGU, HLC, FAM, FMD, FEE, FLT, OMO, FHR, DNA, JGY, GDE, HPM, QVN, QBN, CEH, RHM, HKN, NNR, NPN, BST, NTK, FMK, FSR, FTX, FTI, QMM, AER, FBO, FAJ, NSB, FUA, FRU, FGE, FBA, GAT, FYU, LBM, RBV, BCF, MCC, HCU, HDO, QTP, CEG, JGF, GGR, HGD, EGN, OHK, KIR, KIL, KJO, KLB, GLU, AMG, GMT, AYO, IMX, OMN, GNL, NNC, ENG, OKP, PPK, JPE, KQA, FRO, ESN, ADJ, DZA, HVC, KOM, JSR, ATZ, CTN, NTV, GGB, NVU, NWF, FBG, QID, GIT, GPT, AZW, FSK, BCM, DBW, EGW, EML, FHU, FKZ, GCH, GLI, GSM, HBB, HVG, IGT, KAE, KKW, NFJ, QKH, QPH, NUM, KGZ, FKK, HBL, COD, ASO, PLK, GSE, DSZ, QTH, KTR, GVA, NWS, BZR, PAF, CDZ, BAO, MAU, PBD, GBE, IBZ, JBO, JBR, PIO, BTD, JCL, JCO, ECV, KCY, JEC, BGQ, GFI, GFR, EGM, HGP, IHN, GIE, ECI, OJP, OKR, ELR, AMW, CMA, AMU, QMY, PNP, INI, GNO, IPA, LUS, RAQ, HAW, EBF, HKY, AKM, HDM, GFO, RTF, FKG, FUZ, FLV, PMV, FSI, HAN, EGH, PIN, EMR, AUG, KYE, NTO, GGI, NKI, HMS, NNU, ASC, HTC, FEZ, FMW, NNF, QLA, IAN, KWE, FTM, HMF, FKV]
+        - $ref: '#/components/parameters/addressType'
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/AddressesResultObject'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressSetResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
     post:
       description: Create address for a person
       tags:
         - addresses
-      operationId: postAddresses
+      operationId: postAddress
       parameters:
-        - name: addressBody
-          in: body
-          description: Post body for the new address
-          required: true
-          schema:
-            $ref: '#/definitions/NewAddressResultObject'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressPostBody'
+        description: Post body for new address
+        required: true
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/AddressResultObject'
-        400:
-          description: Bad request
-          schema:
-            $ref: '#/definitions/ErrorArray'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
   /persons/{osuId}/phones:
     get:
       description: Get phone numbers for a person
@@ -395,859 +420,1464 @@ paths:
         - phones
       operationId: getPhones
       parameters:
-        - $ref: '#/parameters/addressType'
-        - $ref: '#/parameters/phoneType'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/addressType'
+        - $ref: '#/components/parameters/phoneType'
+        - name: filter[primaryInd]
+          in: query
+          required: false
+          description: Filter on primary or non-primary phone numbers
+          schema:
+            type: boolean
       responses:
-        200:
+        '200':
           description: Successful response
-          schema:
-            $ref: '#/definitions/PhonesResultObject'
-        400:
-          description: Bad request
-          schema:
-            $ref: '#/definitions/ErrorArray'
-        404:
-          description: Person not found
-          schema:
-            $ref: '#/definitions/Error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneSetResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
     post:
-      description: Create phone numbers for a person
+      description: Create phone number for a person
       tags:
         - phones
-      operationId: createPhones
+      operationId: postPhone
       parameters:
-        - name: phoneBody
-          in: body
-          description: Post body for the new Phone
-          required: true
-          schema:
-            $ref: '#/definitions/NewPhoneResultObject'
-        - $ref: '#/parameters/osuId'
-        - $ref: '#/parameters/authorization'
+        - $ref: '#/components/parameters/osuId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhonePostBody'
+        description: Post body for the new phone
+        required: true
       responses:
-        200:
+        '200':
           description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+  /persons/{osuId}/emails:
+    get:
+      description: Get emails for a person
+      tags:
+        - emails
+      operationId: getEmails
+      parameters:
+        - $ref: '#/components/parameters/osuId'
+        - name: filter[emailType]
+          in: query
+          required: false
+          description: |
+            Type of email
+            - `ONID` - Student
+            - `STU` - Non-directory Student
+            - `VEND` - Vendor
+            - `VWEB` - Vendor
+            - `EMPL` - Employee
+            - `VPAY` - Vendor Pay
+            - `EMER` - Emergency Contact Persons Email for Student
           schema:
-            $ref: '#/definitions/PhoneResultObject'
-        400:
-          description: Bad request
+            type: array
+            items:
+              type: string
+              enum: 
+                &emailTypeEnums [ONID, STU, VEND, VWEB, EMPL, VPAY, EMER]
+        - name: filter[preferredInd]
+          in: query
+          description: Filter on preferred email addresses
           schema:
-            $ref: '#/definitions/ErrorArray'
-        404:
-          description: Person not found
+            type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailSetResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  parameters:
+    osuId:
+      name: osuId
+      in: path
+      required: true
+      description: OSU ID of a person
+      schema:
+        type: string
+        pattern: ^\d{9}$
+    jobId:
+      name: jobId
+      in: path
+      description: ID of the specific job to be updated
+      required: true
+      schema:
+        type: string
+    mealPlanId:
+      name: mealPlanId
+      in: path
+      description: ID of meal plan
+      required: true
+      schema:
+        type: string
+    employmentType:
+      name: filter[employmentType]
+      in: query
+      description: Filter based on the jobs type of employment
+      required: false
+      schema:
+        type: array
+        items:
+          enum:
+            &employmentTypeEnums [student, graduate]
+          type: string
+    addressType:
+      name: filter[addressType]
+      in: query
+      required: false
+      description: |
+        Filter by address type. Common address types and their description:
+        - `PA` - Student Alternate Contact
+        - `RN` - Geographic Origin-First Admit
+        - `RB` - Research Billing
+        - `RE` - Billing Address
+        - `RK` - Financial Aid Address
+        - `VO` - Vendor Order
+        - `VP` - Vendor Payment
+        - `XX` - Reserved for TGRFEED Use Only
+        - `CM` - Current Mailing
+        - `DM` - Department (US Mail)
+        - `EO` - Employee Office (Directory)
+        - `RH` - Residence Hall
+        - `PR` - Payroll W2 Address
+        - `MA` - Reserved for SRTLOAD Use Only
+        - `SV` - International -SEVIS
+        - `JA` - Job Application (HR use only)
+      schema:
+        type: string
+        enum:
+          &addressTypeEnums [PA, RN, RB, RE, RK, VO, VP, XX, CM, DM, EO, RH, PR, MA, SV, JA]
+    phoneType:
+      name: filter[phoneType]
+      in: query
+      required: false
+      description: |
+        Filter by phone type. Phone types and their descriptions:
+        - `PA` - Student Alternate Contact
+        - `RN` - Geographic Origin-First Admit
+        - `RB` - Research Billing
+        - `MG` - Mailing Address (Grades)
+        - `RE` - Billing Phone
+        - `RK` - Financial Aid Address
+        - `VO` - Vendor Order
+        - `VP` - Vendor Payment
+        - `VF` - Vendor Fax
+        - `CM` - Current
+        - `EO` - Employee Office (Directory)
+        - `RH` - Residence Hall
+        - `EF` - Employee Office Fax
+        - `MP` - Mobile Phone
+      schema:
+        type: string
+        enum:
+          &phoneTypeEnums [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
+  responses:
+    '400':
+      description: Bad request
+      content:
+        application/json:
           schema:
-            $ref: '#/definitions/Error'
-
-parameters:
-  osuId:
-    name: osuId
-    in: path
-    required: true
-    description: OSU ID of person
-    type: string
-  jobId:
-    name: jobId
-    in: path
-    description: ID of the specific job to be updated
-    required: true
-    type: string
-  employmentType:
-    name: employmentType
-    in: query
-    description: The type of employment that the job record should be processed as.
-    required: true
-    type: string
-    enum: [student, graduate]
-  pretty:
-    name: pretty
-    in: query
-    type: boolean
-    required: false
-    description: If true, JSON response will be pretty-printed
-  authorization:
-    name: Authorization
-    in: header
-    type: string
-    required: true
-    description: '"Bearer [token]" where [token] is your OAuth2 access token'
-  addressType:
-    name: addressType
-    in: query
-    description: |
-      Filter by phone type. Common phone types and their descriptions:
-      - 'CM' - Current Mailing
-      - 'PA' - Student Alternate Contact
-      - 'DM' - Department (US Mail)
-      - 'RK' - Financial Aid Address
-      - 'RH' - Residence Hall
-    required: false
-    type: string
-    enum: &ADDRESSTYPEENUM
-      - RN
-      - MG
-      - VO
-      - RE
-      - RB
-      - VP
-      - VF
-      - RK
-      - CM
-      - EF
-      - RH
-      - EO
-      - PA
-      - MP
-  phoneType:
-    name: phoneType
-    in: query
-    description: |
-      Filter by phone type. Common phone types and their descriptions:
-      - 'CM' - Current
-      - 'PA' - Student Alternate Contact
-      - 'RK' - Financial Aid Address
-      - 'MP' - Mobile Phone
-    required: false
-    type: string
-    enum: &PHONETYPEENUM
-      - PA
-      - RN
-      - RB
-      - MG
-      - RE
-      - RK
-      - VO
-      - VP
-      - VF
-      - CM
-      - EO
-      - RH
-      - EF
-      - MP
-definitions:
-  NewPersonResultObject:
-    properties:
-      data:
-        $ref: '#/definitions/NewPersonResourceObject'
-  NewPersonResourceObject:
-    properties:
-      type:
-        $ref: '#/definitions/PersonType'
-      attributes:
-        required:
-        - name
+            $ref: '#/components/schemas/ErrorResult'
+    '404':
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+    '409':
+      description: Type or ID conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.oregonstate.edu/oauth2/token
+          scopes:
+            full: Full access to the API
+  schemas:
+    PersonType:
+      type: string
+      enum: [person]
+    JobType:
+      type: string
+      enum: [job]
+    SsnType:
+      type: string
+      enum: [ssn]
+    MealPlanType:
+      type: string
+      enum: [meal-plans]
+    AddressType:
+      type: string
+      enum: [addresses]
+    PhoneType:
+      type: string
+      enum: [phones]
+    EmailType:
+      type: string
+      enum: [emails]
+    PersonPostRequired:
+      type: object
+      required:
+        - firstName
+        - lastName
         - birthDate
         - sex
-        properties:
-          name:
+    PersonPostAttributes:
+      type: object
+      additionalProperties: false
+      properties:
+        firstName:
+          type: string
+          description: First name of person
+          example: John
+        lastName:
+          type: string
+          description: Last name of person
+          example: Smith
+        middleName:
+          type: string
+          nullable: true
+          description: Middle name of person
+          example: Adam
+        birthDate:
+          type: string
+          format: date
+          description: Birthday of person
+          example: '1970-01-21'
+        citizen:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              enum: [FN, N, R, S, C]
+              description: |
+                Person's citizen code
+                - `FN` - Foreign National
+                - `N` - Non Resident Alien
+                - `R` - Resident Alien
+                - `S` - Substantial Presence Alien
+                - `C` - Citizen
+        sex:
+          type: string
+          nullable: true
+          enum:
+            [M, F, N]
+          description: |
+            Person's sex code
+            - `M` - Male
+            - `F` - Female
+            - `N` - Non-specified
+    PersonAttributes:
+      type: object
+      properties:
+        displayFirstName:
+          type: string
+          nullable: true
+          description: Preferred first name
+          example: John
+        displayMiddleName:
+          type: string
+          nullable: true
+          description: Preferred middle name
+          example: Adam
+        displayLastName:
+          type: string
+          nullable: true
+          description: Preferred last name
+          example: Smith
+        onid:
+          type: string
+          nullable: true
+          description: ONID username
+          example: smithj
+        confidentialInd:
+          type: boolean
+          nullable: true
+          description: If true, the person has opted in to being required to be listed as
+            confidential
+        currentStudentInd:
+          type: boolean
+          nullable: true
+          description: True if person is a current student
+        employeeStatus:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              enum:
+                [A, B, L, F, P, T]
+              description: |
+                The status of the employee:
+                - `A` - Active
+                - `B` - Leave without pay and with benefits
+                - `L` - Leave without pay and without benefits
+                - `F` - Leave with pay and with benefits
+                - `P` - Leave with partial pay and with benefits
+                - `T` - Terminated
+            description:
+              type: string
+              nullable: true
+              description: Description of employee status code
+              example: Active
+        ssnStatus:
+          type: string
+          nullable: true
+          enum:
+            [vault, valid, invalid]
+          description: SSN status
+        citizen:
+          type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+              description: Description field for the code
+    PersonResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: OSU ID of a person
+          pattern: ^\d{9}$
+        type:
+          $ref: '#/components/schemas/PersonType'
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          allOf:
+            - $ref: '#/components/schemas/PersonPostAttributes'
+            - $ref: '#/components/schemas/PersonAttributes'
+    PersonResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/PersonResource'
+    PersonPostBody:
+      type: object
+      required:
+        - data
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          additionalProperties: false
+          properties:
+            type:
+              $ref: '#/components/schemas/PersonType'
+            attributes:
+              allOf:
+                - $ref: '#/components/schemas/PersonPostRequired'
+                - $ref: '#/components/schemas/PersonPostAttributes'
+    SupervisorAttributes:
+      type: object
+      required:
+        - osuId
+        - positionNumber
+      additionalProperties: false
+      properties:
+        osuId:
+          type: string
+          description: OSU ID of the supervisor for the job.
+          pattern: ^\d{9}$
+        firstName:
+          type: string
+          description: First name of the supervisor for the job.
+          example: John
+        lastName:
+          type: string
+          description: Last name of the supervisor for the job.
+          example: Smith
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: The primary email of the supervisor for the job.
+          example: john.smith@example.com
+        positionNumber:
+          type: string
+          description: Position number for the supervisor.
+          example: C12345
+        suffix:
+          type: string
+          nullable: true
+          description: Suffix of the supervisor.
+    JobPostRequired:
+      type: object
+      required:
+        - positionNumber
+        - employmentType
+        - beginDate
+        - supervisor
+        - effectiveDate
+      properties:
+        laborDistribution:
+          type: array
+          items:
+            required:
+              - effectiveDate
+              - accountIndexCode
+              - distributionPercent
+    JobPostAttributes:
+      type: object
+      additionalProperties: false
+      properties:
+        suffix:
+          type: string
+          nullable: true
+          description: >
+            Used to uniquely identify a job record for persons who have multiple
+            jobs that share the same position number. For updating existing
+            jobs, this field is required.
+        positionNumber:
+          type: string
+          description: Identifies a position.
+          example: C12345
+        employmentType:
+          type: string
+          enum: *employmentTypeEnums
+          description: Type of employment.
+        effectiveDate:
+          type: string
+          format: date
+          description: The date this job assignment is effective.
+          example: '1970-01-21'
+        beginDate:
+          type: string
+          format: date
+          description: Begin date of job.
+          example: '1970-01-21'
+        endDate:
+          type: string
+          nullable: true
+          format: date
+          description: End date of job.
+          example: '1971-02-15'
+        accruesLeaveInd:
+          type: boolean
+          description: If true, the job accrues leave time.
+        contractBeginDate:
+          type: string
+          nullable: true
+          format: date
+          description: The date the contract begins.
+          example: '1970-01-21'
+        contractEndDate:
+          type: string
+          nullable: true
+          format: date
+          description: The date the contract ends.
+          example: '1971-02-21'
+        contractType:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+              enum:
+                [P, S, O]
+              description: |
+                Contract type code/Id.
+                - `P` - Primary
+                - `S` - Secondary
+                - `O` - Overload
+        campus:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+              description: ID of campus where this job will be performed.
+        status:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Job status.
+              enum: *statusCodeEnums
+        jobDescription:
+          type: string
+          nullable: true
+          description: Description of job.
+        personnelChangeDate:
+          type: string
+          nullable: true
+          format: date
+          description: Date the last change was made to the job record.
+          example: '1970-01-01'
+        changeReason:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+              description: The reason the last change was made to the job record.
+        fullTimeEquivalency:
+          type: number
+          nullable: true
+          format: float
+          description: Full time equivalency where full time = 1.
+          example: 0.25
+        appointmentPercent:
+          type: number
+          nullable: true
+          format: float
+          description: FTE presented as a whole percentage.
+          example: 25
+        strsAssignment:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              description: STRS assignment code for the job.
+              example: '12'
+        supervisor:
+          $ref: '#/components/schemas/SupervisorAttributes'
+        timesheet:
+          type: object
+          properties:
+            current:
+              type: object
+              properties:
+                code:
+                  type: string
+                  nullable: true
+                  description: Organization code where the time sheet is sent for the job.
+                  example: '123456'
+            predecessor:
+              type: object
+              properties:
+                code:
+                  type: string
+                  nullable: true
+                  description: The next higher organizational code of the current timesheet
+                    organization.
+                  example: '123456'
+        homeOrganization:
+          type: object
+          properties:
+            current:
+              type: object
+              properties:
+                code:
+                  type: string
+                  nullable: true
+                  description: The home organization code of the employee.
+                  example: '123456'
+            predecessor:
+              type: object
+              properties:
+                code:
+                  type: string
+                  nullable: true
+                  description: The next higher organizational code of the current home
+                    organization.
+                  example: '123456'
+        hourlyRate:
+          type: number
+          nullable: true
+          format: float
+          description: Hourly pay rate of the job.
+          example: 12.85
+        hoursPerPay:
+          type: number
+          nullable: true
+          format: float
+          description: Hours per payment for the job.
+          example: 173.33
+        salary:
+          type: object
+          properties:
+            annual:
+              type: number
+              nullable: true
+              format: float
+              description: Annual salary for the job.
+              example: 30000.5
+            assignment:
+              type: number
+              nullable: true
+              format: float
+              description: The salary to be paid each pay period.
+              example: 1670.83
+            paysPerYear:
+              type: number
+              nullable: true
+              format: float
+              description: The number of pays per calendar year.
+              example: 12
+            step:
+              type: number
+              nullable: true
+              format: integer
+              example: 1
+            group:
+              type: object
+              nullable: true
+              properties:
+                code:
+                  type: string
+                  description: Salary group code for the job.
+                  example: 12345A
+        employeeClassification:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              description: The employee class attached to the job, based on the Employee
+                Class entered on the Position Form (NBAPOSN).
+              example: CA
+        employerIdentification:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              description: Employer identification code.
+              example: ORST
+        earningCode:
+          type: object
+          properties:
+            hours:
+              type: number
+              nullable: true
+              format: float
+              description: Hours/units defaulted on timesheets for earnCode.
+              example: 173.33
+            shift:
+              type: string
+              nullable: true
+              description: Shift code used as a default on timesheet for earnCode.
+            code:
+              type: string
+              nullable: true
+              description: Default earnings code attached to the job and used on timesheet.
+              example: REG
+        useTemporarySsnInd:
+          type: boolean
+          description: When creating or updating a job, this field indicates the employee
+            needs a temporary social security number assigned.
+        employeeInformationReleaseInd:
+          type: boolean
+          description: Indicates the employee has consented to having their employment
+            information shared.
+        salaryInformationReleaseInd:
+          type: boolean
+          description: Indicates the employee accepted or denied to have their salary
+            information shared.
+        salaryInformationReleaseDate:
+          type: string
+          nullable: true
+          format: date
+          description: The date that the employee accepted or denied to have their salary
+            information shared.
+          example: '1970-01-01'
+        retirement:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              description: Retirement code
+        i9Form:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              description: |
+                Code to indicate the status of the employee's I9 form.
+                - `R` - Received
+                - `N` - Not Received
+                - `T` - Temporary
+                - `E` - Exempt
+        laborDistribution:
+          type: array
+          items:
             properties:
-              firstName:
-                type: string
-                description: First name
-              lastName:
-                type: string
-                description: Last name
-              middleName:
-                type: string
-                description: Middle name
-          birthDate:
-            type: string
-            format: date
-            description: Birth date
-            example: '1995-01-20'
-          citizen:
-            type: string
-            enum: [FN, N, R, S, C]
-            description: |
-              Person's citzen code
-              - 'FN' - Foreign National
-              - 'N' - Non Resident Alien
-              - 'R' - Resident Alien
-              - 'S' - Substantial Presence Alien
-              - 'C' - Citizen
-          sex:
-            type: string
-            enum: [M, F, N]
-            description: |
-              Person's sex code
-              - 'M' - Male
-              - 'F' - Female
-              - 'N' - Non-specified
-  PersonResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        properties:
-          id:
-            type: string
-            description: 9 digit OSU ID
-          type:
-            $ref: '#/definitions/PersonType'
-          links:
-            $ref: '#/definitions/SelfLink'
-          attributes:
-            properties:
-              username:
-                type: string
-                description: ONID login name
-              osuUid:
-                type: number
-                format: integer
-                description: Unique identifier in the Directory API
-              firstName:
-                type: string
-                description: First name
-              middleName:
-                type: string
-                description: Middle name
-              lastName:
-                type: string
-                description: Last name
-              displayFirstName:
-                type: string
-                description: Display first name
-              displayMiddleName:
-                type: string
-                description: Display middle name
-              displayLastName:
-                type: string
-                description: Display last name
-              previousRecords:
-                type: array
-                description: Previous records associated with the person
-                items:
-                  properties:
-                    osuId:
-                      type: string
-                      description: 9 digit OSU ID
-                      example: '931234567'
-                    firstName:
-                      type: string
-                      description: First name
-                    middleName:
-                      type: string
-                      description: Middle name
-                    lastName:
-                      type: string
-                      description: Last name
-                    preferredName:
-                      type: string
-                      description: Preferred name
-              email:
-                type: string
-                description: Primary email address
-              birthDate:
+              effectiveDate:
                 type: string
                 format: date
-                description: Birth date
-              confidential:
-                type: boolean
-                description: If true, the person has opted in to being required to be listed as confidential
-              currentStudent:
-                type: boolean
-                description: If true, the person is a current student
-              currentEmployee:
-                type: boolean
-                description: If true, the person is a current employee
-              employeeStatus:
-                type: string
-                enum: ['A', 'B', 'L', 'F', 'P', 'T']
-                description: >
-                  The status of the employee:
-                  A - Active
-                  B - Leave without pay and with benefits
-                  L - Leave without pay and without benefits
-                  F - Leave with pay and with benefits
-                  P - Leave with partial pay and with benefits
-                  T - Terminated
-              primaryPhone:
-                type: string
-                description: E.164 formatted phone number.
-              homePhone:
-                type: string
-                description: E.164 formatted phone number.
-              alternatePhone:
-                type: string
-                description: E.164 formatted phone number.
-              mobilePhone:
-                type: string
-                description: E.164 formatted phone number. Capable of SMS communication.
-              ssnStatus:
-                type: string
-                description: SSN status
-                enum:
-                  - vault
-                  - valid
-                  - invalid
-  JobsResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/JobResourceObject'
-  JobResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        $ref: '#/definitions/JobResourceObject'
-  NewJobResultObject:
-    properties:
-      data:
-        $ref: '#/definitions/NewJobResourceObject'
-  JobResourceObject:
-    properties:
-      id:
-        type: string
-        description: Uniquely identifies a job record for the given person.
-        example: C12345-00
-      type:
-        $ref: '#/definitions/JobType'
-      links:
-        $ref: '#/definitions/SelfLink'
-      attributes:
-        $ref: '#/definitions/JobAttributes'
-  NewJobResourceObject:
-    properties:
-      type:
-        $ref: '#/definitions/JobType'
-      attributes:
-        $ref: '#/definitions/JobAttributes'
-  JobAttributes:
-    required:
-      - positionNumber
-      - beginDate
-      - supervisorOsuId
-      - supervisorPositionNumber
-      - effectiveDate
-    properties:
-      positionNumber:
-        type: string
-        description: Identifies a position
-        example: C12345
-      suffix:
-        type: string
-        # TODO: find a better way to describe different required fields for
-        # a given set of attributes. Suffix is required for PUT but not POST.
-        description: |
-          Used to uniquely identify a job record for persons who have
-          multiple jobs that share the same position number.
-          For updating existing jobs, this field is required.
-      effectiveDate:
-        type: string
-        format: date
-        description: The date this job assignment is effective.
-        example: '2018-12-31'
-      beginDate:
-        type: string
-        format: date
-        description: Begin date of job.
-        example: '2018-12-31'
-      endDate:
-        type: string
-        format: date
-        description: End date of job.
-        example: '2019-01-01'
-      accruesLeave:
-        type: boolean
-        description: If true, the job accrues leave.
-      contractBeginDate:
-        type: string
-        format: date
-        description: The date the contract begins.
-        example: '2018-12-31'
-      contractEndDate:
-        type: string
-        format: date
-        description: The date the contract ends.
-        example: '2018-12-31'
-      contractType:
-        type: string
-        description: Contract type code/ID.
-      locationId:
-        type: string
-        description: Location ID of where job will be performed.
-      status:
-        type: string
-        description: Job status
-        enum:
-          - Active
-          - Leave without pay but with benefits
-          - Leave without pay and benefits
-          - Leave with full pay and benefits
-          - Leave with partial pay and benefits
-          - Terminated
-        example: Active
-      description:
-        type: string
-        description: Description of job
-      personnelChangeDate:
-        type: string
-        format: date
-        description: Date the last change was made to the job record.
-        example: '2018-12-31'
-      changeReasonCode:
-        type: string
-        description: The reason the last change was made to the job record.
-      fullTimeEquivalency:
-        type: number
-        format: float
-        description: Full time eqivalency where full time = 1
-        example: 0.49
-      appointmentPercent:
-        type: number
-        format: float
-        description: FTE presented as a whole percentage.
-        example: 49
-      salaryStep:
-        type: string
-        format: integer
-        example: '1'
-      salaryGroupCode:
-        type: string
-      strsAssignmentCode:
-        type: string
-      supervisorOsuId:
-        type: string
-        description: OSU ID of the supervisor for the job.
-      supervisorLastName:
-        type: string
-        description: Last name of the supervisor for the job.
-      supervisorFirstName:
-        type: string
-        description: First name of the supervisor for the job.
-      supervisorEmail:
-        type: string
-        description: The primary email of the supervisor for the job.
-      supervisorPositionNumber:
-        type: string
-        description: Position number of the supervisor.
-      supervisorSuffix:
-        type: string
-        description: Suffix of the supervisor
-      timesheetOrganizationCode:
-        type: string
-        description: Organization code where time sheet is sent for this job.
-      timesheetOrganizationDesc:
-        type: string
-        description: Organization title where time sheet is sent for this job.
-      timesheetOrganizationPredCode:
-        type: string
-        description: The next higher organizational code of the current timesheet organization.
-      timesheetOrganizationPredDesc:
-        type: string
-        description: The next higher organizational title of the current timesheet organization.
-      homeOrganizationCode:
-        type: string
-        description: The home organization code of the employee.
-      homeOrganizationDesc:
-        type: string
-        description: The home organization title of the employee.
-      homeOrganizationPredCode:
-        type: string
-        description: The next higher organizational code of the current home organization.
-      homeOrganizationPredDesc:
-        type: string
-        description: The next higher organizational title of the current home organization.
-      hourlyRate:
-        type: number
-        format: float
-        description: Hourly rate of job
-        example: 12.85
-      hoursPerPay:
-        type: number
-        format: float
-        description: Hours per payment for job.
-        example: 173.33
-      assignmentSalary:
-        type: number
-        format: float
-        description: The salary to be paid each pay period.
-        example: 1670.83
-      paysPerYear:
-        type: number
-        format: float
-        description: The number of pays per calendar year.
-      employeeClassificationCode:
-        type: string
-      employerCode:
-        type: string
-        description: Employer identification code.
-      annualSalary:
-        type: number
-        format: float
-        example: 20050.35
-      earnCodeEffectiveDate:
-        type: string
-        format: date
-        description: The date the earnCode became effective for this job.
-        example: '2018-12-31'
-      earnCode:
-        type: string
-        description: Default earnings code attached to the job and used on timesheet.
-      earnCodeHours:
-        type: number
-        format: float
-        description: Hours/units defaulted on timesheets for earnCode.
-      earnCodeShift:
-        type: string
-        description: Shift code used as a default on timesheet for earnCode.
-      useTemporarySSN:
-        type: boolean
-        description: When creating or updating a job, this field indicates the employee needs a temporary social security number assigned.
-      employeeInformationRelease:
-        type: boolean
-        description: Indicates the employee has consented to having their employment information shared.
-      salaryInformationRelease:
-        type: boolean
-        description: Indicates the employee has consented to having their salary information shared.
-      salaryInformationReleaseDate:
-        type: string
-        format: date
-        description: The date that the employee accepted or denied to have their salary information shared.
-      retirementCode:
-        type: string
-      i9FormCode:
-        type: string
-        description: |
-          Code to indicate the status of the employee's I9 form.
-          Possible values: R - Received, N - Not received, T - Temporary, E - Exempt.
-        enum: [R, N, T, E]
-      i9Date:
-        type: string
-        format: date
-        description: The date that the I9 form was received.
-      i9ExpirationDate:
-        type: string
-        format: date
-        description: The date the I9 form expires.
-      laborDistribution:
-        type: array
-        items:
-          required:
-            - effectiveDate
-            - accountIndexCode
-            - distributionPercent
+                description: Date this labor distribution becomes effective.
+                example: '1970-01-01'
+              accountIndex:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: ABC123
+              fund:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    nullable: true
+              organization:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    nullable: true
+              account:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    nullable: true
+              program:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    nullable: true
+              activity:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    nullable: true
+              location:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    nullable: true
+              distributionPercent:
+                type: number
+                format: float
+                description: Percentage of labor applied to this fund.
+                example: 49.9
+    JobAttributes:
+      type: object
+      additionalProperties: false
+      properties:
+        contractType:
+          type: object
           properties:
-            effectiveDate:
+            description:
               type: string
-              format: date
-              description: Date this labor distribution becomes effective.
-              example: '2018-12-31'
-            accountIndexCode:
+              nullable: true
+              description: Description of contract code
+        campus:
+          type: object
+          properties:
+            description:
               type: string
-              example: ABC123
-            fundCode:
+              nullable: true
+              description: Description of campus code
+        status:
+          type: object
+          properties:
+            description:
               type: string
-            organizationCode:
+              nullable: true
+              description: Description of status code
+        changeReason:
+          type: object
+          properties:
+            description:
               type: string
-            accountCode:
+              nullable: true
+              description: Description of change reason code
+        strsAssignment:
+          type: object
+          properties:
+            description:
               type: string
-            programCode:
+              nullable: true
+              description: Description for the strsAssignment code
+        timesheet:
+          type: object
+          properties:
+            current:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: true
+                  description: Organization title where timesheet is sent for the job.
+            predecessor:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: true
+                  description: The next higher organizational title of the current
+                    timesheet organization.
+        homeOrganization:
+          type: object
+          properties:
+            current:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: true
+                  description: The home organization title of the employee.
+            predecessor:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: true
+                  description: The next higher organizational title of the current home
+                    organization.
+        salary:
+          type: object
+          properties:
+            group:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: true
+                  description: Description for salary group code
+        employeeClassification:
+          type: object
+          properties:
+            description:
               type: string
-            activityCode:
+              nullable: true
+              description: Description of the employee classification code
+        employerIdentification:
+          type: object
+          properties:
+            description:
               type: string
-            locationCode:
+              nullable: true
+              description: Description of employer identification code
+        earningCode:
+          type: object
+          properties:
+            description:
               type: string
-            distributionPercent:
-              type: number
-              format: float
-              description: Percentage of labor applied to this fund.
-              example: 49.9
-  PersonType:
-    type: string
-    example: person
-  JobType:
-    type: string
-    example: jobs
-  SSNType:
-    type: string
-    example: ssn
-  PhoneType:
-    type: string
-    example: phones
-  AddressType:
-    type: string
-    example: addresses
-  MealPlansResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/MealPlanResourceObject'
-  MealPlanResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        $ref: '#/definitions/MealPlanResourceObject'
-  MealPlanResourceObject:
-    properties:
-      id:
-        type: string
-        description: Meal plan ID
-      type:
-        type: string
-        example: meal-plans
-      links:
-          $ref: '#/definitions/SelfLink'
-      attributes:
-        properties:
-          mealPlan:
-            type: string
-            description: Description of meal plan
-            example: Orange Rewards
-          balance:
-            type: number
-            format: float
-            description: Remaining balance on meal plan in USD
-            example: 23.8
-          lastUsedDate:
-            type: string
-            format: date-time
-            description: The last time the meal plan was used
-            example: '2017-07-14T16:45:15Z'
-          lastUsedLocation:
-            type: string
-            description: Description of place the meal plan was last used
-            example: 'Java II'
-  NewAddressResultObject:
-    properties:
-      data:
-        $ref: '#/definitions/NewAddressResourceObject'
-  NewAddressResourceObject:
-    properties:
-      type:
-        $ref: '#/definitions/AddressType'
-      attributes:
-        required:
+              nullable: true
+              description: Description of earn code
+        retirement:
+          type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+              description: Description of retirement code
+        i9Form:
+          type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+              description: Description of i9Form code
+        laborDistribution:
+          type: array
+          items:
+            properties:
+              accountIndex:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    nullable: true
+                    description: Description of account index code
+              fund:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    nullable: true
+                    description: Description of fund code
+              organization:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    nullable: true
+                    description: Description of organization code
+              account:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    nullable: true
+                    description: Description of account code
+              program:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    nullable: true
+                    description: Description of program code
+              activity:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    nullable: true
+                    description: Description of activity code
+              location:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    nullable: true
+                    description: Description of location code
+    JobId:
+      type: string
+      description: Uniquely identifies a job record for the given person.
+      example: C12345-00
+    JobResource:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/JobId'
+        type:
+          $ref: '#/components/schemas/JobType'
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          allOf:
+            - $ref: '#/components/schemas/JobPostAttributes'
+            - $ref: '#/components/schemas/JobAttributes'
+    JobSetResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobResource'
+    JobResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/JobResource'
+    JobPostBody:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          properties:
+            type:
+              $ref: '#/components/schemas/JobType'
+            attributes:
+              allOf:
+                - $ref: '#/components/schemas/JobPostAttributes'
+                - $ref: '#/components/schemas/JobPostRequired'
+    JobPatchBody:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - id
+            - type
+          additionalProperties: false
+          properties:
+            id:
+              $ref: '#/components/schemas/JobId'
+            type:
+              $ref: '#/components/schemas/JobType'
+            attributes:
+              $ref: '#/components/schemas/JobPostAttributes'
+    SsnPostAttributes:
+      type: object
+      required:
+        - ssn
+      additionalProperties: false
+      properties:
+        ssn:
+          type: string
+          description: 9 digits SSN
+          pattern: ^\d{9}$
+          example: '123456789'
+    SsnPostBody:
+      type: object
+      required:
+        - data
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          additionalProperties: false
+          properties:
+            type:
+              $ref: '#/components/schemas/SsnType'
+            attributes:
+              $ref: '#/components/schemas/SsnPostAttributes'
+    MealPlanAttributes:
+      type: object
+      properties:
+        mealPlan:
+          type: string
+          description: Description of meal plan
+          example: Orange Rewards
+        balance:
+          type: number
+          format: float
+          description: Remaining balance on meal plan in USD.
+          example: 3.5
+        lastUsed:
+          type: object
+          properties:
+            dateTime:
+              type: string
+              nullable: true
+              format: date-time
+              description: The last time the meal plan was used.
+              example: '2017-07-14T16:45:15Z'
+            location:
+              type: string
+              nullable: true
+              description: Description of the place the meal plan was last used.
+              example: Java II
+    MealPlanResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Meal plan ID
+          example: '26'
+        type:
+          $ref: '#/components/schemas/MealPlanType'
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          $ref: '#/components/schemas/MealPlanAttributes'
+    MealPlanResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/MealPlanResource'
+    MealPlanSetResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MealPlanResource'
+    AddressPostRequired:
+      type: object
+      required:
         - addressType
+        - addressLine1
         - city
-        properties: &commonAddressAttributes
-          addressType:
-            type: string
-            description: Code for the type of address record.
-            example: CM
-          addressLine1:
-            type: string
-            example: '123 Main Street'
-          addressLine2:
-            type: string
-            example: 'Apartment 123'
-          addressLine3:
-            type: string
-          addressLine4:
-            type: string
-          houseNumber:
-            type: string
-          city:
-            type: string
-          stateCode:
-            type: string
-            description: State code/abbreviation. This could also represent a province.
-            example: 'OR'
-          postalCode:
-            type: string
-            example: '97331'
-          countyCode:
-            type: string
-            example: '41003'
-          nationCode:
-            type: string
-  AddressesResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/AddressResourceObject'
-  AddressResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        $ref: '#/definitions/AddressResourceObject'
-  AddressResourceObject:
-    properties:
-      id:
-        type: string
-        description: Globally unique ID for the address.
-      type:
-        $ref: '#/definitions/AddressType'
-      attributes:
-        properties:
-          <<: *commonAddressAttributes
-          addressTypeDescription:
-            type: string
-            description: Short description of the address type.
-            example: Current Mailing
-          state:
-            type: string
-            description: Human readable state code. This could also represent a province.
-            example: 'Oregon'
-          county:
-            type: string
-            description: Human readable county.
-            example: 'Benton'
-          nation:
-            type: string
-            description: Human readable nation/country name.
-          lastModified:
-            type: string
-            format: date
-            description: The date this address record was last modified.
-  NewSSNResultObject:
-    properties:
-      data:
-        properties:
-          type:
-            $ref: '#/definitions/SSNType'
-          attributes:
-            required:
-              - ssn
-            properties:
-              ssn:
-                type: string
-                pattern: '\d{9}'
-  SSNResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        properties:
-          id:
-            type: string
-            description: 9 digits SSN
-            example: '123456789'
-          type:
-            $ref: '#/definitions/SSNType'
-          links:
-            $ref: '#/definitions/SelfLink'
-          attributes:
-            properties:
-              ssnStatus:
-                type: string
-                description: SSN status
-                enum:
-                  - vault
-                  - valid
-                  - invalid
-  NewPhoneResultObject:
-    properties:
-      data:
-        $ref: '#/definitions/NewPhoneResourceObject'
-  NewPhoneResourceObject:
-    properties:
-      type:
-        $ref: '#/definitions/PhoneType'
-      attributes:
-        required:
-          - addressType
-          - phoneType
-          - areaCode
-          - phoneNumber
-          - primaryIndicator
-        properties: &commonPhoneAttributes
-          areaCode:
-            type: string
-            description: Area code for the phone number.
-            example: '541'
-            pattern: '^[0-9]{1,3}$'
-          phoneNumber:
-            type: string
-            description: Phone number not including the area code.
-            example: '4443333'
-            pattern: '^[0-9]{1,7}$'
-          phoneExtension:
-            type: string
-            description: Extension for the phone number. Can be returned in different formats.
-            example: '20'
-            pattern: '^[0-9]{1,4}$'
-          primaryIndicator:
-            type: boolean
-            description: Indicates if this phone number is marked as the primary number.
-            example: true
-          phoneType:
-            type: string
-            description: Enum marking which type of phone number this is.
-            example: CM
-            enum: *PHONETYPEENUM
-          addressType:
-            type: string
-            description: Enum marking which type of address this phone number matches with.
-            example: CM
-            enum: *ADDRESSTYPEENUM
-  PhonesResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        type: array
-        items:
-          $ref: '#/definitions/PhoneResourceObject'
-  PhoneResultObject:
-    properties:
-      links:
-        $ref: '#/definitions/SelfLink'
-      data:
-        $ref: '#/definitions/PhoneResourceObject'
-  PhoneResourceObject:
-    properties:
-      id:
-        type: string
-        description: Globally unique ID for the phones.
-      type:
-        $ref: '#/definitions/PhoneType'
-      attributes:
-        properties:
-          <<: *commonPhoneAttributes
-          fullPhoneNumber:
-            type: string
-            description: Combination of area code and phone number.
-            example: '5414443333'
-          phoneTypeDescription:
-            type: string
-            description: Describes the phone type enum.
-            example: Current
-          addressTypeDescription:
-            type: string
-            description: Describes the address type enum.
-            example: Current Mailing
-          lastModified:
-            type: string
-            description: The date of the most recent change made to this record.
-            example: '2015-10-19'
-  SelfLink:
-    properties:
-      self:
-        type: string
-        format: url
-        description: Self link of resource
-  ErrorArray:
-    type: array
-    items:
-      $ref: '#/definitions/Error'
-  Error:
-    properties:
-      status:
-        type: integer
-        description: HTTP status code.
-      developerMessage:
-        type: string
-        description: An error string aimed at developers.
-      userMesage:
-        type: string
-        description: An error string aimed at end users.
-      code:
-        type: integer
-        description: Error code.
-      details:
-        type: string
-        description: A link to further information about the error.
+    AddressPostAttributes:
+      type: object
+      additionalProperties: false
+      properties:
+        addressType:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: *addressTypeEnums
+              description: Code for the type of address record.
+        addressLine1:
+          type: string
+          example: 123 Main Street
+        addressLine2:
+          type: string
+          nullable: true
+          example: Apartment 4
+        addressLine3:
+          type: string
+          nullable: true
+        addressLine4:
+          type: string
+          nullable: true
+        houseNumber:
+          type: string
+          nullable: true
+          example: '620'
+        city:
+          type: string
+          nullable: true
+          example: Corvallis
+        stateCode:
+          type: string
+          nullable: true
+          enum: *stateCodeEnums
+          description: State code/abbreviation. This could also represent a province.
+          example: OR
+        postalCode:
+          type: string
+          nullable: true
+          example: '97331'
+        countyCode:
+          type: string
+          nullable: true
+          example: '41003'
+        nationCode:
+          type: string
+          nullable: true
+          enum: *nationCodeEnums
+          description: Code for the nation of the address
+    AddressAttributes:
+      type: object
+      properties:
+        addressType:
+          type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+              description: Short description of the address type.
+              example: Current Mailing
+        state:
+          type: string
+          nullable: true
+          description: Human readable state code. This could also represent a province.
+          example: Oregon
+        county:
+          type: string
+          nullable: true
+          description: Human readable county.
+          example: Benton
+        nation:
+          type: string
+          nullable: true
+          description: Human readable nation/country name.
+          example: Albania
+        lastModified:
+          type: string
+          nullable: true
+          format: date
+          description: The date this address record was last modified.
+          example: '1970-01-01'
+    AddressResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique ID for the address
+        type:
+          $ref: '#/components/schemas/AddressType'
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          allOf:
+            - $ref: '#/components/schemas/AddressPostAttributes'
+            - $ref: '#/components/schemas/AddressAttributes'
+    AddressSetResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressResource'
+    AddressResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/AddressResource'
+    AddressPostBody:
+      type: object
+      required:
+        - data
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          additionalProperties: false
+          properties:
+            type:
+              $ref: '#/components/schemas/AddressType'
+            attributes:
+              allOf:
+                - $ref: '#/components/schemas/AddressPostRequired'
+                - $ref: '#/components/schemas/AddressPostAttributes'
+    PhonePostRequired:
+      type: object
+      required:
+        - addressType
+        - phoneType
+        - areaCode
+        - phoneNumber
+        - primaryInd
+    PhonePostAttributes:
+      type: object
+      additionalProperties: false
+      properties:
+        areaCode:
+          type: string
+          description: Area code for the phone number.
+          example: '541'
+          pattern: ^[0-9]{1,3}$
+        phoneNumber:
+          type: string
+          description: Extension for the phone number. Can be returned in different formats.
+          example: '4443333'
+          pattern: ^[0-9]{1,7}$
+        phoneExtension:
+          type: string
+          nullable: true
+          description: Extension for the phone number. Can be returned in different formats.
+          example: '20'
+          pattern: ^[0-9]{1,4}$
+        primaryInd:
+          type: boolean
+          description: Indicates if this phone number is marked as the primary number.
+          example: true
+        phoneType:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Enum marking which type of address this phone number matches with.
+              enum: *phoneTypeEnums
+        addressType:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Enum marking which type of address this phone number matches with.
+              enum: *addressTypeEnums
+    PhoneAttributes:
+      type: object
+      properties:
+        fullPhoneNumber:
+          type: string
+          description: Combination of area code and phone number.
+          example: '5414443333'
+        phoneType:
+          type: object
+          properties:
+            description:
+              type: string
+              description: Describes the phone type enum.
+              example: Current
+        addressType:
+          type: object
+          properties:
+            description:
+              type: string
+              description: Describes the address type enum.
+              example: Current Mailing
+        lastModified:
+          type: string
+          nullable: true
+          format: date
+          description: The date of the most recent change made to this record.
+          example: '2015-10-19'
+    PhoneResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique ID for the phone
+        type:
+          $ref: '#/components/schemas/PhoneType'
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          allOf:
+            - $ref: '#/components/schemas/PhonePostAttributes'
+            - $ref: '#/components/schemas/PhoneAttributes'
+    PhoneSetResult:
+      type: object
+      properties:
+        link:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneResource'
+    PhoneResult:
+      type: object
+      properties:
+        link:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/PhoneResource'
+    PhonePostBody:
+      type: object
+      required:
+        - data
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          additionalProperties: false
+          properties:
+            type:
+              $ref: '#/components/schemas/PhoneType'
+            attributes:
+              allOf:
+                - $ref: '#/components/schemas/PhonePostRequired'
+                - $ref: '#/components/schemas/PhonePostAttributes'
+    EmailAttributes:
+      type: object
+      required:
+        - emailType
+        - emailAddress
+      additionalProperties: false
+      properties:
+        emailType:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: *emailTypeEnums
+              description: |
+                Type of email
+                - `STU` - Non-directory Student
+                - `ONID` - Student
+                - `VEND` - Vendor
+                - `VWEB` - Vendor
+                - `EMPL` - Employee
+                - `VPAY` - Vendor Pay
+                - `EMER` - Emergency Contact Persons Email for Student
+            description:
+              type: string
+              description: Description of email code
+        emailAddress:
+          type: string
+          format: email
+          description: Email address for a person
+          example: john.smith@example.com
+        comment:
+          type: string
+          nullable: true
+          description: Comment associated with this email
+        preferredInd:
+          type: boolean
+          description: Indicator for a preferred email
+        lastActivityDate:
+          type: string
+          nullable: true
+          format: date
+          description: Date of last activity for this email
+          example: '1970-01-01'
+    EmailResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique ID for an email address
+          example: '918179'
+        type:
+          $ref: '#/components/schemas/EmailType'
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          $ref: '#/components/schemas/EmailAttributes'
+    EmailSetResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailResource'
+    SelfLink:
+      properties:
+        self:
+          type: string
+          format: uri
+          description: Self link of resource
+    ErrorObject:
+      properties:
+        status:
+          type: string
+          description: HTTP status code
+          example: '123'
+        title:
+          type: string
+          description: A short, user readable summary of the error
+          example: Not Found
+        code:
+          type: string
+          description: An application-specific error code
+          example: '1234'
+        detail:
+          type: string
+          description: A long description of the error that may contain instance-specific
+            details
+        links:
+          properties:
+            about:
+              type: string
+              format: uri
+              description: A link to further information about the error
+              example: https://developer.oregonstate.edu/documentation/error-reference#1234
+    ErrorResult:
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorObject'
