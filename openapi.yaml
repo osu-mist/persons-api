@@ -22,6 +22,7 @@ paths:
   /persons:
     post:
       description: Create a person
+      summary: Create a person
       tags:
         - persons
       operationId: postPerson
@@ -48,6 +49,7 @@ paths:
   /persons/{osuId}:
     get:
       description: Get general person information
+      summary: Get general person information
       tags:
         - persons
       operationId: getPersonById
@@ -67,6 +69,7 @@ paths:
   /persons/{osuId}/jobs:
     get:
       description: Get jobs associated with a person
+      summary: Get jobs associated with a person
       tags:
         - jobs
       operationId: getJobs
@@ -128,6 +131,7 @@ paths:
           $ref: '#/components/responses/500'
     post:
       description: Create a job record for a person
+      summary: Create a job record for a person
       tags:
         - jobs
       operationId: postJob
@@ -158,6 +162,7 @@ paths:
   /persons/{osuId}/jobs/{jobId}:
     get:
       description: Get a specific job associated with a person
+      summary: Get a specific job associated with a person
       tags:
         - jobs
       operationId: getJobById
@@ -177,6 +182,7 @@ paths:
           $ref: '#/components/responses/500'
     patch:
       description: Update a job record for a person
+      summary: Update a job record for a person
       tags:
         - jobs
       operationId: patchJobById
@@ -209,6 +215,7 @@ paths:
   /persons/{osuId}/ssn:
     post:
       description: Create a person's SSN
+      summary: Create a person's SSN
       tags:
         - ssn
       operationId: postSsn
@@ -235,6 +242,7 @@ paths:
   /persons/{osuId}/images:
     get:
       description: Get a person's image
+      summary: Get a person's image
       tags:
         - images
       operationId: getImages
@@ -267,6 +275,7 @@ paths:
   /persons/{osuId}/meal-plans:
     get:
       description: Get meal plans for a person
+      summary: Get meal plans for a person
       tags:
         - meal-plans
       operationId: getMealPlans
@@ -317,6 +326,7 @@ paths:
   /persons/{osuId}/meal-plans/{mealPlanId}:
     get:
       description: Get a specific meal plan for a person
+      summary: Get a specific meal plan for a person
       tags:
         - meal-plans
       operationId: getMealPlanById
@@ -337,6 +347,7 @@ paths:
   /persons/{osuId}/addresses:
     get:
       description: Get addresses for a person
+      summary: Get addresses for a person
       tags:
         - addresses
       operationId: getAddresses
@@ -386,6 +397,7 @@ paths:
           $ref: '#/components/responses/500'
     post:
       description: Create address for a person
+      summary: Create address for a person
       tags:
         - addresses
       operationId: postAddress
@@ -416,6 +428,7 @@ paths:
   /persons/{osuId}/phones:
     get:
       description: Get phone numbers for a person
+      summary: Get phone numbers for a person
       tags:
         - phones
       operationId: getPhones
@@ -444,6 +457,7 @@ paths:
           $ref: '#/components/responses/500'
     post:
       description: Create phone number for a person
+      summary: Create phone number for a person
       tags:
         - phones
       operationId: postPhone
@@ -474,6 +488,7 @@ paths:
   /persons/{osuId}/emails:
     get:
       description: Get emails for a person
+      summary: Get emails for a person
       tags:
         - emails
       operationId: getEmails
