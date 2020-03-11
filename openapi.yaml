@@ -22,6 +22,7 @@ paths:
   /persons:
     post:
       description: Create a person
+      summary: Create a person
       tags:
         - persons
       operationId: postPerson
@@ -42,12 +43,13 @@ paths:
         '400':
           $ref: '#/components/responses/400'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}:
     get:
       description: Get general person information
+      summary: Get general person information
       tags:
         - persons
       operationId: getPersonById
@@ -67,6 +69,7 @@ paths:
   /persons/{osuId}/jobs:
     get:
       description: Get jobs associated with a person
+      summary: Get jobs associated with a person
       tags:
         - jobs
       operationId: getJobs
@@ -81,7 +84,7 @@ paths:
         - name: filter[suffix]
           in: query
           required: false
-          description: >
+          description: >-
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
           schema:
@@ -99,8 +102,7 @@ paths:
             - `T` - Terminated
           schema:
             type: string
-            enum:
-              &statusCodeEnums [A, B, L, F, P, T]
+            enum: &statusCodeEnums [A, B, L, F, P, T]
         - name: filter[campusCode]
           in: query
           required: false
@@ -113,7 +115,31 @@ paths:
             - `26C` - Portland
           schema:
             type: string
-            enum: ['47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '33D', '33E', '33F', '33G', '34A', '34B', '34C', '34D', '34E', '34F', '34G', '34H', '34I', '35A', '35B', '36A', '36B', '36C', '36D', '36E', '36F', '36G', '36H', '36I', '37', '40', '41', '42', '43', '44', '45', '46', '29E', '29F', '29G', '30A', '30B', '30C', '30D', '30E', '30F', '30G', '30H', '30I', '30J', '30K', '30L', '31A', '31B', '31C', '31D', '31E', '31F', '31G', '31H', '32A', '32B', '32C', '32D', '33A', '33B', '33C', '24M', '24N', '24O', '24P', '24Q', '24R', '24S', '25A', '25B', '25C', '25D', '25E', '26A', '26B', '26C', '26D', '26E', '27A', '27B', '27C', '27D', '27E', '28A', '28B', '28C', '29A', '29B', '29C', '29D', '21B', '21C', '21D', '21E', '22A', '22B', '22C', '22D', '22E', '22F', '22G', '22H', '22I', '23A', '23B', '23C', '23D', '23E', '23F', '24A', '24B', '24C', '24D', '24E', '24F', '24G', '24H', '24I', '24J', '24K', '24L', '15E', '15F', '15G', '15H', '15I', '15J', '16A', '16B', '16C', '17A', '17B', '18A', '18B', '18C', '18D', '18E', '19A', '19B', '19C', '20A', '20B', '20C', '20D', '20E', '20F', '20G', '20H', '20I', '21A', '10F', '10G', '10H', '10I', '10J', '10K', '11A', '11B', '11C', '12A', '12B', '12C', '12D', '12E', '12F', '12G', '12H', '12I', '13A', '13B', '13C', '13D', '13E', '14A', '14B', '15A', '15B', '15C', '15D', '01A', '01B', '01C', '01D', '01E', '01F', '01G', '01H', '01I', '02A', '02B', '02C', '03A', '03B', '03C', '03D', '03E', '03F', '03G', '03H', '03I', '03J', '03K', '03L', '04A', '04B', '04C', '04D', '04E', '05A', '05B', '05C', '05D', '05E', '05F', '05G', '05H', '06A', '06B', '06C', '06D', '06E', '06F', '06G', '06H', '06I', '07A', '08A', '08B', '08C', '09A', '09B', '09C', '10A', '10B', '10C', '10D', '10E', '87', '88', '89', '16D', '34J', '20J', '03M', '02D', '02E', '07B', '13F', '25F', '06J', '05I', '03N', '34K', '20K', '34L', '24T', '10L', '09D', '09E', '27F', '20L', '37A', '27G', '22J']
+            enum: ['47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59',
+            '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73',
+            '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '33D',
+            '33E', '33F', '33G', '34A', '34B', '34C', '34D', '34E', '34F', '34G', '34H', '34I',
+            '35A', '35B', '36A', '36B', '36C', '36D', '36E', '36F', '36G', '36H', '36I', '37', '40',
+            '41', '42', '43', '44', '45', '46', '29E', '29F', '29G', '30A', '30B', '30C', '30D',
+            '30E', '30F', '30G', '30H', '30I', '30J', '30K', '30L', '31A', '31B', '31C', '31D',
+            '31E', '31F', '31G', '31H', '32A', '32B', '32C', '32D', '33A', '33B', '33C', '24M',
+            '24N', '24O', '24P', '24Q', '24R', '24S', '25A', '25B', '25C', '25D', '25E', '26A',
+            '26B', '26C', '26D', '26E', '27A', '27B', '27C', '27D', '27E', '28A', '28B', '28C',
+            '29A', '29B', '29C', '29D', '21B', '21C', '21D', '21E', '22A', '22B', '22C', '22D',
+            '22E', '22F', '22G', '22H', '22I', '23A', '23B', '23C', '23D', '23E', '23F', '24A',
+            '24B', '24C', '24D', '24E', '24F', '24G', '24H', '24I', '24J', '24K', '24L', '15E',
+            '15F', '15G', '15H', '15I', '15J', '16A', '16B', '16C', '17A', '17B', '18A', '18B',
+            '18C', '18D', '18E', '19A', '19B', '19C', '20A', '20B', '20C', '20D', '20E', '20F',
+            '20G', '20H', '20I', '21A', '10F', '10G', '10H', '10I', '10J', '10K', '11A', '11B',
+            '11C', '12A', '12B', '12C', '12D', '12E', '12F', '12G', '12H', '12I', '13A', '13B',
+            '13C', '13D', '13E', '14A', '14B', '15A', '15B', '15C', '15D', '01A', '01B', '01C',
+            '01D', '01E', '01F', '01G', '01H', '01I', '02A', '02B', '02C', '03A', '03B', '03C',
+            '03D', '03E', '03F', '03G', '03H', '03I', '03J', '03K', '03L', '04A', '04B', '04C',
+            '04D', '04E', '05A', '05B', '05C', '05D', '05E', '05F', '05G', '05H', '06A', '06B',
+            '06C', '06D', '06E', '06F', '06G', '06H', '06I', '07A', '08A', '08B', '08C', '09A',
+            '09B', '09C', '10A', '10B', '10C', '10D', '10E', '87', '88', '89', '16D', '34J', '20J',
+            '03M', '02D', '02E', '07B', '13F', '25F', '06J', '05I', '03N', '34K', '20K', '34L',
+            '24T', '10L', '09D', '09E', '27F', '20L', '37A', '27G', '22J']
         - $ref: '#/components/parameters/employmentType'
       responses:
         '200':
@@ -128,6 +154,7 @@ paths:
           $ref: '#/components/responses/500'
     post:
       description: Create a job record for a person
+      summary: Create a job record for a person
       tags:
         - jobs
       operationId: postJob
@@ -152,12 +179,13 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/jobs/{jobId}:
     get:
       description: Get a specific job associated with a person
+      summary: Get a specific job associated with a person
       tags:
         - jobs
       operationId: getJobById
@@ -177,6 +205,7 @@ paths:
           $ref: '#/components/responses/500'
     patch:
       description: Update a job record for a person
+      summary: Update a job record for a person
       tags:
         - jobs
       operationId: patchJobById
@@ -203,12 +232,13 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Patch'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/ssn:
     post:
       description: Create a person's SSN
+      summary: Create a person's SSN
       tags:
         - ssn
       operationId: postSsn
@@ -229,12 +259,13 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/images:
     get:
       description: Get a person's image
+      summary: Get a person's image
       tags:
         - images
       operationId: getImages
@@ -267,6 +298,7 @@ paths:
   /persons/{osuId}/meal-plans:
     get:
       description: Get meal plans for a person
+      summary: Get meal plans for a person
       tags:
         - meal-plans
       operationId: getMealPlans
@@ -317,6 +349,7 @@ paths:
   /persons/{osuId}/meal-plans/{mealPlanId}:
     get:
       description: Get a specific meal plan for a person
+      summary: Get a specific meal plan for a person
       tags:
         - meal-plans
       operationId: getMealPlanById
@@ -337,6 +370,7 @@ paths:
   /persons/{osuId}/addresses:
     get:
       description: Get addresses for a person
+      summary: Get addresses for a person
       tags:
         - addresses
       operationId: getAddresses
@@ -361,7 +395,11 @@ paths:
           schema:
             type: string
             enum:
-              &stateCodeEnums [DE, NJ, PA, DC, NY, CA, VA, NC, TX, FL, HI, WV, MT, GA, MD, OH, IN, AK, AL, AR, AZ, CO, CT, IA, ID, IL, KS, KY, LA, MA, ME, MI, MN, MO, MS, ND, NE, NH, NM, NV, OK, OR, RI, SC, SD, TN, UT, VT, WA, WI, WY, VI, TT, PR, GU, CZ, AS, BC, NT, AB, ON, SK, NB, NF, NS, PE, PQ, MP, FM, MH, PW, MB, YT, AP, AE, AA, FC, FR, NU, BY, ENG]
+              &stateCodeEnums [DE, NJ, PA, DC, NY, CA, VA, NC, TX, FL, HI, WV, MT, GA, MD, OH, IN,
+              AK, AL, AR, AZ, CO, CT, IA, ID, IL, KS, KY, LA, MA, ME, MI, MN, MO, MS, ND, NE, NH,
+              NM, NV, OK, OR, RI, SC, SD, TN, UT, VT, WA, WI, WY, VI, TT, PR, GU, CZ, AS, BC, NT,
+              AB, ON, SK, NB, NF, NS, PE, PQ, MP, FM, MH, PW, MB, YT, AP, AE, AA, FC, FR, NU, BY,
+              ENG]
         - name: filter[nationCode]
           in: query
           required: false
@@ -369,7 +407,21 @@ paths:
           schema:
             type: string
             enum:
-              &nationCodeEnums [FPL, ARE, ARW, KSA, QSG, ESL, GES, CSD, KSY, HTT, ETG, JUY, JVE, KYD, AZM, FAL, GAD, JAR, HBS, KBH, PBT, ABI, QBU, LCA, BCG, OTW, OCN, ICR, GDK, ISV, AET, NPF, BGA, SGL, HHT, GIS, KIQ, HJM, AKE, DLS, CLY, GMC, HMQ, AMZ, NPG, ENE, MNZ, JPY, HAI, HAG, EBJ, FBY, MCX, NCK, JFK, NGU, HLC, FAM, FMD, FEE, FLT, OMO, FHR, DNA, JGY, GDE, HPM, QVN, QBN, CEH, RHM, HKN, NNR, NPN, BST, NTK, FMK, FSR, FTX, FTI, QMM, AER, FBO, FAJ, NSB, FUA, FRU, FGE, FBA, GAT, FYU, LBM, RBV, BCF, MCC, HCU, HDO, QTP, CEG, JGF, GGR, HGD, EGN, OHK, KIR, KIL, KJO, KLB, GLU, AMG, GMT, AYO, IMX, OMN, GNL, NNC, ENG, OKP, PPK, JPE, KQA, FRO, ESN, ADJ, DZA, HVC, KOM, JSR, ATZ, CTN, NTV, GGB, NVU, NWF, FBG, QID, GIT, GPT, AZW, FSK, BCM, DBW, EGW, EML, FHU, FKZ, GCH, GLI, GSM, HBB, HVG, IGT, KAE, KKW, NFJ, QKH, QPH, NUM, KGZ, FKK, HBL, COD, ASO, PLK, GSE, DSZ, QTH, KTR, GVA, NWS, BZR, PAF, CDZ, BAO, MAU, PBD, GBE, IBZ, JBO, JBR, PIO, BTD, JCL, JCO, ECV, KCY, JEC, BGQ, GFI, GFR, EGM, HGP, IHN, GIE, ECI, OJP, OKR, ELR, AMW, CMA, AMU, QMY, PNP, INI, GNO, IPA, LUS, RAQ, HAW, EBF, HKY, AKM, HDM, GFO, RTF, FKG, FUZ, FLV, PMV, FSI, HAN, EGH, PIN, EMR, AUG, KYE, NTO, GGI, NKI, HMS, NNU, ASC, HTC, FEZ, FMW, NNF, QLA, IAN, KWE, FTM, HMF, FKV]
+              &nationCodeEnums [FPL, ARE, ARW, KSA, QSG, ESL, GES, CSD, KSY, HTT, ETG, JUY, JVE,
+              KYD, AZM, FAL, GAD, JAR, HBS, KBH, PBT, ABI, QBU, LCA, BCG, OTW, OCN, ICR, GDK, ISV,
+              AET, NPF, BGA, SGL, HHT, GIS, KIQ, HJM, AKE, DLS, CLY, GMC, HMQ, AMZ, NPG, ENE, MNZ,
+              JPY, HAI, HAG, EBJ, FBY, MCX, NCK, JFK, NGU, HLC, FAM, FMD, FEE, FLT, OMO, FHR, DNA,
+              JGY, GDE, HPM, QVN, QBN, CEH, RHM, HKN, NNR, NPN, BST, NTK, FMK, FSR, FTX, FTI, QMM,
+              AER, FBO, FAJ, NSB, FUA, FRU, FGE, FBA, GAT, FYU, LBM, RBV, BCF, MCC, HCU, HDO, QTP,
+              CEG, JGF, GGR, HGD, EGN, OHK, KIR, KIL, KJO, KLB, GLU, AMG, GMT, AYO, IMX, OMN, GNL,
+              NNC, ENG, OKP, PPK, JPE, KQA, FRO, ESN, ADJ, DZA, HVC, KOM, JSR, ATZ, CTN, NTV, GGB,
+              NVU, NWF, FBG, QID, GIT, GPT, AZW, FSK, BCM, DBW, EGW, EML, FHU, FKZ, GCH, GLI, GSM,
+              HBB, HVG, IGT, KAE, KKW, NFJ, QKH, QPH, NUM, KGZ, FKK, HBL, COD, ASO, PLK, GSE, DSZ,
+              QTH, KTR, GVA, NWS, BZR, PAF, CDZ, BAO, MAU, PBD, GBE, IBZ, JBO, JBR, PIO, BTD, JCL,
+              JCO, ECV, KCY, JEC, BGQ, GFI, GFR, EGM, HGP, IHN, GIE, ECI, OJP, OKR, ELR, AMW, CMA,
+              AMU, QMY, PNP, INI, GNO, IPA, LUS, RAQ, HAW, EBF, HKY, AKM, HDM, GFO, RTF, FKG, FUZ,
+              FLV, PMV, FSI, HAN, EGH, PIN, EMR, AUG, KYE, NTO, GGI, NKI, HMS, NNU, ASC, HTC, FEZ,
+              FMW, NNF, QLA, IAN, KWE, FTM, HMF, FKV]
         - $ref: '#/components/parameters/addressType'
       responses:
         '200':
@@ -386,6 +438,7 @@ paths:
           $ref: '#/components/responses/500'
     post:
       description: Create address for a person
+      summary: Create address for a person
       tags:
         - addresses
       operationId: postAddress
@@ -410,12 +463,13 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/phones:
     get:
       description: Get phone numbers for a person
+      summary: Get phone numbers for a person
       tags:
         - phones
       operationId: getPhones
@@ -444,6 +498,7 @@ paths:
           $ref: '#/components/responses/500'
     post:
       description: Create phone number for a person
+      summary: Create phone number for a person
       tags:
         - phones
       operationId: postPhone
@@ -468,12 +523,13 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/emails:
     get:
       description: Get emails for a person
+      summary: Get emails for a person
       tags:
         - emails
       operationId: getEmails
@@ -547,8 +603,7 @@ components:
       schema:
         type: array
         items:
-          enum:
-            &employmentTypeEnums [student, graduate]
+          enum: &employmentTypeEnums [student, graduate]
           type: string
     addressType:
       name: filter[addressType]
@@ -613,8 +668,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResult'
-    '409':
-      description: Type or ID conflict
+    '409Post':
+      description: >-
+        The request body resource object's type was invalid or, if a client-generated ID was used, a
+        resource already exists with this ID
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+    '409Patch':
+      description: >-
+        The request body resource object had an invalid type, invalid ID, or violated a uniqueness
+        constraint
       content:
         application/json:
           schema:
@@ -668,10 +733,12 @@ components:
       properties:
         firstName:
           type: string
+          nullable: false
           description: First name of person
           example: John
         lastName:
           type: string
+          nullable: false
           description: Last name of person
           example: Smith
         middleName:
@@ -681,6 +748,7 @@ components:
           example: Adam
         birthDate:
           type: string
+          nullable: false
           format: date
           description: Birthday of person
           example: '1970-01-21'
@@ -701,8 +769,7 @@ components:
         sex:
           type: string
           nullable: true
-          enum:
-            [M, F, N]
+          enum: [M, F, N]
           description: |
             Person's sex code
             - `M` - Male
@@ -733,12 +800,12 @@ components:
           example: smithj
         confidentialInd:
           type: boolean
-          nullable: true
+          nullable: false
           description: If true, the person has opted in to being required to be listed as
             confidential
         currentStudentInd:
           type: boolean
-          nullable: true
+          nullable: false
           description: True if person is a current student
         employeeStatus:
           type: object
@@ -746,8 +813,7 @@ components:
             code:
               type: string
               nullable: true
-              enum:
-                [A, B, L, F, P, T]
+              enum: [A, B, L, F, P, T]
               description: |
                 The status of the employee:
                 - `A` - Active
@@ -764,8 +830,7 @@ components:
         ssnStatus:
           type: string
           nullable: true
-          enum:
-            [vault, valid, invalid]
+          enum: [vault, valid, invalid]
           description: SSN status
         citizen:
           type: object
@@ -824,14 +889,17 @@ components:
       properties:
         osuId:
           type: string
+          nullable: true
           description: OSU ID of the supervisor for the job.
           pattern: ^\d{9}$
         firstName:
           type: string
+          nullable: true
           description: First name of the supervisor for the job.
           example: John
         lastName:
           type: string
+          nullable: true
           description: Last name of the supervisor for the job.
           example: Smith
         email:
@@ -842,6 +910,7 @@ components:
           example: john.smith@example.com
         positionNumber:
           type: string
+          nullable: true
           description: Position number for the supervisor.
           example: C12345
         suffix:
@@ -870,26 +939,30 @@ components:
       properties:
         suffix:
           type: string
-          nullable: true
-          description: >
+          nullable: false
+          description: >-
             Used to uniquely identify a job record for persons who have multiple
             jobs that share the same position number. For updating existing
             jobs, this field is required.
         positionNumber:
           type: string
+          nullable: false
           description: Identifies a position.
           example: C12345
         employmentType:
           type: string
+          nullable: false
           enum: *employmentTypeEnums
           description: Type of employment.
         effectiveDate:
           type: string
+          nullable: false
           format: date
           description: The date this job assignment is effective.
           example: '1970-01-21'
         beginDate:
           type: string
+          nullable: false
           format: date
           description: Begin date of job.
           example: '1970-01-21'
@@ -901,6 +974,7 @@ components:
           example: '1971-02-15'
         accruesLeaveInd:
           type: boolean
+          nullable: false
           description: If true, the job accrues leave time.
         contractBeginDate:
           type: string
@@ -916,12 +990,11 @@ components:
           example: '1971-02-21'
         contractType:
           type: object
-          nullable: true
           properties:
             code:
               type: string
-              enum:
-                [P, S, O]
+              nullable: true
+              enum: [P, S, O]
               description: |
                 Contract type code/Id.
                 - `P` - Primary
@@ -929,16 +1002,17 @@ components:
                 - `O` - Overload
         campus:
           type: object
-          nullable: true
           properties:
             code:
               type: string
+              nullable: true
               description: ID of campus where this job will be performed.
         status:
           type: object
           properties:
             code:
               type: string
+              nullable: false
               description: Job status.
               enum: *statusCodeEnums
         jobDescription:
@@ -947,26 +1021,26 @@ components:
           description: Description of job.
         personnelChangeDate:
           type: string
-          nullable: true
+          nullable: false
           format: date
           description: Date the last change was made to the job record.
           example: '1970-01-01'
         changeReason:
           type: object
-          nullable: true
           properties:
             code:
               type: string
+              nullable: false
               description: The reason the last change was made to the job record.
         fullTimeEquivalency:
           type: number
-          nullable: true
+          nullable: false
           format: float
           description: Full time equivalency where full time = 1.
           example: 0.25
         appointmentPercent:
           type: number
-          nullable: true
+          nullable: false
           format: float
           description: FTE presented as a whole percentage.
           example: 25
@@ -988,7 +1062,7 @@ components:
               properties:
                 code:
                   type: string
-                  nullable: true
+                  nullable: false
                   description: Organization code where the time sheet is sent for the job.
                   example: '123456'
             predecessor:
@@ -996,7 +1070,7 @@ components:
               properties:
                 code:
                   type: string
-                  nullable: true
+                  nullable: false
                   description: The next higher organizational code of the current timesheet
                     organization.
                   example: '123456'
@@ -1022,13 +1096,13 @@ components:
                   example: '123456'
         hourlyRate:
           type: number
-          nullable: true
+          nullable: false
           format: float
           description: Hourly pay rate of the job.
           example: 12.85
         hoursPerPay:
           type: number
-          nullable: true
+          nullable: false
           format: float
           description: Hours per payment for the job.
           example: 173.33
@@ -1037,33 +1111,33 @@ components:
           properties:
             annual:
               type: number
-              nullable: true
+              nullable: false
               format: float
               description: Annual salary for the job.
               example: 30000.5
             assignment:
               type: number
-              nullable: true
+              nullable: false
               format: float
               description: The salary to be paid each pay period.
               example: 1670.83
             paysPerYear:
               type: number
-              nullable: true
+              nullable: false
               format: float
               description: The number of pays per calendar year.
               example: 12
             step:
               type: number
-              nullable: true
+              nullable: false
               format: integer
               example: 1
             group:
               type: object
-              nullable: true
               properties:
                 code:
                   type: string
+                  nullable: false
                   description: Salary group code for the job.
                   example: 12345A
         employeeClassification:
@@ -1071,7 +1145,7 @@ components:
           properties:
             code:
               type: string
-              nullable: true
+              nullable: false
               description: The employee class attached to the job, based on the Employee
                 Class entered on the Position Form (NBAPOSN).
               example: CA
@@ -1080,7 +1154,7 @@ components:
           properties:
             code:
               type: string
-              nullable: true
+              nullable: false
               description: Employer identification code.
               example: ORST
         earningCode:
@@ -1088,29 +1162,32 @@ components:
           properties:
             hours:
               type: number
-              nullable: true
               format: float
+              nullable: true
               description: Hours/units defaulted on timesheets for earnCode.
               example: 173.33
             shift:
               type: string
-              nullable: true
+              nullable: false
               description: Shift code used as a default on timesheet for earnCode.
             code:
               type: string
-              nullable: true
+              nullable: false
               description: Default earnings code attached to the job and used on timesheet.
               example: REG
         useTemporarySsnInd:
           type: boolean
+          nullable: false
           description: When creating or updating a job, this field indicates the employee
             needs a temporary social security number assigned.
         employeeInformationReleaseInd:
           type: boolean
+          nullable: false
           description: Indicates the employee has consented to having their employment
             information shared.
         salaryInformationReleaseInd:
           type: boolean
+          nullable: false
           description: Indicates the employee accepted or denied to have their salary
             information shared.
         salaryInformationReleaseDate:
@@ -1125,7 +1202,7 @@ components:
           properties:
             code:
               type: string
-              nullable: true
+              nullable: false
               description: Retirement code
         i9Form:
           type: object
@@ -1145,6 +1222,7 @@ components:
             properties:
               effectiveDate:
                 type: string
+                nullable: false
                 format: date
                 description: Date this labor distribution becomes effective.
                 example: '1970-01-01'
@@ -1153,6 +1231,7 @@ components:
                 properties:
                   code:
                     type: string
+                    nullable: false
                     example: ABC123
               fund:
                 type: object
@@ -1193,6 +1272,7 @@ components:
               distributionPercent:
                 type: number
                 format: float
+                nullable: false
                 description: Percentage of labor applied to this fund.
                 example: 49.9
     JobAttributes:
@@ -1204,28 +1284,28 @@ components:
           properties:
             description:
               type: string
-              nullable: true
+              nullable: false
               description: Description of contract code
         campus:
           type: object
           properties:
             description:
               type: string
-              nullable: true
+              nullable: false
               description: Description of campus code
         status:
           type: object
           properties:
             description:
               type: string
-              nullable: true
+              nullable: false
               description: Description of status code
         changeReason:
           type: object
           properties:
             description:
               type: string
-              nullable: true
+              nullable: false
               description: Description of change reason code
         strsAssignment:
           type: object
@@ -1242,14 +1322,14 @@ components:
               properties:
                 description:
                   type: string
-                  nullable: true
+                  nullable: false
                   description: Organization title where timesheet is sent for the job.
             predecessor:
               type: object
               properties:
                 description:
                   type: string
-                  nullable: true
+                  nullable: false
                   description: The next higher organizational title of the current
                     timesheet organization.
         homeOrganization:
@@ -1260,14 +1340,14 @@ components:
               properties:
                 description:
                   type: string
-                  nullable: true
+                  nullable: false
                   description: The home organization title of the employee.
             predecessor:
               type: object
               properties:
                 description:
                   type: string
-                  nullable: true
+                  nullable: false
                   description: The next higher organizational title of the current home
                     organization.
         salary:
@@ -1278,28 +1358,28 @@ components:
               properties:
                 description:
                   type: string
-                  nullable: true
+                  nullable: false
                   description: Description for salary group code
         employeeClassification:
           type: object
           properties:
             description:
               type: string
-              nullable: true
+              nullable: false
               description: Description of the employee classification code
         employerIdentification:
           type: object
           properties:
             description:
               type: string
-              nullable: true
+              nullable: false
               description: Description of employer identification code
         earningCode:
           type: object
           properties:
             description:
               type: string
-              nullable: true
+              nullable: false
               description: Description of earn code
         retirement:
           type: object
@@ -1444,6 +1524,7 @@ components:
       properties:
         ssn:
           type: string
+          nullable: false
           description: 9 digits SSN
           pattern: ^\d{9}$
           example: '123456789'
@@ -1469,11 +1550,13 @@ components:
       properties:
         mealPlan:
           type: string
+          nullable: false
           description: Description of meal plan
           example: Orange Rewards
         balance:
           type: number
           format: float
+          nullable: false
           description: Remaining balance on meal plan in USD.
           example: 3.5
         lastUsed:
@@ -1481,14 +1564,14 @@ components:
           properties:
             dateTime:
               type: string
-              nullable: true
               format: date-time
+              nullable: false
               description: The last time the meal plan was used.
               example: '2017-07-14T16:45:15Z'
             location:
               type: string
-              nullable: true
               description: Description of the place the meal plan was last used.
+              nullable: false
               example: Java II
     MealPlanResource:
       type: object
@@ -1534,10 +1617,12 @@ components:
           properties:
             code:
               type: string
+              nullable: false
               enum: *addressTypeEnums
               description: Code for the type of address record.
         addressLine1:
           type: string
+          nullable: true
           example: 123 Main Street
         addressLine2:
           type: string
@@ -1555,11 +1640,11 @@ components:
           example: '620'
         city:
           type: string
-          nullable: true
+          nullable: false
           example: Corvallis
         stateCode:
           type: string
-          nullable: true
+          nullable: false
           enum: *stateCodeEnums
           description: State code/abbreviation. This could also represent a province.
           example: OR
@@ -1604,8 +1689,8 @@ components:
           example: Albania
         lastModified:
           type: string
-          nullable: true
           format: date
+          nullable: false
           description: The date this address record was last modified.
           example: '1970-01-01'
     AddressResource:
@@ -1671,11 +1756,13 @@ components:
       properties:
         areaCode:
           type: string
+          nullable: true
           description: Area code for the phone number.
           example: '541'
           pattern: ^[0-9]{1,3}$
         phoneNumber:
           type: string
+          nullable: true
           description: Extension for the phone number. Can be returned in different formats.
           example: '4443333'
           pattern: ^[0-9]{1,7}$
@@ -1687,13 +1774,14 @@ components:
           pattern: ^[0-9]{1,4}$
         primaryInd:
           type: boolean
+          nullable: false
           description: Indicates if this phone number is marked as the primary number.
-          example: true
         phoneType:
           type: object
           properties:
             code:
               type: string
+              nullable: false
               description: Enum marking which type of address this phone number matches with.
               enum: *phoneTypeEnums
         addressType:
@@ -1701,6 +1789,7 @@ components:
           properties:
             code:
               type: string
+              nullable: false
               description: Enum marking which type of address this phone number matches with.
               enum: *addressTypeEnums
     PhoneAttributes:
@@ -1708,6 +1797,7 @@ components:
       properties:
         fullPhoneNumber:
           type: string
+          nullable: false
           description: Combination of area code and phone number.
           example: '5414443333'
         phoneType:
@@ -1715,6 +1805,7 @@ components:
           properties:
             description:
               type: string
+              nullable: false
               description: Describes the phone type enum.
               example: Current
         addressType:
@@ -1722,12 +1813,13 @@ components:
           properties:
             description:
               type: string
+              nullable: false
               description: Describes the address type enum.
               example: Current Mailing
         lastModified:
           type: string
-          nullable: true
           format: date
+          nullable: false
           description: The date of the most recent change made to this record.
           example: '2015-10-19'
     PhoneResource:
@@ -1791,6 +1883,7 @@ components:
           properties:
             code:
               type: string
+              nullable: false
               enum: *emailTypeEnums
               description: |
                 Type of email
@@ -1803,10 +1896,12 @@ components:
                 - `EMER` - Emergency Contact Persons Email for Student
             description:
               type: string
+              nullable: false
               description: Description of email code
         emailAddress:
           type: string
           format: email
+          nullable: false
           description: Email address for a person
           example: john.smith@example.com
         comment:
@@ -1815,11 +1910,12 @@ components:
           description: Comment associated with this email
         preferredInd:
           type: boolean
+          nullable: false
           description: Indicator for a preferred email
         lastActivityDate:
           type: string
-          nullable: true
           format: date
+          nullable: false
           description: Date of last activity for this email
           example: '1970-01-01'
     EmailResource:
@@ -1845,12 +1941,14 @@ components:
           items:
             $ref: '#/components/schemas/EmailResource'
     SelfLink:
+      type: object
       properties:
         self:
           type: string
           format: uri
           description: Self link of resource
     ErrorObject:
+      type: object
       properties:
         status:
           type: string
@@ -1869,6 +1967,7 @@ components:
           description: A long description of the error that may contain instance-specific
             details
         links:
+          type: object
           properties:
             about:
               type: string
@@ -1876,6 +1975,7 @@ components:
               description: A link to further information about the error
               example: https://developer.oregonstate.edu/documentation/error-reference#1234
     ErrorResult:
+      type: object
       properties:
         errors:
           type: array
