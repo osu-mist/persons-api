@@ -16,10 +16,26 @@ const personResourcePath = 'persons';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
 /**
+ * Employee status code descriptions are not stored in a db so we must manage them
+ *
+ * @param {string} statusCode employee status code returned from data source
+ * @returns {string} description for the passed in status code
+ */
+const getEmployeeStatusDescrByCode = (statusCode) => (
+  {
+    A: 'Active',
+    B: 'Leave without pay but with benefits',
+    L: 'Leave without pay and benefits',
+    F: 'Leave with full pay and benefits',
+    P: 'Leave with partial pay and benefits',
+    T: 'Terminated',
+  }[statusCode]
+);
+
+/**
  * Takes raw person data and serializes it into json api standards
  *
- * @param {object[]} rawPersons Raw person data from data source
- * @param {object} querys Query parameters from request
+ * @param {object} rawPerson Raw person data from data source
  * @returns {object} Serialized person resource data
  */
 const serializePerson = (rawPerson) => {
@@ -30,6 +46,11 @@ const serializePerson = (rawPerson) => {
     resourcePath: personResourcePath,
     topLevelSelfLink,
     enableDataLinks: true,
+  };
+
+  rawPerson.employeeStatus = {
+    code: rawPerson.employeeStatusCode,
+    description: getEmployeeStatusDescrByCode(rawPerson.employeeStatusCode),
   };
 
   return new JsonApiSerializer(
