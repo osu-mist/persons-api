@@ -84,7 +84,7 @@ paths:
         - name: filter[suffix]
           in: query
           required: false
-          description: >
+          description: >-
             Filter by suffix. The suffix is used to differentiate multiple jobs
             that share the same position number for a given person.
           schema:
@@ -933,7 +933,7 @@ components:
         suffix:
           type: string
           nullable: true
-          description: >
+          description: >-
             Used to uniquely identify a job record for persons who have multiple
             jobs that share the same position number. For updating existing
             jobs, this field is required.
