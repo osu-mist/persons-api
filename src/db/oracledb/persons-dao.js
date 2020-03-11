@@ -8,7 +8,7 @@ import { serializePerson } from '../../serializers/persons-serializer';
 /**
  * Queries data source for raw person data and passes it to the serializer
  *
- * @param {object} querys Query parameters from request
+ * @param {string} osuId 9-digit osu ID of a person
  * @returns {object} Serialized person resource from person-serializer
  */
 const getPersonById = async (osuId) => {
