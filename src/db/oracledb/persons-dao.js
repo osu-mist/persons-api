@@ -11,26 +11,14 @@ import { serializePersons } from '../../serializers/persons-serializer';
  * @param {object} querys Query parameters from request
  * @returns {object} Serialized person resource from person-serializer
  */
-const getPersonById = async (querys) => {
+const getPersonById = async (osuId) => {
   const connection = await getConnection();
   try {
-    const { rows } = await connection.execute(contrib.getPersonById(querys.osuId), {
-      osuUid: querys.osuUid,
-      onid: querys.onid,
-      firstName: querys.lastName ? querys.firstName.toUpperCase() : null,
-      lastName: querys.lastName ? querys.lastName.toUpperCase() : null,
-      searchOldVersions: querys.searchOldVersions || 0,
-    });
+    const { rows } = await connection.execute(contrib.getPersonById(osuId));
 
-    // massage data if any is returned
-    if (rows.length > 0) {
-      // get previous record data
-      const internalIds = _.map(rows, 'internalId');
-      const { rows: previousRecords } = await connection.execute(
-        contrib.getPreviousRecords(internalIds),
-      );
-      const previousRecordsMap = _.groupBy(previousRecords, 'osuId');
-
+    const serializedPerson = serializePersons(rows[0], null);
+    return serializedPerson;
+    /*
       _.forEach(rows, (rawPerson) => {
         rawPerson.previousRecords = previousRecordsMap[rawPerson.osuId] || [];
         rawPerson.currentEmployee = rawPerson.employeeStatus === 'A';
@@ -41,7 +29,7 @@ const getPersonById = async (querys) => {
     if (rows.length === 1) {
       return serializePersons(rows[0], querys);
     }
-    return serializePersons(rows, querys);
+    return serializePersons(rows, querys); */
   } finally {
     connection.close();
   }
