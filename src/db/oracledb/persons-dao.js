@@ -16,7 +16,7 @@ const getPersonById = async (osuId) => {
   try {
     const { rows } = await connection.execute(contrib.getPersonById(osuId));
 
-    const serializedPerson = serializePerson(rows[0], null);
+    const serializedPerson = serializePerson(rows[0]);
     return serializedPerson;
     /*
       _.forEach(rows, (rawPerson) => {
