@@ -1941,12 +1941,14 @@ components:
           items:
             $ref: '#/components/schemas/EmailResource'
     SelfLink:
+      type: object
       properties:
         self:
           type: string
           format: uri
           description: Self link of resource
     ErrorObject:
+      type: object
       properties:
         status:
           type: string
@@ -1965,6 +1967,7 @@ components:
           description: A long description of the error that may contain instance-specific
             details
         links:
+          type: object
           properties:
             about:
               type: string
@@ -1972,6 +1975,7 @@ components:
               description: A link to further information about the error
               example: https://developer.oregonstate.edu/documentation/error-reference#1234
     ErrorResult:
+      type: object
       properties:
         errors:
           type: array
