@@ -1,15 +1,18 @@
 /* eslint-disable no-unused-vars */
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
+import merge from 'merge-deep';
 
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
 import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
 
 const personResourceProp = openapi.components.schemas.PersonResult.properties.data.properties;
-const personResourceType = personResourceProp.type.example;
-const personResourceKeys = _.keys(personResourceProp.attributes.properties);
-const personResourcePath = 'person';
+const personResourceType = personResourceProp.type.enum[0];
+const personResourceAttributes = personResourceProp.attributes.allOf;
+const personCombinedAttributes = merge(personResourceAttributes[0], personResourceAttributes[1]);
+const personResourceKeys = _.keys(personCombinedAttributes.properties);
+const personResourcePath = 'persons';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
 
 /**
@@ -20,13 +23,7 @@ const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
  * @returns {object} Serialized person resource data
  */
 const serializePersons = (rawPersons, querys) => {
-  const topLevelSelfLink = paramsLink(personResourceUrl, {
-    osuId: querys.osuId.length > 0 ? querys.osuId.join(',') : null,
-    firstName: querys.firstName,
-    lastName: querys.lastName,
-    osuUid: querys.osuUid,
-    onid: querys.onid,
-  });
+  const topLevelSelfLink = paramsLink(personResourceUrl);
   const serializerArgs = {
     identifierField: 'osuId',
     resourceKeys: personResourceKeys,
