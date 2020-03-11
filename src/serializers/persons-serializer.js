@@ -22,8 +22,8 @@ const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
  * @param {object} querys Query parameters from request
  * @returns {object} Serialized person resource data
  */
-const serializePersons = (rawPersons, querys) => {
-  const topLevelSelfLink = paramsLink(personResourceUrl);
+const serializePerson = (rawPerson) => {
+  const topLevelSelfLink = resourcePathLink(personResourceUrl, rawPerson.osuId);
   const serializerArgs = {
     identifierField: 'osuId',
     resourceKeys: personResourceKeys,
@@ -35,9 +35,9 @@ const serializePersons = (rawPersons, querys) => {
   return new JsonApiSerializer(
     personResourceType,
     serializerOptions(serializerArgs, personResourcePath, topLevelSelfLink),
-  ).serialize(rawPersons);
+  ).serialize(rawPerson);
 };
 
 export {
-  serializePersons,
+  serializePerson,
 };

@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
-import { serializePersons } from '../../serializers/persons-serializer';
+import { serializePerson } from '../../serializers/persons-serializer';
 
 /**
  * Queries data source for raw person data and passes it to the serializer
@@ -16,7 +16,7 @@ const getPersonById = async (osuId) => {
   try {
     const { rows } = await connection.execute(contrib.getPersonById(osuId));
 
-    const serializedPerson = serializePersons(rows[0], null);
+    const serializedPerson = serializePerson(rows[0], null);
     return serializedPerson;
     /*
       _.forEach(rows, (rawPerson) => {
