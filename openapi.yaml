@@ -42,7 +42,7 @@ paths:
         '400':
           $ref: '#/components/responses/400'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}:
@@ -152,7 +152,7 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/jobs/{jobId}:
@@ -203,7 +203,7 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Patch'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/ssn:
@@ -229,7 +229,7 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/images:
@@ -410,7 +410,7 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/phones:
@@ -468,7 +468,7 @@ paths:
         '404':
           $ref: '#/components/responses/404'
         '409':
-          $ref: '#/components/responses/409'
+          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/emails:
@@ -613,8 +613,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResult'
-    '409':
-      description: Type or ID conflict
+    '409Post':
+      description: >-
+        The request body resource object's type was invalid or, if a client-generated ID was used, a
+        resource already exists with this ID
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+    '409Patch':
+      description: >-
+        The request body resource object had an invalid type, invalid ID, or violated a uniqueness
+        constraint
       content:
         application/json:
           schema:
