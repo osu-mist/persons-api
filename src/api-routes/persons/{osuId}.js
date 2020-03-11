@@ -12,10 +12,9 @@ import { getPersonById } from '../../db/oracledb/persons-dao';
 const get = async (req, res) => {
   try {
     console.log('GET person by ID');
-    // const { query } = req;
-    // const result = await getPersonById(query);
-    // return res.send(result);
-    return 'crap';
+    const { osuId } = req.params;
+    const result = await getPersonById(osuId);
+    return res.send(result);
   } catch (err) {
     return errorHandler(res, err);
   }
