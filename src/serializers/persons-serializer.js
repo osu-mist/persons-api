@@ -1,6 +1,7 @@
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
 import merge from 'merge-deep';
+import moment from 'moment';
 
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
@@ -39,6 +40,8 @@ const getEmployeeStatusDescrByCode = (statusCode) => (
 const prepareRawData = (rawPerson) => {
   rawPerson.confidentialInd = rawPerson.confidentialInd === 'Y';
   rawPerson.currentStudentInd = rawPerson.currentStudentInd === 'Y';
+
+  rawPerson.birthDate = moment(new Date(rawPerson.birthDate)).format('YYYY-MM-DD');
 
   rawPerson.employeeStatus = {
     code: rawPerson.employeeStatusCode,
