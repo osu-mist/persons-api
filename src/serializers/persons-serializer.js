@@ -33,6 +33,26 @@ const getEmployeeStatusDescrByCode = (statusCode) => (
 );
 
 /**
+ * Some fields need to be massaged before they can be passed to the serializer
+ *
+ * @param {Object} rawPerson Raw person data from data source
+ */
+const prepareRawData = (rawPerson) => {
+  rawPerson.confidentialInd = rawPerson.confidentialInd === 'Y';
+  rawPerson.currentStudentInd = rawPerson.currentStudentInd === 'Y';
+
+  rawPerson.employeeStatus = {
+    code: rawPerson.employeeStatusCode,
+    description: getEmployeeStatusDescrByCode(rawPerson.employeeStatusCode),
+  };
+
+  rawPerson.citizen = {
+    code: rawPerson.citizenCode,
+    description: rawPerson.citizenDescription,
+  };
+};
+
+/**
  * Takes raw person data and serializes it into json api standards
  *
  * @param {object} rawPerson Raw person data from data source
@@ -48,15 +68,7 @@ const serializePerson = (rawPerson) => {
     enableDataLinks: true,
   };
 
-  rawPerson.employeeStatus = {
-    code: rawPerson.employeeStatusCode,
-    description: getEmployeeStatusDescrByCode(rawPerson.employeeStatusCode),
-  };
-
-  rawPerson.citizen = {
-    code: rawPerson.citizenCode,
-    description: rawPerson.citizenDescription,
-  };
+  prepareRawData(rawPerson);
 
   return new JsonApiSerializer(
     personResourceType,
