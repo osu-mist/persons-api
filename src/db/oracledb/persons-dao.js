@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import _ from 'lodash';
 
 import { getConnection } from './connection';
@@ -16,20 +15,13 @@ const getPersonById = async (osuId) => {
   try {
     const { rows } = await connection.execute(contrib.getPersonById(osuId));
 
-    const serializedPerson = serializePerson(rows[0]);
-    return serializedPerson;
-    /*
-      _.forEach(rows, (rawPerson) => {
-        rawPerson.previousRecords = previousRecordsMap[rawPerson.osuId] || [];
-        rawPerson.currentEmployee = rawPerson.employeeStatus === 'A';
-        rawPerson.currentStudent = rawPerson.studentStatus === 'Y';
-      });
+    if (rows.length > 1) {
+      throw new Error('Expect a single object but got multiple results.');
+    } else if (_.isEmpty(rows)) {
+      return null;
     }
 
-    if (rows.length === 1) {
-      return serializePersons(rows[0], querys);
-    }
-    return serializePersons(rows, querys); */
+    return serializePerson(rows[0]);
   } finally {
     connection.close();
   }
