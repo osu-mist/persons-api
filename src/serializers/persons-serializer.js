@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
 import merge from 'merge-deep';
 
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
-import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
+import { apiBaseUrl, resourcePathLink } from 'utils/uri-builder';
 
 const personResourceProp = openapi.components.schemas.PersonResult.properties.data.properties;
 const personResourceType = personResourceProp.type.enum[0];
