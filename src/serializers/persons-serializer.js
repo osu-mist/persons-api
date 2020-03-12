@@ -53,6 +53,11 @@ const serializePerson = (rawPerson) => {
     description: getEmployeeStatusDescrByCode(rawPerson.employeeStatusCode),
   };
 
+  rawPerson.citizen = {
+    code: rawPerson.citizenCode,
+    description: rawPerson.citizenDescription,
+  };
+
   return new JsonApiSerializer(
     personResourceType,
     serializerOptions(serializerArgs, personResourcePath, topLevelSelfLink),
