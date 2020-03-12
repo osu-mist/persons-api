@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { errorHandler } from 'errors/errors';
+import { errorHandler, errorBuilder } from 'errors/errors';
 import { getPersonById } from '../../db/oracledb/persons-dao';
 
 /**
@@ -11,9 +10,11 @@ import { getPersonById } from '../../db/oracledb/persons-dao';
  */
 const get = async (req, res) => {
   try {
-    console.log('GET person by ID');
     const { osuId } = req.params;
     const result = await getPersonById(osuId);
+    if (!result) {
+      return errorBuilder(res, 404, 'A person with the specified osu ID was not found.');
+    }
     return res.send(result);
   } catch (err) {
     return errorHandler(res, err);
