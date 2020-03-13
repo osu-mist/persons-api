@@ -1,6 +1,6 @@
-# Express API Skeleton ![version](https://img.shields.io/badge/version-v1-blue.svg) [![openapi](https://img.shields.io/badge/openapi-2.0-green.svg)](./openapi.yaml) ![node](https://img.shields.io/badge/node-10.17-brightgreen.svg) ![npm](https://img.shields.io/badge/npm-6.11.1-orange.svg)
+# Persons API ![version](https://img.shields.io/badge/version-v2-blue.svg) [![openapi](https://img.shields.io/badge/openapi-3-green.svg)](./openapi.yaml) ![node](https://img.shields.io/badge/node-10.17-brightgreen.svg) ![npm](https://img.shields.io/badge/npm-6.11.1-orange.svg)
 
-Skeleton for Express APIs. API definition is contained in the [OpenAPI specification](./openapi.yaml).
+Get persons resource related data. API definition is contained in the [OpenAPI specification](./openapi.yaml).
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ Skeleton for Express APIs. API definition is contained in the [OpenAPI specifica
     | `${API_USER}` | The HTTP Basic username used to authenticate API calls. |
     | `${API_PASSWD}` | The HTTP Basic password used to authenticate API calls. |
 
-5 Copy [db/mock-data-example.json](db/mock-data-example.yaml) to `db/mock-data.json`. This will serve as the JSON DB, which is not committed to source code as it will change as the POST endpoint is used.
+5. Copy [mock-db/mock-data-example.json](mock-db/mock-data-example.yaml) to `mock-db/mock-data.json`. This will serve as the JSON DB, which is not committed to source code as it will change as the POST endpoint is used.
 
 ### Installing
 
@@ -131,13 +131,13 @@ paths. The list of functions that use this plugin can be found in
 
 3. We use [express-openapi](https://www.npmjs.com/package/express-openapi) to generate API by inheriting openapi.yaml. Create path handlers and put them into corresponding directories. For example:
 
-    * The path handler for `/src/api/v1/pets` should go to [src/api/v1/paths/pet.js](./src/api/v1/paths/pet.js)
-    * The path handler for `/src/api/v1/pets/{id}` should go to [src/api/v1/paths/pet/{id}.js](./src/api/v1/paths/pet/{id}.js)
+    * The path handler for `/pets` should go to [src/api-routes/pet.js](./src/api-routes/pet.js)
+    * The path handler for `/pets/{id}` should go to [src/api-routes/{id}.js](./src/api-routes/pet/{id}.js)
 
-4. Copy [src/api/v1/serializers/pets-serializer.js](./src/api/v1/serializers/pets-serializer.js) to `src/api/v1/serializers/<resources>-serializer.js` and modify as necessary:
+4. Copy [src/serializers/pets-serializer.js](./src/serializers/pets-serializer.js) to `src/serializers/<resources>-serializer.js` and modify as necessary:
 
     ```shell
-    $ cp src/api/v1/serializers/pets-serializer.js src/api/v1/serializers/<resources>-serializer.js
+    $ cp src/serializers/pets-serializer.js src/serializers/<resources>-serializer.js
     ```
 
 ### Base an existing project off / Incorporate updates from the skeleton
@@ -192,12 +192,12 @@ The following instructions show you how to connect the API to an Oracle database
 
     > Note: To avoid `ORA-02396: exceeded maximum idle time` and prevent deadlocks, the [best practice](https://github.com/oracle/node-oracledb/issues/928#issuecomment-398238519) is to keep `poolMin` the same as `poolMax`. Also, ensure [increasing the number of worker threads](https://github.com/oracle/node-oracledb/blob/node-oracledb-v1/doc/api.md#-82-connections-and-number-of-threads) available to node-oracledb. The thread pool size should be at least equal to the maximum number of connections and less than 128.
 
-3. If the SQL codes/queries contain intellectual property like Banner table names, put them into `src/api/v1/db/oracledb/contrib` folder and use [git-submodule](https://git-scm.com/docs/git-submodule) to manage submodules:
+3. If the SQL codes/queries contain intellectual property like Banner table names, put them into `src/db/oracledb/contrib` folder and use [git-submodule](https://git-scm.com/docs/git-submodule) to manage submodules:
 
-    * Add the given repository as a submodule at `src/api/v1/db/oracledb/contrib`:
+    * Add the given repository as a submodule at `src/db/oracledb/contrib`:
 
         ```shell
-        $ git submodule add <contrib_repo_git_url> src/api/v1/db/oracledb/contrib
+        $ git submodule add <contrib_repo_git_url> src/db/oracledb/contrib
         ```
 
     * Fetch the submodule from the contrib repository:
@@ -206,10 +206,10 @@ The following instructions show you how to connect the API to an Oracle database
         $ git submodule update --init
         ```
 
-4. Copy [src/api/v1/db/oracledb/pets-dao-example.js](./src/api/v1/db/oracledb/pets-dao-example.js) to `src/api/v1/db/oracledb/<resources>-dao.js` and modify as necessary:
+4. Copy [src/db/oracledb/pets-dao-example.js](./src/db/oracledb/pets-dao-example.js) to `src/db/oracledb/<resources>-dao.js` and modify as necessary:
 
     ```shell
-    $ cp src/api/v1/db/oracledb/pets-dao-example.js src/api/v1/db/oracledb/<resources>-dao.js
+    $ cp src/db/oracledb/pets-dao-example.js src/db/oracledb/<resources>-dao.js
     ```
 
 5. Make sure to use the correct path for the new DAO file at path handlers files:

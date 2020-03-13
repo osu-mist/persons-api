@@ -5,13 +5,13 @@ import { logger } from 'utils/logger';
 
 const { dataSources } = config.get('dataSources');
 const awsS3 = dataSources.includes('awsS3')
-  ? require('api/v2/db/awsS3/aws-operations').validateAwsS3
+  ? require('db/awsS3/aws-operations').validateAwsS3
   : null;
 const json = dataSources.includes('json')
-  ? require('api/v2/db/json/fs-operations').validateJsonDb
+  ? require('db/json/fs-operations').validateJsonDb
   : null;
 const oracledb = dataSources.includes('oracledb')
-  ? require('api/v2/db/oracledb/connection').validateOracleDb
+  ? require('db/oracledb/connection').validateOracleDb
   : null;
 
 /** Validate database configuration */
