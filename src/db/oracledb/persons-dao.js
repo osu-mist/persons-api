@@ -7,13 +7,13 @@ import { serializePerson } from '../../serializers/persons-serializer';
 /**
  * Queries data source for raw person data and passes it to the serializer
  *
- * @param {string} osuId 9-digit osu ID of a person
- * @returns {object} Serialized person resource from person-serializer
+ * @param {object} binds object
+ * @returns {Promise<object>} Serialized person resource from person-serializer
  */
-const getPersonById = async (osuId) => {
+const getPersonById = async (binds) => {
   const connection = await getConnection();
   try {
-    const { rows } = await connection.execute(contrib.getPersonById(osuId));
+    const { rows } = await connection.execute(contrib.getPersonById(), binds);
 
     if (rows.length > 1) {
       throw new Error('Expect a single object but got multiple results.');
