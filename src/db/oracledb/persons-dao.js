@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
+import { serializePerson } from 'serializers/persons-serializer';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
-import { serializePerson } from '../../serializers/persons-serializer';
 
 /**
  * Queries data source for raw person data and passes it to the serializer
