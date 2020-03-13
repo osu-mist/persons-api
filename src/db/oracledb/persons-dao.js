@@ -19,7 +19,7 @@ const getPersonById = async (osuId) => {
     if (rows.length > 1) {
       throw new Error('Expect a single object but got multiple results.');
     } else if (_.isEmpty(rows)) {
-      return null;
+      return undefined;
     }
 
     return serializePerson(rows[0]);
