@@ -1,6 +1,5 @@
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
-import merge from 'merge-deep';
 import moment from 'moment';
 
 import { serializerOptions } from 'utils/jsonapi';
@@ -10,7 +9,7 @@ import { apiBaseUrl, resourcePathLink } from 'utils/uri-builder';
 const personResourceProp = openapi.components.schemas.PersonResult.properties.data.properties;
 const personResourceType = personResourceProp.type.enum[0];
 const personResourceAttributes = personResourceProp.attributes.allOf;
-const personCombinedAttributes = merge(personResourceAttributes[0], personResourceAttributes[1]);
+const personCombinedAttributes = _.merge(personResourceAttributes[0], personResourceAttributes[1]);
 const personResourceKeys = _.keys(personCombinedAttributes.properties);
 const personResourcePath = 'persons';
 const personResourceUrl = resourcePathLink(apiBaseUrl, personResourcePath);
