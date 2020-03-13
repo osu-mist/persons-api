@@ -1,4 +1,4 @@
 [submodule "src/db/oracledb/contrib"]
 	path = src/db/oracledb/contrib
-	url = github.sig.oregonstate.edu:ecs-data/persons-api-contrib.git
+	url = git@github.sig.oregonstate.edu:ecs-data/persons-api-contrib.git
 	branch = v2
