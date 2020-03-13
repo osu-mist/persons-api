@@ -10,8 +10,8 @@ import { getPersonById } from '../../db/oracledb/persons-dao';
  */
 const get = async (req, res) => {
   try {
-    const { params: binds } = req;
-    const result = await getPersonById(binds);
+    const { osuId } = req.params;
+    const result = await getPersonById(osuId);
     if (!result) {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
