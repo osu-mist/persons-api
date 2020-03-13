@@ -4,9 +4,7 @@ import { getPersonById } from '../../db/oracledb/persons-dao';
 /**
  * Get person by ID
  *
- * @param {object} req request
- * @param {object} res response
- * @returns {Promise<object>} response
+ * @type {RequestHandler}
  */
 const get = async (req, res) => {
   try {
