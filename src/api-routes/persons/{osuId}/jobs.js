@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { errorHandler, errorBuilder } from 'errors/errors';
-// import { getPersonById } from '../../db/oracledb/jobs-dao';
+import { getJobs } from 'db/oracledb/jobs-dao';
 
 /**
  * Get jobs by ID
@@ -10,7 +10,9 @@ import { errorHandler, errorBuilder } from 'errors/errors';
 const get = async (req, res) => {
   try {
     console.log('get jobs endpoint');
-    const result = undefined;
+    const { query } = req;
+    const { osuId } = req.params;
+    const result = await getJobs(query, osuId);
     return res.send(result);
   } catch (err) {
     return errorHandler(res, err);
