@@ -46,6 +46,15 @@ const prepareRawJobs = (rawJobs) => {
       description: strsAssignmentDesc,
     };
 
+    job.supervisor = {
+      osuId: job.supervisorId,
+      firstName: job.supervisorFirstName,
+      lastName: job.supervisorLastName,
+      email: job.supervisorEmail,
+      positionNumber: job.supervisorPositionNumber,
+      suffix: job.supervisorSuffix,
+    };
+
     // campusCode handle later
   });
 };
