@@ -94,6 +94,11 @@ const prepareRawJobs = (rawJobs) => {
       longDescription: job.employeeClassLongDesc,
     };
 
+    job.employerIdentification = {
+      code: job.employerIdentificationCode,
+      description: job.employerIdentificationDesc,
+    };
+
     // campusCode handle later
   });
 };
