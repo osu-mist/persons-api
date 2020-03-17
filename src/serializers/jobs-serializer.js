@@ -22,6 +22,8 @@ const prepareRawJobs = (rawJobs) => {
       statusCode,
       changeReasonCode,
       changeReasonDesc,
+      strsAssignmentCode,
+      strsAssignmentDesc,
     } = job;
 
     job.contractType = {
@@ -37,6 +39,11 @@ const prepareRawJobs = (rawJobs) => {
     job.changeReason = {
       code: changeReasonCode,
       description: changeReasonDesc,
+    };
+
+    job.strsAssignment = {
+      code: strsAssignmentCode,
+      description: strsAssignmentDesc,
     };
 
     // campusCode handle later
