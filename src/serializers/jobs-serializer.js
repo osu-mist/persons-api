@@ -66,6 +66,17 @@ const prepareRawJobs = (rawJobs) => {
       },
     };
 
+    job.homeOrganization = {
+      current: {
+        code: job.homeOrgCode,
+        description: job.homeOrgDesc,
+      },
+      predecessor: {
+        code: job.homeOrgPredCode,
+        description: job.homeOrgPredDesc,
+      },
+    };
+
     // campusCode handle later
   });
 };
