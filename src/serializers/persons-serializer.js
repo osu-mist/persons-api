@@ -58,6 +58,4 @@ const serializePerson = (rawPerson) => {
   ).serialize(rawPerson);
 };
 
-export {
-  serializePerson,
-};
+export { serializePerson };
