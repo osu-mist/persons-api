@@ -24,6 +24,7 @@ const prepareRawJobs = (rawJobs) => {
       changeReasonDesc,
       strsAssignmentCode,
       strsAssignmentDesc,
+      i9FormCode,
     } = job;
 
     job.contractType = {
@@ -109,10 +110,10 @@ const prepareRawJobs = (rawJobs) => {
     };
 
     job.i9Form = {
-      code: job.i9FormCode,
+      code: i9FormCode,
       date: job.i9Date,
       expirationDate: job.i9ExpireDate,
-      // description: job.i9FormDesc,
+      description: contrib.geti9FormDescByCode(i9FormCode),
     };
 
     // campusCode handle later
