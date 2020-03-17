@@ -17,12 +17,29 @@ const jobResourceUrl = resourcePathLink(apiBaseUrl, jobResourcePath);
 
 const prepareRawJobs = (rawJobs) => {
   _.forEach(rawJobs, (job) => {
-    const { contractCode } = job;
+    const {
+      contractCode,
+      statusCode,
+      changeReasonCode,
+      changeReasonDesc,
+    } = job;
 
     job.contractType = {
       code: contractCode,
       description: contrib.getContractDescByCode(contractCode),
     };
+
+    job.status = {
+      code: statusCode,
+      description: contrib.getStatusDescByCode(statusCode),
+    };
+
+    job.changeReason = {
+      code: changeReasonCode,
+      description: changeReasonDesc,
+    };
+
+    // campusCode handle later
   });
 };
 
