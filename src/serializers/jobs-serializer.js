@@ -108,6 +108,13 @@ const prepareRawJobs = (rawJobs) => {
       longDescription: job.earnCodeLongDesc,
     };
 
+    job.i9Form = {
+      code: job.i9FormCode,
+      date: job.i9Date,
+      expirationDate: job.i9ExpireDate,
+      // description: job.i9FormDesc,
+    };
+
     // campusCode handle later
   });
 };
