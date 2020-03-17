@@ -77,6 +77,17 @@ const prepareRawJobs = (rawJobs) => {
       },
     };
 
+    job.salary = {
+      annual: job.salaryAnnual,
+      assignment: job.salaryAssignment,
+      paysPerYear: job.paysPerYear,
+      step: job.salaryStep,
+      group: {
+        code: job.salaryGroupCode,
+        description: job.salaryGroupDesc,
+      },
+    };
+
     // campusCode handle later
   });
 };
