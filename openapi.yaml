@@ -1363,10 +1363,14 @@ components:
         employeeClassification:
           type: object
           properties:
-            description:
+            shortDescription:
               type: string
               nullable: false
-              description: Description of the employee classification code
+              description: Short description of the employee classification code
+            longDescription:
+              type: string
+              nullable: false
+              description: Long description of the employee classification code
         employerIdentification:
           type: object
           properties:

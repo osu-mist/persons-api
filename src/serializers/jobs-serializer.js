@@ -88,6 +88,12 @@ const prepareRawJobs = (rawJobs) => {
       },
     };
 
+    job.employeeClassification = {
+      code: job.employeeClassCode,
+      shortDescription: job.employeeClassShortDesc,
+      longDescription: job.employeeClassLongDesc,
+    };
+
     // campusCode handle later
   });
 };
