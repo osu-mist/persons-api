@@ -55,6 +55,17 @@ const prepareRawJobs = (rawJobs) => {
       suffix: job.supervisorSuffix,
     };
 
+    job.timesheet = {
+      current: {
+        code: job.timesheetOrgCode,
+        description: job.timesheetOrgDesc,
+      },
+      predecessor: {
+        code: job.timesheetPredCode,
+        description: job.timesheetPredDesc,
+      },
+    };
+
     // campusCode handle later
   });
 };
