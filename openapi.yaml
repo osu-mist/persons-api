@@ -1172,6 +1172,7 @@ components:
               description: Shift code used as a default on timesheet for earnCode.
             effectiveDate:
               type: string
+              format: date
               nullable: true
               description: Effective date for the earnCode.
               example: '1970-01-20'
