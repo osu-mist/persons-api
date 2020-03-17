@@ -15,6 +15,16 @@ const jobResourceKeys = _.keys(jobCombinedAttributes.properties);
 const jobResourcePath = 'jobs';
 const jobResourceUrl = resourcePathLink(apiBaseUrl, jobResourcePath);
 
+const prepareRawJobs = (rawJobs) => {
+  _.forEach(rawJobs, (job) => {
+    const { contractCode } = job;
+
+    job.contractType = {
+      code: contractCode,
+      description: contrib.getContractDescByCode(contractCode),
+    };
+  });
+};
 
 const serializeJobs = (rawJobs, query) => {
   const topLevelSelfLink = paramsLink(apiBaseUrl, query);
@@ -25,6 +35,9 @@ const serializeJobs = (rawJobs, query) => {
     topLevelSelfLink,
     enableDataLinks: true,
   };
+
+  console.log(rawJobs[0]);
+  prepareRawJobs(rawJobs);
 
   return new JsonApiSerializer(
     jobResourceType,
