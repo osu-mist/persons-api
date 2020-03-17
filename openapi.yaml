@@ -1170,6 +1170,11 @@ components:
               type: string
               nullable: false
               description: Shift code used as a default on timesheet for earnCode.
+            effectiveDate:
+              type: string
+              nullable: true
+              description: Effective date for the earnCode.
+              example: '1970-01-20'
             code:
               type: string
               nullable: false
@@ -1381,10 +1386,14 @@ components:
         earningCode:
           type: object
           properties:
-            description:
+            shortDescription:
               type: string
               nullable: false
-              description: Description of earn code
+              description: Short description of earn code
+            longDescription:
+              type: string
+              nullable: false
+              description: Long description of earn code
         retirement:
           type: object
           properties:

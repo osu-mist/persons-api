@@ -99,6 +99,15 @@ const prepareRawJobs = (rawJobs) => {
       description: job.employerIdentificationDesc,
     };
 
+    job.earningCode = {
+      hours: job.earnCodeHours,
+      shift: job.earnCodeShift,
+      effectiveDate: job.earnCodeEffectiveDate,
+      code: job.earnCode,
+      shortDescription: job.earnCodeShortDesc,
+      longDescription: job.earnCodeLongDesc,
+    };
+
     // campusCode handle later
   });
 };
