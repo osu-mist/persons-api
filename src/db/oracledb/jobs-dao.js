@@ -20,7 +20,20 @@ const getJobs = async (query, osuId) => {
     const parsedQuery = parseQuery(query);
     parsedQuery.osuId = osuId;
     const { rows } = await connection.execute(contrib.getJobsById(parsedQuery), parsedQuery);
-    // console.log(rows);
+    console.log(rows);
+
+    /* for await (const job of rows) {
+      const laborQuery = {
+        osuId,
+        suffix: job.suffix,
+        positionNumber: job.positionNumber,
+      };
+      const { rows: laborData } = await connection.execute(
+        contrib.getJobLaborDistribution(),
+        laborQuery,
+      );
+      job.laborData = laborData;
+    } */
 
     return serializeJobs(rows, query);
 
