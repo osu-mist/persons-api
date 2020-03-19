@@ -30,6 +30,7 @@ const prepareRawJobs = (rawJobs) => {
       strsAssignmentCode,
       strsAssignmentDesc,
       i9FormCode,
+      laborData,
     } = job;
 
     job.contractType = {
@@ -121,6 +122,42 @@ const prepareRawJobs = (rawJobs) => {
       description: contrib.geti9FormDescByCode(i9FormCode),
     };
 
+    job.laborDistribution = [];
+    _.forEach(laborData, (labor) => {
+      job.laborDistribution.push({
+        effectiveDate: labor.effectiveDate,
+        distributionPercent: labor.distributionPercent,
+        accountIndex: {
+          code: labor.accountIndexCode,
+          description: labor.accountIndexDesc,
+        },
+        fund: {
+          code: labor.fundCode,
+          description: 'fillme',
+        },
+        organization: {
+          code: labor.organizationCode,
+          description: 'fillme',
+        },
+        account: {
+          code: labor.accountCode,
+          description: 'fillme',
+        },
+        program: {
+          code: labor.programCode,
+          description: 'fillme',
+        },
+        activity: {
+          code: labor.activityCode,
+          description: 'fillme',
+        },
+        location: {
+          code: labor.locationCode,
+          description: 'fillme',
+        },
+      });
+    });
+
     // campusCode handle later
   });
 };
@@ -142,7 +179,7 @@ const serializeJobs = (rawJobs, query) => {
     enableDataLinks: true,
   };
 
-  console.log(rawJobs[0]);
+  // console.log(rawJobs[0]);
   prepareRawJobs(rawJobs);
 
   return new JsonApiSerializer(
