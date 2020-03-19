@@ -1,6 +1,9 @@
+import sharp from 'sharp';
+
 import { errorHandler, errorBuilder } from 'errors/errors';
 // import { getPersonById } from 'db/oracledb/persons-dao';
 import { getImageById } from 'db/oracledb/images-dao';
+import { parseQuery } from 'utils/parse-query';
 
 /**
  * Get person by ID
@@ -10,14 +13,20 @@ import { getImageById } from 'db/oracledb/images-dao';
 const get = async (req, res) => {
   try {
     const { osuId } = req.params;
-    const result = await getImageById(osuId);
+    const { width } = parseQuery(req.query);
+    const image = await getImageById(osuId);
 
-    if (!result) {
+    if (!image) {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
-
     res.contentType('image/jpeg');
-    return res.send(result);
+
+    if (width) {
+      const resizedImage = await sharp(image).resize(width, null).toBuffer();
+      return res.send(resizedImage);
+    }
+
+    return res.send(image);
   } catch (err) {
     return errorHandler(res, err);
   }

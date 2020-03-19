@@ -18,16 +18,6 @@ const getImageById = async (osuId) => {
     }
 
     return rows[0].image;
-
-    /* fs.open('test.jpg', 'w', (err, fd) => {
-      if (err) {
-        throw err;
-      }
-
-      fs.write(fd, lob, 0, lob.length, null, (err) => {
-        throw err;
-      })
-    }); */
   } finally {
     connection.close();
   }
