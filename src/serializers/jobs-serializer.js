@@ -15,6 +15,11 @@ const jobResourceKeys = _.keys(jobCombinedAttributes.properties);
 const jobResourcePath = 'jobs';
 const jobResourceUrl = resourcePathLink(apiBaseUrl, jobResourcePath);
 
+/**
+ * Prepare raw data from data source for the serializer
+ *
+ * @param {*} rawJobs rawJobs from data source
+ */
 const prepareRawJobs = (rawJobs) => {
   _.forEach(rawJobs, (job) => {
     const {
@@ -120,6 +125,13 @@ const prepareRawJobs = (rawJobs) => {
   });
 };
 
+/**
+ * Serialize multiple jobs from data source
+ *
+ * @param {*} rawJobs
+ * @param {*} query
+ * @returns {object} Serialized job resource data
+ */
 const serializeJobs = (rawJobs, query) => {
   const topLevelSelfLink = paramsLink(apiBaseUrl, query);
   const serializerArgs = {

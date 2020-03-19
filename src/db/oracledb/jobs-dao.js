@@ -10,6 +10,7 @@ import { contrib } from './contrib/contrib';
  * Queries data source for raw person data and passes it to the serializer
  *
  * @param {object} query Query parameters from request
+ * @param {string} osuId OSU ID from request path
  * @returns {Promise<object>} Serialized person resource from person-serializer
  */
 const getJobs = async (query, osuId) => {
