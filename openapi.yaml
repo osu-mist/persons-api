@@ -272,7 +272,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/osuId'
         - in: query
-          name: width
+          name: filter[width]
           description: Resizes image to a pixel value for width while keeping original
             aspect ratio
           required: false
@@ -280,7 +280,6 @@ paths:
             type: integer
             minimum: 1
             maximum: 2000
-            default: 100
       responses:
         '200':
           description: Successful response
