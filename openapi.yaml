@@ -1236,6 +1236,12 @@ components:
           type: array
           items:
             properties:
+              distributionPercent:
+                type: number
+                format: float
+                nullable: false
+                description: Percentage of labor applied to this fund.
+                example: 49.9
               effectiveDate:
                 type: string
                 nullable: false
@@ -1285,12 +1291,6 @@ components:
                   code:
                     type: string
                     nullable: true
-              distributionPercent:
-                type: number
-                format: float
-                nullable: false
-                description: Percentage of labor applied to this fund.
-                example: 49.9
     JobAttributes:
       type: object
       additionalProperties: false
