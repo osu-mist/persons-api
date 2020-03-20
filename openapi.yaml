@@ -271,15 +271,7 @@ paths:
       operationId: getImages
       parameters:
         - $ref: '#/components/parameters/osuId'
-        - in: query
-          name: filter[width]
-          description: Resizes image to a pixel value for width while keeping original
-            aspect ratio
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 2000
+        - $ref: '#/components/parameters/imageWidth'
       responses:
         '200':
           description: Successful response
@@ -587,6 +579,16 @@ components:
       required: true
       schema:
         type: string
+    imageWidth:
+      in: query
+      name: filter[width]
+      description: Resizes image to a pixel value for width while keeping original
+        aspect ratio
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 2000
     mealPlanId:
       name: mealPlanId
       in: path
