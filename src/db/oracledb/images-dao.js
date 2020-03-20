@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
@@ -13,7 +15,7 @@ const getImageById = async (osuId) => {
     const query = { osuId };
     const { rows } = await connection.execute(contrib.getImageById(), query);
 
-    if (!rows) {
+    if (!rows || _.isEmpty(rows)) {
       return undefined;
     }
 
