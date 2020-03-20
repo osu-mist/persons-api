@@ -16,7 +16,7 @@ const get = async (req, res) => {
     const image = await getImageById(osuId);
 
     if (!image) {
-      return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+      return errorBuilder(res, 404, 'No image with the specified OSU ID was not found.');
     }
     res.contentType('image/jpeg');
 
