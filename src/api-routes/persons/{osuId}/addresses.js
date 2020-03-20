@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { errorHandler } from 'errors/errors';
 import { getAddressesById } from 'db/oracledb/addresses-dao';
 
@@ -8,7 +7,6 @@ import { getAddressesById } from 'db/oracledb/addresses-dao';
  * @type {RequestHandler}
  */
 const get = async (req, res) => {
-  console.log('get addresses endpoint');
   try {
     const { osuId } = req.params;
     const { query } = req;
@@ -23,7 +21,7 @@ const get = async (req, res) => {
  * Post address
  *
  */
-const post = async (req, res) => {
+const post = async () => {
   // TODO
 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { serializeAddresses } from 'serializers/addresses-serializer';
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
@@ -12,7 +11,6 @@ import { contrib } from './contrib/contrib';
  * @returns {Promise<object>} Serialized address resource
  */
 const getAddressesById = async (osuId, query) => {
-  console.log('get addresses dao');
   const connection = await getConnection();
   try {
     const parsedQuery = parseQuery(query);

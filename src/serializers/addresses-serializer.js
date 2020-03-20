@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
 
@@ -18,7 +17,7 @@ const addressResourceKeys = _.keys(addressCombinedAttributes.properties);
 /**
  * Some fields need to be massaged before the can be passed to the serializer
  *
- * @param {*} rawAddresses raw address data from data source
+ * @param {object} rawAddresses raw address data from data source
  */
 const prepareRawData = (rawAddresses) => {
   // handle sub objects programmatically
@@ -35,6 +34,13 @@ const prepareRawData = (rawAddresses) => {
   });
 };
 
+/**
+ * Get serializer arguments for JsonApiSerializer
+ *
+ * @param {string} osuId
+ * @param {object} query
+ * @returns {object} serializer arguments
+ */
 const getSerializerArgs = (osuId, query) => {
   const addressResourcePath = `persons/${osuId}/${addressResourceType}`;
   const addressResourceUrl = resourcePathLink(apiBaseUrl, addressResourcePath);
@@ -51,8 +57,9 @@ const getSerializerArgs = (osuId, query) => {
 /**
  * Takes raw addresses data and serializes it into json api standards
  *
- * @param rawAddresses raw address data from data source
- * @param query query parameters from request
+ * @param {object} rawAddresses raw address data from data source
+ * @param {object} query query parameters from request
+ * @param {string} osuId OSU ID for a person
  * @returns {object}
  */
 const serializeAddresses = (rawAddresses, query, osuId) => {
