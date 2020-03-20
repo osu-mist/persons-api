@@ -1,12 +1,11 @@
 import sharp from 'sharp';
 
 import { errorHandler, errorBuilder } from 'errors/errors';
-// import { getPersonById } from 'db/oracledb/persons-dao';
 import { getImageById } from 'db/oracledb/images-dao';
 import { parseQuery } from 'utils/parse-query';
 
 /**
- * Get person by ID
+ * Get image by ID
  *
  * @type {RequestHandler}
  */
