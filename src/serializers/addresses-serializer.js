@@ -14,8 +14,6 @@ const addressCombinedAttributes = _.merge(
   addressResourceAttributes[0], addressResourceAttributes[1],
 );
 const addressResourceKeys = _.keys(addressCombinedAttributes.properties);
-const addressResourcePath = 'addresses';
-const addressResourceUrl = resourcePathLink(apiBaseUrl, addressResourcePath);
 
 /**
  * Some fields need to be massaged before the can be passed to the serializer
@@ -37,6 +35,19 @@ const prepareRawData = (rawAddresses) => {
   });
 };
 
+const getSerializerArgs = (osuId, query) => {
+  const addressResourcePath = `persons/${osuId}/${addressResourceType}`;
+  const addressResourceUrl = resourcePathLink(apiBaseUrl, addressResourcePath);
+  const topLevelSelfLink = paramsLink(addressResourceUrl, query);
+  return {
+    identifierField: 'addressId',
+    resourceKeys: addressResourceKeys,
+    resourcePath: addressResourcePath,
+    topLevelSelfLink,
+    enableDataLinks: true,
+  };
+};
+
 /**
  * Takes raw addresses data and serializes it into json api standards
  *
@@ -44,21 +55,14 @@ const prepareRawData = (rawAddresses) => {
  * @param query query parameters from request
  * @returns {object}
  */
-const serializeAddresses = (rawAddresses, query) => {
-  const topLevelSelfLink = paramsLink(addressResourceUrl, query);
-  const serializerArgs = {
-    identifierField: 'addressId',
-    resourceKeys: addressResourceKeys,
-    resourcePath: addressResourcePath,
-    topLevelSelfLink,
-    enableDataLinks: true,
-  };
+const serializeAddresses = (rawAddresses, query, osuId) => {
+  const serializerArgs = getSerializerArgs(osuId, query);
 
   prepareRawData(rawAddresses);
 
   return new JsonApiSerializer(
     addressResourceType,
-    serializerOptions(serializerArgs, addressResourcePath, topLevelSelfLink),
+    serializerOptions(serializerArgs, addressResourceType, serializerArgs.topLevelSelfLink),
   ).serialize(rawAddresses);
 };
 
