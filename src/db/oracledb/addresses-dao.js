@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
@@ -13,7 +14,13 @@ const getAddressesById = async (osuId, query) => {
   console.log('get addresses dao');
   const connection = await getConnection();
   try {
-    return undefined;
+    const parsedQuery = parseQuery(query);
+    parsedQuery.osuId = osuId;
+    parsedQuery.addressType = parsedQuery.addressType ? parsedQuery.addressType : null;
+    const { rows } = await connection.execute(contrib.getAdresses(), parsedQuery);
+    console.log(rows);
+
+    return rows;
   } finally {
     connection.close();
   }
