@@ -18,10 +18,30 @@ const addressResourcePath = 'addresses';
 const addressResourceUrl = resourcePathLink(apiBaseUrl, addressResourcePath);
 
 /**
+ * Some fields need to be massaged before the can be passed to the serializer
+ *
+ * @param {*} rawAddresses raw address data from data source
+ */
+const prepareRawData = (rawAddresses) => {
+  // handle sub objects programmatically
+  _.forEach(rawAddresses, (address) => {
+    _.forEach(address, (value, key) => {
+      const splitKey = key.split('.');
+      if (splitKey.length > 1) {
+        if (!address[splitKey[0]]) {
+          address[splitKey[0]] = {};
+        }
+        address[splitKey[0]][splitKey[1]] = value;
+      }
+    });
+  });
+};
+
+/**
  * Takes raw addresses data and serializes it into json api standards
  *
- * @param rawAddresses
- * @param query
+ * @param rawAddresses raw address data from data source
+ * @param query query parameters from request
  * @returns {object}
  */
 const serializeAddresses = (rawAddresses, query) => {
@@ -33,6 +53,8 @@ const serializeAddresses = (rawAddresses, query) => {
     topLevelSelfLink,
     enableDataLinks: true,
   };
+
+  prepareRawData(rawAddresses);
 
   return new JsonApiSerializer(
     addressResourceType,

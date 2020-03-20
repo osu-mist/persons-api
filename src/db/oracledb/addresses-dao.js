@@ -19,7 +19,6 @@ const getAddressesById = async (osuId, query) => {
     parsedQuery.osuId = osuId;
     parsedQuery.addressType = parsedQuery.addressType ? parsedQuery.addressType : null;
     const { rows } = await connection.execute(contrib.getAdresses(), parsedQuery);
-    console.log(rows[0]);
 
     return serializeAddresses(rows, query);
   } finally {
