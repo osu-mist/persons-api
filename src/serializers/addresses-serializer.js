@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
 import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
-// import { contrib } from '../db/oracledb/contrib/contrib';
 
 const addressResourceProp = openapi.components.schemas.AddressResult.properties.data.properties;
 const addressResourceType = addressResourceProp.type.enum[0];
