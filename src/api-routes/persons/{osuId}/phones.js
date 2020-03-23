@@ -10,7 +10,7 @@ const get = async (req, res) => {
   try {
     console.log('get phones endpoint');
     const { osuId } = req.params;
-    const { query } = req.query;
+    const { query } = req;
     const result = await getPhones(osuId, query);
     return res.send(result);
   } catch (err) {
