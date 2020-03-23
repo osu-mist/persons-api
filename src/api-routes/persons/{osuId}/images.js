@@ -1,6 +1,7 @@
+import fs from 'fs';
 import sharp from 'sharp';
 
-import { errorHandler, errorBuilder } from 'errors/errors';
+import { errorHandler } from 'errors/errors';
 import { getImageById } from 'db/oracledb/images-dao';
 import { parseQuery } from 'utils/parse-query';
 import { openapi } from 'utils/load-openapi';
@@ -18,11 +19,17 @@ const get = async (req, res) => {
     const { width } = parseQuery(req.query);
     const image = await getImageById(osuId);
 
+    // return default image if no image is returned from data source
     if (!image) {
-      return errorBuilder(res, 404, 'No image with the specified OSU ID was not found.');
+      return fs.readFile('src/resources/defaultImage.jpg', (err, data) => {
+        if (err) {
+          return errorHandler(res, err);
+        }
+        res.contentType('image/jpeg');
+        return res.send(data);
+      });
     }
 
-    res.contentType('image/jpeg');
     let result;
     const sharpImage = sharp(image);
     if (width) {
@@ -33,6 +40,7 @@ const get = async (req, res) => {
       result = image;
     }
 
+    res.contentType('image/jpeg');
     return res.send(result);
   } catch (err) {
     return errorHandler(res, err);
