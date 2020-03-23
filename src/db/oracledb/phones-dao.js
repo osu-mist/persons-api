@@ -1,3 +1,4 @@
+import { serializePhones } from 'serializers/phones-serializer';
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -16,8 +17,8 @@ const getPhones = async (osuId, query) => {
     parsedQuery.phoneType = parsedQuery.phoneType ? parsedQuery.phoneType : null;
     parsedQuery.addressType = parsedQuery.addressType ? parsedQuery.addressType : null;
     const { rows } = await connection.execute(contrib.getPhones(), parsedQuery);
-    console.log(rows);
-    return undefined;
+
+    return serializePhones(rows, osuId, query);
   } finally {
     connection.close();
   }
