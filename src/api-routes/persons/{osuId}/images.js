@@ -3,7 +3,6 @@ import sharp from 'sharp';
 
 import { getImageById } from 'db/oracledb/images-dao';
 import { errorHandler } from 'errors/errors';
-import { parseQuery } from 'utils/parse-query';
 import { openapi } from 'utils/load-openapi';
 
 const { maximum: maxWidth } = openapi.components.parameters.imageWidth.schema;
@@ -16,7 +15,7 @@ const { maximum: maxWidth } = openapi.components.parameters.imageWidth.schema;
 const get = async (req, res) => {
   try {
     const { osuId } = req.params;
-    const { width } = parseQuery(req.query);
+    const { width } = req.query;
     const image = await getImageById(osuId);
 
     // return default image if no image is returned from data source

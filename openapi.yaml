@@ -581,7 +581,7 @@ components:
         type: string
     imageWidth:
       in: query
-      name: filter[width]
+      name: width
       description: Resizes image to a pixel value for width while keeping original
         aspect ratio
       required: false
