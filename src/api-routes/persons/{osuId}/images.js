@@ -1,8 +1,8 @@
 import fs from 'fs';
 import sharp from 'sharp';
 
-import { errorHandler } from 'errors/errors';
 import { getImageById } from 'db/oracledb/images-dao';
+import { errorHandler } from 'errors/errors';
 import { parseQuery } from 'utils/parse-query';
 import { openapi } from 'utils/load-openapi';
 
