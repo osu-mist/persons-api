@@ -1,4 +1,3 @@
-import { serializeAddresses } from 'serializers/addresses-serializer';
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -17,8 +16,7 @@ const getAddressesByOsuId = async (osuId, query) => {
     parsedQuery.osuId = osuId;
 
     const { rows } = await connection.execute(contrib.getAdresses(parsedQuery), parsedQuery);
-
-    return serializeAddresses(rows, query, osuId);
+    return rows;
   } finally {
     connection.close();
   }

@@ -1,3 +1,4 @@
+import { serializeAddresses } from 'serializers/addresses-serializer';
 import { errorHandler } from 'errors/errors';
 import { getAddressesByOsuId } from 'db/oracledb/addresses-dao';
 
@@ -8,10 +9,10 @@ import { getAddressesByOsuId } from 'db/oracledb/addresses-dao';
  */
 const get = async (req, res) => {
   try {
-    const { osuId } = req.params;
-    const { query } = req;
+    const { query, params: { osuId } } = req;
     const result = await getAddressesByOsuId(osuId, query);
-    return res.send(result);
+    const serializedAddresses = serializeAddresses(result, query, osuId);
+    return res.send(serializedAddresses);
   } catch (err) {
     return errorHandler(res, err);
   }
