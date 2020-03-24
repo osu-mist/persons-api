@@ -1,3 +1,4 @@
+import { serializePhones } from 'serializers/phones-serializer';
 import { errorHandler } from 'errors/errors';
 import { getPhones } from 'db/oracledb/phones-dao';
 
@@ -11,8 +12,9 @@ const get = async (req, res) => {
     console.log('get phones endpoint');
     const { osuId } = req.params;
     const { query } = req;
-    const result = await getPhones(osuId, query);
-    return res.send(result);
+    const results = await getPhones(osuId, query);
+    const serializedPhones = serializePhones(results, osuId, query);
+    return res.send(serializedPhones);
   } catch (err) {
     return errorHandler(res, err);
   }
