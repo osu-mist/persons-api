@@ -1,6 +1,7 @@
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
 
+import { formatSubObjects } from 'utils/format-sub-objects';
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
 import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
@@ -19,18 +20,7 @@ const addressResourceKeys = _.keys(addressCombinedAttributes.properties);
  * @param {object} rawAddresses raw address data from data source
  */
 const prepareRawData = (rawAddresses) => {
-  // handle sub objects programmatically
-  _.forEach(rawAddresses, (address) => {
-    _.forEach(address, (value, key) => {
-      const splitKey = key.split('.');
-      if (splitKey.length > 1) {
-        if (!address[splitKey[0]]) {
-          address[splitKey[0]] = {};
-        }
-        address[splitKey[0]][splitKey[1]] = value;
-      }
-    });
-  });
+  formatSubObjects(rawAddresses);
 };
 
 /**
