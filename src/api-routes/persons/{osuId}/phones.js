@@ -10,8 +10,7 @@ import { getPhones } from 'db/oracledb/phones-dao';
 const get = async (req, res) => {
   try {
     console.log('get phones endpoint');
-    const { osuId } = req.params;
-    const { query } = req;
+    const { query, params: { osuId } } = req;
     const results = await getPhones(osuId, query);
     const serializedPhones = serializePhones(results, osuId, query);
     return res.send(serializedPhones);
