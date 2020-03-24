@@ -16,17 +16,11 @@ const get = async (req, res) => {
   try {
     const { osuId } = req.params;
     const { width } = req.query;
-    const image = await getImageById(osuId);
+    let image = await getImageById(osuId);
 
     // return default image if no image is returned from data source
     if (!image) {
-      return fs.readFile('src/resources/defaultImage.jpg', (err, data) => {
-        if (err) {
-          return errorHandler(res, err);
-        }
-        res.contentType('image/jpeg');
-        return res.send(data);
-      });
+      image = fs.readFileSync('src/resources/defaultImage.jpg');
     }
 
     let result;
