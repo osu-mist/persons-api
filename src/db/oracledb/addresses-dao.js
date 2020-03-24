@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { serializeAddresses } from 'serializers/addresses-serializer';
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
@@ -19,10 +17,6 @@ const getAddressesById = async (osuId, query) => {
     parsedQuery.osuId = osuId;
 
     const { rows } = await connection.execute(contrib.getAdresses(parsedQuery), parsedQuery);
-
-    if (_.isEmpty(rows)) {
-      return undefined;
-    }
 
     return serializeAddresses(rows, query, osuId);
   } finally {
