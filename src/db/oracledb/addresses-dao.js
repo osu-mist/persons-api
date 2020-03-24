@@ -10,7 +10,7 @@ import { contrib } from './contrib/contrib';
  * @param {object} query Query parameters passed in with request
  * @returns {Promise<object>} Serialized address resource
  */
-const getAddressesById = async (osuId, query) => {
+const getAddressesByOsuId = async (osuId, query) => {
   const connection = await getConnection();
   try {
     const parsedQuery = parseQuery(query);
@@ -24,4 +24,4 @@ const getAddressesById = async (osuId, query) => {
   }
 };
 
-export { getAddressesById };
+export { getAddressesByOsuId };

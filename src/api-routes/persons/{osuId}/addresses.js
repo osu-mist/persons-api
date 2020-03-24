@@ -1,5 +1,5 @@
 import { errorHandler } from 'errors/errors';
-import { getAddressesById } from 'db/oracledb/addresses-dao';
+import { getAddressesByOsuId } from 'db/oracledb/addresses-dao';
 
 /**
  * Get addresses by OSU ID
@@ -10,7 +10,7 @@ const get = async (req, res) => {
   try {
     const { osuId } = req.params;
     const { query } = req;
-    const result = await getAddressesById(osuId, query);
+    const result = await getAddressesByOsuId(osuId, query);
     return res.send(result);
   } catch (err) {
     return errorHandler(res, err);
