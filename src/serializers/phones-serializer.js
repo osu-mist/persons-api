@@ -26,7 +26,8 @@ const prepareRawPhones = (rawPhones) => {
  * Creates serializer arguments
  *
  * @param {string} osuId OSU ID of person
- * @param {object} query query parameters passed in with the request
+ * @param {object} query Query parameters passed in with the request
+ * @returns {object} Serializer arguments
  */
 const getSerializerArgs = (osuId, query) => {
   const phoneResourcePath = `persons/${osuId}/${phoneResourceType}`;
@@ -47,6 +48,7 @@ const getSerializerArgs = (osuId, query) => {
  * @param {object[]} rawPhones raw data from data source
  * @param {string} osuId OSU ID of person
  * @param {object} query query parameters passed in with the request
+ * @returns {Promise<object>} Serialized phone resource
  */
 const serializePhones = (rawPhones, osuId, query) => {
   const serializerArgs = getSerializerArgs(osuId, query);
