@@ -421,7 +421,7 @@ paths:
               JCO, ECV, KCY, JEC, BGQ, GFI, GFR, EGM, HGP, IHN, GIE, ECI, OJP, OKR, ELR, AMW, CMA,
               AMU, QMY, PNP, INI, GNO, IPA, LUS, RAQ, HAW, EBF, HKY, AKM, HDM, GFO, RTF, FKG, FUZ,
               FLV, PMV, FSI, HAN, EGH, PIN, EMR, AUG, KYE, NTO, GGI, NKI, HMS, NNU, ASC, HTC, FEZ,
-              FMW, NNF, QLA, IAN, KWE, FTM, HMF, FKV, null]
+              FMW, NNF, QLA, IAN, KWE, FTM, HMF, FKV]
         - $ref: '#/components/parameters/addressType'
       responses:
         '200':
