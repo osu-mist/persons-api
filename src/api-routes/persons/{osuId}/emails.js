@@ -1,3 +1,4 @@
+import { serializeEmails } from 'serializers/emails-serializer';
 import { errorHandler } from 'errors/errors';
 import { getEmailsByOsuId } from 'db/oracledb/emails-dao';
 
@@ -11,7 +12,8 @@ const get = async (req, res) => {
   try {
     const { query, params: { osuId } } = req;
     const result = await getEmailsByOsuId(osuId, query);
-    return res.send(result);
+    const serializedEmails = serializeEmails(result, osuId, query);
+    return res.send(serializedEmails);
   } catch (err) {
     return errorHandler(res, err);
   }
