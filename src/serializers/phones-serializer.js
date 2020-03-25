@@ -11,12 +11,23 @@ const phoneResourceAttributes = phoneResourceProp.attributes.allOf;
 const phoneCombinedAttributes = _.merge(phoneResourceAttributes[0], phoneResourceAttributes[1]);
 const phoneResourceKeys = _.keys(phoneCombinedAttributes.properties);
 
+/**
+ * Creates fullPhoneNumber and prepares sub-objects for serializer
+ *
+ * @param {object[]} rawPhones raw data from data source
+ */
 const prepareRawPhones = (rawPhones) => {
   _.forEach(rawPhones, (phone) => {
     phone.fullPhoneNumber = `${phone.areaCode}${phone.phoneNumber}`;
   });
 };
 
+/**
+ * Creates serializer arguments
+ *
+ * @param {string} osuId OSU ID of person
+ * @param {object} query query parameters passed in with the request
+ */
 const getSerializerArgs = (osuId, query) => {
   const phoneResourcePath = `persons/${osuId}/${phoneResourceType}`;
   const addressResourceUrl = resourcePathLink(apiBaseUrl, phoneResourcePath);
@@ -30,6 +41,13 @@ const getSerializerArgs = (osuId, query) => {
   };
 };
 
+/**
+ * Serializes raw phone data from data source
+ *
+ * @param {object[]} rawPhones raw data from data source
+ * @param {string} osuId OSU ID of person
+ * @param {object} query query parameters passed in with the request
+ */
 const serializePhones = (rawPhones, osuId, query) => {
   const serializerArgs = getSerializerArgs(osuId, query);
 
