@@ -13,9 +13,7 @@ const getPhones = async (osuId, query) => {
     console.log('getPhones dao');
     const parsedQuery = parseQuery(query);
     parsedQuery.osuId = osuId;
-    parsedQuery.phoneType = parsedQuery.phoneType ? parsedQuery.phoneType : null;
-    parsedQuery.addressType = parsedQuery.addressType ? parsedQuery.addressType : null;
-    const { rows } = await connection.execute(contrib.getPhones(), parsedQuery);
+    const { rows } = await connection.execute(contrib.getPhones(parsedQuery), parsedQuery);
 
     return rows;
   } finally {
