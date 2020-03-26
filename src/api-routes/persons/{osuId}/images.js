@@ -16,11 +16,15 @@ const get = async (req, res) => {
   try {
     const { osuId } = req.params;
     const { width } = req.query;
-    const image = await getImageById(osuId);
+    let image = await getImageById(osuId);
+
+    // load default image if image is null
+    if (!image) {
+      image = fs.readFileSync('src/resources/defaultImage.jpg');
+    }
 
     let result;
-    // load default image if image is null
-    const sharpImage = sharp(image || fs.readFileSync('src/resources/defaultImage.jpg'));
+    const sharpImage = sharp(image);
     if (width) {
       result = await sharpImage.resize(width, null).toBuffer();
     } else if (await sharpImage.metadata().width > maxWidth) {
