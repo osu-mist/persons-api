@@ -1,5 +1,6 @@
+import { personExists } from 'db/oracledb/persons-dao';
 import { serializePhones } from 'serializers/phones-serializer';
-import { errorHandler } from 'errors/errors';
+import { errorHandler, errorBuilder } from 'errors/errors';
 import { getPhones } from 'db/oracledb/phones-dao';
 
 /**
@@ -10,6 +11,11 @@ import { getPhones } from 'db/oracledb/phones-dao';
 const get = async (req, res) => {
   try {
     const { query, params: { osuId } } = req;
+
+    if (!await personExists(osuId)) {
+      return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+    }
+
     const results = await getPhones(osuId, query);
     const serializedPhones = serializePhones(results, osuId, query);
     return res.send(serializedPhones);
