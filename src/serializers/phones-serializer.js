@@ -1,6 +1,7 @@
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
 
+import { formatSubObjects } from 'utils/format-sub-objects';
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
 import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
@@ -19,7 +20,10 @@ const phoneResourceKeys = _.keys(phoneCombinedAttributes.properties);
 const prepareRawPhones = (rawPhones) => {
   _.forEach(rawPhones, (phone) => {
     phone.fullPhoneNumber = `${phone.areaCode}${phone.phoneNumber}`;
+    phone.primaryInd = phone.primaryInd === 'Y';
   });
+
+  formatSubObjects(rawPhones);
 };
 
 /**
