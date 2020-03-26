@@ -5,6 +5,22 @@ import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
 /**
+ * Returns true if person with the given OSU ID exists
+ *
+ * @param {string} osuId OSU ID of a person
+ * @returns {boolean} true if person exists
+ */
+const personExists = async (osuId) => {
+  const connection = await getConnection();
+  try {
+    const { rows } = await connection.execute(contrib.personExists(), { osuId });
+    return rows.length > 0;
+  } finally {
+    connection.close();
+  }
+};
+
+/**
  * Queries data source for raw person data and passes it to the serializer
  *
  * @param {string} osuId OSU ID of person to select
@@ -28,6 +44,4 @@ const getPersonById = async (osuId) => {
   }
 };
 
-export {
-  getPersonById,
-};
+export { getPersonById, personExists };

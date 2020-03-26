@@ -18,7 +18,7 @@ const get = async (req, res) => {
     const { width } = req.query;
     let image = await getImageById(osuId);
 
-    // return default image if no image is returned from data source
+    // load default image if image is null
     if (!image) {
       image = fs.readFileSync('src/resources/defaultImage.jpg');
     }
