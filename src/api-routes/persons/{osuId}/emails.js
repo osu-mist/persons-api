@@ -8,7 +8,6 @@ import { getEmailsByOsuId } from 'db/oracledb/emails-dao';
  * @type {RequestHandler}
  */
 const get = async (req, res) => {
-  console.log('get emails endpoint');
   try {
     const { query, params: { osuId } } = req;
     const result = await getEmailsByOsuId(osuId, query);
