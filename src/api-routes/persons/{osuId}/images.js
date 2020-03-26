@@ -20,7 +20,7 @@ const get = async (req, res) => {
 
     // load default image if image is null
     if (!image) {
-      image = fs.readFileSync('src/resources/defaultImage.jpg');
+      image = fs.readFileSync(`${__dirname}/../../../resources/defaultImage.jpg`);
     }
 
     let result;
