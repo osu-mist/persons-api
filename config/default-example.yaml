@@ -15,9 +15,15 @@ authentication:
 dataSources:
   dataSources: ['oracledb']
   oracledb:
-    connectString: ${DB_URL}
-    user: ${DB_USER}
-    password: ${DB_PASSWD}
     poolMin: 4
     poolMax: 4
     poolIncrement: 0
+    oracleSources: ['bannerRead', 'odsRead']
+    bannerRead:
+      connectString: ${DB_URL}
+      user: ${DB_USER}
+      password: ${DB_PASSWD}
+    odsRead:
+      connectString: ${DB_URL}
+      user: ${DB_USER}
+      password: ${DB_PASSWD}
