@@ -1,5 +1,5 @@
 import config from 'config';
-import _ from 'lodash';
+import _ from 'async-dash';
 import oracledb from 'oracledb';
 
 import { logger } from 'utils/logger';
@@ -16,7 +16,7 @@ const threadPoolSize = dbConfig.poolMax + (dbConfig.poolMax / 5);
 process.env.UV_THREADPOOL_SIZE = threadPoolSize > 128 ? 128 : threadPoolSize;
 
 /** Connection pool */
-let pool;
+const pools = {};
 
 /**
  * Create a pool of connection
@@ -26,7 +26,11 @@ let pool;
 const createPool = async () => {
   /** Attributes to use from config file */
   const attributes = ['connectString', 'user', 'password', 'poolMin', 'poolMax', 'poolIncrement'];
-  pool = await oracledb.createPool(_.pick(dbConfig, attributes));
+  const poolConfig = _.pick(dbConfig, attributes);
+  await _.asyncEach(dbConfig.oracleSources, async (source) => {
+    const connectConfig = _.pick(dbConfig[source], attributes);
+    pools[source] = await oracledb.createPool({ ...connectConfig, ...poolConfig });
+  });
 };
 
 /**
@@ -34,11 +38,11 @@ const createPool = async () => {
  *
  * @returns {Promise} Promise object represents a connection from created pool
  */
-const getConnection = async () => {
-  if (!pool) {
+const getConnection = async (pool = 'bannerRead') => {
+  if (!pools[pool]) {
     await createPool();
   }
-  return pool.getConnection();
+  return pools[pool].getConnection();
 };
 
 /**
