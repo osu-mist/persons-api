@@ -36,6 +36,7 @@ const createPool = async () => {
 /**
  * Get a connection from a created pool. Creates pool if it hasn't been created yet.
  *
+ * @param {string} pool Name of the connection pool to use
  * @returns {Promise} Promise object represents a connection from created pool
  */
 const getConnection = async (pool = 'bannerRead') => {
