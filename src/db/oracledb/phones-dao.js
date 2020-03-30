@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -14,7 +16,9 @@ const getPhones = async (pidm, query) => {
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.pidm = pidm;
-    const { rows } = await connection.execute(contrib.getPhones(parsedQuery), parsedQuery);
+
+    const omittedQuery = _.omit(parsedQuery, ['primaryInd']);
+    const { rows } = await connection.execute(contrib.getPhones(parsedQuery), omittedQuery);
 
     return rows;
   } finally {
