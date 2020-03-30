@@ -31,6 +31,14 @@ const getSerializerArgs = (osuId, query) => {
   };
 };
 
+/**
+ * Serializes raw data into JSON API format
+ *
+ * @param {object[]} rawMealPlans raw data from data source
+ * @param {string} osuId OSU ID of a person
+ * @param {object} query Query parameters from request
+ * @returns {object[]} Serialized meal-plans
+ */
 const serializeMealPlans = (rawMealPlans, osuId, query) => {
   const serializerArgs = getSerializerArgs(osuId, query);
 
