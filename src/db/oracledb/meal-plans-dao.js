@@ -14,6 +14,7 @@ const getMealPlansByOsuId = async (osuId, query) => {
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.osuId = osuId;
+    parsedQuery.balance = parsedQuery.balance.toString();
 
     const { rows } = await connection.execute(
       contrib.getMealPlansByOsuId(parsedQuery),
