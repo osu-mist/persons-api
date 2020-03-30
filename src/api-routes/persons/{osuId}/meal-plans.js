@@ -1,6 +1,6 @@
-import { serializeMealPlans } from 'serializers/meal-plans-serializer';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { getMealPlansByOsuId } from 'db/oracledb/meal-plans-dao';
+import { serializeMealPlans } from 'serializers/meal-plans-serializer';
 import { personExists } from 'db/oracledb/persons-dao';
 
 /**
