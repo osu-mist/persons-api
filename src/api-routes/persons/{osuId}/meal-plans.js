@@ -1,3 +1,4 @@
+import { serializeMealPlans } from 'serializers/meal-plans-serializer';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { getMealPlansByOsuId } from 'db/oracledb/meal-plans-dao';
 import { personExists } from 'db/oracledb/persons-dao';
@@ -16,8 +17,9 @@ const get = async (req, res) => {
     }
 
     const result = await getMealPlansByOsuId(osuId, query);
+    const serializedMealPlans = serializeMealPlans(result, osuId, query);
 
-    return res.send(result);
+    return res.send(serializedMealPlans);
   } catch (err) {
     return errorHandler(res, err);
   }
