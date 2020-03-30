@@ -14,7 +14,11 @@ const personExists = async (osuId) => {
   const connection = await getConnection();
   try {
     const { rows } = await connection.execute(contrib.personExists(), { osuId });
-    return rows.length > 0;
+    if (rows.length > 0) {
+      return rows[0].pidm;
+    }
+
+    return null;
   } finally {
     connection.close();
   }

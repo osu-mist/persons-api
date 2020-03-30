@@ -9,11 +9,11 @@ import { contrib } from './contrib/contrib';
  * @param {object} query Query parameters passed in with request
  * @returns {Promise<object>} Serialized address resource
  */
-const getAddressesByOsuId = async (osuId, query) => {
+const getAddressesByOsuId = async (pidm, query) => {
   const connection = await getConnection();
   try {
     const parsedQuery = parseQuery(query);
-    parsedQuery.osuId = osuId;
+    parsedQuery.pidm = pidm;
 
     const { rows } = await connection.execute(contrib.getAdresses(parsedQuery), parsedQuery);
     return rows;

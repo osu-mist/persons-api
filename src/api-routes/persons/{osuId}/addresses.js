@@ -12,11 +12,12 @@ const get = async (req, res) => {
   try {
     const { query, params: { osuId } } = req;
 
-    if (!await personExists(osuId)) {
+    const pidm = await personExists(osuId);
+    if (!pidm) {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await getAddressesByOsuId(osuId, query);
+    const result = await getAddressesByOsuId(pidm, query);
     const serializedAddresses = serializeAddresses(result, query, osuId);
     return res.send(serializedAddresses);
   } catch (err) {
