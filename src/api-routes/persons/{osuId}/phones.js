@@ -1,7 +1,7 @@
-import { personExists } from 'db/oracledb/persons-dao';
-import { serializePhones } from 'serializers/phones-serializer';
 import { errorHandler, errorBuilder } from 'errors/errors';
+import { personExists } from 'db/oracledb/persons-dao';
 import { getPhones } from 'db/oracledb/phones-dao';
+import { serializePhones } from 'serializers/phones-serializer';
 
 /**
  * Get phones by OSU ID
