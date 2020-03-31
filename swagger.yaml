@@ -17,6 +17,9 @@ produces:
   - application/json
 consumes:
   - application/json
+security:
+  - OAuth2:
+    - full
 paths:
   /persons:
     get:
@@ -71,7 +74,6 @@ paths:
           description: If true, searching by OSU ID will also search old OSU ID's associated with the person.
           type: boolean
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -94,7 +96,6 @@ paths:
           schema:
             $ref: '#/definitions/NewPersonResultObject'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         202:
           # The backend data source needs to do additional processing with the new person record.
@@ -115,7 +116,6 @@ paths:
       parameters:
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -146,7 +146,6 @@ paths:
           required: false
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -171,7 +170,6 @@ paths:
         - $ref: '#/parameters/employmentType'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         202:
           # The backend data source needs to do additional processing with the new job record.
@@ -197,7 +195,6 @@ paths:
         - $ref: '#/parameters/jobID'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -223,7 +220,6 @@ paths:
         - $ref: '#/parameters/jobID'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         202:
           # The backend data source needs to do additional processing with the new job record.
@@ -254,7 +250,6 @@ paths:
             $ref: '#/definitions/NewSSNResultObject'
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         202:
           description: SSN record accepted.
@@ -287,7 +282,6 @@ paths:
           type: integer
         - $ref: '#/parameters/osuID'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -309,7 +303,6 @@ paths:
       operationId: getMealPlans
       parameters:
         - $ref: '#/parameters/osuID'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -332,7 +325,6 @@ paths:
           required: true
           type: string
         - $ref: '#/parameters/osuID'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -351,7 +343,6 @@ paths:
       parameters:
         - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/osuID'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -374,7 +365,6 @@ paths:
           schema:
             $ref: '#/definitions/NewAddressResultObject'
         - $ref: '#/parameters/osuID'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -398,7 +388,6 @@ paths:
         - $ref: '#/parameters/addressType'
         - $ref: '#/parameters/phoneType'
         - $ref: '#/parameters/osuID'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -425,7 +414,6 @@ paths:
           schema:
             $ref: '#/definitions/NewPhoneResultObject'
         - $ref: '#/parameters/osuID'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Successful response
@@ -466,12 +454,6 @@ parameters:
     type: boolean
     required: false
     description: If true, JSON response will be pretty-printed
-  authorization:
-    name: Authorization
-    in: header
-    type: string
-    required: true
-    description: '"Bearer [token]" where [token] is your OAuth2 access token'
   addressType:
     name: addressType
     in: query
@@ -527,6 +509,13 @@ parameters:
       - RH
       - EF
       - MP
+securityDefinitions:
+  OAuth2:
+    type: oauth2
+    flow: application
+    tokenUrl: https://api.oregonstate.edu/oauth2/token
+    scopes:
+      full: Full access to the API
 definitions:
   NewPersonResultObject:
     properties:
