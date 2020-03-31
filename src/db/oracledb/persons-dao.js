@@ -15,7 +15,7 @@ const personExists = async (osuId) => {
   try {
     const { rows } = await connection.execute(contrib.personExists(), { osuId });
     if (rows.length > 0) {
-      return rows[0].pidm;
+      return rows[0].internalId;
     }
 
     return null;
