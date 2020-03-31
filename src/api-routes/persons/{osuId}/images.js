@@ -1,9 +1,10 @@
 import fs from 'fs';
 import sharp from 'sharp';
 
-import { getImageById } from 'db/oracledb/images-dao';
 import { errorHandler } from 'errors/errors';
+import { getImageById } from 'db/oracledb/images-dao';
 import { openapi } from 'utils/load-openapi';
+import { personExists } from 'db/oracledb/persons-dao';
 
 const { maximum: maxWidth } = openapi.components.parameters.imageWidth.schema;
 
@@ -16,7 +17,12 @@ const get = async (req, res) => {
   try {
     const { osuId } = req.params;
     const { width } = req.query;
-    let image = await getImageById(osuId);
+    const internalId = await personExists(osuId);
+    let image;
+
+    if (internalId) {
+      image = await getImageById(internalId);
+    }
 
     // load default image if image is null
     if (!image) {
