@@ -382,23 +382,11 @@ class PersonsResource extends Resource {
                     logger.info("Labor change. Updating $employmentType job")
                     dbFunctionOutput = bannerPersonsWriteDAO.updateLaborChangeJob(osuID, job)
                         .getString(BannerPersonsWriteDAO.outParameter)
-                } else if (employmentType == studentEmploymentType) {
-                    // TODO: This must be removed once the updateJob SP is completed.
-                    logger.info("Updating $studentEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
-                        .getString(BannerPersonsWriteDAO.outParameter)
-                } else if (employmentType == graduateEmploymentType) {
-                    // TODO: This must be removed once the updateJob SP is completed.
-                    logger.info("Updating $graduateEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
+                } else {
+                    logger.info("Updating $employmentType job")
+                    dbFunctionOutput = bannerPersonsWriteDAO.updateJob(osuID, job)
                         .getString(BannerPersonsWriteDAO.outParameter)
                 }
-                // TODO: SP hasn't be released yet. Need to test this part once it's done.
-                // else {
-                //     logger.info("Updating $employmentType job")
-                //     dbFunctionOutput = bannerPersonsWriteDAO.updateJob(osuID, job)
-                //         .getString(BannerPersonsWriteDAO.outParameter)
-                // }
             } else {
                 switch (employmentType) {
                 case studentEmploymentType:
