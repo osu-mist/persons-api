@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -15,13 +17,14 @@ const getMealPlansByOsuId = async (osuId, query) => {
     const parsedQuery = parseQuery(query);
     parsedQuery.osuId = osuId;
 
+    // create query string
     const getMealPlansQuery = contrib.getMealPlansByOsuId(parsedQuery);
-    if (parsedQuery.balance) {
-      parsedQuery.balance = parsedQuery.balance.value;
-    }
-    if (parsedQuery.lastUsedDateTime) {
-      parsedQuery.lastUsedDateTime = parsedQuery.lastUsedDateTime.value;
-    }
+    // strip operators from parsedQuery so they are not passed into the query execution
+    _.forEach(parsedQuery, (value, param) => {
+      if (value.operator) {
+        parsedQuery[param] = value.value;
+      }
+    });
     const { rows } = await connection.execute(
       getMealPlansQuery,
       parsedQuery,
