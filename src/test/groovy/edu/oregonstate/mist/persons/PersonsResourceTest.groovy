@@ -1467,10 +1467,7 @@ class PersonsResourceTest {
         def personsWriteDAOStub = new StubFor(BannerPersonsWriteDAO)
 
         personsWriteDAOStub.demand.with {
-            updateStudentJob { String osuID, JobObject job ->
-                outParametersStub.proxyInstance()
-            }
-            updateGraduateJob { String osuID, JobObject job ->
+            updateJob { String osuID, JobObject job ->
                 outParametersStub.proxyInstance()
             }
         }
