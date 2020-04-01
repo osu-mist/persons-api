@@ -19,6 +19,9 @@ const getMealPlansByOsuId = async (osuId, query) => {
     if (parsedQuery.balance) {
       parsedQuery.balance = parsedQuery.balance.value;
     }
+    if (parsedQuery.lastUsedDateTime) {
+      parsedQuery.lastUsedDateTime = parsedQuery.lastUsedDateTime.value;
+    }
     const { rows } = await connection.execute(
       getMealPlansQuery,
       parsedQuery,
