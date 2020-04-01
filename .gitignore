@@ -40,3 +40,9 @@ src/main/groovy/edu/oregonstate/mist/contrib/
 # virtual_len
 **/virtual_env/*
 **/venv/*
+
+# v2 express
+config/default.yaml
+dist/
+node_modules/
+src/db/
