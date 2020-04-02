@@ -35,4 +35,20 @@ const getMealPlansByOsuId = async (osuId, query) => {
   }
 };
 
-export { getMealPlansByOsuId };
+const getMealPlanByMealPlanId = async (osuId, mealPlanId) => {
+  const connection = await getConnection('odsRead');
+  try {
+    const query = { osuId, mealPlanId };
+    const { rows } = await connection.execute(contrib.getMealPlansByOsuId(query), query);
+
+    if (rows.length < 1) {
+      return undefined;
+    }
+
+    return rows[0];
+  } finally {
+    connection.close();
+  }
+};
+
+export { getMealPlansByOsuId, getMealPlanByMealPlanId };
