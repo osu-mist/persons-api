@@ -49,6 +49,13 @@ const serializeMealPlans = (rawMealPlans, osuId, query) => {
   ).serialize(rawMealPlans);
 };
 
+/**
+ * Serializes raw data into JSON API format
+ *
+ * @param {object} rawMealPlan raw data from data source
+ * @param {string} osuId OSU ID of a person
+ * @returns {object} Serialized meal-plans
+ */
 const serializeMealPlan = (rawMealPlan, osuId) => {
   const serializerArgs = getSerializerArgs(osuId);
   const planResourceUrl = resourcePathLink(apiBaseUrl, serializerArgs.resourcePath);

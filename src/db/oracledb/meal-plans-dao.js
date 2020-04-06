@@ -35,6 +35,13 @@ const getMealPlansByOsuId = async (osuId, query) => {
   }
 };
 
+/**
+ * Queries data source for raw meal-plan data
+ *
+ * @param {string} osuId OSU ID of person to select addresses from
+ * @param {string} mealPlanId ID of meal plan to select
+ * @returns {Promise<object>} Serialized address resource
+ */
 const getMealPlanByMealPlanId = async (osuId, mealPlanId) => {
   const connection = await getConnection('odsRead');
   try {
