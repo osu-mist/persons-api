@@ -2,6 +2,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 
 import { getImageById } from 'db/oracledb/images-dao';
+import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler } from 'errors/errors';
 import { openapi } from 'utils/load-openapi';
 
@@ -16,11 +17,16 @@ const get = async (req, res) => {
   try {
     const { osuId } = req.params;
     const { width } = req.query;
-    let image = await getImageById(osuId);
+    const internalId = await personExists(osuId);
+    let image;
 
-    // return default image if no image is returned from data source
+    if (internalId) {
+      image = await getImageById(internalId);
+    }
+
+    // load default image if image is null
     if (!image) {
-      image = fs.readFileSync('src/resources/defaultImage.jpg');
+      image = fs.readFileSync(`${__dirname}/../../../resources/defaultImage.jpg`);
     }
 
     let result;

@@ -16,10 +16,12 @@ import { bodyParserError } from 'middlewares/body-parser-error';
 import { loggerMiddleware } from 'middlewares/logger';
 import { removeUnknownParams } from 'middlewares/remove-unknown-params';
 import { runtimeErrors } from 'middlewares/runtime-errors';
+import { validateBooleanParams } from 'middlewares/validate-boolean-params';
 import { openapi } from 'utils/load-openapi';
 import { validateDataSource } from 'utils/validate-data-source';
 
 const serverConfig = config.get('server');
+const { version, title } = openapi.info;
 
 validateDataSource();
 
@@ -51,6 +53,7 @@ adminApp.use(baseEndpoint, adminAppRouter);
 
 appRouter.use(loggerMiddleware);
 appRouter.use(authentication);
+appRouter.use(validateBooleanParams);
 adminAppRouter.use(authentication);
 
 /**
@@ -78,13 +81,13 @@ const errorTransformer = (openapiError, ajvError) => {
 };
 
 // Return API meta information at admin endpoint
-adminAppRouter.get('/', async (req, res) => {
+adminAppRouter.get(`/${version}`, async (req, res) => {
   try {
     const commit = await git().revparse(['--short', 'HEAD']);
     const now = moment();
     const info = {
       meta: {
-        name: openapi.info.title,
+        name: title,
         time: now.format('YYYY-MM-DD HH:mm:ssZZ'),
         unixTime: now.unix(),
         commit: commit.trim(),
