@@ -1,6 +1,7 @@
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
 
+import { formatSubObjects } from 'utils/format-sub-objects';
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
 import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
@@ -19,6 +20,8 @@ const prepareRawEmails = (rawEmails) => {
   _.forEach(rawEmails, (email) => {
     email.preferredInd = email.preferredInd === 'Y';
   });
+
+  formatSubObjects(rawEmails);
 };
 
 /**
