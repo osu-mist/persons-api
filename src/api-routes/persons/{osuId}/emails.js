@@ -1,6 +1,6 @@
-import { serializeEmails } from 'serializers/emails-serializer';
-import { errorHandler } from 'errors/errors';
 import { getEmailsByOsuId } from 'db/oracledb/emails-dao';
+import { errorHandler } from 'errors/errors';
+import { serializeEmails } from 'serializers/emails-serializer';
 
 /**
  * Get emails of a person by OSU ID
