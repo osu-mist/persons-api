@@ -1,10 +1,10 @@
 import fs from 'fs';
 import sharp from 'sharp';
 
-import { errorHandler } from 'errors/errors';
 import { getImageById } from 'db/oracledb/images-dao';
-import { openapi } from 'utils/load-openapi';
 import { personExists } from 'db/oracledb/persons-dao';
+import { errorHandler } from 'errors/errors';
+import { openapi } from 'utils/load-openapi';
 
 const { maximum: maxWidth } = openapi.components.parameters.imageWidth.schema;
 
