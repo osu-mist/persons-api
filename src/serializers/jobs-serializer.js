@@ -14,10 +14,15 @@ const jobResourceKeys = _.keys(jobCombinedAttributes.properties);
 
 const prepareRawData = (rawJobs) => {
   _.forEach(rawJobs, (job) => {
+    // oracle aliases have a character limit of 30 so we set the correct name here
     job['timesheet.predecessor.description'] = job['timesheet.pred.description'];
+    delete job['timesheet.pred.description'];
     job['homeOrganization.current.description'] = job['homeOrganization.current.desc'];
+    delete job['homeOrganization.current.desc'];
     job['homeOrganization.predecessor.code'] = job['homeOrganization.pred.code'];
-    job['homeOrganization.pred.description'] = job['homeOrganization.pred.desc'];
+    delete job['homeOrganization.pred.code'];
+    job['homeOrganization.predecessor.description'] = job['homeOrganization.pred.desc'];
+    delete job['homeOrganization.pred.desc'];
   });
 
   formatSubObjects(rawJobs);
