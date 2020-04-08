@@ -1171,6 +1171,12 @@ components:
               type: string
               nullable: false
               description: Shift code used as a default on timesheet for earnCode.
+            effectiveDate:
+              type: string
+              format: date
+              nullable: false
+              description: Effective date of the earning code
+              example: '1970-01-01'
             code:
               type: string
               nullable: false
@@ -1217,6 +1223,18 @@ components:
                 - `N` - Not Received
                 - `T` - Temporary
                 - `E` - Exempt
+            date:
+              type: string
+              format: date
+              nullable: true
+              description: Date of i9Form
+              example: '1970-01-01'
+            expirationDate:
+              type: string
+              format: date
+              nullable: true
+              description: Expiration date of i9Form
+              example: '1970-01-01'
         laborDistribution:
           type: array
           items:
