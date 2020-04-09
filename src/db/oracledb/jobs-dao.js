@@ -23,4 +23,16 @@ const getJobs = async (internalId, query) => {
   }
 };
 
-export { getJobs };
+const createJob = async (osuId, body) => {
+  const connection = await getConnection();
+  try {
+    body.osuId = osuId;
+
+    const result = await connection.execute(contrib.createJob(body), body);
+    return result;
+  } finally {
+    connection.close();
+  }
+};
+
+export { getJobs, createJob };
