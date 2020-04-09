@@ -1,3 +1,5 @@
+import oracledb from 'oracledb';
+
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -22,4 +24,28 @@ const getAddressesByOsuId = async (internalId, query) => {
   }
 };
 
-export { getAddressesByOsuId };
+/**
+ * Creates address records
+ */
+const createAddress = async (internalId, body) => {
+  const connection = await getConnection();
+  try {
+    body.addressType = body.addressType.code;
+    body.seqno = null;
+    body.pidm = internalId;
+    body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+
+    const addresses = await getAddressesByOsuId(internalId, { addressType: 'EO' });
+    if (addresses.length > 0) {
+      console.log('address exists');
+    }
+
+    const { outBinds } = await connection.execute(contrib.createAddress(body), body);
+    console.log(outBinds);
+    return outBinds;
+  } finally {
+    connection.close();
+  }
+};
+
+export { getAddressesByOsuId, createAddress };
