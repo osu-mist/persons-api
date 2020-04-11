@@ -1,3 +1,5 @@
+import oracledb from 'oracledb';
+
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -27,8 +29,15 @@ const createJob = async (osuId, body) => {
   const connection = await getConnection();
   try {
     body.osuId = osuId;
-
-    const result = await connection.execute(contrib.createJob(body), body);
+    body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    const attributes = {
+      osuId,
+      effectiveDate: '1970-01-01',
+      positionNumber: 'C12345',
+      suffix: '00',
+      reasonCode: 'AAHIR',
+    };
+    const result = await connection.execute(contrib.createJob2(), attributes);
     return result;
   } finally {
     connection.close();
