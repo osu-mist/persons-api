@@ -1020,6 +1020,12 @@ components:
           type: string
           nullable: true
           description: Description of job.
+        location:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
         personnelChangeDate:
           type: string
           nullable: false
@@ -1066,6 +1072,10 @@ components:
                   nullable: false
                   description: Organization code where the time sheet is sent for the job.
                   example: '123456'
+                description:
+                  type: string
+                  nullable: false
+                  description: Organization title where timesheet is sent for the job.
             predecessor:
               type: object
               properties:
@@ -1075,6 +1085,11 @@ components:
                   description: The next higher organizational code of the current timesheet
                     organization.
                   example: '123456'
+                description:
+                  type: string
+                  nullable: false
+                  description: The next higher organizational title of the current
+                    timesheet organization.
         homeOrganization:
           type: object
           properties:
@@ -1086,6 +1101,10 @@ components:
                   nullable: true
                   description: The home organization code of the employee.
                   example: '123456'
+                description:
+                  type: string
+                  nullable: false
+                  description: The home organization title of the employee.
             predecessor:
               type: object
               properties:
@@ -1095,6 +1114,11 @@ components:
                   description: The next higher organizational code of the current home
                     organization.
                   example: '123456'
+                description:
+                  type: string
+                  nullable: false
+                  description: The next higher organizational title of the current home
+                    organization.
         hourlyRate:
           type: number
           nullable: false
@@ -1333,42 +1357,6 @@ components:
               type: string
               nullable: true
               description: Description for the strsAssignment code
-        timesheet:
-          type: object
-          properties:
-            current:
-              type: object
-              properties:
-                description:
-                  type: string
-                  nullable: false
-                  description: Organization title where timesheet is sent for the job.
-            predecessor:
-              type: object
-              properties:
-                description:
-                  type: string
-                  nullable: false
-                  description: The next higher organizational title of the current
-                    timesheet organization.
-        homeOrganization:
-          type: object
-          properties:
-            current:
-              type: object
-              properties:
-                description:
-                  type: string
-                  nullable: false
-                  description: The home organization title of the employee.
-            predecessor:
-              type: object
-              properties:
-                description:
-                  type: string
-                  nullable: false
-                  description: The next higher organizational title of the current home
-                    organization.
         salary:
           type: object
           properties:
