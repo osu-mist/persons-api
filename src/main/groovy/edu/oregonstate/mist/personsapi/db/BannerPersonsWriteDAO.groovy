@@ -31,6 +31,16 @@ public interface BannerPersonsWriteDAO extends Closeable {
     OutParameters createGraduateJob(@Bind('osuID') String osuID,
                                     @BindJob JobObject job)
 
+    @SqlCall(AbstractPersonsDAO.studentUpdateFunction)
+    @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
+    OutParameters updateStudentJob(@Bind('osuID') String osuID,
+                                   @BindJob JobObject job)
+
+    @SqlCall(AbstractPersonsDAO.graduateUpdateFunction)
+    @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
+    OutParameters updateGraduateJob(@Bind('osuID') String osuID,
+                                    @BindJob JobObject job)
+
     @SqlCall(AbstractPersonsDAO.jobUpdateFunction)
     @OutParameter(name = "return_value", sqlType = Types.VARCHAR)
     OutParameters updateJob(@Bind('osuID') String osuID,

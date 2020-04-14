@@ -372,16 +372,27 @@ class PersonsResource extends Resource {
                 .getString(BannerPersonsWriteDAO.outParameter)
         } else {
             if (!bannerPersonsReadDAO.isValidChangeReasonCode(changeReasonCode)) {
-                // TODO: set changeReasonCode to null for now if the input changeReasonCode is
-                // invalid since it's currently an optional parameter. An error should be thrown
-                // when changeReasonCode become a required parameter.
-                job.changeReasonCode = null
+                String errormsg = 'changeReasonCode is invalid or null'
+                return badRequest(errormsg).type(MediaType.APPLICATION_JSON).build()
             }
             if (update) {
                 if (changeReasonCode == 'LCHNG') {
                     logger.info("Labor change. Updating $employmentType job")
                     dbFunctionOutput = bannerPersonsWriteDAO.updateLaborChangeJob(osuID, job)
                         .getString(BannerPersonsWriteDAO.outParameter)
+                } else if (changeReasonCode == 'BREAP') {
+                    switch (employmentType) {
+                        case studentEmploymentType:
+                            logger.info("Updating $studentEmploymentType job")
+                            dbFunctionOutput = bannerPersonsWriteDAO.updateStudentJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                            break
+                        case graduateEmploymentType:
+                            logger.info("Updating $graduateEmploymentType job")
+                            dbFunctionOutput = bannerPersonsWriteDAO.updateGraduateJob(osuID, job)
+                                .getString(BannerPersonsWriteDAO.outParameter)
+                            break
+                    }
                 } else {
                     logger.info("Updating $employmentType job")
                     dbFunctionOutput = bannerPersonsWriteDAO.updateJob(osuID, job)
@@ -389,16 +400,16 @@ class PersonsResource extends Resource {
                 }
             } else {
                 switch (employmentType) {
-                case studentEmploymentType:
-                    logger.info("Creating $studentEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
-                        .getString(BannerPersonsWriteDAO.outParameter)
-                    break
-                case graduateEmploymentType:
-                    logger.info("Creating $graduateEmploymentType job")
-                    dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
-                        .getString(BannerPersonsWriteDAO.outParameter)
-                    break
+                    case studentEmploymentType:
+                        logger.info("Creating $studentEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.createStudentJob(osuID, job)
+                            .getString(BannerPersonsWriteDAO.outParameter)
+                        break
+                    case graduateEmploymentType:
+                        logger.info("Creating $graduateEmploymentType job")
+                        dbFunctionOutput = bannerPersonsWriteDAO.createGraduateJob(osuID, job)
+                            .getString(BannerPersonsWriteDAO.outParameter)
+                        break
                 }
             }
         }
