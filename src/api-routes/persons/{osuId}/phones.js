@@ -1,10 +1,10 @@
-import { getAddressesByOsuId } from 'db/oracledb/addresses-dao';
-import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
-import { serializeAddresses } from 'serializers/addresses-serializer';
+import { personExists } from 'db/oracledb/persons-dao';
+import { getPhones } from 'db/oracledb/phones-dao';
+import { serializePhones } from 'serializers/phones-serializer';
 
 /**
- * Get addresses by OSU ID
+ * Get phones by OSU ID
  *
  * @type {RequestHandler}
  */
@@ -17,20 +17,21 @@ const get = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await getAddressesByOsuId(internalId, query);
-    const serializedAddresses = serializeAddresses(result, query, osuId);
-    return res.send(serializedAddresses);
+    const results = await getPhones(internalId, query);
+    const serializedPhones = serializePhones(results, osuId, query);
+    return res.send(serializedPhones);
   } catch (err) {
     return errorHandler(res, err);
   }
 };
 
 /**
- * Post address
+ * Post phones endpoint
  *
+ * @type {RequestHandler}
  */
 const post = async () => {
-  // TODO
+  // todo
 };
 
 export { get, post };
