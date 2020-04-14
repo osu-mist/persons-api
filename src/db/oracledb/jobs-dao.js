@@ -30,14 +30,15 @@ const createJob = async (osuId, body) => {
   try {
     body.osuId = osuId;
     body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-    const attributes = {
-      osuId,
-      effectiveDate: '1970-01-01',
-      positionNumber: 'C12345',
-      suffix: '00',
-      reasonCode: 'AAHIR',
-    };
-    const result = await connection.execute(contrib.createJob2(), attributes);
+    // const attributes = {
+    // osuId,
+    // effectiveDate: '1970-01-01',
+    // positionNumber: 'C12345',
+    // suffix: '00',
+    // reasonCode: 'AAHIR',
+    // outId: { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT },
+    // };
+    const result = await connection.execute(contrib.createJob3());
     return result;
   } finally {
     connection.close();
