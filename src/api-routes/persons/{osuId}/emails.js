@@ -1,5 +1,6 @@
 import { getEmailsByOsuId } from 'db/oracledb/emails-dao';
-import { errorHandler } from 'errors/errors';
+import { personExists } from 'db/oracledb/persons-dao';
+import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeEmails } from 'serializers/emails-serializer';
 
 /**
@@ -10,7 +11,13 @@ import { serializeEmails } from 'serializers/emails-serializer';
 const get = async (req, res) => {
   try {
     const { query, params: { osuId } } = req;
-    const result = await getEmailsByOsuId(osuId, query);
+
+    const internalId = await personExists(osuId);
+    if (!internalId) {
+      return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+    }
+
+    const result = await getEmailsByOsuId(internalId, query);
     const serializedEmails = serializeEmails(result, osuId, query);
     return res.send(serializedEmails);
   } catch (err) {
