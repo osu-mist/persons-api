@@ -25,10 +25,7 @@ const getMealPlansByOsuId = async (osuId, query) => {
         parsedQuery[param] = value.value;
       }
     });
-    const { rows } = await connection.execute(
-      getMealPlansQuery,
-      parsedQuery,
-    );
+    const { rows } = await connection.execute(getMealPlansQuery, parsedQuery);
     return rows;
   } finally {
     connection.close();
