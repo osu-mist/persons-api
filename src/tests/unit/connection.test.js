@@ -20,7 +20,7 @@ describe('Test oracledb connection module', () => {
   beforeEach(() => {
     configGetStub = sinon.stub(config, 'get')
       .withArgs('dataSources.oracledb')
-      .returns({});
+      .returns({ oracleSources: ['banner'], banner: {} });
   });
   afterEach(() => sinon.restore());
 
@@ -43,9 +43,9 @@ describe('Test oracledb connection module', () => {
        * These cases are not in a loop since a for-loop would be required. Lodash functions wouldn't
        * work due to the need to run each async function in sequence.
        */
-      const firstResult = connection.getConnection();
+      const firstResult = connection.getConnection('banner');
       await firstResult.should.eventually.be.fulfilled.and.deep.equal('test-connection');
-      const secondResult = connection.getConnection();
+      const secondResult = connection.getConnection('banner');
       await secondResult.should.eventually.be.fulfilled.and.deep.equal('test-connection');
       createPoolStub.should.have.been.calledOnce.and.always.calledWithMatch({});
       createPoolStub.should.have.been.calledWithMatch({});

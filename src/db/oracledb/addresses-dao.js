@@ -10,7 +10,7 @@ import { contrib } from './contrib/contrib';
  * @returns {Promise<object>} Serialized address resource
  */
 const getAddressesByOsuId = async (internalId, query) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.internalId = internalId;

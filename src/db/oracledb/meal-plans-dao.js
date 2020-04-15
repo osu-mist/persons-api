@@ -12,7 +12,7 @@ import { contrib } from './contrib/contrib';
  * @returns {Promise<object>} Serialized address resource
  */
 const getMealPlansByOsuId = async (osuId, query) => {
-  const connection = await getConnection('odsRead');
+  const connection = await getConnection('ods');
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.osuId = osuId;

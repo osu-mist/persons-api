@@ -10,7 +10,7 @@ import { contrib } from './contrib/contrib';
  * @returns {object[]} raw email data
  */
 const getEmailsByOsuId = async (internalId, query) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const parsedQuery = parseQuery(query);
     const { rows } = await connection.execute(
