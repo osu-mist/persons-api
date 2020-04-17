@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import oracledb from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
@@ -37,7 +38,11 @@ const createAddress = async (internalId, body) => {
 
     const addresses = await getAddressesByOsuId(internalId, { addressType: 'EO' });
     if (addresses.length > 0) {
-      console.log('address exists');
+      console.log('address exists, deactivating');
+      console.log(addresses);
+      const deactivateBinds = _.pick(body, ['pidm', 'addressType']);
+      const output = await connection.execute(contrib.deactivateAddress(), deactivateBinds);
+      console.log(output);
     }
 
     const { outBinds } = await connection.execute(contrib.createAddress(body), body);
