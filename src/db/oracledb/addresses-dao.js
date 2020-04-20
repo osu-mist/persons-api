@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import oracledb from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
@@ -25,6 +24,18 @@ const getAddressesByInternalId = async (internalId, query) => {
   }
 };
 
+const hasSameAddressType = async (internalId, addressType) => {
+  const connection = await getConnection();
+  try {
+    const attributes = { internalId, addressType };
+    const { rows } = await connection.execute(contrib.hasSameAddressType(), attributes);
+
+    return rows;
+  } finally {
+    connection.close();
+  }
+};
+
 /**
  * Creates address records
  */
@@ -36,16 +47,18 @@ const createAddress = async (internalId, body) => {
     body.pidm = internalId;
     body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
-    const addresses = await getAddressesByInternalId(internalId, { 'filter[addressType]': 'EO' });
-    console.log(addresses);
-    if (addresses.length > 0) {
+    const addresses = await hasSameAddressType(internalId, 'EO');
+    if (addresses.length > 1) {
+      // error state?
+    } else if (addresses.length === 1) {
       console.log('address exists, deactivating');
-      console.log(addresses);
-      const deactivateBinds = _.pick(body, ['pidm', 'addressType']);
+      const deactivateBinds = { ...addresses[0], internalId };
+      console.log(deactivateBinds);
       const output = await connection.execute(contrib.deactivateAddress(), deactivateBinds);
       console.log(output);
     }
 
+    console.log('creating address');
     const { outBinds } = await connection.execute(contrib.createAddress(body), body);
     console.log(outBinds);
     return outBinds;
