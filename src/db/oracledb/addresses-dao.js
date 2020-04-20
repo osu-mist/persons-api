@@ -75,16 +75,25 @@ const createAddress = async (internalId, body) => {
 
     const address = await hasSameAddressType(internalId, body.addressType);
     const phone = await phoneHasSameAddressType(internalId, body.addressType);
-    console.log(phone);
     if (address) {
       const deactivateBinds = { ...address, internalId };
       await connection.execute(contrib.deactivateAddress(), deactivateBinds);
     }
 
-    console.log('creating address');
-    const { outBinds } = await connection.execute(contrib.createAddress(body), body);
-    console.log(outBinds);
-    return outBinds;
+    await connection.execute(contrib.createAddress(body), body);
+    const newAddress = await getAddressesByInternalId(
+      internalId,
+      { 'filter[addressType]': body.addressType },
+    );
+    if (newAddress.length > 1) {
+      const reactivateBinds = { ...address, internalId };
+      await connection.execute(contrib.reactivateAddress(), reactivateBinds);
+      throw new Error('error when creating address');
+    }
+
+    await updatePhoneAddrSeqno(internalId, newAddress[0], phone);
+
+    return newAddress[0];
   } finally {
     connection.close();
   }
