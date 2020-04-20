@@ -30,7 +30,7 @@ const hasSameAddressType = async (internalId, addressType) => {
     const attributes = { internalId, addressType };
     const { rows } = await connection.execute(contrib.hasSameAddressType(), attributes);
 
-    return rows;
+    return rows[0];
   } finally {
     connection.close();
   }
@@ -47,15 +47,10 @@ const createAddress = async (internalId, body) => {
     body.pidm = internalId;
     body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
-    const addresses = await hasSameAddressType(internalId, 'EO');
-    if (addresses.length > 1) {
-      // error state?
-    } else if (addresses.length === 1) {
-      console.log('address exists, deactivating');
-      const deactivateBinds = { ...addresses[0], internalId };
-      console.log(deactivateBinds);
-      const output = await connection.execute(contrib.deactivateAddress(), deactivateBinds);
-      console.log(output);
+    const address = await hasSameAddressType(internalId, 'EO');
+    if (address) {
+      const deactivateBinds = { ...address, internalId };
+      await connection.execute(contrib.deactivateAddress(), deactivateBinds);
     }
 
     console.log('creating address');
