@@ -39,7 +39,9 @@ const post = async (req, res) => {
     }
 
     const result = await createAddress(internalId, body.data.attributes);
-    return res.send(result);
+    // need to make serializeAddress method
+    const serializedAddresses = serializeAddresses([result], {}, osuId);
+    return res.send(serializedAddresses);
   } catch (err) {
     return errorHandler(res, err);
   }
