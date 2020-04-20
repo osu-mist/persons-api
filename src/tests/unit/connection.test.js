@@ -16,11 +16,12 @@ chai.use(sinonChai);
 describe('Test oracledb connection module', () => {
   let configGetStub;
   let connection;
+  const fakeDb = 'fakeDb';
 
   beforeEach(() => {
     configGetStub = sinon.stub(config, 'get')
       .withArgs('dataSources.oracledb')
-      .returns({ oracleSources: ['banner'], banner: {} });
+      .returns({ oracleSources: [fakeDb], fakeDb: {} });
   });
   afterEach(() => sinon.restore());
 
@@ -43,9 +44,9 @@ describe('Test oracledb connection module', () => {
        * These cases are not in a loop since a for-loop would be required. Lodash functions wouldn't
        * work due to the need to run each async function in sequence.
        */
-      const firstResult = connection.getConnection('banner');
+      const firstResult = connection.getConnection(fakeDb);
       await firstResult.should.eventually.be.fulfilled.and.deep.equal('test-connection');
-      const secondResult = connection.getConnection('banner');
+      const secondResult = connection.getConnection(fakeDb);
       await secondResult.should.eventually.be.fulfilled.and.deep.equal('test-connection');
       createPoolStub.should.have.been.calledOnce.and.always.calledWithMatch({});
       createPoolStub.should.have.been.calledWithMatch({});
