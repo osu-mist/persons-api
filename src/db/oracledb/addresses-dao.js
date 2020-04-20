@@ -12,7 +12,7 @@ import { contrib } from './contrib/contrib';
  * @param {object} query Query parameters passed in with request
  * @returns {Promise<object>} Serialized address resource
  */
-const getAddressesByOsuId = async (internalId, query) => {
+const getAddressesByInternalId = async (internalId, query) => {
   const connection = await getConnection();
   try {
     const parsedQuery = parseQuery(query);
@@ -36,7 +36,8 @@ const createAddress = async (internalId, body) => {
     body.pidm = internalId;
     body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
-    const addresses = await getAddressesByOsuId(internalId, { addressType: 'EO' });
+    const addresses = await getAddressesByInternalId(internalId, { 'filter[addressType]': 'EO' });
+    console.log(addresses);
     if (addresses.length > 0) {
       console.log('address exists, deactivating');
       console.log(addresses);
@@ -53,4 +54,4 @@ const createAddress = async (internalId, body) => {
   }
 };
 
-export { getAddressesByOsuId, createAddress };
+export { getAddressesByInternalId, createAddress };

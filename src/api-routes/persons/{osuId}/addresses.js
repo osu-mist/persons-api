@@ -1,4 +1,4 @@
-import { getAddressesByOsuId, createAddress } from 'db/oracledb/addresses-dao';
+import { getAddressesByInternalId, createAddress } from 'db/oracledb/addresses-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeAddresses } from 'serializers/addresses-serializer';
@@ -17,7 +17,7 @@ const get = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await getAddressesByOsuId(internalId, query);
+    const result = await getAddressesByInternalId(internalId, query);
     const serializedAddresses = serializeAddresses(result, query, osuId);
     return res.send(serializedAddresses);
   } catch (err) {
