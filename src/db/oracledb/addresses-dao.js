@@ -36,6 +36,18 @@ const hasSameAddressType = async (internalId, addressType) => {
   }
 };
 
+const phoneHasSameAddressType = async (internalId, addressType) => {
+  const connection = await getConnection();
+  try {
+    const attributes = { internalId, addressType };
+    const { rows } = await connection.execute(contrib.phoneHasSameAddressType(), attributes);
+
+    return rows[0];
+  } finally {
+    connection.close();
+  }
+};
+
 /**
  * Creates address records
  */
@@ -47,7 +59,9 @@ const createAddress = async (internalId, body) => {
     body.pidm = internalId;
     body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
-    const address = await hasSameAddressType(internalId, 'EO');
+    const address = await hasSameAddressType(internalId, body.addressType);
+    const phone = await phoneHasSameAddressType(internalId, body.addressType);
+    console.log(phone);
     if (address) {
       const deactivateBinds = { ...address, internalId };
       await connection.execute(contrib.deactivateAddress(), deactivateBinds);
