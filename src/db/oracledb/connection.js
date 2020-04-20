@@ -54,18 +54,20 @@ const getConnection = async (pool) => {
  * @returns {Promise} resolves if database connection can be established and rejects otherwise
  */
 const validateOracleDb = async () => {
-  let connection;
-  try {
-    connection = await getConnection('banner');
-    await connection.execute('SELECT 1 FROM DUAL');
-  } catch (err) {
-    logger.error(err);
-    throw new Error('Unable to connect to Oracle database');
-  } finally {
-    if (connection) {
-      await connection.close();
+  await _.asyncEach(dbConfig.oracleSources, async (source) => {
+    let connection;
+    try {
+      connection = await getConnection(source);
+      await connection.execute('SELECT 1 FROM DUAL');
+    } catch (err) {
+      logger.error(err);
+      throw new Error('Unable to connect to Oracle database');
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
     }
-  }
+  });
 };
 
 export {
