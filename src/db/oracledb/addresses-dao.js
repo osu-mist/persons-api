@@ -48,6 +48,20 @@ const phoneHasSameAddressType = async (internalId, addressType) => {
   }
 };
 
+const updatePhoneAddrSeqno = async (internalId, address, phone) => {
+  if (phone) {
+    const updatedAddress = await hasSameAddressType(internalId, address['addressType.code']);
+
+    const connection = await getConnection();
+    try {
+      phone.addrSeqno = updatedAddress.seqno;
+      await connection.execute(contrib.updatePhoneAddrSeqno(), phone);
+    } finally {
+      connection.close();
+    }
+  }
+};
+
 /**
  * Creates address records
  */
