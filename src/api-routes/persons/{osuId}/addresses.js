@@ -1,7 +1,7 @@
 import { getAddressesByInternalId, createAddress } from 'db/oracledb/addresses-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
-import { serializeAddresses } from 'serializers/addresses-serializer';
+import { serializeAddress, serializeAddresses } from 'serializers/addresses-serializer';
 
 /**
  * Get addresses by OSU ID
@@ -40,8 +40,8 @@ const post = async (req, res) => {
 
     const result = await createAddress(internalId, body.data.attributes);
     // need to make serializeAddress method
-    const serializedAddresses = serializeAddresses([result], {}, osuId);
-    return res.send(serializedAddresses);
+    const serializedAddress = serializeAddress(result, osuId);
+    return res.send(serializedAddress);
   } catch (err) {
     return errorHandler(res, err);
   }
