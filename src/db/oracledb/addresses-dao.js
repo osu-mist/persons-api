@@ -56,7 +56,7 @@ const createAddress = async (internalId, body) => {
   const connection = await getConnection();
   try {
     body.addressType = body.addressType.code;
-    body.pidm = internalId;
+    body.internalId = internalId;
     body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
     body.seqno = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
