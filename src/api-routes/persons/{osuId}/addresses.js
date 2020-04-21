@@ -28,6 +28,7 @@ const get = async (req, res) => {
 /**
  * Post address
  *
+ * @type {RequestHandler}
  */
 const post = async (req, res) => {
   try {

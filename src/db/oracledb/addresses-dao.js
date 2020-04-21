@@ -17,7 +17,7 @@ const getAddresses = async (connection, internalId, query) => {
  *
  * @param {string} internalId internal ID of person to select addresses from
  * @param {object} query Query parameters passed in with request
- * @returns {Promise<object>} Serialized address resource
+ * @returns {Promise<object>} Raw address records from data source
  */
 const getAddressesByInternalId = async (internalId, query) => {
   const connection = await getConnection();
@@ -51,6 +51,10 @@ const updatePhoneAddrSeqno = async (connection, addrSeqno, phone) => {
 
 /**
  * Creates address records
+ *
+ * @param {string} internalId internal ID of a person
+ * @param {object} body Request body with new address attributes
+ * @returns {Promise<object>} Raw address record from data source
  */
 const createAddress = async (internalId, body) => {
   const connection = await getConnection();
