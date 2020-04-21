@@ -12,7 +12,7 @@ import { contrib } from './contrib/contrib';
  * @returns {Promise<object>} Raw phone data from data source
  */
 const getPhones = async (internalId, query) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.internalId = internalId;
