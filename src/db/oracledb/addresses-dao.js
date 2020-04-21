@@ -56,19 +56,21 @@ const createAddress = async (internalId, body) => {
   const connection = await getConnection();
   try {
     body.addressType = body.addressType.code;
-    body.seqno = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
     body.pidm = internalId;
     body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    body.seqno = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+
+    // Query phone early because it is changed automatically by createAddress
+    const phone = await phoneHasSameAddressType(connection, internalId, body.addressType);
 
     const address = await hasSameAddressType(connection, internalId, body.addressType);
-    const phone = await phoneHasSameAddressType(connection, internalId, body.addressType);
     if (address) {
       const deactivateBinds = { ...address, internalId };
       await connection.execute(contrib.deactivateAddress(), deactivateBinds);
     }
 
-    console.log('createAddress');
     const result = await connection.execute(contrib.createAddress(body), body);
+
     const newAddress = await getAddresses(
       connection,
       internalId,
@@ -84,7 +86,7 @@ const createAddress = async (internalId, body) => {
     return newAddress[0];
   } catch (err) {
     console.log(err);
-    connection.rollback();
+    await connection.rollback();
     return undefined;
   } finally {
     connection.close();
