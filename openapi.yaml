@@ -1609,6 +1609,11 @@ components:
         - addressType
         - addressLine1
         - city
+      properties:
+        addressType:
+          type: object
+          required:
+            - code
     AddressPostAttributes:
       type: object
       properties:
