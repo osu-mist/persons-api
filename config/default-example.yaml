@@ -18,12 +18,12 @@ dataSources:
     poolMin: 4
     poolMax: 4
     poolIncrement: 0
-    oracleSources: ['bannerRead', 'odsRead']
-    bannerRead:
-      connectString: ${DB_URL}
-      user: ${DB_USER}
-      password: ${DB_PASSWD}
-    odsRead:
-      connectString: ${DB_URL}
-      user: ${DB_USER}
-      password: ${DB_PASSWD}
+    oracleSources: ['banner', 'ods']
+    banner:
+      connectString: ${BANNER_URL}
+      user: ${BANNER_USER}
+      password: ${BANNER_PASSWD}
+    ods:
+      connectString: ${ODS_URL}
+      user: ${ODS_USER}
+      password: ${ODS_PASSWD}

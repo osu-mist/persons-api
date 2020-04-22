@@ -16,6 +16,8 @@ import { bodyParserError } from 'middlewares/body-parser-error';
 import { loggerMiddleware } from 'middlewares/logger';
 import { removeUnknownParams } from 'middlewares/remove-unknown-params';
 import { runtimeErrors } from 'middlewares/runtime-errors';
+import { validateBooleanParams } from 'middlewares/validate-boolean-params';
+import { validateOperationParams } from 'middlewares/validate-operation-params';
 import { openapi } from 'utils/load-openapi';
 import { validateDataSource } from 'utils/validate-data-source';
 
@@ -52,6 +54,7 @@ adminApp.use(baseEndpoint, adminAppRouter);
 
 appRouter.use(loggerMiddleware);
 appRouter.use(authentication);
+appRouter.use(validateBooleanParams);
 adminAppRouter.use(authentication);
 
 /**
@@ -103,7 +106,7 @@ initialize({
   app: appRouter,
   apiDoc: {
     ...openapi,
-    'x-express-openapi-additional-middleware': [removeUnknownParams],
+    'x-express-openapi-additional-middleware': [validateOperationParams, removeUnknownParams],
   },
   paths: 'dist/api-routes',
   consumesMiddleware: {

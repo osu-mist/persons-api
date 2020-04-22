@@ -15,7 +15,7 @@ oracledb.fetchAsBuffer = [oracledb.BLOB];
 const threadPoolSize = dbConfig.poolMax + (dbConfig.poolMax / 5);
 process.env.UV_THREADPOOL_SIZE = threadPoolSize > 128 ? 128 : threadPoolSize;
 
-/** Connection pool */
+/** Connection pools */
 const pools = {};
 
 /**
@@ -39,8 +39,10 @@ const createPool = async () => {
  * @param {string} pool Name of the connection pool to use
  * @returns {Promise} Promise object represents a connection from created pool
  */
-const getConnection = async (pool = 'bannerRead') => {
-  if (!pools[pool]) {
+const getConnection = async (pool) => {
+  if (!_.includes(dbConfig.oracleSources, pool)) {
+    throw new Error(`Unknown pool name ${pool}`);
+  } else if (!pools[pool]) {
     await createPool();
   }
   return pools[pool].getConnection();
@@ -52,18 +54,20 @@ const getConnection = async (pool = 'bannerRead') => {
  * @returns {Promise} resolves if database connection can be established and rejects otherwise
  */
 const validateOracleDb = async () => {
-  let connection;
-  try {
-    connection = await getConnection();
-    await connection.execute('SELECT 1 FROM DUAL');
-  } catch (err) {
-    logger.error(err);
-    throw new Error('Unable to connect to Oracle database');
-  } finally {
-    if (connection) {
-      await connection.close();
+  await _.asyncEach(dbConfig.oracleSources, async (source) => {
+    let connection;
+    try {
+      connection = await getConnection(source);
+      await connection.execute('SELECT 1 FROM DUAL');
+    } catch (err) {
+      logger.error(err);
+      throw new Error(`Unable to connect to ${source} Oracle database`);
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
     }
-  }
+  });
 };
 
 export {
