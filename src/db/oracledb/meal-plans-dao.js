@@ -40,7 +40,7 @@ const getMealPlansByOsuId = async (osuId, query) => {
  * @returns {Promise<object>} Serialized address resource
  */
 const getMealPlanByMealPlanId = async (osuId, mealPlanId) => {
-  const connection = await getConnection('odsRead');
+  const connection = await getConnection('ods');
   try {
     const query = { osuId, mealPlanId };
     const { rows } = await connection.execute(contrib.getMealPlansByOsuId(query), query);
