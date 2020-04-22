@@ -65,4 +65,16 @@ const serializePhones = (rawPhones, osuId, query) => {
   ).serialize(rawPhones);
 };
 
-export { serializePhones };
+const serializePhone = (rawPhone, osuId) => {
+  const serializerArgs = getSerializerArgs(osuId, {});
+  serializerArgs.topLevelSelfLink = `${serializerArgs.topLevelSelfLink}/${rawPhone.phoneId}`;
+
+  prepareRawPhones([rawPhone]);
+
+  return new JsonApiSerializer(
+    phoneResourceType,
+    serializerOptions(serializerArgs, phoneResourceType, serializerArgs.topLevelSelfLink),
+  ).serialize(rawPhone);
+};
+
+export { serializePhone, serializePhones };

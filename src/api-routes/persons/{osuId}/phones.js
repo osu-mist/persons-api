@@ -1,7 +1,7 @@
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { personExists } from 'db/oracledb/persons-dao';
 import { getPhonesByInternalId, postPhones } from 'db/oracledb/phones-dao';
-import { serializePhones } from 'serializers/phones-serializer';
+import { serializePhone, serializePhones } from 'serializers/phones-serializer';
 
 /**
  * Get phones by OSU ID
@@ -40,8 +40,9 @@ const post = async (req, res) => {
     }
 
     const result = await postPhones(internalId, attributes);
+    const serializedPhone = serializePhone(result, osuId);
 
-    return res.send(result);
+    return res.send(serializedPhone);
   } catch (err) {
     return errorHandler(res, err);
   }
