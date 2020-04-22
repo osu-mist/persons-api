@@ -81,7 +81,7 @@ const createAddress = async (internalId, body) => {
       { 'filter[addressType]': body.addressType },
     );
     if (newAddress.length > 1) {
-      throw new Error(`Error: Multiple active addresses for ${body.addressType}`);
+      throw new Error(`Error: Multiple active addresses for address type ${body.addressType}`);
     }
 
     await updatePhoneAddrSeqno(connection, result.outBinds.seqno, phone);
