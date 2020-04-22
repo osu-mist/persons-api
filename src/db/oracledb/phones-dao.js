@@ -52,15 +52,15 @@ const postPhones = async (internalId, body) => {
     body.phoneType = body.phoneType.code;
     body.phoneId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
     body.seqno = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-    const address = await hasSameAddressType(connection, internalId, body.addressType);
-    const phone = await hasSamePhoneType(connection, internalId, body.phoneType);
 
+    const address = await hasSameAddressType(connection, internalId, body.addressType);
     if (!address) {
       // should be using errorBuilder somehow
       throw new Error('Address record does not exists for this person and address type');
     }
     body.addrSeqno = address.seqno;
 
+    const phone = await hasSamePhoneType(connection, internalId, body.phoneType);
     if (phone) {
       console.log('phone record exists. Deactivating current one');
       await deactivatePhone(connection, phone);
