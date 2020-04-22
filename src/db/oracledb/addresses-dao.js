@@ -86,12 +86,9 @@ const createAddress = async (internalId, body) => {
 
     await updatePhoneAddrSeqno(connection, result.outBinds.seqno, phone);
 
+    // wait till everything is done and working to commit
     await connection.commit();
     return newAddress[0];
-  } catch (err) {
-    console.log(err);
-    await connection.rollback();
-    return undefined;
   } finally {
     connection.close();
   }
