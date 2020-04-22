@@ -6,6 +6,16 @@ import { hasSameAddressType } from 'db/oracledb/addresses-dao';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
+const getPhones = async (connection, internalId, query) => {
+  const parsedQuery = parseQuery(query);
+  parsedQuery.internalId = internalId;
+
+  const omittedQuery = _.omit(parsedQuery, ['primaryInd']);
+  const { rows } = await connection.execute(contrib.getPhones(parsedQuery), omittedQuery);
+
+  return rows;
+};
+
 /**
  * Queries data source for raw person data and passes it to the serializer
  *
@@ -13,16 +23,10 @@ import { contrib } from './contrib/contrib';
  * @param {object} query query parameters passed in with the request
  * @returns {Promise<object>} Raw phone data from data source
  */
-const getPhones = async (internalId, query) => {
+const getPhonesByInternalId = async (internalId, query) => {
   const connection = await getConnection();
   try {
-    const parsedQuery = parseQuery(query);
-    parsedQuery.internalId = internalId;
-
-    const omittedQuery = _.omit(parsedQuery, ['primaryInd']);
-    const { rows } = await connection.execute(contrib.getPhones(parsedQuery), omittedQuery);
-
-    return rows;
+    return await getPhones(connection, internalId, query);
   } finally {
     connection.close();
   }
@@ -64,13 +68,23 @@ const postPhones = async (internalId, body) => {
 
     // remove primaryInd from body since it can't be passed in with connection.execute
     const binds = _.omit(body, ['primaryInd']);
-    const result = await connection.execute(contrib.createPhone(body), binds);
-    console.log(result);
+    await connection.execute(contrib.createPhone(body), binds);
 
-    return undefined;
+    const newPhones = await getPhones(
+      connection,
+      internalId,
+      { 'filter[phoneType]': body.phoneType },
+    );
+    if (newPhones.length > 1) {
+      throw new Error(`Error: Multiple active phones for phone type ${body.phoneType}`);
+    } else if (newPhones.length === 0) {
+      throw new Error('Error: No phone record created');
+    }
+
+    return newPhones[0];
   } finally {
     connection.close();
   }
 };
 
-export { getPhones, postPhones };
+export { getPhonesByInternalId, postPhones };
