@@ -15,18 +15,14 @@ const planResourceKeys = _.keys(planResourceAttributes);
  * Get serializer arguments for JsonApiSerializer
  *
  * @param {string} osuId
- * @param {object} query
  * @returns {object} serializer arguments
  */
-const getSerializerArgs = (osuId, query) => {
+const getSerializerArgs = (osuId) => {
   const planResourcePath = `persons/${osuId}/${planResourceType}`;
-  const planResourceUrl = resourcePathLink(apiBaseUrl, planResourcePath);
-  const topLevelSelfLink = paramsLink(planResourceUrl, query);
   return {
     identifierField: 'mealPlanId',
     resourceKeys: planResourceKeys,
     resourcePath: planResourcePath,
-    topLevelSelfLink,
     enableDataLinks: true,
   };
 };
@@ -41,6 +37,9 @@ const getSerializerArgs = (osuId, query) => {
  */
 const serializeMealPlans = (rawMealPlans, osuId, query) => {
   const serializerArgs = getSerializerArgs(osuId, query);
+  const planResourceUrl = resourcePathLink(apiBaseUrl, serializerArgs.resourcePath);
+  const topLevelSelfLink = paramsLink(planResourceUrl, query);
+  serializerArgs.topLevelSelfLink = topLevelSelfLink;
 
   formatSubObjects(rawMealPlans);
 
@@ -50,4 +49,25 @@ const serializeMealPlans = (rawMealPlans, osuId, query) => {
   ).serialize(rawMealPlans);
 };
 
-export { serializeMealPlans };
+/**
+ * Serializes raw data into JSON API format
+ *
+ * @param {object} rawMealPlan raw data from data source
+ * @param {string} osuId OSU ID of a person
+ * @returns {object} Serialized meal-plans
+ */
+const serializeMealPlan = (rawMealPlan, osuId) => {
+  const serializerArgs = getSerializerArgs(osuId);
+  const planResourceUrl = resourcePathLink(apiBaseUrl, serializerArgs.resourcePath);
+  const topLevelSelfLink = resourcePathLink(planResourceUrl, rawMealPlan.mealPlanId);
+  serializerArgs.topLevelSelfLink = topLevelSelfLink;
+
+  formatSubObjects([rawMealPlan]);
+
+  return new JsonApiSerializer(
+    planResourceType,
+    serializerOptions(serializerArgs, planResourceType, serializerArgs.topLevelSelfLink),
+  ).serialize(rawMealPlan);
+};
+
+export { serializeMealPlans, serializeMealPlan };
