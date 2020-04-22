@@ -65,6 +65,13 @@ const serializePhones = (rawPhones, osuId, query) => {
   ).serialize(rawPhones);
 };
 
+/**
+ * Serialize single raw phone data from data source
+ *
+ * @param {object[]} rawPhone raw data from data source
+ * @param {string} osuId OSU ID of person
+ * @returns {Promise<object>} Serialized phone resource
+ */
 const serializePhone = (rawPhone, osuId) => {
   const serializerArgs = getSerializerArgs(osuId, {});
   serializerArgs.topLevelSelfLink = `${serializerArgs.topLevelSelfLink}/${rawPhone.phoneId}`;

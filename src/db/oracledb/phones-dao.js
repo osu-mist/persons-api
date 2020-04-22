@@ -44,6 +44,13 @@ const deactivatePhone = async (connection, phone) => {
   await connection.execute(contrib.deactivatePhone(), binds);
 };
 
+/**
+ * Create phone record
+ *
+ * @param {string} internalId Internal ID of a person
+ * @param {object} body body sent with post request
+ * @returns {Promise<object>} newly created phone record
+ */
 const postPhones = async (internalId, body) => {
   const connection = await getConnection();
   try {
@@ -62,7 +69,6 @@ const postPhones = async (internalId, body) => {
 
     const phone = await hasSamePhoneType(connection, internalId, body.phoneType);
     if (phone) {
-      console.log('phone record exists. Deactivating current one');
       await deactivatePhone(connection, phone);
     }
 
