@@ -45,11 +45,7 @@ const getMealPlanByMealPlanId = async (osuId, mealPlanId) => {
     const query = { osuId, mealPlanId };
     const { rows } = await connection.execute(contrib.getMealPlansByOsuId(query), query);
 
-    if (rows.length < 1) {
-      return undefined;
-    }
-
-    return rows[0];
+    return rows.length < 1 ? undefined : rows[0];
   } finally {
     connection.close();
   }
