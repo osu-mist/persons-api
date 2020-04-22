@@ -28,6 +28,14 @@ const getAddressesByInternalId = async (internalId, query) => {
   }
 };
 
+/**
+ * Check if an address exists for the given address type
+ *
+ * @param {object} connection oracledb connection object
+ * @param {string} internalId internal ID of a person
+ * @param {string} addressType Address type code
+ * @returns {Promise<object>} Limited address record fields
+ */
 const hasSameAddressType = async (connection, internalId, addressType) => {
   const attributes = { internalId, addressType };
   const { rows } = await connection.execute(contrib.hasSameAddressType(), attributes);
@@ -94,4 +102,4 @@ const createAddress = async (internalId, body) => {
   }
 };
 
-export { getAddressesByInternalId, createAddress };
+export { getAddressesByInternalId, createAddress, hasSameAddressType };
