@@ -73,7 +73,10 @@ const createAddress = async (internalId, body) => {
       await connection.execute(contrib.deactivateAddress(), deactivateBinds);
     }
 
-    const result = await connection.execute(contrib.createAddress(body), body);
+    const { outBinds: { seqno: addrSeqno } } = await connection.execute(
+      contrib.createAddress(body),
+      body,
+    );
 
     const newAddress = await getAddresses(
       connection,
@@ -84,7 +87,7 @@ const createAddress = async (internalId, body) => {
       throw new Error(`Error: Multiple active addresses for address type ${body.addressType}`);
     }
 
-    await updatePhoneAddrSeqno(connection, result.outBinds.seqno, phone);
+    await updatePhoneAddrSeqno(connection, addrSeqno, phone);
 
     // wait till everything is done and working to commit
     await connection.commit();
