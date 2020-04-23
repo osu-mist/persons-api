@@ -20,7 +20,7 @@ const getAddresses = async (connection, internalId, query) => {
  * @returns {Promise<object>} Raw address records from data source
  */
 const getAddressesByInternalId = async (internalId, query) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     return await getAddresses(connection, internalId, query);
   } finally {
@@ -57,7 +57,7 @@ const updatePhoneAddrSeqno = async (connection, addrSeqno, phone) => {
  * @returns {Promise<object>} Raw address record from data source
  */
 const createAddress = async (internalId, body) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     body.addressType = body.addressType.code;
     body.internalId = internalId;
