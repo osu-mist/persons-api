@@ -87,6 +87,7 @@ const postPhones = async (internalId, body) => {
       throw new Error('Error: No phone record created');
     }
 
+    await connection.commit();
     return newPhones[0];
   } finally {
     connection.close();
