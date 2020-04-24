@@ -1,3 +1,4 @@
+// import oracledb from 'oracledb';
 import _ from 'lodash';
 
 import { serializePerson } from 'serializers/persons-serializer';
@@ -48,4 +49,19 @@ const getPersonById = async (osuId) => {
   }
 };
 
-export { getPersonById, personExists };
+const createPerson = async (body) => {
+  const connection = await getConnection('banner');
+  try {
+    body.citizen = body.citizen.code;
+    // body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    console.log(body);
+    const result = await connection.execute(contrib.createPerson(), body);
+    console.log(result);
+
+    return undefined;
+  } finally {
+    connection.close();
+  }
+};
+
+export { getPersonById, personExists, createPerson };

@@ -1,17 +1,20 @@
-/* eslint-disable no-unused-vars */
+import { createPerson } from 'db/oracledb/persons-dao';
 import { errorHandler } from 'errors/errors';
 
 /**
  * Post person endpoint
  *
- * @param {object} req request
- * @param {object} res response
- * @returns {Promise<object>} response
+ * @type {RequestHandler}
  */
 const post = async (req, res) => {
-  // todo
+  try {
+    const { body: { data: { attributes } } } = req;
+
+    const result = await createPerson(attributes);
+    return res.send(result);
+  } catch (err) {
+    return errorHandler(res, err);
+  }
 };
 
-export {
-  post,
-};
+export { post };
