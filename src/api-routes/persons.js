@@ -1,5 +1,6 @@
 import { createPerson } from 'db/oracledb/persons-dao';
 import { errorHandler } from 'errors/errors';
+import { serializePerson } from 'serializers/persons-serializer';
 
 /**
  * Post person endpoint
@@ -11,7 +12,8 @@ const post = async (req, res) => {
     const { body: { data: { attributes } } } = req;
 
     const result = await createPerson(attributes);
-    return res.send(result);
+    const serializedPerson = serializePerson(result);
+    return res.send(serializedPerson);
   } catch (err) {
     return errorHandler(res, err);
   }
