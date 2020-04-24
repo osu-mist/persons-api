@@ -1,5 +1,6 @@
+import { getPersonById } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
-import { getPersonById } from '../../db/oracledb/persons-dao';
+import { serializePerson } from 'serializers/persons-serializer';
 
 /**
  * Get person by ID
