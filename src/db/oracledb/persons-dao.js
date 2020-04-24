@@ -54,17 +54,20 @@ const getPersonById = async (osuId) => {
 const createPerson = async (body) => {
   const connection = await getConnection('banner');
   try {
-    body.citizen = body.citizen.code;
+    if (body.citizen && body.citizen.code) {
+      body.citizen = body.citizen.code;
+    }
     body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
     console.log(body);
-    const { outBinds: { outId } } = await connection.execute(contrib.createPerson(), body);
+    const { outBinds: { outId } } = await connection.execute(contrib.createPerson(body), body);
     console.log(outId);
     if (!await personExistsWithConnection(connection, outId)) {
       connection.rollback();
       throw new Error('Person creation failed');
     }
 
-    const person = await getPersonById(outId);
+    const person = await getPerson(connection, outId);
+    console.log(person);
 
     // await connection.commit();
     return person;
