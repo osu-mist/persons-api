@@ -1,7 +1,6 @@
-import oracledb from 'oracledb';
 import _ from 'lodash';
+import oracledb from 'oracledb';
 
-import { serializePerson } from 'serializers/persons-serializer';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
@@ -20,10 +19,21 @@ const personExistsWithConnection = async (connection, osuId) => {
 const personExists = async (osuId) => {
   const connection = await getConnection('banner');
   try {
-    personExistsWithConnection(connection, osuId);
+    return await personExistsWithConnection(connection, osuId);
   } finally {
     connection.close();
   }
+};
+
+const getPerson = async (connection, osuId) => {
+  const query = { osuId };
+  const { rows } = await connection.execute(contrib.getPersonById(), query);
+
+  if (rows.length > 1) {
+    throw new Error('Expect a single object but got multiple results.');
+  }
+
+  return !_.isEmpty(rows) ? rows[0] : undefined;
 };
 
 /**
@@ -35,16 +45,7 @@ const personExists = async (osuId) => {
 const getPersonById = async (osuId) => {
   const connection = await getConnection('banner');
   try {
-    const query = { osuId };
-    const { rows } = await connection.execute(contrib.getPersonById(), query);
-
-    if (rows.length > 1) {
-      throw new Error('Expect a single object but got multiple results.');
-    } else if (_.isEmpty(rows)) {
-      return undefined;
-    }
-
-    return serializePerson(rows[0]);
+    return await getPerson(connection, osuId);
   } finally {
     connection.close();
   }
