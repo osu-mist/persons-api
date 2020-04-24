@@ -1,9 +1,15 @@
-// import oracledb from 'oracledb';
+import oracledb from 'oracledb';
 import _ from 'lodash';
 
 import { serializePerson } from 'serializers/persons-serializer';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
+
+const personExistsWithConnection = async (connection, osuId) => {
+  const { rows } = await connection.execute(contrib.personExists(), { osuId });
+
+  return rows.length > 0 ? rows[0].internalId : null;
+};
 
 /**
  * Returns true if person with the given OSU ID exists
@@ -14,12 +20,7 @@ import { contrib } from './contrib/contrib';
 const personExists = async (osuId) => {
   const connection = await getConnection('banner');
   try {
-    const { rows } = await connection.execute(contrib.personExists(), { osuId });
-    if (rows.length > 0) {
-      return rows[0].internalId;
-    }
-
-    return null;
+    personExistsWithConnection(connection, osuId);
   } finally {
     connection.close();
   }
@@ -53,12 +54,19 @@ const createPerson = async (body) => {
   const connection = await getConnection('banner');
   try {
     body.citizen = body.citizen.code;
-    // body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
     console.log(body);
-    const result = await connection.execute(contrib.createPerson(), body);
-    console.log(result);
+    const { outBinds: { outId } } = await connection.execute(contrib.createPerson(), body);
+    console.log(outId);
+    if (!await personExistsWithConnection(connection, outId)) {
+      connection.rollback();
+      throw new Error('Person creation failed');
+    }
 
-    return undefined;
+    const person = await getPersonById(outId);
+
+    // await connection.commit();
+    return person;
   } finally {
     connection.close();
   }
