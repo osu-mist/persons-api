@@ -4,6 +4,14 @@ import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
+/**
+ * Queries data source for address data using passed in oracledb connection
+ *
+ * @param {object} connection open oracledb connection
+ * @param {string} internalId internal ID of a person
+ * @param {object} query query parameters passed in with request
+ * @returns {Promise<object[]>} raw address data from data source
+ */
 const getAddresses = async (connection, internalId, query) => {
   const parsedQuery = parseQuery(query);
   parsedQuery.internalId = internalId;
