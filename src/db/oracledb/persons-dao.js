@@ -20,6 +20,12 @@ const personExists = async (osuId) => {
   }
 };
 
+/**
+ * Uses passed in connection to query data source for person records
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ */
 const getPerson = async (connection, osuId) => {
   const query = { osuId };
   const { rows } = await connection.execute(contrib.getPersonById(), query);
@@ -46,6 +52,12 @@ const getPersonById = async (osuId) => {
   }
 };
 
+/**
+ * Creates person record
+ *
+ * @param {object} body body from request
+ * @returns {Promise<object>} Newly created person record
+ */
 const createPerson = async (body) => {
   const connection = await getConnection('banner');
   try {
