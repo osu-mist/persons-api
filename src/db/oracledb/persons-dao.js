@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import oracledb from 'oracledb';
+import { DB_TYPE_VARCHAR, BIND_OUT } from 'oracledb';
 
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -57,7 +57,7 @@ const createPerson = async (body) => {
     if (body.citizen && body.citizen.code) {
       body.citizen = body.citizen.code;
     }
-    body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    body.outId = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
     console.log(body);
     const { outBinds: { outId } } = await connection.execute(contrib.createPerson(body), body);
     console.log(outId);
