@@ -72,7 +72,7 @@ const createAddress = async (internalId, body) => {
     body.returnValue = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
     body.seqno = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
 
-    // Query phone early because it is changed automatically by createAddress
+    // Query phone early because it deactivated automatically by the create address query
     const phone = await phoneHasSameAddressType(connection, internalId, body.addressType);
 
     const address = await hasSameAddressType(connection, internalId, body.addressType);
