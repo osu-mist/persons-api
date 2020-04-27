@@ -1,4 +1,4 @@
-import oracledb from 'oracledb';
+import { DB_TYPE_VARCHAR, BIND_OUT } from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
@@ -61,8 +61,8 @@ const createAddress = async (internalId, body) => {
   try {
     body.addressType = body.addressType.code;
     body.internalId = internalId;
-    body.returnValue = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-    body.seqno = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    body.returnValue = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
+    body.seqno = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
 
     // Query phone early because it is changed automatically by createAddress
     const phone = await phoneHasSameAddressType(connection, internalId, body.addressType);
