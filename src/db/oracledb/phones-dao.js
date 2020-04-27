@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import oracledb from 'oracledb';
+import { DB_TYPE_VARCHAR, BIND_OUT } from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
 import { hasSameAddressType } from 'db/oracledb/addresses-dao';
@@ -57,8 +57,8 @@ const postPhones = async (internalId, body) => {
     body.internalId = internalId;
     body.addressType = body.addressType.code;
     body.phoneType = body.phoneType.code;
-    body.phoneId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-    body.seqno = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    body.phoneId = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
+    body.seqno = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
 
     const address = await hasSameAddressType(connection, internalId, body.addressType);
     if (!address) {
