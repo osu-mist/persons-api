@@ -25,6 +25,7 @@ const personExists = async (osuId) => {
  *
  * @param {object} connection oracledb connection
  * @param {string} osuId OSU ID of a person
+ * @returns {Promise<object>} Raw person data
  */
 const getPerson = async (connection, osuId) => {
   const query = { osuId };
