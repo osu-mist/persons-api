@@ -6,6 +6,14 @@ import { hasSameAddressType } from 'db/oracledb/addresses-dao';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
+/**
+ * Queries phone data using passed in oracledb connection
+ *
+ * @param {object} connection
+ * @param {string} internalId
+ * @param {object} query
+ * @returns {Promise<object[]>} raw phone data
+ */
 const getPhones = async (connection, internalId, query) => {
   const parsedQuery = parseQuery(query);
   parsedQuery.internalId = internalId;
