@@ -44,6 +44,10 @@ const hasSamePhoneType = async (connection, internalId, phoneType) => {
   const binds = { internalId, phoneType };
   const { rows } = await connection.execute(contrib.hasSamePhoneType(), binds);
 
+  if (rows.length > 1) {
+    throw new Error(`Multiple records found for phone type ${phoneType} for ${internalId}`);
+  }
+
   return rows[0];
 };
 
