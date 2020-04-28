@@ -1604,10 +1604,8 @@ class PersonsResourceTest {
             personExist(2..2) { String osuID -> '123456789'}
             isValidPhoneType { String phoneType -> true }
             isValidAddressType { String addressType -> true }
-            hasSamePhoneType { String pidm, String phoneType -> new PhoneRecordObject() }
-            hasSameAddressType { 
-                String pidm, String addressType -> [new AddressRecordObject()]
-            }
+            hasSamePhoneType { String pidm, String phoneType -> [new PhoneRecordObject()] }
+            hasSameAddressType { String pidm, String addressType -> [new AddressRecordObject()] }
         }
 
         personsDAOStub

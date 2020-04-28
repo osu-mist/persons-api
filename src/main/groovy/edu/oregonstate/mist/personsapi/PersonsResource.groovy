@@ -882,8 +882,29 @@ class PersonsResource extends Resource {
         errors
     }
 
-    private Response multipleAddressError(String addressType) {
+    private AddressRecordObject hasSameAddressType(String pidm, String addressType) {
         badRequest("Multiple address records found with the type $addressType").build()
+        List<AddressRecordObject> addressRecords = bannerPersonsReadDAO.hasSameAddressType(
+            pidm, addressType
+        )
+
+        if(addressRecords.size() > 1) {
+            throw new Exception("Multiple address records found with the type $addressType")
+        }
+
+        addressRecords[0]
+    }
+
+    private PhoneRecordObject phoneHasSameAddressType(String pidm, String addressType) {
+        List<PhoneRecordObject> phoneRecords = bannerPersonsReadDAO.phoneHasSameAddressType(
+            pidm, addressType
+        )
+
+        if(phoneRecords.size() > 1) {
+            throw new Exception("Multiple active phone records with address type $addressType")
+        }
+
+        phoneRecords[0]
     }
 
     @Timed
@@ -917,15 +938,10 @@ class PersonsResource extends Resource {
 
         try {
             String addressType = resultObject.data['attributes']['addressType']
-            List<AddressRecordObject> addressRecords = bannerPersonsReadDAO.hasSameAddressType(
-                pidm, addressType
-            )
-            if(addressRecords.size() > 1) {
-                return multipleAddressError(addressType)
-            }
-            AddressRecordObject addressRecord = addressRecords[0]
+            AddressRecordObject addressRecord = hasSameAddressType(pidm, addressType)
+
             // query phoneRecord early because deactivateAddress will set the status to inactive
-            PhoneRecordObject phoneRecord = bannerPersonsReadDAO.phoneHasSameAddressType(
+            PhoneRecordObject phoneRecord = phoneHasSameAddressType(
                 pidm, addressType
             )
             if (addressRecord?.rowID) {
@@ -1123,6 +1139,18 @@ class PersonsResource extends Resource {
         errors
     }
 
+    private PhoneRecordObject hasSamePhoneType(String pidm, String phoneType) {
+        List<PhoneRecordObject> phoneRecords = bannerPersonsReadDAO.hasSamePhoneType(
+            pidm, phoneType
+        )
+
+        if(phoneRecords.size() > 1) {
+            throw new Exception("Multiple active phone records found with type $phoneType")
+        }
+
+        phoneRecords[0]
+    }
+
     @Timed
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
@@ -1154,18 +1182,15 @@ class PersonsResource extends Resource {
 
         String phoneType = resultObject.data['attributes']['phoneType']
         String addressType = resultObject.data['attributes']['addressType']
-        PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
+        PhoneRecordObject phoneRecord = hasSamePhoneType(
             pidm, phoneType
         )
-        List<AddressRecordObject> addressRecords = bannerPersonsReadDAO.hasSameAddressType(
+        AddressRecordObject addressRecord = hasSameAddressType(
             pidm, addressType
         )
-        if(addressRecords.size() == 0) {
+        if(!addressRecord) {
             return badRequest("No address record found with the $addressType address code").build()
-        } else if(addressRecords.size() > 1) {
-            return multipleAddressError(addressType)
         }
-        AddressRecordObject addressRecord = addressRecords[0]
 
         try {
             if (phoneRecord?.id) {
@@ -1218,9 +1243,9 @@ class PersonsResource extends Resource {
                 Updating address seqno on phone record.
             """)
             // query address record to get updated seqno
-            AddressRecordObject updatedAddressRecord = bannerPersonsReadDAO.hasSameAddressType(
+            AddressRecordObject updatedAddressRecord = hasSameAddressType(
                                                 pidm, addressRecord.addressType
-            )[0]
+            )
 
             try {
                 bannerPersonsWriteDAO.updatePhoneAddrSeqno(pidm,
