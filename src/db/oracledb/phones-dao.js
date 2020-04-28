@@ -59,7 +59,7 @@ const deactivatePhone = async (connection, phone) => {
  * @param {object} body body sent with post request
  * @returns {Promise<object>} newly created phone record
  */
-const postPhones = async (internalId, body) => {
+const createPhone = async (internalId, body) => {
   const connection = await getConnection();
   try {
     body.internalId = internalId;
@@ -102,4 +102,4 @@ const postPhones = async (internalId, body) => {
   }
 };
 
-export { getPhonesByInternalId, postPhones };
+export { getPhonesByInternalId, createPhone };

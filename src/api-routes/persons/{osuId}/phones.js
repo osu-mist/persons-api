@@ -1,6 +1,6 @@
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { personExists } from 'db/oracledb/persons-dao';
-import { getPhonesByInternalId, postPhones } from 'db/oracledb/phones-dao';
+import { getPhonesByInternalId, createPhone } from 'db/oracledb/phones-dao';
 import { serializePhone, serializePhones } from 'serializers/phones-serializer';
 
 /**
@@ -39,7 +39,7 @@ const post = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await postPhones(internalId, attributes);
+    const result = await createPhone(internalId, attributes);
     const serializedPhone = serializePhone(result, osuId);
 
     return res.send(serializedPhone);
