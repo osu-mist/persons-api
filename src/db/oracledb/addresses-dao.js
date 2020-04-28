@@ -40,12 +40,24 @@ const hasSameAddressType = async (connection, internalId, addressType) => {
   const attributes = { internalId, addressType };
   const { rows } = await connection.execute(contrib.hasSameAddressType(), attributes);
 
+  if (rows.length > 1) {
+    throw new Error(
+      `Multiple addresses found for the same address type ${addressType} for ${internalId}`,
+    );
+  }
+
   return rows[0];
 };
 
 const phoneHasSameAddressType = async (connection, internalId, addressType) => {
   const attributes = { internalId, addressType };
   const { rows } = await connection.execute(contrib.phoneHasSameAddressType(), attributes);
+
+  if (rows.length > 1) {
+    throw new Error(
+      `Multiple phone records found for the address type ${addressType} for ${internalId}`,
+    );
+  }
 
   return rows[0];
 };
