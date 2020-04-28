@@ -103,7 +103,7 @@ public interface BannerPersonsReadDAO extends Closeable {
 
     @SqlQuery(AbstractPersonsDAO.hasSameAddressType)
     @Mapper(AddressRecordMapper)
-    AddressRecordObject hasSameAddressType(@Bind('pidm') String pidm,
+    List<AddressRecordObject> hasSameAddressType(@Bind('pidm') String pidm,
                                            @Bind('addressType') String addressType)
 
     @SqlQuery(AbstractPersonsDAO.validateAddressType)

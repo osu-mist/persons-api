@@ -882,6 +882,10 @@ class PersonsResource extends Resource {
         errors
     }
 
+    private Response multipleAddressError(String addressType) {
+        badRequest("Multiple address records found with the type $addressType").build()
+    }
+
     @Timed
     @POST
     @Consumes (MediaType.APPLICATION_JSON)
@@ -913,9 +917,13 @@ class PersonsResource extends Resource {
 
         try {
             String addressType = resultObject.data['attributes']['addressType']
-            AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+            List<AddressRecordObject> addressRecords = bannerPersonsReadDAO.hasSameAddressType(
                 pidm, addressType
             )
+            if(addressRecords.size() > 1) {
+                return multipleAddressError(addressType)
+            }
+            AddressRecordObject addressRecord = addressRecords[0]
             // query phoneRecord early because deactivateAddress will set the status to inactive
             PhoneRecordObject phoneRecord = bannerPersonsReadDAO.phoneHasSameAddressType(
                 pidm, addressType
@@ -1149,12 +1157,15 @@ class PersonsResource extends Resource {
         PhoneRecordObject phoneRecord = bannerPersonsReadDAO.hasSamePhoneType(
             pidm, phoneType
         )
-        AddressRecordObject addressRecord = bannerPersonsReadDAO.hasSameAddressType(
+        List<AddressRecordObject> addressRecords = bannerPersonsReadDAO.hasSameAddressType(
             pidm, addressType
         )
-        if(!addressRecord) {
+        if(addressRecords.size() == 0) {
             return badRequest("No address record found with the $addressType address code").build()
+        } else if(addressRecords.size() > 1) {
+            return multipleAddressError(addressType)
         }
+        AddressRecordObject addressRecord = addressRecords[0]
 
         try {
             if (phoneRecord?.id) {
@@ -1209,7 +1220,7 @@ class PersonsResource extends Resource {
             // query address record to get updated seqno
             AddressRecordObject updatedAddressRecord = bannerPersonsReadDAO.hasSameAddressType(
                                                 pidm, addressRecord.addressType
-            )
+            )[0]
 
             try {
                 bannerPersonsWriteDAO.updatePhoneAddrSeqno(pidm,
