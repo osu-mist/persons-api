@@ -9,7 +9,6 @@ import { serializeJobs } from 'serializers/jobs-serializer';
  * @type {RequestHandler}
  */
 const get = async (req, res) => {
-  console.log('get jobs endpoint');
   try {
     const { query, params: { osuId } } = req;
 
