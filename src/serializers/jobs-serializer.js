@@ -1,6 +1,7 @@
 import { Serializer as JsonApiSerializer } from 'jsonapi-serializer';
 import _ from 'lodash';
 
+import { contrib } from 'db/oracledb/contrib/contrib';
 import { formatSubObjects } from 'utils/format-sub-objects';
 import { serializerOptions } from 'utils/jsonapi';
 import { openapi } from 'utils/load-openapi';
@@ -17,6 +18,8 @@ const prepareRawData = (rawJobs) => {
     job.jobId = `${job.positionNumber}-${job.suffix}`;
     job.accruesLeaveInd = job.accruesLeaveInd === 'Y';
     job.employmentType = job['employeeClassification.code'] === 'XA' ? 'student' : 'graduate';
+
+    job['contractType.description'] = contrib.getContractTypeDescrByCode(job['contractType.code']);
 
     // oracle aliases have a character limit of 30 so we set the correct name here
     job['timesheet.predecessor.description'] = job['timesheet.pred.description'];
