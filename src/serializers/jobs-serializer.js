@@ -15,6 +15,8 @@ const jobResourceKeys = _.keys(jobCombinedAttributes.properties);
 const prepareRawData = (rawJobs) => {
   _.forEach(rawJobs, (job) => {
     job.jobId = `${job.positionNumber}-${job.suffix}`;
+    job.accruesLeaveInd = job.accruesLeaveInd === 'Y';
+    job.employmentType = job['employeeClassification.code'] === 'XA' ? 'student' : 'graduate';
 
     // oracle aliases have a character limit of 30 so we set the correct name here
     job['timesheet.predecessor.description'] = job['timesheet.pred.description'];
@@ -25,6 +27,10 @@ const prepareRawData = (rawJobs) => {
     delete job['homeOrganization.pred.code'];
     job['homeOrganization.predecessor.description'] = job['homeOrganization.pred.desc'];
     delete job['homeOrganization.pred.desc'];
+    job['employeeClassification.shortDescription'] = job['employeeClass.shortDesc'];
+    job['employeeClassification.longDescription'] = job['employeeClass.longDesc'];
+    delete job['employeeClass.shortDesc'];
+    delete job['employeeClass.longDesc'];
   });
 
   formatSubObjects(rawJobs);
