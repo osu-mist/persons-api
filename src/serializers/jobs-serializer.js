@@ -20,6 +20,7 @@ const prepareRawData = (rawJobs) => {
     job.employmentType = job['employeeClassification.code'] === 'XA' ? 'student' : 'graduate';
 
     job['contractType.description'] = contrib.getContractTypeDescrByCode(job['contractType.code']);
+    job['i9Form.description'] = contrib.getI9FormDescrByCode(job['i9Form.code']);
 
     // oracle aliases have a character limit of 30 so we set the correct name here
     job['timesheet.predecessor.description'] = job['timesheet.pred.description'];
