@@ -1400,10 +1400,14 @@ components:
         earningCode:
           type: object
           properties:
-            description:
+            shortDescription:
               type: string
               nullable: false
-              description: Description of earn code
+              description: Short description of earn code
+            longDescription:
+              type: string
+              nullable: false
+              description: Long description of earn code
         retirement:
           type: object
           properties:
