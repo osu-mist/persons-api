@@ -54,6 +54,14 @@ const getSerializerArgs = (osuId, query) => {
   };
 };
 
+/**
+ * Serializes raw job data
+ *
+ * @param {object[]} rawJobs raw job data from data source
+ * @param {string} osuId OSU ID of a person
+ * @param {object} query query parameters passed in with request
+ * @returns {object[]} Serialized job data
+ */
 const serializeJobs = (rawJobs, osuId, query) => {
   const serializerArgs = getSerializerArgs(osuId, query);
 
