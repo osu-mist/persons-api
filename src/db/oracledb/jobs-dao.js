@@ -1,3 +1,5 @@
+import _ from 'async-dash';
+
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -16,6 +18,13 @@ const getJobs = async (internalId, query) => {
     parsedQuery.internalId = internalId;
 
     const { rows } = await connection.execute(contrib.getJobs(parsedQuery), parsedQuery);
+
+    await _.asyncEach(rows, async (row) => {
+      const binds = await _.pick(row, ['positionNumber', 'suffix']);
+      binds.internalId = internalId;
+      const { rows: labors } = await connection.execute(contrib.getLaborDistribution(), binds);
+      row.laborDistribution = labors;
+    });
 
     return rows;
   } finally {
