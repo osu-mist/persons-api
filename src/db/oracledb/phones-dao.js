@@ -64,7 +64,7 @@ const deactivatePhone = async (connection, phone) => {
  * @returns {Promise<object>} newly created phone record
  */
 const createPhone = async (internalId, body) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     body.internalId = internalId;
     body.addressType = body.addressType.code;
