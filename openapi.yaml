@@ -1607,8 +1607,14 @@ components:
       type: object
       required:
         - addressType
-        - addressLine1
         - city
+      properties:
+        postalCode:
+          nullable: false
+        addressType:
+          type: object
+          required:
+            - code
     AddressPostAttributes:
       type: object
       properties:
@@ -1650,7 +1656,6 @@ components:
           example: OR
         postalCode:
           type: string
-          nullable: true
           example: '97331'
         countyCode:
           type: string
@@ -1682,6 +1687,8 @@ components:
           nullable: true
           description: Human readable county.
           example: Benton
+        postalCode:
+          nullable: true
         nation:
           type: string
           nullable: true
