@@ -1246,48 +1246,27 @@ components:
                 description: Date this labor distribution becomes effective.
                 example: '1970-01-01'
               accountIndex:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: false
-                    example: ABC123
+                type: string
+                nullable: false
+                example: ABC123
               fund:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               organization:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               account:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               program:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               activity:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               location:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               distributionPercent:
                 type: number
                 format: float
@@ -1426,55 +1405,10 @@ components:
           type: array
           items:
             properties:
-              accountIndex:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account index code
-              fund:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of fund code
-              organization:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of organization code
-              account:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account code
-              program:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of program code
-              activity:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of activity code
-              location:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of location code
+              title:
+                type: string
+                nullable: false
+                description: The hierarchy description or title appropriate for this level
     JobId:
       type: string
       description: Uniquely identifies a job record for the given person.
