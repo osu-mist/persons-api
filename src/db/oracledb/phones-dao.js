@@ -32,7 +32,7 @@ const getPhones = async (connection, internalId, query) => {
  * @returns {Promise<object>} Raw phone data from data source
  */
 const getPhonesByInternalId = async (internalId, query) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     return await getPhones(connection, internalId, query);
   } finally {

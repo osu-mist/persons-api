@@ -31,15 +31,10 @@ const prepareRawData = (rawAddresses) => {
  * @param {string} addressId ID of address record
  * @returns {object} serializer arguments
  */
-const getSerializerArgs = (osuId, query, addressId) => {
+const getSerializerArgs = (osuId, query) => {
   const addressResourcePath = `persons/${osuId}/${addressResourceType}`;
   const addressResourceUrl = resourcePathLink(apiBaseUrl, addressResourcePath);
-  let topLevelSelfLink;
-  if (query) {
-    topLevelSelfLink = paramsLink(addressResourceUrl, query);
-  } else {
-    topLevelSelfLink = resourcePathLink(addressResourceUrl, addressId);
-  }
+  const topLevelSelfLink = paramsLink(addressResourceUrl, query);
   return {
     identifierField: 'addressId',
     resourceKeys: addressResourceKeys,
@@ -76,7 +71,8 @@ const serializeAddresses = (rawAddresses, query, osuId) => {
  * @returns {object} serialized address data
  */
 const serializeAddress = (rawAddress, osuId) => {
-  const serializerArgs = getSerializerArgs(osuId, null, rawAddress.addressId);
+  const serializerArgs = getSerializerArgs(osuId, null);
+  serializerArgs.topLevelSelfLink = `${serializerArgs.topLevelSelfLink}/${rawAddress.addressId}`;
 
   prepareRawData([rawAddress]);
 

@@ -11,7 +11,7 @@ import { contrib } from './contrib/contrib';
  * @returns {boolean} true if person exists
  */
 const personExists = async (osuId) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const { rows } = await connection.execute(contrib.personExists(), { osuId });
     if (rows.length > 0) {
@@ -31,7 +31,7 @@ const personExists = async (osuId) => {
  * @returns {Promise<object>} Serialized person resource from person-serializer
  */
 const getPersonById = async (osuId) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const query = { osuId };
     const { rows } = await connection.execute(contrib.getPersonById(), query);
