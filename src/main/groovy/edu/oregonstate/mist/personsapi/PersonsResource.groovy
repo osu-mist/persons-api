@@ -1154,6 +1154,15 @@ class PersonsResource extends Resource {
         )
         if(!addressRecord) {
             return badRequest("No address record found with the $addressType address code").build()
+        } else if(phoneType != addressType) {
+            PhoneRecordObject phoneRecordAddress = bannerPersonsReadDAO.phoneHasSameAddressType(
+                pidm, addressType
+            )
+            if(phoneRecordAddress.primaryIndicator) {
+                return badRequest(
+                    "A primary phone record with the $addressType address code already exists"
+                ).build()
+            }
         }
 
         try {
