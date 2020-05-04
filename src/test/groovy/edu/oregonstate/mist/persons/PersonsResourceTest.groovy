@@ -1606,6 +1606,7 @@ class PersonsResourceTest {
             isValidAddressType { String addressType -> true }
             hasSamePhoneType { String pidm, String phoneType -> new PhoneRecordObject() }
             hasSameAddressType { String pidm, String addressType -> new AddressRecordObject() }
+            phoneHasSameAddressType { String pidm, String addressType -> new PhoneRecordObject() }
         }
 
         personsDAOStub
