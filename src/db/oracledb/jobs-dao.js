@@ -4,6 +4,15 @@ import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
+const getLaborDistributions = async (connection, internalId, jobs) => {
+  await _.asyncEach(jobs, async (job) => {
+    const binds = await _.pick(job, ['positionNumber', 'suffix']);
+    binds.internalId = internalId;
+    const { rows: labors } = await connection.execute(contrib.getLaborDistribution(), binds);
+    job.laborDistribution = labors;
+  });
+};
+
 /**
  * Queries data source for raw person data and passes it to the serializer
  *
@@ -19,12 +28,7 @@ const getJobs = async (internalId, query) => {
 
     const { rows } = await connection.execute(contrib.getJobs(parsedQuery), parsedQuery);
 
-    await _.asyncEach(rows, async (row) => {
-      const binds = await _.pick(row, ['positionNumber', 'suffix']);
-      binds.internalId = internalId;
-      const { rows: labors } = await connection.execute(contrib.getLaborDistribution(), binds);
-      row.laborDistribution = labors;
-    });
+    await getLaborDistributions(connection, internalId, rows);
 
     return rows;
   } finally {
