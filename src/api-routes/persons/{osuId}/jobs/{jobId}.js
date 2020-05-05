@@ -1,6 +1,7 @@
 import { getJobByJobId } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
+import { serializeJob } from 'serializers/jobs-serializer';
 
 /**
  * Get job by job ID
@@ -20,9 +21,9 @@ const get = async (req, res) => {
     if (!result) {
       return errorBuilder(res, 404, 'A job with the specified job ID was not found.');
     }
-    // const serializedMealPlan = serializeMealPlan(result, osuId, query);
+    const serializedJob = serializeJob(result, osuId);
 
-    return res.send(result);
+    return res.send(serializedJob);
   } catch (err) {
     return errorHandler(res, err);
   }

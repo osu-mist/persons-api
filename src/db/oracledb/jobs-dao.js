@@ -45,7 +45,7 @@ const getJobByJobId = async (internalId, jobId) => {
 
     await getLaborDistributions(connection, internalId, rows);
 
-    return rows;
+    return rows[0];
   } finally {
     connection.close();
   }

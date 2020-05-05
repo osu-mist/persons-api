@@ -74,4 +74,16 @@ const serializeJobs = (rawJobs, osuId, query) => {
   ).serialize(rawJobs);
 };
 
-export { serializeJobs };
+const serializeJob = (rawJob, osuId) => {
+  const serializerArgs = getSerializerArgs(osuId);
+
+  prepareRawData([rawJob]);
+  serializerArgs.topLevelSelfLink = `${serializerArgs.topLevelSelfLink}/${rawJob.jobId}`;
+
+  return new JsonApiSerializer(
+    jobResourceType,
+    serializerOptions(serializerArgs, jobResourceType, serializerArgs.topLevelSelfLink),
+  ).serialize(rawJob);
+};
+
+export { serializeJobs, serializeJob };
