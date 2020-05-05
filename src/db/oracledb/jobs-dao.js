@@ -43,6 +43,10 @@ const getJobByJobId = async (internalId, jobId) => {
     const binds = { internalId, positionNumber, suffix };
     const { rows } = await connection.execute(contrib.getJobs(binds), binds);
 
+    if (rows.length > 1) {
+      throw new Error(`Multiple job records found for job ID ${jobId}`);
+    }
+
     await getLaborDistributions(connection, internalId, rows);
 
     return rows[0];
