@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import { DB_TYPE_VARCHAR, BIND_OUT } from 'oracledb';
 
+import { hasSameAddressType, phoneHasSameAddressType } from 'db/oracledb/addresses-dao';
 import { parseQuery } from 'utils/parse-query';
-import { hasSameAddressType } from 'db/oracledb/addresses-dao';
+
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
