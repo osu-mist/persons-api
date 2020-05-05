@@ -1,7 +1,7 @@
-import { errorHandler, errorBuilder } from 'errors/errors';
 import { personExists } from 'db/oracledb/persons-dao';
-import { getPhones } from 'db/oracledb/phones-dao';
-import { serializePhones } from 'serializers/phones-serializer';
+import { getPhonesByInternalId, createPhone } from 'db/oracledb/phones-dao';
+import { errorHandler, errorBuilder } from 'errors/errors';
+import { serializePhone, serializePhones } from 'serializers/phones-serializer';
 
 /**
  * Get phones by OSU ID
@@ -17,7 +17,7 @@ const get = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const results = await getPhones(internalId, query);
+    const results = await getPhonesByInternalId(internalId, query);
     const serializedPhones = serializePhones(results, osuId, query);
     return res.send(serializedPhones);
   } catch (err) {
@@ -30,8 +30,26 @@ const get = async (req, res) => {
  *
  * @type {RequestHandler}
  */
-const post = async () => {
-  // todo
+const post = async (req, res) => {
+  try {
+    const { body: { data: { attributes } }, params: { osuId } } = req;
+
+    const internalId = await personExists(osuId);
+    if (!internalId) {
+      return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+    }
+
+    const result = await createPhone(internalId, attributes, res);
+
+    if (result instanceof Error) {
+      return errorBuilder(res, 400, [result.message]);
+    }
+
+    const serializedPhone = serializePhone(result, osuId);
+    return res.send(serializedPhone);
+  } catch (err) {
+    return errorHandler(res, err);
+  }
 };
 
 export { get, post };
