@@ -75,10 +75,22 @@ const createPhone = async (internalId, body) => {
 
     const address = await hasSameAddressType(connection, internalId, body.addressType);
     if (!address) {
-      // should be using errorBuilder somehow
-      throw new Error('Address record does not exists for this person and address type');
+      return new Error('Address record does not exists for this person and address type');
     }
     body.addrSeqno = address.seqno;
+
+    if (body.phoneType !== body.addressType) {
+      const phoneAddressType = await phoneHasSameAddressType(
+        connection,
+        internalId,
+        body.addressType,
+      );
+      if (phoneAddressType.primaryInd) {
+        return new Error(
+          'A primary phone record with the $addressType address code already exists',
+        );
+      }
+    }
 
     const phone = await hasSamePhoneType(connection, internalId, body.phoneType);
     if (phone) {

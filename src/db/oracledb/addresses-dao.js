@@ -125,4 +125,9 @@ const createAddress = async (internalId, body) => {
   }
 };
 
-export { getAddressesByInternalId, createAddress, hasSameAddressType };
+export {
+  getAddressesByInternalId,
+  createAddress,
+  hasSameAddressType,
+  phoneHasSameAddressType,
+};

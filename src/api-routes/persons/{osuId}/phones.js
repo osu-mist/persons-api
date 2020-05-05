@@ -39,9 +39,13 @@ const post = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await createPhone(internalId, attributes);
-    const serializedPhone = serializePhone(result, osuId);
+    const result = await createPhone(internalId, attributes, res);
 
+    if (result instanceof Error) {
+      return errorBuilder(res, 400, [result.message]);
+    }
+
+    const serializedPhone = serializePhone(result, osuId);
     return res.send(serializedPhone);
   } catch (err) {
     return errorHandler(res, err);
