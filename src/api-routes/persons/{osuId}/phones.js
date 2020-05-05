@@ -1,6 +1,6 @@
-import { errorHandler, errorBuilder } from 'errors/errors';
 import { personExists } from 'db/oracledb/persons-dao';
 import { getPhonesByInternalId, createPhone } from 'db/oracledb/phones-dao';
+import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializePhone, serializePhones } from 'serializers/phones-serializer';
 
 /**
