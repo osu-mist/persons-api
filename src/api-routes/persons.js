@@ -1,5 +1,5 @@
-import { createPerson } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
+import { createPerson } from 'db/oracledb/persons-dao';
 import { serializePerson } from 'serializers/persons-serializer';
 
 /**
