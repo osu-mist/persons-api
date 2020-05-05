@@ -1,5 +1,5 @@
 import { createPerson } from 'db/oracledb/persons-dao';
-import { errorHandler } from 'errors/errors';
+import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializePerson } from 'serializers/persons-serializer';
 
 /**
@@ -12,6 +12,11 @@ const post = async (req, res) => {
     const { body: { data: { attributes } } } = req;
 
     const result = await createPerson(attributes);
+
+    if (result instanceof Error) {
+      return errorBuilder(res, 400, [result.message]);
+    }
+
     const serializedPerson = serializePerson(result);
     return res.send(serializedPerson);
   } catch (err) {

@@ -69,6 +69,10 @@ const createPerson = async (body) => {
 
     const { outBinds: { outId } } = await connection.execute(contrib.createPerson(body), body);
 
+    if (_.startsWith(outId, 'ERROR')) {
+      return new Error(outId);
+    }
+
     const person = await getPerson(connection, outId);
     if (!person) {
       connection.rollback();
