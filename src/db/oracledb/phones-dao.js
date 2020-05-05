@@ -87,7 +87,7 @@ const createPhone = async (internalId, body) => {
       );
       if (phoneAddressType.primaryInd) {
         return new Error(
-          'A primary phone record with the $addressType address code already exists',
+          `A primary phone record with the ${body.addressType} address code already exists`,
         );
       }
     }
