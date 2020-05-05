@@ -728,6 +728,9 @@ components:
         - lastName
         - birthDate
         - sex
+      properties:
+        sex:
+          nullable: false
     PersonPostAttributes:
       type: object
       additionalProperties: false
@@ -769,7 +772,6 @@ components:
                 - `C` - Citizen
         sex:
           type: string
-          nullable: true
           enum: [M, F, N]
           description: |
             Person's sex code
@@ -779,6 +781,8 @@ components:
     PersonAttributes:
       type: object
       properties:
+        sex:
+          nullable: true
         displayFirstName:
           type: string
           nullable: true
