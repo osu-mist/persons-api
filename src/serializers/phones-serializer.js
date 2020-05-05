@@ -65,4 +65,23 @@ const serializePhones = (rawPhones, osuId, query) => {
   ).serialize(rawPhones);
 };
 
-export { serializePhones };
+/**
+ * Serialize single raw phone data from data source
+ *
+ * @param {object[]} rawPhone raw data from data source
+ * @param {string} osuId OSU ID of person
+ * @returns {Promise<object>} Serialized phone resource
+ */
+const serializePhone = (rawPhone, osuId) => {
+  const serializerArgs = getSerializerArgs(osuId, {});
+  serializerArgs.topLevelSelfLink = `${serializerArgs.topLevelSelfLink}/${rawPhone.phoneId}`;
+
+  prepareRawPhones([rawPhone]);
+
+  return new JsonApiSerializer(
+    phoneResourceType,
+    serializerOptions(serializerArgs, phoneResourceType, serializerArgs.topLevelSelfLink),
+  ).serialize(rawPhone);
+};
+
+export { serializePhone, serializePhones };
