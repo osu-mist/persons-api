@@ -57,6 +57,13 @@ const hasSameAddressType = async (connection, internalId, addressType) => {
   return rows[0];
 };
 
+/**
+ * Query for phones by address type
+ *
+ * @param {object} connection oracle db connection object
+ * @param {string} internalId Internal ID of a person
+ * @param {string} addressType Address type from request
+ */
 const phoneHasSameAddressType = async (connection, internalId, addressType) => {
   const attributes = { internalId, addressType };
   const { rows } = await connection.execute(contrib.phoneHasSameAddressType(), attributes);
