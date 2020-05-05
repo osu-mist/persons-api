@@ -85,7 +85,7 @@ const createPhone = async (internalId, body) => {
         internalId,
         body.addressType,
       );
-      if (phoneAddressType.primaryInd) {
+      if (phoneAddressType && phoneAddressType.primaryInd) {
         return new Error(
           `A primary phone record with the ${body.addressType} address code already exists`,
         );
