@@ -731,6 +731,11 @@ components:
       properties:
         sex:
           nullable: false
+        citizen:
+          type: object
+          properties:
+            code:
+              nullable: false
     PersonPostAttributes:
       type: object
       additionalProperties: false
@@ -761,7 +766,6 @@ components:
           properties:
             code:
               type: string
-              nullable: true
               enum: [FN, N, R, S, C]
               description: |
                 Person's citizen code
@@ -840,6 +844,8 @@ components:
         citizen:
           type: object
           properties:
+            code:
+              nullable: true
             description:
               type: string
               nullable: true
