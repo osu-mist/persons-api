@@ -36,4 +36,19 @@ const getJobs = async (internalId, query) => {
   }
 };
 
-export { getJobs };
+const getJobByJobId = async (internalId, jobId) => {
+  const connection = await getConnection();
+  try {
+    const [positionNumber, suffix] = jobId.split('-');
+    const binds = { internalId, positionNumber, suffix };
+    const { rows } = await connection.execute(contrib.getJobs(binds), binds);
+
+    await getLaborDistributions(connection, internalId, rows);
+
+    return rows;
+  } finally {
+    connection.close();
+  }
+};
+
+export { getJobs, getJobByJobId };
