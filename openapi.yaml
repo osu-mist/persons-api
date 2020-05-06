@@ -1359,6 +1359,15 @@ components:
         employeeClassification:
           type: object
           properties:
+            category:
+              type: string
+              description: Job classification
+              enum:
+                - Classified
+                - Temporary
+                - Student
+                - Unclassified
+                - Unpaid Appt
             shortDescription:
               type: string
               nullable: false
@@ -1407,10 +1416,6 @@ components:
                 type: string
                 nullable: false
                 description: The hierarchy description or title appropriate for this level
-        classifiedInd:
-          type: boolean
-          nullable: false
-          description: Indicates if this job is classified
     JobId:
       type: string
       description: Uniquely identifies a job record for the given person.
