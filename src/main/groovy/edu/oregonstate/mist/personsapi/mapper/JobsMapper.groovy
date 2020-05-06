@@ -12,16 +12,16 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
         String classification
         String classificationCode = rs.getString('EMPLOYEE_CLASSIFICATION_CODE')
 
-        if (classificationCode.startsWith('C') || classificationCode.startsWith('G')) {
-            classification = 'Classified'
+        if (classificationCode == 'XX') {
+            classification = 'Unpaid Appt'
         } else if (classificationCode.startsWith('T')) {
             classification = 'Temporary'
         } else if (classificationCode.startsWith('X')) {
             classification = 'Student'
         } else if (classificationCode.startsWith('U')) {
             classification = 'Unclassified'
-        } else if (classificationCode == 'XX') {
-            classification = 'Unpaid Appt'
+        } else if (classificationCode.startsWith('C') || classificationCode.startsWith('G')) {
+            classification = 'Classified'
         } else {
             throw new Error('Unrecognized classification code')
         }
