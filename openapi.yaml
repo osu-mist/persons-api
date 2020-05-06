@@ -602,10 +602,8 @@ components:
       description: Filter based on the jobs type of employment
       required: false
       schema:
-        type: array
-        items:
-          enum: &employmentTypeEnums [student, graduate]
-          type: string
+        type: string
+        enum: &employmentTypeEnums [student, graduate]
     addressType:
       name: filter[addressType]
       in: query
