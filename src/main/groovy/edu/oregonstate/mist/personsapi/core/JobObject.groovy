@@ -50,7 +50,6 @@ class JobObject {
     LocalDate endDate
 
     Boolean accruesLeave
-    Boolean classifiedInd
 
     @JsonIgnore
     public void setAccruesLeaveFromDbValue(String dbValue) {
@@ -132,6 +131,7 @@ class JobObject {
     BigDecimal assignmentSalary
     BigDecimal paysPerYear
     String employeeClassificationCode
+    String employeeClassification
     BigDecimal annualSalary
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")

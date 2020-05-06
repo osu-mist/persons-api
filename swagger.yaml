@@ -865,6 +865,15 @@ definitions:
         description: The number of pays per calendar year.
       employeeClassificationCode:
         type: string
+      employeeClassification:
+        type: string
+        description: Job classification
+        enum:
+          - Classified
+          - Temporary
+          - Student
+          - Unclassified
+          - Unpaid Appt
       employerCode:
         type: string
         description: Employer identification code.
@@ -949,9 +958,6 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
-      classifiedInd:
-        type: boolean
-        description: Indicates if this job is classified.
   PersonType:
     type: string
     example: person
