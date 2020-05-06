@@ -50,6 +50,7 @@ class JobObject {
     LocalDate endDate
 
     Boolean accruesLeave
+    Boolean classifiedInd
 
     @JsonIgnore
     public void setAccruesLeaveFromDbValue(String dbValue) {

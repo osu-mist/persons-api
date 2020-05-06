@@ -949,6 +949,9 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
+      classifiedInd:
+        type: boolean
+        description: Indicates if this job is classified.
   PersonType:
     type: string
     example: person
