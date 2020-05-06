@@ -17,6 +17,7 @@ const prepareRawData = (rawJobs) => {
   _.forEach(rawJobs, (job) => {
     job.jobId = `${job.positionNumber}-${job.suffix}`;
     job.accruesLeaveInd = job.accruesLeaveInd === 'Y';
+    job.classifiedInd = job.classifiedInd === 'Y';
     job.employmentType = job['employeeClassification.code'] === 'XA' ? 'student' : 'graduate';
 
     job['contractType.description'] = contrib.getContractTypeDescrByCode(job['contractType.code']);
