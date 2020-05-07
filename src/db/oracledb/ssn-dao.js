@@ -6,9 +6,9 @@ import { contrib } from './contrib/contrib';
 const ssnIsNotNull = async (osuId) => {
   const connection = await getConnection('banner');
   try {
-    const { rows: { ssnStatus } } = await connection.execute(contrib.ssnIsNotNull(), { osuId });
+    const { rows } = await connection.execute(contrib.ssnIsNotNull(), { osuId });
 
-    return ssnStatus === 'Y';
+    return rows[0].ssnStatus === 'N';
   } finally {
     connection.close();
   }
