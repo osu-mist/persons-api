@@ -1358,6 +1358,11 @@ components:
                   nullable: false
                   description: The next higher organizational title of the current home
                     organization.
+        lastPaidDate:
+          type: string
+          format: date
+          nullable: true
+          description: Date the person was last paid for this job
         salary:
           type: object
           properties:
