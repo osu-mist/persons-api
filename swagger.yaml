@@ -865,6 +865,15 @@ definitions:
         description: The number of pays per calendar year.
       employeeClassificationCode:
         type: string
+      employeeClassification:
+        type: string
+        description: Job classification
+        enum:
+          - Classified
+          - Temporary
+          - Student
+          - Unclassified
+          - Unpaid Appt
       employerCode:
         type: string
         description: Employer identification code.
