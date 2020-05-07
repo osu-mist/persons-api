@@ -672,6 +672,17 @@ definitions:
                   - vault
                   - valid
                   - invalid
+              employeeClassificationCode:
+                type: string
+              employeeClassification:
+                type: string
+                description: Employee classification
+                enum:
+                  - Classified
+                  - Temporary
+                  - Student
+                  - Unclassified
+                  - Unpaid Appt
   JobsResultObject:
     properties:
       links:
