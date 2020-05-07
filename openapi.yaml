@@ -1362,6 +1362,7 @@ components:
           type: string
           format: date
           nullable: true
+          example: '2019-06-20'
           description: Date the person was last paid for this job
         salary:
           type: object
