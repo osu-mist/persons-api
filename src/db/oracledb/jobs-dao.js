@@ -12,7 +12,7 @@ import { contrib } from './contrib/contrib';
  * @returns {Promise<object>} Raw job data from data source
  */
 const getJobs = async (internalId, query) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.internalId = internalId;
