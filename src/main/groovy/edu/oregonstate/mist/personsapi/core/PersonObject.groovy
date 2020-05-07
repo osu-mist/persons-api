@@ -45,8 +45,6 @@ class PersonObject {
     String username
     Boolean confidential
     String ssnStatus
-    String employeeClassificationCode
-    String employeeClassification
 
     public static PersonObject fromResultObject(ResultObject resultObject) {
         try {

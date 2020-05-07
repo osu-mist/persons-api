@@ -14,23 +14,6 @@ import java.sql.SQLException
 public class PersonMapper implements ResultSetMapper<PersonObject> {
     PhoneFormatter phoneFormatter = new PhoneFormatter()
     public PersonObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
-        String classification
-        String classificationCode = rs.getString('EMPLOYEE_CLASSIFICATION_CODE')
-
-        if (classificationCode == 'XX') {
-            classification = 'Unpaid Appt'
-        } else if (classificationCode.startsWith('T')) {
-            classification = 'Temporary'
-        } else if (classificationCode.startsWith('X')) {
-            classification = 'Student'
-        } else if (classificationCode.startsWith('U')) {
-            classification = 'Unclassified'
-        } else if (classificationCode.startsWith('C') || classificationCode.startsWith('G')) {
-            classification = 'Classified'
-        } else {
-            throw new Error('Unrecognized classification code')
-        }
-
         new PersonObject (
             osuID: rs.getString('OSU_ID'),
             internalID: rs.getString('INTERNAL_ID'),
@@ -56,9 +39,7 @@ public class PersonMapper implements ResultSetMapper<PersonObject> {
             alternatePhone: formatPhoneNumber(rs.getString('ALTERNATE_PHONE')),
             primaryPhone: formatPhoneNumber(rs.getString('PRIMARY_PHONE')),
             mobilePhone: formatPhoneNumber(rs.getString('MOBILE_PHONE')),
-            ssnStatus: rs.getString('SSNStatus'),
-            employeeClassificationCode: classificationCode,
-            employeeClassification: classification
+            ssnStatus: rs.getString('SSNStatus')
         )
     }
 

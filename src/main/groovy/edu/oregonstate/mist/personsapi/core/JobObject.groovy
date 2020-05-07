@@ -131,8 +131,8 @@ class JobObject {
     BigDecimal assignmentSalary
     BigDecimal paysPerYear
     String employeeClassificationCode
-    String employeeClassification
     BigDecimal annualSalary
+    Boolean civilServiceInd
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     LocalDate earnCodeEffectiveDate
