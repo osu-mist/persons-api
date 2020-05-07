@@ -733,6 +733,8 @@ components:
           nullable: false
         citizen:
           type: object
+          required:
+            - code
           properties:
             code:
               nullable: false
