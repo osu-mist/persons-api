@@ -9,6 +9,23 @@ import java.sql.SQLException
 
 public class JobsMapper implements ResultSetMapper<JobObject> {
     public JobObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
+        String classificationCode = rs.getString('EMPLOYEE_CLASSIFICATION_CODE')
+        String classification
+
+        if (classificationCode == 'XX') {
+            classification = 'Unpaid Appt'
+        } else if (classificationCode.startsWith('T')) {
+            classification = 'Temporary'
+        } else if (classificationCode.startsWith('X')) {
+            classification = 'Student'
+        } else if (classificationCode.startsWith('U')) {
+            classification = 'Unclassified'
+        } else if (classificationCode.startsWith('C') || classificationCode.startsWith('G')) {
+            classification = 'Classified'
+        } else {
+            throw new Error('Unrecognized classification code')
+        }
+
         JobObject job = new JobObject(
             positionNumber: rs.getString('POSITION_NUMBER'),
             suffix: rs.getString('SUFFIX'),
@@ -45,7 +62,8 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             hoursPerPay: rs.getBigDecimal('HOURS_PER_PAY'),
             assignmentSalary: rs.getBigDecimal('ASSIGNMENT_SALARY'),
             paysPerYear: rs.getBigDecimal('PAYS_PER_YEAR'),
-            employeeClassificationCode: rs.getString('EMPLOYEE_CLASSIFICATION_CODE'),
+            employeeClassificationCode: classificationCode,
+            employeeClassification: classification,
             annualSalary: rs.getBigDecimal('ANNUAL_SALARY'),
             earnCodeEffectiveDate: rs.getDate('EARN_CODE_EFFECTIVE_DATE')?.toLocalDate(),
             earnCode: rs.getString('EARN_CODE'),
