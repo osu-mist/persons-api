@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import { createPerson } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializePerson } from 'serializers/persons-serializer';
@@ -11,7 +13,7 @@ const post = async (req, res) => {
   try {
     const { body: { data: { attributes } } } = req;
 
-    if (new Date(attributes.birthDate) > new Date()) {
+    if (moment().isBefore(attributes.birthDate)) {
       return errorBuilder(res, 400, ["birthDate can't be a future date"]);
     }
 
