@@ -9,8 +9,8 @@ import java.sql.SQLException
 
 public class JobsMapper implements ResultSetMapper<JobObject> {
     public JobObject map(int i, ResultSet rs, StatementContext sc) throws SQLException {
-        String classification
         String classificationCode = rs.getString('EMPLOYEE_CLASSIFICATION_CODE')
+        String classification
 
         if (classificationCode == 'XX') {
             classification = 'Unpaid Appt'
@@ -63,6 +63,7 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             assignmentSalary: rs.getBigDecimal('ASSIGNMENT_SALARY'),
             paysPerYear: rs.getBigDecimal('PAYS_PER_YEAR'),
             employeeClassificationCode: classificationCode,
+            employeeClassification: classification,
             annualSalary: rs.getBigDecimal('ANNUAL_SALARY'),
             earnCodeEffectiveDate: rs.getDate('EARN_CODE_EFFECTIVE_DATE')?.toLocalDate(),
             earnCode: rs.getString('EARN_CODE'),
@@ -71,7 +72,7 @@ public class JobsMapper implements ResultSetMapper<JobObject> {
             i9FormCode: rs.getString('I9_FORM_CODE'),
             i9Date: rs.getDate('I9_DATE')?.toLocalDate(),
             i9ExpirationDate: rs.getDate('I9_EXPIRATION_DATE')?.toLocalDate(),
-            employeeClassification: classification
+            civilServiceInd: rs.getString('CIVIL_SERVICE_IND') == 'Y'
         )
 
         job.setAccruesLeaveFromDbValue(rs.getString('ACCRUE_LEAVE_INDICATOR'))

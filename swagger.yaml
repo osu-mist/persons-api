@@ -958,6 +958,9 @@ definitions:
               format: float
               description: Percentage of labor applied to this fund.
               example: 49.9
+      civilServiceInd:
+        description: Indicates if this assignment is a civil service job.
+        type: boolean
   PersonType:
     type: string
     example: person
