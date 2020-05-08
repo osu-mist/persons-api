@@ -44,4 +44,4 @@ const createSsn = async (internalId, body) => {
   }
 };
 
-export { createSsn, ssnIsNotNull, hasSpbpers };
+export { createSsn, ssnIsNotNull };
