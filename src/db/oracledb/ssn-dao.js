@@ -50,7 +50,7 @@ const createSsn = async (internalId, body) => {
       throw new Error('Error occurred creating SSN');
     }
 
-    return rows[0].ssnStatus;
+    await connection.commit();
   } finally {
     connection.close();
   }
