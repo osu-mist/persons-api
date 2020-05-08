@@ -852,6 +852,11 @@ components:
               type: string
               nullable: true
               description: Description field for the code
+        lastPaidDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2019-6-30'
     PersonResource:
       type: object
       properties:
