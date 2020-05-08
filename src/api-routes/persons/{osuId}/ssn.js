@@ -11,7 +11,7 @@ const post = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    if (!await ssnIsNotNull(osuId)) {
+    if (await ssnIsNotNull(osuId)) {
       return errorBuilder(res, 400, ["Person's SSN is not null or in vault"]);
     }
 

@@ -8,7 +8,7 @@ const ssnIsNotNull = async (osuId) => {
   try {
     const { rows } = await connection.execute(contrib.ssnIsNotNull(), { osuId });
 
-    return rows[0].ssnStatus === 'N';
+    return rows[0].ssnStatus === 'Y';
   } finally {
     connection.close();
   }
