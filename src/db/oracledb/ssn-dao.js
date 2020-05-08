@@ -3,6 +3,12 @@ import { DB_TYPE_VARCHAR, BIND_OUT } from 'oracledb';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
+/**
+ * Check if a persons SSN is not null
+ *
+ * @param {string} osuId OSU ID of a person
+ * @returns {boolean} True if person's SSN is not null
+ */
 const ssnIsNotNull = async (osuId) => {
   const connection = await getConnection('banner');
   try {
@@ -20,6 +26,12 @@ const hasSpbpers = async (connection, internalId) => {
   return rows[0].spbpersCount >= 1;
 };
 
+/**
+ * Creates an SSN record of updates it if one exists
+ *
+ * @param {string} internalId Internal ID of a person
+ * @param {object} body body sent with request
+ */
 const createSsn = async (internalId, body) => {
   const connection = await getConnection('banner');
   try {

@@ -2,6 +2,11 @@ import { personExists } from 'db/oracledb/persons-dao';
 import { createSsn, ssnIsNotNull } from 'db/oracledb/ssn-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 
+/**
+ * Post SSN endpoint
+ *
+ * @type {RequestHandler}
+ */
 const post = async (req, res) => {
   try {
     const { body: { data: { attributes } }, params: { osuId } } = req;
