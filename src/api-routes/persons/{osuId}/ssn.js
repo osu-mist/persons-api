@@ -15,9 +15,9 @@ const post = async (req, res) => {
       return errorBuilder(res, 400, ["Person's SSN is not null or in vault"]);
     }
 
-    const result = await createSsn(internalId, attributes);
+    await createSsn(internalId, attributes);
 
-    return res.send(result);
+    return res.sendStatus(204);
   } catch (err) {
     return errorHandler(res, err);
   }
