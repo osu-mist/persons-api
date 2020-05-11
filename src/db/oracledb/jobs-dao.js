@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import oracledb from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
@@ -30,15 +31,24 @@ const createJob = async (osuId, body) => {
   try {
     body.osuId = osuId;
     body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-    // const attributes = {
-    // osuId,
-    // effectiveDate: '1970-01-01',
-    // positionNumber: 'C12345',
-    // suffix: '00',
-    // reasonCode: 'AAHIR',
-    // outId: { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT },
-    // };
-    const result = await connection.execute(contrib.createJob3());
+    body.changeReason = body.changeReason.code;
+
+    const binds = _.pick(body, [
+      'osuId',
+      'effectiveDate',
+      'positionNumber',
+      'suffix',
+      'changeReason',
+      'outId',
+      'hourlyRate',
+      'appointmentPercent',
+      'personnelChangeDate',
+      'hoursPerPay',
+      'annualSalary',
+      'fullTimeEquivalency',
+    ]);
+
+    const result = await connection.execute(contrib.createJob(binds), binds);
     return result;
   } finally {
     connection.close();
