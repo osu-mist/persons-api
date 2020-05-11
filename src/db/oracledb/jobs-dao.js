@@ -40,7 +40,7 @@ const updateJob = async (connection, osuId, body) => {
   ]);
   binds.osuId = osuId;
   binds.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-  binds.changeReason = body.changeReason.code;
+  binds.changeReasonCode = body.changeReason.code;
 
   const result = await connection.execute(contrib.updateJob(binds), binds);
   return result;
