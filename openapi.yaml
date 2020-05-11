@@ -856,7 +856,8 @@ components:
           type: string
           format: date
           nullable: true
-          example: '2019-6-30'
+          example: '2019-06-30'
+          description: Most recent date the employee was paid for this job
     PersonResource:
       type: object
       properties:
