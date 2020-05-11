@@ -26,33 +26,33 @@ const getJobs = async (internalId, query) => {
   }
 };
 
-const createJob = async (osuId, body) => {
+const updateJob = async (connection, osuId, body) => {
+  const binds = _.pick(body, [
+    'effectiveDate',
+    'positionNumber',
+    'suffix',
+    'hourlyRate',
+    'appointmentPercent',
+    'personnelChangeDate',
+    'hoursPerPay',
+    'annualSalary',
+    'fullTimeEquivalency',
+  ]);
+  binds.osuId = osuId;
+  binds.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+  binds.changeReason = body.changeReason.code;
+
+  const result = await connection.execute(contrib.updateJob(binds), binds);
+  return result;
+};
+
+const createOrUpdateJob = async (osuId, body) => {
   const connection = await getConnection();
   try {
-    body.osuId = osuId;
-    body.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-    body.changeReason = body.changeReason.code;
-
-    const binds = _.pick(body, [
-      'osuId',
-      'effectiveDate',
-      'positionNumber',
-      'suffix',
-      'changeReason',
-      'outId',
-      'hourlyRate',
-      'appointmentPercent',
-      'personnelChangeDate',
-      'hoursPerPay',
-      'annualSalary',
-      'fullTimeEquivalency',
-    ]);
-
-    const result = await connection.execute(contrib.createJob(binds), binds);
-    return result;
+    return await updateJob(connection, osuId, body);
   } finally {
     connection.close();
   }
 };
 
-export { getJobs, createJob };
+export { getJobs, createOrUpdateJob };
