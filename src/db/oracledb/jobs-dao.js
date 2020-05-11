@@ -46,10 +46,56 @@ const updateJob = async (connection, osuId, body) => {
   return result;
 };
 
-const createOrUpdateJob = async (osuId, body) => {
+const terminateJob = async (connection, osuId, body) => {
+  const binds = _.pick(body, [
+    'positionNumber',
+    'suffix',
+    'effectiveDate',
+  ]);
+  binds.osuId = osuId;
+  binds.changeReasonCode = body.changeReason.code;
+  binds.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+
+  return connection.execute(contrib.terminateJob(binds), binds);
+};
+
+const isValidChangeReasonCode = async (connection, changeReasonCode) => {
+  const { rows } = await connection.execute(
+    contrib.validateChangeReasonCode(),
+    { changeReasonCode },
+  );
+  return rows[0].count > 0;
+};
+
+const createOrUpdateJob = async (update, osuId, body) => {
   const connection = await getConnection();
   try {
-    return await updateJob(connection, osuId, body);
+    const { changeReason: { code: changeReasonCode } } = body;
+
+    if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
+      console.log('termination');
+      const result = await terminateJob(connection, osuId, body);
+      console.log(result);
+    } else {
+      console.log('not termination');
+      if (!await isValidChangeReasonCode(connection, changeReasonCode)) {
+        return new Error(`Invalid change reason code ${changeReasonCode}`);
+      }
+
+      if (update) {
+        console.log('update');
+        if (changeReasonCode === 'LCHNG') {
+          console.log('LCHNG');
+        } else if (changeReasonCode === 'BREAP') {
+          console.log('BREAP');
+        } else {
+          await updateJob(connection, osuId, body);
+        }
+      } else {
+        console.log('not update');
+      }
+    }
+    return undefined;
   } finally {
     connection.close();
   }
