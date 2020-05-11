@@ -857,7 +857,7 @@ components:
           format: date
           nullable: true
           example: '2019-06-30'
-          description: Most recent date the employee was paid for this job
+          description: Most recent date the employee was paid
     PersonResource:
       type: object
       properties:
@@ -1467,6 +1467,12 @@ components:
                     type: string
                     nullable: true
                     description: Description of location code
+              lastPaidDate:
+                type: string
+                format: date
+                nullable: true
+                example: '2019-06-30'
+                description: Most recent date the employee was paid for this job
     JobId:
       type: string
       description: Uniquely identifies a job record for the given person.
