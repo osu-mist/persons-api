@@ -16,7 +16,7 @@
   "scripts": {
     "babel": "gulp babel",
     "build": "gulp build",
-    "dev": "nodemon -e js,yaml,json -i dist/ -x 'npm run babel && npm start'",
+    "dev": "nodemon -e js,yaml,json -i dist/ -i mock-db/ -x 'npm run babel && npm start'",
     "lint": "gulp lint",
     "start": "pm2-runtime dist/app.js --no-auto-exit",
     "test": "gulp test",
@@ -29,6 +29,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "async-dash": "^1.0.3",
     "body-parser": "^1.19.0",
     "compose-middleware": "^5.0.1",
     "config": "^3.2.2",

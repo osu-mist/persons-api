@@ -1,6 +1,6 @@
 import _ from 'lodash';
+import { DB_TYPE_VARCHAR, BIND_OUT } from 'oracledb';
 
-import { serializePerson } from 'serializers/persons-serializer';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
@@ -11,17 +11,31 @@ import { contrib } from './contrib/contrib';
  * @returns {boolean} true if person exists
  */
 const personExists = async (osuId) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const { rows } = await connection.execute(contrib.personExists(), { osuId });
-    if (rows.length > 0) {
-      return rows[0].internalId;
-    }
-
-    return null;
+    return rows.length > 0 ? rows[0].internalId : null;
   } finally {
     connection.close();
   }
+};
+
+/**
+ * Uses passed in connection to query data source for person records
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @returns {Promise<object>} Raw person data
+ */
+const getPerson = async (connection, osuId) => {
+  const query = { osuId };
+  const { rows } = await connection.execute(contrib.getPersonById(), query);
+
+  if (rows.length > 1) {
+    throw new Error('Expect a single object but got multiple results.');
+  }
+
+  return !_.isEmpty(rows) ? rows[0] : undefined;
 };
 
 /**
@@ -31,21 +45,45 @@ const personExists = async (osuId) => {
  * @returns {Promise<object>} Serialized person resource from person-serializer
  */
 const getPersonById = async (osuId) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
-    const query = { osuId };
-    const { rows } = await connection.execute(contrib.getPersonById(), query);
-
-    if (rows.length > 1) {
-      throw new Error('Expect a single object but got multiple results.');
-    } else if (_.isEmpty(rows)) {
-      return undefined;
-    }
-
-    return serializePerson(rows[0]);
+    return await getPerson(connection, osuId);
   } finally {
     connection.close();
   }
 };
 
-export { getPersonById, personExists };
+/**
+ * Creates person record
+ *
+ * @param {object} body body from request
+ * @returns {Promise<object>} Newly created person record
+ */
+const createPerson = async (body) => {
+  const connection = await getConnection('banner');
+  try {
+    if (body.citizen && body.citizen.code) {
+      body.citizen = body.citizen.code;
+    }
+    body.outId = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
+
+    const { outBinds: { outId } } = await connection.execute(contrib.createPerson(body), body);
+
+    if (_.startsWith(outId, 'ERROR')) {
+      return new Error(outId);
+    }
+
+    const person = await getPerson(connection, outId);
+    if (!person) {
+      connection.rollback();
+      throw new Error('Person creation failed');
+    }
+
+    await connection.commit();
+    return person;
+  } finally {
+    connection.close();
+  }
+};
+
+export { getPersonById, personExists, createPerson };

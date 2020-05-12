@@ -10,7 +10,7 @@ import { contrib } from './contrib/contrib';
  * @returns {Promise<object>} Serialized person resource from person-serializer
  */
 const getImageById = async (internalId) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const query = { internalId };
     const { rows } = await connection.execute(contrib.getImageById(), query);

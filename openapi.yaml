@@ -602,10 +602,8 @@ components:
       description: Filter based on the jobs type of employment
       required: false
       schema:
-        type: array
-        items:
-          enum: &employmentTypeEnums [student, graduate]
-          type: string
+        type: string
+        enum: &employmentTypeEnums [student, graduate]
     addressType:
       name: filter[addressType]
       in: query
@@ -728,6 +726,16 @@ components:
         - lastName
         - birthDate
         - sex
+      properties:
+        sex:
+          nullable: false
+        citizen:
+          type: object
+          required:
+            - code
+          properties:
+            code:
+              nullable: false
     PersonPostAttributes:
       type: object
       additionalProperties: false
@@ -758,7 +766,6 @@ components:
           properties:
             code:
               type: string
-              nullable: true
               enum: [FN, N, R, S, C]
               description: |
                 Person's citizen code
@@ -769,7 +776,6 @@ components:
                 - `C` - Citizen
         sex:
           type: string
-          nullable: true
           enum: [M, F, N]
           description: |
             Person's sex code
@@ -779,6 +785,8 @@ components:
     PersonAttributes:
       type: object
       properties:
+        sex:
+          nullable: true
         displayFirstName:
           type: string
           nullable: true
@@ -836,6 +844,8 @@ components:
         citizen:
           type: object
           properties:
+            code:
+              nullable: true
             description:
               type: string
               nullable: true
@@ -1270,48 +1280,27 @@ components:
                 description: Date this labor distribution becomes effective.
                 example: '1970-01-01'
               accountIndex:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: false
-                    example: ABC123
+                type: string
+                nullable: false
+                example: ABC123
               fund:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               organization:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               account:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               program:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               activity:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               location:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
               distributionPercent:
                 type: number
                 format: float
@@ -1357,6 +1346,48 @@ components:
               type: string
               nullable: true
               description: Description for the strsAssignment code
+        timesheet:
+          type: object
+          properties:
+            current:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: false
+                  description: Organization title where timesheet is sent for the job.
+            predecessor:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: false
+                  description: The next higher organizational title of the current
+                    timesheet organization.
+        homeOrganization:
+          type: object
+          properties:
+            current:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: false
+                  description: The home organization title of the employee.
+            predecessor:
+              type: object
+              properties:
+                description:
+                  type: string
+                  nullable: false
+                  description: The next higher organizational title of the current home
+                    organization.
+        lastPaidDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2019-06-20'
+          description: Date the person was last paid for this job
         salary:
           type: object
           properties:
@@ -1370,10 +1401,23 @@ components:
         employeeClassification:
           type: object
           properties:
-            description:
+            category:
+              type: string
+              description: Job classification
+              enum:
+                - Classified
+                - Temporary
+                - Student
+                - Unclassified
+                - Unpaid Appt
+            shortDescription:
               type: string
               nullable: false
-              description: Description of the employee classification code
+              description: Short description of the employee classification code
+            longDescription:
+              type: string
+              nullable: false
+              description: Long description of employee classification code
         employerIdentification:
           type: object
           properties:
@@ -1384,10 +1428,14 @@ components:
         earningCode:
           type: object
           properties:
-            description:
+            shortDescription:
               type: string
               nullable: false
-              description: Description of earn code
+              description: Short description of earn code
+            longDescription:
+              type: string
+              nullable: false
+              description: Long description of earn code
         retirement:
           type: object
           properties:
@@ -1406,55 +1454,14 @@ components:
           type: array
           items:
             properties:
-              accountIndex:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account index code
-              fund:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of fund code
-              organization:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of organization code
-              account:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account code
-              program:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of program code
-              activity:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of activity code
-              location:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of location code
+              title:
+                type: string
+                nullable: false
+                description: The hierarchy description or title appropriate for this level
+        classifiedInd:
+          type: boolean
+          nullable: false
+          description: Indicates if this assignment is a civil service job
     JobId:
       type: string
       description: Uniquely identifies a job record for the given person.
@@ -1613,8 +1620,14 @@ components:
       type: object
       required:
         - addressType
-        - addressLine1
         - city
+      properties:
+        postalCode:
+          nullable: false
+        addressType:
+          type: object
+          required:
+            - code
     AddressPostAttributes:
       type: object
       properties:
@@ -1656,7 +1669,6 @@ components:
           example: OR
         postalCode:
           type: string
-          nullable: true
           example: '97331'
         countyCode:
           type: string
@@ -1688,6 +1700,8 @@ components:
           nullable: true
           description: Human readable county.
           example: Benton
+        postalCode:
+          nullable: true
         nation:
           type: string
           nullable: true
@@ -1756,6 +1770,9 @@ components:
         - areaCode
         - phoneNumber
         - primaryInd
+      properties:
+        phoneNumber:
+          nullable: false
     PhonePostAttributes:
       type: object
       additionalProperties: false
@@ -1768,7 +1785,6 @@ components:
           pattern: ^[0-9]{1,3}$
         phoneNumber:
           type: string
-          nullable: true
           description: Extension for the phone number. Can be returned in different formats.
           example: '4443333'
           pattern: ^[0-9]{1,7}$
@@ -1801,6 +1817,8 @@ components:
     PhoneAttributes:
       type: object
       properties:
+        phoneNumber:
+          nullable: true
         fullPhoneNumber:
           type: string
           nullable: false
