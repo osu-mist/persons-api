@@ -1,7 +1,7 @@
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { personExists } from 'db/oracledb/persons-dao';
 import { getJobs, createOrUpdateJob } from 'db/oracledb/jobs-dao';
-import { serializeJobs } from 'serializers/jobs-serializer';
+import { serializeJobs, serializeJob } from 'serializers/jobs-serializer';
 
 /**
  * Get jobs by OSU ID
@@ -39,12 +39,14 @@ const post = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await createOrUpdateJob(false, osuId, body.data.attributes);
+    const result = await createOrUpdateJob(false, osuId, body.data.attributes, internalId);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);
     }
-    return res.send(result);
+
+    const serializedJob = serializeJob(result, osuId);
+    return res.send(serializedJob);
   } catch (err) {
     return errorHandler(res, err);
   }

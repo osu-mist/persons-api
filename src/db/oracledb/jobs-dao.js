@@ -103,7 +103,7 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
   return rows[0].count > 0;
 };
 
-const createOrUpdateJob = async (update, osuId, body) => {
+const createOrUpdateJob = async (update, osuId, body, internalId) => {
   const connection = await getConnection('banner');
   try {
     let result;
@@ -135,7 +135,8 @@ const createOrUpdateJob = async (update, osuId, body) => {
     // null === success
     if (!result) {
       // return getJob;
-      return undefined;
+      const jobId = `${body.positionNumber}-${body.suffix}`;
+      return await getJobByJobIdWithConnection(connection, internalId, jobId);
     }
     return new Error('Error occurred');
   } finally {
