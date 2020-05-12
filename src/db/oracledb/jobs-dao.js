@@ -38,20 +38,24 @@ const getJobs = async (internalId, query) => {
   }
 };
 
+const getJobByJobIdWithConnection = async (connection, internalId, jobId) => {
+  const [positionNumber, suffix] = jobId.split('-');
+  const binds = { internalId, positionNumber, suffix };
+  const { rows } = await connection.execute(contrib.getJobs(binds), binds);
+
+  if (rows.length > 1) {
+    throw new Error(`Multiple job records found for job ID ${jobId}`);
+  }
+
+  await getLaborDistributions(connection, internalId, rows);
+
+  return rows[0];
+};
+
 const getJobByJobId = async (internalId, jobId) => {
   const connection = await getConnection('banner');
   try {
-    const [positionNumber, suffix] = jobId.split('-');
-    const binds = { internalId, positionNumber, suffix };
-    const { rows } = await connection.execute(contrib.getJobs(binds), binds);
-
-    if (rows.length > 1) {
-      throw new Error(`Multiple job records found for job ID ${jobId}`);
-    }
-
-    await getLaborDistributions(connection, internalId, rows);
-
-    return rows[0];
+    return await getJobByJobIdWithConnection(connection, internalId, jobId);
   } finally {
     connection.close();
   }
