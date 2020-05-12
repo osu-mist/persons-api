@@ -39,10 +39,10 @@ const updateJob = async (connection, osuId, body) => {
     'fullTimeEquivalency',
   ]);
   binds.osuId = osuId;
-  binds.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+  binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
   binds.changeReasonCode = body.changeReason.code;
 
-  const result = await connection.execute(contrib.updateJob(binds), binds);
+  const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
   return result;
 };
 
@@ -54,9 +54,10 @@ const terminateJob = async (connection, osuId, body) => {
   ]);
   binds.osuId = osuId;
   binds.changeReasonCode = body.changeReason.code;
-  binds.outId = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+  binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
-  return connection.execute(contrib.terminateJob(binds), binds);
+  const { outBinds: { result } } = await connection.execute(contrib.terminateJob(binds), binds);
+  return result;
 };
 
 const isValidChangeReasonCode = async (connection, changeReasonCode) => {
@@ -70,12 +71,12 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
 const createOrUpdateJob = async (update, osuId, body) => {
   const connection = await getConnection();
   try {
+    let result;
     const { changeReason: { code: changeReasonCode } } = body;
 
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
       console.log('termination');
-      const result = await terminateJob(connection, osuId, body);
-      console.log(result);
+      result = await terminateJob(connection, osuId, body);
     } else {
       console.log('not termination');
       if (!await isValidChangeReasonCode(connection, changeReasonCode)) {
@@ -95,7 +96,13 @@ const createOrUpdateJob = async (update, osuId, body) => {
         console.log('not update');
       }
     }
-    return undefined;
+
+    // null === success
+    if (!result) {
+      // return getJob;
+      return undefined;
+    }
+    return new Error('Error occurred');
   } finally {
     connection.close();
   }
