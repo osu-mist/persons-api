@@ -28,6 +28,7 @@ const prepareRawData = (rawAddresses) => {
  *
  * @param {string} osuId
  * @param {object} query
+ * @param {string} addressId ID of address record
  * @returns {object} serializer arguments
  */
 const getSerializerArgs = (osuId, query) => {
@@ -62,4 +63,23 @@ const serializeAddresses = (rawAddresses, query, osuId) => {
   ).serialize(rawAddresses);
 };
 
-export { serializeAddresses };
+/**
+ * Takes a raw address record and serializes it into json api standards
+ *
+ * @param {object} rawAddress
+ * @param {string} osuId
+ * @returns {object} serialized address data
+ */
+const serializeAddress = (rawAddress, osuId) => {
+  const serializerArgs = getSerializerArgs(osuId, null);
+  serializerArgs.topLevelSelfLink = `${serializerArgs.topLevelSelfLink}/${rawAddress.addressId}`;
+
+  prepareRawData([rawAddress]);
+
+  return new JsonApiSerializer(
+    addressResourceType,
+    serializerOptions(serializerArgs, addressResourceType, serializerArgs.topLevelSelfLink),
+  ).serialize(rawAddress);
+};
+
+export { serializeAddress, serializeAddresses };

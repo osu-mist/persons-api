@@ -1,5 +1,5 @@
 import config from 'config';
-import _ from 'lodash';
+import _ from 'async-dash';
 import oracledb from 'oracledb';
 
 import { logger } from 'utils/logger';
@@ -15,8 +15,8 @@ oracledb.fetchAsBuffer = [oracledb.BLOB];
 const threadPoolSize = dbConfig.poolMax + (dbConfig.poolMax / 5);
 process.env.UV_THREADPOOL_SIZE = threadPoolSize > 128 ? 128 : threadPoolSize;
 
-/** Connection pool */
-let pool;
+/** Connection pools */
+const pools = {};
 
 /**
  * Create a pool of connection
@@ -26,19 +26,26 @@ let pool;
 const createPool = async () => {
   /** Attributes to use from config file */
   const attributes = ['connectString', 'user', 'password', 'poolMin', 'poolMax', 'poolIncrement'];
-  pool = await oracledb.createPool(_.pick(dbConfig, attributes));
+  const poolConfig = _.pick(dbConfig, attributes);
+  await _.asyncEach(dbConfig.oracleSources, async (source) => {
+    const connectConfig = _.pick(dbConfig[source], attributes);
+    pools[source] = await oracledb.createPool({ ...connectConfig, ...poolConfig });
+  });
 };
 
 /**
  * Get a connection from a created pool. Creates pool if it hasn't been created yet.
  *
+ * @param {string} pool Name of the connection pool to use
  * @returns {Promise} Promise object represents a connection from created pool
  */
-const getConnection = async () => {
-  if (!pool) {
+const getConnection = async (pool) => {
+  if (!_.includes(dbConfig.oracleSources, pool)) {
+    throw new Error(`Unknown pool name ${pool}`);
+  } else if (!pools[pool]) {
     await createPool();
   }
-  return pool.getConnection();
+  return pools[pool].getConnection();
 };
 
 /**
@@ -47,18 +54,20 @@ const getConnection = async () => {
  * @returns {Promise} resolves if database connection can be established and rejects otherwise
  */
 const validateOracleDb = async () => {
-  let connection;
-  try {
-    connection = await getConnection();
-    await connection.execute('SELECT 1 FROM DUAL');
-  } catch (err) {
-    logger.error(err);
-    throw new Error('Unable to connect to Oracle database');
-  } finally {
-    if (connection) {
-      await connection.close();
+  await _.asyncEach(dbConfig.oracleSources, async (source) => {
+    let connection;
+    try {
+      connection = await getConnection(source);
+      await connection.execute('SELECT 1 FROM DUAL');
+    } catch (err) {
+      logger.error(err);
+      throw new Error(`Unable to connect to ${source} Oracle database`);
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
     }
-  }
+  });
 };
 
 export {

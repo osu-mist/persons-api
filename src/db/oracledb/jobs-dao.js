@@ -21,12 +21,13 @@ const getLaborDistributions = async (connection, internalId, jobs) => {
  * @returns {Promise<object>} Raw job data from data source
  */
 const getJobs = async (internalId, query) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.internalId = internalId;
+    const binds = _.omit(parsedQuery, ['employmentType']);
 
-    const { rows } = await connection.execute(contrib.getJobs(parsedQuery), parsedQuery);
+    const { rows } = await connection.execute(contrib.getJobs(parsedQuery), binds);
 
     await getLaborDistributions(connection, internalId, rows);
 
@@ -37,7 +38,7 @@ const getJobs = async (internalId, query) => {
 };
 
 const getJobByJobId = async (internalId, jobId) => {
-  const connection = await getConnection();
+  const connection = await getConnection('banner');
   try {
     const [positionNumber, suffix] = jobId.split('-');
     const binds = { internalId, positionNumber, suffix };
