@@ -76,6 +76,7 @@ const updateJob = async (connection, osuId, body) => {
   binds.osuId = osuId;
   binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
   binds.changeReasonCode = body.changeReason.code;
+  binds.annualSalary = body.salary.annual;
 
   const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
   return result;
@@ -91,8 +92,9 @@ const terminateJob = async (connection, osuId, body) => {
   binds.changeReasonCode = body.changeReason.code;
   binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
-  const { outBinds: { result } } = await connection.execute(contrib.terminateJob(binds), binds);
-  return result;
+  const result = await connection.execute(contrib.terminateJob(), binds);
+  console.log(result);
+  return result.outBinds.result;
 };
 
 const isValidChangeReasonCode = async (connection, changeReasonCode) => {
