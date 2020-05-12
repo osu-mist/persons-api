@@ -728,6 +728,16 @@ components:
         - lastName
         - birthDate
         - sex
+      properties:
+        sex:
+          nullable: false
+        citizen:
+          type: object
+          required:
+            - code
+          properties:
+            code:
+              nullable: false
     PersonPostAttributes:
       type: object
       additionalProperties: false
@@ -758,7 +768,6 @@ components:
           properties:
             code:
               type: string
-              nullable: true
               enum: [FN, N, R, S, C]
               description: |
                 Person's citizen code
@@ -769,7 +778,6 @@ components:
                 - `C` - Citizen
         sex:
           type: string
-          nullable: true
           enum: [M, F, N]
           description: |
             Person's sex code
@@ -779,6 +787,8 @@ components:
     PersonAttributes:
       type: object
       properties:
+        sex:
+          nullable: true
         displayFirstName:
           type: string
           nullable: true
@@ -836,10 +846,18 @@ components:
         citizen:
           type: object
           properties:
+            code:
+              nullable: true
             description:
               type: string
               nullable: true
               description: Description field for the code
+        lastPaidDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2019-06-30'
+          description: Most recent date the employee was paid
     PersonResource:
       type: object
       properties:
@@ -1449,6 +1467,12 @@ components:
                     type: string
                     nullable: true
                     description: Description of location code
+              lastPaidDate:
+                type: string
+                format: date
+                nullable: true
+                example: '2019-06-30'
+                description: Most recent date the employee was paid for this job
     JobId:
       type: string
       description: Uniquely identifies a job record for the given person.
