@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import _ from 'async-dash';
 import oracledb from 'oracledb';
 
@@ -80,6 +81,17 @@ const updateJob = async (connection, osuId, body) => {
 
   const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
   return result;
+};
+
+const standardBinds = async (osuId, body) => {
+  const binds = _.pick(body, [
+    'positionNumber',
+    'suffix',
+    'effectiveDate',
+  ]);
+  binds.osuId = osuId;
+
+  return binds;
 };
 
 const terminateJob = async (connection, osuId, body) => {
