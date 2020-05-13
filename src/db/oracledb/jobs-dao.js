@@ -155,7 +155,6 @@ const studentUpdateJob = async (connection, osuId, body) => {
     'supervisor_osuId',
     'beginDate',
     'accruesLeaveInd',
-    'effectiveDate',
     'contractBeginDate',
     'contractEndDate',
     'useTemporarySsnInd',
