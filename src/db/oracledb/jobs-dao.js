@@ -90,6 +90,8 @@ const standardBinds = async (osuId, body) => {
     'effectiveDate',
   ]);
   binds.osuId = osuId;
+  binds.changeReasonCode = body.changeReason.code;
+  binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
   return binds;
 };
@@ -109,6 +111,23 @@ const terminateJob = async (connection, osuId, body) => {
   return result.outBinds.result;
 };
 
+const updateLaborChangeJob = async (connection, osuId, body) => {
+  // todo
+};
+
+const studentUpdateJob = async (connection, osuId, body) => {
+  console.log(_.flatMap(body));
+  const binds = standardBinds(osuId, body);
+
+  const result = await connection.execute(contrib.studentUpdateJob(binds), binds);
+  console.log(result);
+  return result.outBinds.result;
+};
+
+const graduateUpdateJob = async (connection, osuId, body) => {
+  // todo
+};
+
 const isValidChangeReasonCode = async (connection, changeReasonCode) => {
   const { rows } = await connection.execute(
     contrib.validateChangeReasonCode(),
@@ -121,7 +140,7 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
   const connection = await getConnection('banner');
   try {
     let result;
-    const { changeReason: { code: changeReasonCode } } = body;
+    const { employmentType, changeReason: { code: changeReasonCode } } = body;
 
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
       console.log('termination');
@@ -136,8 +155,14 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
         console.log('update');
         if (changeReasonCode === 'LCHNG') {
           console.log('LCHNG');
+          await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
           console.log('BREAP');
+          if (employmentType === 'student') {
+            await studentUpdateJob(connection, osuId, body);
+          } else if (employmentType === 'graduate') {
+            await graduateUpdateJob(connection, osuId, body);
+          }
         } else {
           await updateJob(connection, osuId, body);
         }
