@@ -86,12 +86,28 @@ const updateJob = async (connection, osuId, body) => {
 
 const flattenBody = (body) => flatten(body, { delimiter: '_' });
 
-const standardBinds = (osuId, body) => {
-  const binds = _.pick(body, [
+const standardBinds = (osuId, body, additionalFields) => {
+  const flattenedBody = flattenBody(body);
+
+  if (_.includes(additionalFields, 'accruesLeaveInd') && flattenedBody.accruesLeaveInd !== undefined) {
+    flattenedBody.accruesLeaveInd = flattenedBody.accruesLeaveInd ? 'Y' : 'N';
+  }
+  if (_.includes(additionalFields, 'useTemporarySsnInd') && flattenedBody.useTemporarySsnInd !== undefined) {
+    flattenedBody.useTemporarySsnInd = flattenedBody.useTemporarySsnInd.toString();
+  }
+  if (_.includes(additionalFields, 'employeeInformationReleaseInd')
+      && flattenedBody.employeeInformationReleaseInd !== undefined) {
+    flattenedBody.employeeInformationReleaseInd = flattenedBody
+      .employeeInformationReleaseInd
+      .toString();
+  }
+
+  const binds = _.pick(flattenedBody, [
     'positionNumber',
     'suffix',
     'effectiveDate',
     'changeReason_code',
+    ...additionalFields,
   ]);
   binds.osuId = osuId;
   // binds.changeReasonCode = body.changeReason.code;
@@ -101,8 +117,7 @@ const standardBinds = (osuId, body) => {
 };
 
 const terminateJob = async (connection, osuId, body) => {
-  const flattenedBody = flattenBody(body);
-  const binds = standardBinds(osuId, flattenedBody);
+  const binds = standardBinds(osuId, body);
 
   const { outBinds: { result } } = await connection.execute(contrib.terminateJob(), binds);
   return result;
@@ -113,10 +128,39 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
 };
 
 const studentUpdateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body);
+  const binds = standardBinds(osuId, body, [
+    'status_code',
+    'hourlyRate',
+    'timesheet_current_code',
+    'appointmentPercent',
+    'jobDescription',
+    'campus_code',
+    'personnelChangeDate',
+    'hoursPerPay',
+    'salary_paysPerYear',
+    'salary_annual',
+    'strsAssignment_code',
+    'fullTimeEquivalency',
+    'earningCode_effectiveDate',
+    'earningCode_code',
+    'earningCode_hours',
+    'supervisor_positionNumber',
+    'supervisor_suffix',
+    'supervisor_osuId',
+    'beginDate',
+    'accruesLeaveInd',
+    'effectiveDate',
+    'contractBeginDate',
+    'contractEndDate',
+    'useTemporarySsnInd',
+    'employeeInformationReleaseInd',
+    'retirement_code',
+    'i9Form_code',
+    'i9Form_date',
+    'i9Form_expirationDate',
+  ]);
 
   const result = await connection.execute(contrib.studentUpdateJob(binds), binds);
-  console.log(result);
   return result.outBinds.result;
 };
 
@@ -155,7 +199,7 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
         } else if (changeReasonCode === 'BREAP') {
           console.log('BREAP');
           if (employmentType === 'student') {
-            await studentUpdateJob(connection, osuId, body);
+            result = await studentUpdateJob(connection, osuId, body);
           } else if (employmentType === 'graduate') {
             await graduateUpdateJob(connection, osuId, body);
           }
