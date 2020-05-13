@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import _ from 'async-dash';
+import { flatten } from 'flat';
 import oracledb from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
@@ -83,32 +84,28 @@ const updateJob = async (connection, osuId, body) => {
   return result;
 };
 
-const standardBinds = async (osuId, body) => {
+const flattenBody = (body) => flatten(body, { delimiter: '_' });
+
+const standardBinds = (osuId, body) => {
   const binds = _.pick(body, [
     'positionNumber',
     'suffix',
     'effectiveDate',
+    'changeReason_code',
   ]);
   binds.osuId = osuId;
-  binds.changeReasonCode = body.changeReason.code;
+  // binds.changeReasonCode = body.changeReason.code;
   binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
   return binds;
 };
 
 const terminateJob = async (connection, osuId, body) => {
-  const binds = _.pick(body, [
-    'positionNumber',
-    'suffix',
-    'effectiveDate',
-  ]);
-  binds.osuId = osuId;
-  binds.changeReasonCode = body.changeReason.code;
-  binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+  const flattenedBody = flattenBody(body);
+  const binds = standardBinds(osuId, flattenedBody);
 
-  const result = await connection.execute(contrib.terminateJob(), binds);
-  console.log(result);
-  return result.outBinds.result;
+  const { outBinds: { result } } = await connection.execute(contrib.terminateJob(), binds);
+  return result;
 };
 
 const updateLaborChangeJob = async (connection, osuId, body) => {
@@ -116,7 +113,6 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
 };
 
 const studentUpdateJob = async (connection, osuId, body) => {
-  console.log(_.flatMap(body));
   const binds = standardBinds(osuId, body);
 
   const result = await connection.execute(contrib.studentUpdateJob(binds), binds);
@@ -177,7 +173,7 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
       const jobId = `${body.positionNumber}-${body.suffix}`;
       return await getJobByJobIdWithConnection(connection, internalId, jobId);
     }
-    return new Error('Error occurred');
+    throw new Error(result);
   } finally {
     connection.close();
   }
