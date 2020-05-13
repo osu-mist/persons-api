@@ -101,13 +101,19 @@ const standardBinds = (osuId, body, additionalFields) => {
       .employeeInformationReleaseInd
       .toString();
   }
+  if (_.includes(additionalFields, 'salaryInformationReleaseInd')
+      && flattenedBody.salaryInformationReleaseInd !== undefined) {
+    flattenedBody.salaryInformationReleaseInd = flattenedBody
+      .salaryInformationReleaseInd
+      .toString();
+  }
 
   const binds = _.pick(flattenedBody, [
     'positionNumber',
     'suffix',
     'effectiveDate',
     'changeReason_code',
-    ...additionalFields,
+    ...additionalFields || [],
   ]);
   binds.osuId = osuId;
   // binds.changeReasonCode = body.changeReason.code;
