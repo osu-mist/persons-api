@@ -170,7 +170,43 @@ const studentUpdateJob = async (connection, osuId, body) => {
 };
 
 const graduateUpdateJob = async (connection, osuId, body) => {
-  // todo
+  const binds = standardBinds(osuId, body, [
+    'personnelChangeDate',
+    'status_code',
+    'hourlyRate',
+    'timesheet_current_code',
+    'appointmentPercent',
+    'jobDescription',
+    'campus_code',
+    'hoursPerPay',
+    'salary_paysPerYear',
+    'salary_annual',
+    'strsAssignment_code',
+    'fullTimeEquivalency',
+    'earningCode_effectiveDate',
+    'earningCode_code',
+    'earningCode_hours',
+    'supervisor_positionNumber',
+    'supervisor_suffix',
+    'supervisor_osuId',
+    'beginDate',
+    'accruesLeaveInd',
+    'contractBeginDate',
+    'contractEndDate',
+    'useTemporarySsnInd',
+    'employeeInformationReleaseInd',
+    'salaryInformationReleaseInd',
+    'salaryInformationReleaseDate',
+    'i9Form_code',
+    'i9Form_date',
+    'i9Form_expirationDate',
+  ]);
+
+  const { outBinds: { result } } = await connection.execute(
+    contrib.graduateUpdateJob(binds),
+    binds,
+  );
+  return result;
 };
 
 const isValidChangeReasonCode = async (connection, changeReasonCode) => {
@@ -204,9 +240,11 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
         } else if (changeReasonCode === 'BREAP') {
           console.log('BREAP');
           if (employmentType === 'student') {
+            console.log('student');
             result = await studentUpdateJob(connection, osuId, body);
           } else if (employmentType === 'graduate') {
-            await graduateUpdateJob(connection, osuId, body);
+            console.log('graduate');
+            result = await graduateUpdateJob(connection, osuId, body);
           }
         } else {
           await updateJob(connection, osuId, body);
