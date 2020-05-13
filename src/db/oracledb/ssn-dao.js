@@ -6,13 +6,13 @@ import { contrib } from './contrib/contrib';
 /**
  * Check if a persons SSN is not null
  *
- * @param {string} osuId OSU ID of a person
+ * @param {string} internalId Internal ID of a person
  * @returns {boolean} True if person's SSN is not null
  */
-const ssnIsNotNull = async (osuId) => {
+const ssnIsNotNull = async (internalId) => {
   const connection = await getConnection('banner');
   try {
-    const { rows } = await connection.execute(contrib.ssnIsNotNull(), { osuId });
+    const { rows } = await connection.execute(contrib.ssnIsNotNull(), { internalId });
 
     return rows.length > 0 && rows[0].ssnStatus === 'Y';
   } finally {
