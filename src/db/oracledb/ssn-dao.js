@@ -20,6 +20,13 @@ const ssnIsNotNull = async (internalId) => {
   }
 };
 
+/**
+ * Returns true if person has a SPBPERS record
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} internalId Internal ID of a person
+ * @returns {boolean} true if person has SPBPERS record
+ */
 const hasSpbpers = async (connection, internalId) => {
   const { rows } = await connection.execute(contrib.hasSpbpers(), { internalId });
 
