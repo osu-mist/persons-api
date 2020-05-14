@@ -38,6 +38,38 @@ const studentBinds = [
   'i9Form_expirationDate',
 ];
 
+const graduateBinds = [
+  'personnelChangeDate',
+  'status_code',
+  'hourlyRate',
+  'timesheet_current_code',
+  'appointmentPercent',
+  'jobDescription',
+  'campus_code',
+  'hoursPerPay',
+  'salary_paysPerYear',
+  'salary_annual',
+  'strsAssignment_code',
+  'fullTimeEquivalency',
+  'earningCode_effectiveDate',
+  'earningCode_code',
+  'earningCode_hours',
+  'supervisor_positionNumber',
+  'supervisor_suffix',
+  'supervisor_osuId',
+  'beginDate',
+  'accruesLeaveInd',
+  'contractBeginDate',
+  'contractEndDate',
+  'useTemporarySsnInd',
+  'employeeInformationReleaseInd',
+  'salaryInformationReleaseInd',
+  'salaryInformationReleaseDate',
+  'i9Form_code',
+  'i9Form_date',
+  'i9Form_expirationDate',
+];
+
 const getLaborDistributions = async (connection, internalId, jobs) => {
   await _.asyncEach(jobs, async (job) => {
     const binds = await _.pick(job, ['positionNumber', 'suffix']);
@@ -178,38 +210,19 @@ const studentCreateJob = async (connection, osuId, body) => {
   return result;
 };
 
+const graduateCreateJob = async (connection, osuId, body) => {
+  const binds = standardBinds(osuId, body, graduateBinds);
+  console.log(binds);
+
+  const { outBinds: { result } } = await connection.execute(
+    contrib.graduateCreateJob(binds),
+    binds,
+  );
+  return result;
+};
+
 const graduateUpdateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, [
-    'personnelChangeDate',
-    'status_code',
-    'hourlyRate',
-    'timesheet_current_code',
-    'appointmentPercent',
-    'jobDescription',
-    'campus_code',
-    'hoursPerPay',
-    'salary_paysPerYear',
-    'salary_annual',
-    'strsAssignment_code',
-    'fullTimeEquivalency',
-    'earningCode_effectiveDate',
-    'earningCode_code',
-    'earningCode_hours',
-    'supervisor_positionNumber',
-    'supervisor_suffix',
-    'supervisor_osuId',
-    'beginDate',
-    'accruesLeaveInd',
-    'contractBeginDate',
-    'contractEndDate',
-    'useTemporarySsnInd',
-    'employeeInformationReleaseInd',
-    'salaryInformationReleaseInd',
-    'salaryInformationReleaseDate',
-    'i9Form_code',
-    'i9Form_date',
-    'i9Form_expirationDate',
-  ]);
+  const binds = standardBinds(osuId, body, graduateBinds);
 
   const { outBinds: { result } } = await connection.execute(
     contrib.graduateUpdateJob(binds),
@@ -245,7 +258,7 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
         console.log('update');
         if (changeReasonCode === 'LCHNG') {
           console.log('LCHNG');
-          await updateLaborChangeJob(connection, osuId, body);
+          result = await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
           console.log('BREAP');
           if (employmentType === 'student') {
@@ -265,10 +278,10 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
           result = await studentCreateJob(connection, osuId, body);
         } else if (employmentType === 'graduate') {
           console.log('graduate');
+          result = await graduateCreateJob(connection, osuId, body);
         }
       }
     }
-
     // null === success
     if (!result) {
       // return getJob;
