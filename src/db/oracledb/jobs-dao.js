@@ -188,6 +188,17 @@ const flattenBody = (body) => flatten(body, { delimiter: '_' });
  * @returns {object} sql binds to be used with a sql execution
  */
 const standardBinds = (osuId, body, additionalFields) => {
+  if (_.includes(additionalFields, 'laborDistribution') && body.laborDistribution !== undefined) {
+    _.forEach(body.laborDistribution, (laborDist) => {
+      if (body.laborEffectiveDates) {
+        body.laborEffectiveDates += `|${laborDist.effectiveDate}`;
+      } else {
+        body.laborEffectiveDates = laborDist.effectiveDate;
+      }
+    });
+  }
+  console.log(body.laborEffectiveDates);
+
   const flattenedBody = flattenBody(body);
 
   if (_.includes(additionalFields, 'accruesLeaveInd') && flattenedBody.accruesLeaveInd !== undefined) {
@@ -247,7 +258,7 @@ const terminateJob = async (connection, osuId, body) => {
  * @returns {string} Query result, null if success
  */
 const updateLaborChangeJob = async (connection, osuId, body) => {
-  // todo
+  const binds = standardBinds(osuId, body, ['laborDistribution']);
 };
 
 /**
