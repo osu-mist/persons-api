@@ -7,6 +7,37 @@ import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
+const studentBinds = [
+  'status_code',
+  'hourlyRate',
+  'timesheet_current_code',
+  'appointmentPercent',
+  'jobDescription',
+  'campus_code',
+  'personnelChangeDate',
+  'hoursPerPay',
+  'salary_paysPerYear',
+  'salary_annual',
+  'strsAssignment_code',
+  'fullTimeEquivalency',
+  'earningCode_effectiveDate',
+  'earningCode_code',
+  'earningCode_hours',
+  'supervisor_positionNumber',
+  'supervisor_suffix',
+  'supervisor_osuId',
+  'beginDate',
+  'accruesLeaveInd',
+  'contractBeginDate',
+  'contractEndDate',
+  'useTemporarySsnInd',
+  'employeeInformationReleaseInd',
+  'retirement_code',
+  'i9Form_code',
+  'i9Form_date',
+  'i9Form_expirationDate',
+];
+
 const getLaborDistributions = async (connection, internalId, jobs) => {
   await _.asyncEach(jobs, async (job) => {
     const binds = await _.pick(job, ['positionNumber', 'suffix']);
@@ -134,39 +165,17 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
 };
 
 const studentUpdateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, [
-    'status_code',
-    'hourlyRate',
-    'timesheet_current_code',
-    'appointmentPercent',
-    'jobDescription',
-    'campus_code',
-    'personnelChangeDate',
-    'hoursPerPay',
-    'salary_paysPerYear',
-    'salary_annual',
-    'strsAssignment_code',
-    'fullTimeEquivalency',
-    'earningCode_effectiveDate',
-    'earningCode_code',
-    'earningCode_hours',
-    'supervisor_positionNumber',
-    'supervisor_suffix',
-    'supervisor_osuId',
-    'beginDate',
-    'accruesLeaveInd',
-    'contractBeginDate',
-    'contractEndDate',
-    'useTemporarySsnInd',
-    'employeeInformationReleaseInd',
-    'retirement_code',
-    'i9Form_code',
-    'i9Form_date',
-    'i9Form_expirationDate',
-  ]);
+  const binds = standardBinds(osuId, body, studentBinds);
 
   const result = await connection.execute(contrib.studentUpdateJob(binds), binds);
   return result.outBinds.result;
+};
+
+const studentCreateJob = async (connection, osuId, body) => {
+  const binds = standardBinds(osuId, body, studentBinds);
+
+  const { outBinds: { result } } = await connection.execute(contrib.studentCreateJob(binds), binds);
+  return result;
 };
 
 const graduateUpdateJob = async (connection, osuId, body) => {
@@ -253,6 +262,7 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
         console.log('not update');
         if (employmentType === 'student') {
           console.log('student');
+          result = await studentCreateJob(connection, osuId, body);
         } else if (employmentType === 'graduate') {
           console.log('graduate');
         }
