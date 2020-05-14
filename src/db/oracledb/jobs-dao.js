@@ -70,6 +70,13 @@ const graduateBinds = [
   'i9Form_expirationDate',
 ];
 
+/**
+ * Gets labor distribution data for each job passed in
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} internalId Internal ID of a person
+ * @param {object[]} jobs raw job records
+ */
 const getLaborDistributions = async (connection, internalId, jobs) => {
   await _.asyncEach(jobs, async (job) => {
     const binds = await _.pick(job, ['positionNumber', 'suffix']);
@@ -103,6 +110,14 @@ const getJobs = async (internalId, query) => {
   }
 };
 
+/**
+ * Queries for a specific job record belonging to a person
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} internalId Internal ID of a person
+ * @param {string} jobId ID of a job record
+ * @returns {object} Single raw job record
+ */
 const getJobByJobIdWithConnection = async (connection, internalId, jobId) => {
   const [positionNumber, suffix] = jobId.split('-');
   const binds = { internalId, positionNumber, suffix };
@@ -117,6 +132,13 @@ const getJobByJobIdWithConnection = async (connection, internalId, jobId) => {
   return rows[0];
 };
 
+/**
+ * Creates oracledb connection object and calls getJobByJobIdWithConnection
+ *
+ * @param {string} internalId Internal ID of a person
+ * @param {string} jobId ID of a job record
+ * @returns {object} Single raw job record
+ */
 const getJobByJobId = async (internalId, jobId) => {
   const connection = await getConnection('banner');
   try {
@@ -126,6 +148,14 @@ const getJobByJobId = async (internalId, jobId) => {
   }
 };
 
+/**
+ * Updates job record
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
 const updateJob = async (connection, osuId, body) => {
   const binds = _.pick(body, [
     'effectiveDate',
@@ -149,6 +179,14 @@ const updateJob = async (connection, osuId, body) => {
 
 const flattenBody = (body) => flatten(body, { delimiter: '_' });
 
+/**
+ * Transforms body into binds ready to be used with a sql execution
+ *
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @param {string[]} additionalFields Extra fields to add to binds that aren't normally included
+ * @returns {object} sql binds to be used with a sql execution
+ */
 const standardBinds = (osuId, body, additionalFields) => {
   const flattenedBody = flattenBody(body);
 
@@ -185,6 +223,14 @@ const standardBinds = (osuId, body, additionalFields) => {
   return binds;
 };
 
+/**
+ * Terminates a job record
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
 const terminateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body);
 
@@ -192,10 +238,26 @@ const terminateJob = async (connection, osuId, body) => {
   return result;
 };
 
+/**
+ * Updates labor distribution for a job
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
 const updateLaborChangeJob = async (connection, osuId, body) => {
   // todo
 };
 
+/**
+ * Updates student job records
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
 const studentUpdateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, studentBinds);
 
@@ -203,6 +265,14 @@ const studentUpdateJob = async (connection, osuId, body) => {
   return result.outBinds.result;
 };
 
+/**
+ * Creates student job records
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
 const studentCreateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, studentBinds);
 
@@ -210,6 +280,14 @@ const studentCreateJob = async (connection, osuId, body) => {
   return result;
 };
 
+/**
+ * Creates graduate job records
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
 const graduateCreateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, graduateBinds);
   console.log(binds);
@@ -221,6 +299,14 @@ const graduateCreateJob = async (connection, osuId, body) => {
   return result;
 };
 
+/**
+ * Updates graduate job records
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
 const graduateUpdateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, graduateBinds);
 
@@ -231,6 +317,13 @@ const graduateUpdateJob = async (connection, osuId, body) => {
   return result;
 };
 
+/**
+ * Determines if changeReasonCode is valid
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} changeReasonCode Change reason code from request body
+ * @returns {boolean} True if changeReasonCode is valid
+ */
 const isValidChangeReasonCode = async (connection, changeReasonCode) => {
   const { rows } = await connection.execute(
     contrib.validateChangeReasonCode(),
@@ -239,6 +332,15 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
   return rows[0].count > 0;
 };
 
+/**
+ * Determines which Epaf to execute based on fields in body
+ *
+ * @param {boolean} update True if updating record. False if creating record
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @param {string} internalId Internal ID of a person
+ * @returns {object} raw job record
+ */
 const createOrUpdateJob = async (update, osuId, body, internalId) => {
   const connection = await getConnection('banner');
   try {
