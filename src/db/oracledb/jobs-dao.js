@@ -251,6 +251,11 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
         }
       } else {
         console.log('not update');
+        if (employmentType === 'student') {
+          console.log('student');
+        } else if (employmentType === 'graduate') {
+          console.log('graduate');
+        }
       }
     }
 
