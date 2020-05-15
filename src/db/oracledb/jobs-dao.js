@@ -71,6 +71,7 @@ const graduateBinds = [
   'i9Form_code',
   'i9Form_date',
   'i9Form_expirationDate',
+  'laborDistribution',
 ];
 
 /**
@@ -349,6 +350,7 @@ const graduateCreateJob = async (connection, osuId, body) => {
  */
 const graduateUpdateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, graduateBinds);
+  console.log(binds);
 
   const { outBinds: { result } } = await connection.execute(
     contrib.graduateUpdateJob(binds),

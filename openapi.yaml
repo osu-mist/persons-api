@@ -942,7 +942,7 @@ components:
           items:
             required:
               - effectiveDate
-              - accountIndexCode
+              - accountIndex
               - distributionPercent
     JobPostAttributes:
       type: object
