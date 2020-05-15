@@ -1272,6 +1272,7 @@ components:
         laborDistribution:
           type: array
           items:
+            type: object
             properties:
               effectiveDate:
                 type: string
