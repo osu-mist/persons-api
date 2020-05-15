@@ -177,11 +177,7 @@ const formatLaborDistributionForDb = (body, binds) => {
   _.forEach(body.laborDistribution, (laborDist) => {
     _.forOwn(laborFields, ({ bind, attribute }) => {
       laborDist.effectiveDate = moment(laborDist.effectiveDate, 'YYYY-MM-DD').format('DD-MMM-YY');
-      if (binds[bind]) {
-        binds[bind] += `|${laborDist[attribute]}`;
-      } else {
-        binds[bind] = laborDist[attribute];
-      }
+      binds[bind] = `${binds[bind] || ''}${laborDist[attribute] || ''}|`;
     });
   });
 };
