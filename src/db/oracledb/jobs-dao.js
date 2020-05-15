@@ -258,7 +258,6 @@ const standardBinds = (osuId, body, additionalFields) => {
     ...additionalFields || [],
   ]));
   binds.osuId = osuId;
-  // binds.changeReasonCode = body.changeReason.code;
   binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
   return binds;
