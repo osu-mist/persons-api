@@ -225,7 +225,11 @@ const formatLaborDistributionForDb = (body, binds) => {
  * @returns {object} sql binds to be used with a sql execution
  */
 const standardBinds = (osuId, body, additionalFields) => {
-  const binds = {};
+  const binds = {
+    osuId,
+    result: { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT },
+  };
+
   if (_.includes(additionalFields, 'laborDistribution') && body.laborDistribution !== undefined) {
     formatLaborDistributionForDb(body, binds);
   }
@@ -257,8 +261,6 @@ const standardBinds = (osuId, body, additionalFields) => {
     'effectiveDate',
     ...additionalFields || [],
   ]));
-  binds.osuId = osuId;
-  binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
 
   return binds;
 };
