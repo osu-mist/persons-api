@@ -369,8 +369,8 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
 
       if (update) {
         console.log('update');
-        if (changeReasonCode === 'LCHNG') {
-          console.log('LCHNG');
+        if (changeReasonCode === 'NONE') {
+          console.log('labor change');
           result = await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
           console.log('BREAP');
