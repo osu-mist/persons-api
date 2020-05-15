@@ -188,6 +188,7 @@ const flattenBody = (body) => flatten(body, { delimiter: '_' });
  * using '|' as the delimiter
  *
  * @param {object} body Request body
+ * @param {object} binds query binds to be passed in with connection.execute()
  */
 const formatLaborDistributionForDb = (body, binds) => {
   const laborFields = [
