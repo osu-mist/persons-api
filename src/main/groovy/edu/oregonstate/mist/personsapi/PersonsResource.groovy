@@ -376,7 +376,7 @@ class PersonsResource extends Resource {
                 return badRequest(errormsg).type(MediaType.APPLICATION_JSON).build()
             }
             if (update) {
-                if (changeReasonCode == 'LCHNG') {
+                if (changeReasonCode == 'NONE') {
                     logger.info("Labor change. Updating $employmentType job")
                     dbFunctionOutput = bannerPersonsWriteDAO.updateLaborChangeJob(osuID, job)
                         .getString(BannerPersonsWriteDAO.outParameter)
