@@ -180,6 +180,37 @@ const updateJob = async (connection, osuId, body) => {
 const flattenBody = (body) => flatten(body, { delimiter: '_' });
 
 /**
+ * Multiple labor distributions can be created/updated at one time by concatenating the fields
+ * using '|' as the delimiter
+ *
+ * @param {object} body Request body
+ */
+const formatLaborDistributionForDb = (body) => {
+  const laborFields = [
+    { bind: 'laborEffectiveDates', attribute: 'effectiveDate' },
+    { bind: 'laborAccountIndexCodes', attribute: 'accountIndex' },
+    { bind: 'laborFundCodes', attribute: 'fund' },
+    { bind: 'laborOrganizationCodes', attribute: 'organization' },
+    { bind: 'laborAccountCodes', attribute: 'account' },
+    { bind: 'laborProgramCodes', attribute: 'program' },
+    { bind: 'laborActivityCodes', attribute: 'activity' },
+    { bind: 'laborLocationCodes', attribute: 'location' },
+    { bind: 'laborDistributionPercentages', attribute: 'distributionPercent' },
+  ];
+
+  body.laborCount = body.laborDistribution.length;
+  _.forEach(body.laborDistribution, (laborDist) => {
+    _.forOwn(laborFields, ({ bind, attribute }) => {
+      if (body[bind]) {
+        body[bind] += `|${laborDist[attribute]}`;
+      } else {
+        body[bind] = laborDist[attribute];
+      }
+    });
+  });
+};
+
+/**
  * Transforms body into binds ready to be used with a sql execution
  *
  * @param {string} osuId OSU ID of a person
@@ -189,15 +220,8 @@ const flattenBody = (body) => flatten(body, { delimiter: '_' });
  */
 const standardBinds = (osuId, body, additionalFields) => {
   if (_.includes(additionalFields, 'laborDistribution') && body.laborDistribution !== undefined) {
-    _.forEach(body.laborDistribution, (laborDist) => {
-      if (body.laborEffectiveDates) {
-        body.laborEffectiveDates += `|${laborDist.effectiveDate}`;
-      } else {
-        body.laborEffectiveDates = laborDist.effectiveDate;
-      }
-    });
+    formatLaborDistributionForDb(body);
   }
-  console.log(body.laborEffectiveDates);
 
   const flattenedBody = flattenBody(body);
 
