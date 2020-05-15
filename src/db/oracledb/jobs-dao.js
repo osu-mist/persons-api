@@ -20,6 +20,7 @@ const getJobs = async (internalId, query) => {
 
     const { rows } = await connection.execute(contrib.getJobs(parsedQuery), binds);
 
+    // asynchronously get labor distributions for each job
     await _.asyncEach(rows, async (row) => {
       const labourBinds = await _.pick(row, ['positionNumber', 'suffix']);
       labourBinds.internalId = internalId;
