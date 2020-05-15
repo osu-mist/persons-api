@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import _ from 'async-dash';
 import { flatten } from 'flat';
+import moment from 'moment';
 import oracledb from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
@@ -8,6 +9,7 @@ import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
 const studentBinds = [
+  'changeReason_code',
   'status_code',
   'hourlyRate',
   'timesheet_current_code',
@@ -39,6 +41,7 @@ const studentBinds = [
 ];
 
 const graduateBinds = [
+  'changeReason_code',
   'personnelChangeDate',
   'status_code',
   'hourlyRate',
@@ -167,6 +170,7 @@ const updateJob = async (connection, osuId, body) => {
     'hoursPerPay',
     'annualSalary',
     'fullTimeEquivalency',
+    'changeReason_code',
   ]);
   binds.osuId = osuId;
   binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
@@ -185,7 +189,7 @@ const flattenBody = (body) => flatten(body, { delimiter: '_' });
  *
  * @param {object} body Request body
  */
-const formatLaborDistributionForDb = (body) => {
+const formatLaborDistributionForDb = (body, binds) => {
   const laborFields = [
     { bind: 'laborEffectiveDates', attribute: 'effectiveDate' },
     { bind: 'laborAccountIndexCodes', attribute: 'accountIndex' },
@@ -198,13 +202,14 @@ const formatLaborDistributionForDb = (body) => {
     { bind: 'laborDistributionPercentages', attribute: 'distributionPercent' },
   ];
 
-  body.laborCount = body.laborDistribution.length;
+  binds.laborCount = body.laborDistribution.length;
   _.forEach(body.laborDistribution, (laborDist) => {
     _.forOwn(laborFields, ({ bind, attribute }) => {
-      if (body[bind]) {
-        body[bind] += `|${laborDist[attribute]}`;
+      laborDist.effectiveDate = moment(laborDist.effectiveDate, 'YYYY-MM-DD').format('DD-MMM-YY');
+      if (binds[bind]) {
+        binds[bind] += `|${laborDist[attribute]}`;
       } else {
-        body[bind] = laborDist[attribute];
+        binds[bind] = laborDist[attribute];
       }
     });
   });
@@ -219,8 +224,9 @@ const formatLaborDistributionForDb = (body) => {
  * @returns {object} sql binds to be used with a sql execution
  */
 const standardBinds = (osuId, body, additionalFields) => {
+  const binds = {};
   if (_.includes(additionalFields, 'laborDistribution') && body.laborDistribution !== undefined) {
-    formatLaborDistributionForDb(body);
+    formatLaborDistributionForDb(body, binds);
   }
 
   const flattenedBody = flattenBody(body);
@@ -244,13 +250,12 @@ const standardBinds = (osuId, body, additionalFields) => {
       .toString();
   }
 
-  const binds = _.pick(flattenedBody, [
+  _.merge(binds, _.pick(flattenedBody, [
     'positionNumber',
     'suffix',
     'effectiveDate',
-    'changeReason_code',
     ...additionalFields || [],
-  ]);
+  ]));
   binds.osuId = osuId;
   // binds.changeReasonCode = body.changeReason.code;
   binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
@@ -267,7 +272,7 @@ const standardBinds = (osuId, body, additionalFields) => {
  * @returns {string} Query result, null if success
  */
 const terminateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body);
+  const binds = standardBinds(osuId, body, ['changeReason_code']);
 
   const { outBinds: { result } } = await connection.execute(contrib.terminateJob(), binds);
   return result;
@@ -283,6 +288,11 @@ const terminateJob = async (connection, osuId, body) => {
  */
 const updateLaborChangeJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, ['laborDistribution']);
+  console.log(binds);
+
+  const { outBinds: { result } } = await connection.execute(contrib.updateLaborChangeJob(), binds);
+  console.log(result);
+  return result;
 };
 
 /**
