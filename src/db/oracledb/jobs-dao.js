@@ -151,36 +151,6 @@ const getJobByJobId = async (internalId, jobId) => {
   }
 };
 
-/**
- * Updates job record
- *
- * @param {object} connection oracledb connection
- * @param {string} osuId OSU ID of a person
- * @param {object} body Request body
- * @returns {string} Query result, null if success
- */
-const updateJob = async (connection, osuId, body) => {
-  const binds = _.pick(body, [
-    'effectiveDate',
-    'positionNumber',
-    'suffix',
-    'hourlyRate',
-    'appointmentPercent',
-    'personnelChangeDate',
-    'hoursPerPay',
-    'annualSalary',
-    'fullTimeEquivalency',
-    'changeReason_code',
-  ]);
-  binds.osuId = osuId;
-  binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
-  binds.changeReasonCode = body.changeReason.code;
-  binds.annualSalary = body.salary.annual;
-
-  const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
-  return result;
-};
-
 const flattenBody = (body) => flatten(body, { delimiter: '_' });
 
 /**
@@ -266,6 +236,30 @@ const standardBinds = (osuId, body, additionalFields) => {
   ]));
 
   return binds;
+};
+
+/**
+ * Updates job record
+ *
+ * @param {object} connection oracledb connection
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Request body
+ * @returns {string} Query result, null if success
+ */
+const updateJob = async (connection, osuId, body) => {
+  const binds = standardBinds(osuId, body, [
+    'hourlyRate',
+    'appointmentPercent',
+    'personnelChangeDate',
+    'hoursPerPay',
+    'annualSalary',
+    'fullTimeEquivalency',
+    'changeReason_code',
+    'salary_annual',
+  ]);
+
+  const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
+  return result;
 };
 
 /**
