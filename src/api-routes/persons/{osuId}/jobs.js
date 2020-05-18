@@ -1,6 +1,6 @@
-import { errorHandler, errorBuilder } from 'errors/errors';
-import { personExists } from 'db/oracledb/persons-dao';
 import { getJobs } from 'db/oracledb/jobs-dao';
+import { personExists } from 'db/oracledb/persons-dao';
+import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeJobs } from 'serializers/jobs-serializer';
 
 /**
