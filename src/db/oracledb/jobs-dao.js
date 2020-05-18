@@ -39,6 +39,7 @@ const studentBinds = [
   'i9Form_code',
   'i9Form_date',
   'i9Form_expirationDate',
+  'laborDistribution',
 ];
 
 const graduateBinds = [
