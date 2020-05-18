@@ -28,18 +28,18 @@ const prepareRawData = (rawJobs) => {
     );
 
     // oracle aliases have a character limit of 30 so we set the correct name here
-    job['timesheet.predecessor.description'] = job['timesheet.pred.description'];
-    delete job['timesheet.pred.description'];
-    job['homeOrganization.current.description'] = job['homeOrganization.current.desc'];
-    delete job['homeOrganization.current.desc'];
-    job['homeOrganization.predecessor.code'] = job['homeOrganization.pred.code'];
-    delete job['homeOrganization.pred.code'];
-    job['homeOrganization.predecessor.description'] = job['homeOrganization.pred.desc'];
-    delete job['homeOrganization.pred.desc'];
-    job['employeeClassification.shortDescription'] = job['employeeClass.shortDesc'];
-    job['employeeClassification.longDescription'] = job['employeeClass.longDesc'];
-    delete job['employeeClass.shortDesc'];
-    delete job['employeeClass.longDesc'];
+    const nameConversion = [
+      { converted: 'timesheet.predecessor.description', alias: 'timesheet.pred.description' },
+      { converted: 'homeOrganization.current.description', alias: 'homeOrganization.current.desc' },
+      { converted: 'homeOrganization.predecessor.code', alias: 'homeOrganization.pred.code' },
+      { converted: 'homeOrganization.predecessor.description', alias: 'homeOrganization.pred.desc' },
+      { converted: 'employeeClassification.shortDescription', alias: 'employeeClass.shortDesc' },
+      { converted: 'employeeClassification.longDescription', alias: 'employeeClass.longDesc' },
+    ];
+    _.forEach(nameConversion, ({ converted, alias }) => {
+      job[converted] = job[alias];
+      delete job[alias];
+    });
   });
 
   formatSubObjects(rawJobs);
