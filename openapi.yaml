@@ -1268,21 +1268,27 @@ components:
               fund:
                 type: string
                 nullable: true
+                example: '001100'
               organization:
                 type: string
                 nullable: true
+                example: '121205'
               account:
                 type: string
                 nullable: true
+                example: '10301'
               program:
                 type: string
                 nullable: true
+                example: '61000'
               activity:
                 type: string
                 nullable: true
+                example: '123456'
               location:
                 type: string
                 nullable: true
+                example: '123456'
               distributionPercent:
                 type: number
                 format: float
