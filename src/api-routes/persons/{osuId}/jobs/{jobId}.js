@@ -1,7 +1,7 @@
 import { getJobByJobId, createOrUpdateJob } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
-import { serializeJob } from 'serializers/jobs-serializer';
+import { serializeJob, serializePostOrPut } from 'serializers/jobs-serializer';
 
 /**
  * Get job by job ID
@@ -54,7 +54,7 @@ const patch = async (req, res) => {
       return errorBuilder(res, 400, [result.message]);
     }
 
-    const serializedJob = serializeJob(result, osuId);
+    const serializedJob = serializePostOrPut(osuId, body);
     return res.send(serializedJob);
   } catch (err) {
     return errorHandler(res, err);

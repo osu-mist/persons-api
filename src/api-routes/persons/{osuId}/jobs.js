@@ -1,7 +1,7 @@
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { personExists } from 'db/oracledb/persons-dao';
 import { getJobs, createOrUpdateJob } from 'db/oracledb/jobs-dao';
-import { serializeJobs, getSerializerArgs } from 'serializers/jobs-serializer';
+import { serializeJobs, serializePostOrPut } from 'serializers/jobs-serializer';
 
 /**
  * Get jobs by OSU ID
@@ -45,11 +45,8 @@ const post = async (req, res) => {
       return errorBuilder(res, 400, [result.message]);
     }
 
-    const { topLevelSelfLink } = getSerializerArgs(osuId);
-    const links = { self: `${topLevelSelfLink}/${body.data.id}` };
-    body.links = links;
-    body.data.links = links;
-    return res.send(body);
+    const serializedJob = serializePostOrPut(osuId, body);
+    return res.send(serializedJob);
   } catch (err) {
     return errorHandler(res, err);
   }

@@ -97,4 +97,13 @@ const serializeJob = (rawJob, osuId) => {
   ).serialize(rawJob);
 };
 
-export { serializeJobs, serializeJob, getSerializerArgs };
+const serializePostOrPut = (osuId, body) => {
+  const { topLevelSelfLink } = getSerializerArgs(osuId);
+  const links = { self: `${topLevelSelfLink}/${body.data.id}` };
+  body.links = links;
+  body.data.links = links;
+
+  return body;
+};
+
+export { serializeJobs, serializeJob, serializePostOrPut };
