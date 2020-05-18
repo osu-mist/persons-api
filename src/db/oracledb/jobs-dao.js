@@ -286,10 +286,8 @@ const terminateJob = async (connection, osuId, body) => {
  */
 const updateLaborChangeJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, ['laborDistribution']);
-  console.log(binds);
 
   const { outBinds: { result } } = await connection.execute(contrib.updateLaborChangeJob(), binds);
-  console.log(result);
   return result;
 };
 
@@ -333,7 +331,6 @@ const studentCreateJob = async (connection, osuId, body) => {
  */
 const graduateCreateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, graduateBinds);
-  console.log(binds);
 
   const { outBinds: { result } } = await connection.execute(
     contrib.graduateCreateJob(binds),
@@ -352,7 +349,6 @@ const graduateCreateJob = async (connection, osuId, body) => {
  */
 const graduateUpdateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, graduateBinds);
-  console.log(binds);
 
   const { outBinds: { result } } = await connection.execute(
     contrib.graduateUpdateJob(binds),
@@ -430,9 +426,7 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
     }
     // null === success
     if (!result) {
-      // return getJob;
-      const jobId = `${body.positionNumber}-${body.suffix}`;
-      return await getJobByJobIdWithConnection(connection, internalId, jobId);
+      return result;
     }
     throw new Error(result);
   } finally {

@@ -46,6 +46,13 @@ const prepareRawData = (rawJobs) => {
   formatSubObjects(rawJobs);
 };
 
+/**
+ * Returns serializer arguments for serializing job records
+ *
+ * @param {string} osuId OSU ID of a person
+ * @param {object} query Query parameters passed in with request
+ * @returns {object} Serializer arguments
+ */
 const getSerializerArgs = (osuId, query) => {
   const jobResourcePath = `persons/${osuId}/${jobResourceType}`;
   const jobResourceUrl = resourcePathLink(apiBaseUrl, jobResourcePath);
@@ -90,4 +97,4 @@ const serializeJob = (rawJob, osuId) => {
   ).serialize(rawJob);
 };
 
-export { serializeJobs, serializeJob };
+export { serializeJobs, serializeJob, getSerializerArgs };
