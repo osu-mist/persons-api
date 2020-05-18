@@ -1440,61 +1440,6 @@ components:
                 type: string
                 nullable: false
                 description: The hierarchy description or title appropriate for this level
-              accountIndex:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account index code
-              fund:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of fund code
-              organization:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of organization code
-              account:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account code
-              program:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of program code
-              activity:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of activity code
-              location:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of location code
-              lastPaidDate:
-                type: string
-                format: date
-                nullable: true
-                example: '2019-06-30'
-                description: Most recent date the employee was paid for this job
         classifiedInd:
           type: boolean
           nullable: false
