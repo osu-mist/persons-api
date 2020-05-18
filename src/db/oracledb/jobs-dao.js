@@ -10,6 +10,7 @@ import { contrib } from './contrib/contrib';
 
 const studentBinds = [
   'changeReason_code',
+  'employeeClassification_code',
   'status_code',
   'hourlyRate',
   'timesheet_current_code',
@@ -42,6 +43,7 @@ const studentBinds = [
 
 const graduateBinds = [
   'changeReason_code',
+  'employeeClassification_code',
   'personnelChangeDate',
   'status_code',
   'hourlyRate',
