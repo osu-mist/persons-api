@@ -23,7 +23,6 @@ const prepareRawData = (rawJobs) => {
     job['contractType.description'] = contrib.getContractTypeDescrByCode(job['contractType.code']);
     job['i9Form.description'] = contrib.getI9FormDescrByCode(job['i9Form.code']);
     job['status.description'] = contrib.getEmployeeStatusDescrByCode(job['status.code']);
-    job['campus.description'] = contrib.getCampusDescrByCode(job['campus.code'], job.stateCode);
     job['employeeClassification.category'] = contrib.getClassificationCategoryByCode(
       job['employeeClassification.code'],
     );
