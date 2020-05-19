@@ -937,6 +937,10 @@ components:
         - supervisor
         - effectiveDate
       properties:
+        contractBeginDate:
+          nullable: false
+        contractEndDate:
+          nullable: false
         laborDistribution:
           type: array
           items:
@@ -990,13 +994,11 @@ components:
           description: If true, the job accrues leave time.
         contractBeginDate:
           type: string
-          nullable: true
           format: date
           description: The date the contract begins.
           example: '1970-01-21'
         contractEndDate:
           type: string
-          nullable: true
           format: date
           description: The date the contract ends.
           example: '1971-02-21'
@@ -1313,6 +1315,10 @@ components:
       type: object
       additionalProperties: false
       properties:
+        contractBeginDate:
+          nullable: true
+        contractEndDate:
+          nullable: true
         contractType:
           type: object
           properties:
