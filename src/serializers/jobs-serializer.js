@@ -97,6 +97,13 @@ const serializeJob = (rawJob, osuId) => {
   ).serialize(rawJob);
 };
 
+/**
+ * Serialize bodies sent with post or put requests
+ *
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Body passed in with request
+ * @returns {object} Serialized job data
+ */
 const serializePostOrPut = (osuId, body) => {
   const { topLevelSelfLink } = getSerializerArgs(osuId);
   const links = { self: `${topLevelSelfLink}/${body.data.id}` };
