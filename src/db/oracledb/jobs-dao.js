@@ -388,6 +388,10 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
     let result;
     const { employmentType, changeReason: { code: changeReasonCode } } = body;
 
+    if (employmentType === 'student' && !/^C5[0-2]/.test(body.positionNumber)) {
+      return new Error('Position number for students must start with C50, C51, or C52');
+    }
+
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
       console.log('termination');
       result = await terminateJob(connection, osuId, body);
