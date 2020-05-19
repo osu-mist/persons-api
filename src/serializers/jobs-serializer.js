@@ -14,6 +14,20 @@ const jobCombinedAttributes = _.merge(jobResourceAttributes[0], jobResourceAttri
 const jobResourceKeys = _.keys(jobCombinedAttributes.properties);
 
 const prepareRawData = (rawJobs) => {
+  const shouldBeFloat = [
+    'fullTimeEquivalency',
+    'hourlyRate',
+    'hoursPerPay',
+    'salary.annual',
+    'salary.assignment',
+    'earningCode.hours',
+  ];
+  const shouldBeNumber = [
+    'appointmentPercent',
+    'salary.paysPerYear',
+    'salary.step',
+  ];
+
   _.forEach(rawJobs, (job) => {
     job.jobId = `${job.positionNumber}-${job.suffix}`;
     job.accruesLeaveInd = job.accruesLeaveInd === 'Y';
@@ -26,6 +40,17 @@ const prepareRawData = (rawJobs) => {
     job['employeeClassification.category'] = contrib.getClassificationCategoryByCode(
       job['employeeClassification.code'],
     );
+
+    _.forEach(shouldBeFloat, (field) => {
+      job[field] = parseFloat(job[field]);
+    });
+    _.forEach(shouldBeNumber, (field) => {
+      job[field] = Number(job[field]);
+    });
+
+    _.forEach(job.laborDistribution, (laborDistribution) => {
+      laborDistribution.distributionPercent = parseFloat(laborDistribution.distributionPercent);
+    });
 
     // oracle aliases have a character limit of 30 so we set the correct name here
     const nameConversion = [
