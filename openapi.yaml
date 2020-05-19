@@ -951,6 +951,7 @@ components:
         suffix:
           type: string
           nullable: false
+          maxLength: 2
           description: >-
             Used to uniquely identify a job record for persons who have multiple
             jobs that share the same position number. For updating existing
