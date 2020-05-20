@@ -1086,15 +1086,6 @@ components:
                   nullable: false
                   description: Organization code where the time sheet is sent for the job.
                   example: '123456'
-            predecessor:
-              type: object
-              properties:
-                code:
-                  type: string
-                  nullable: false
-                  description: The next higher organizational code of the current timesheet
-                    organization.
-                  example: '123456'
         homeOrganization:
           type: object
           properties:
@@ -1105,15 +1096,6 @@ components:
                   type: string
                   nullable: true
                   description: The home organization code of the employee.
-                  example: '123456'
-            predecessor:
-              type: object
-              properties:
-                code:
-                  type: string
-                  nullable: true
-                  description: The next higher organizational code of the current home
-                    organization.
                   example: '123456'
         hourlyRate:
           type: number
@@ -1352,6 +1334,12 @@ components:
             predecessor:
               type: object
               properties:
+                code:
+                  type: string
+                  nullable: false
+                  description: The next higher organizational code of the current timesheet
+                    organization.
+                  example: '123456'
                 description:
                   type: string
                   nullable: false
@@ -1370,6 +1358,12 @@ components:
             predecessor:
               type: object
               properties:
+                code:
+                  type: string
+                  nullable: true
+                  description: The next higher organizational code of the current home
+                    organization.
+                  example: '123456'
                 description:
                   type: string
                   nullable: false
