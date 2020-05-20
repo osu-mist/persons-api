@@ -397,40 +397,28 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
     }
 
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
-      console.log('termination');
       result = await terminateJob(connection, osuId, body);
     } else {
-      console.log('not termination');
       if (!await isValidChangeReasonCode(connection, changeReasonCode)) {
         return new Error(`Invalid change reason code ${changeReasonCode}`);
       }
 
       if (update) {
-        console.log('update');
         if (changeReasonCode === 'NONE') {
-          console.log('labor change');
           result = await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
-          console.log('BREAP');
           if (employmentType === 'student') {
-            console.log('student');
             result = await studentUpdateJob(connection, osuId, body);
           } else if (employmentType === 'graduate') {
-            console.log('graduate');
             result = await graduateUpdateJob(connection, osuId, body);
           }
         } else {
           await updateJob(connection, osuId, body);
         }
-      } else {
-        console.log('not update');
-        if (employmentType === 'student') {
-          console.log('student');
-          result = await studentCreateJob(connection, osuId, body);
-        } else if (employmentType === 'graduate') {
-          console.log('graduate');
-          result = await graduateCreateJob(connection, osuId, body);
-        }
+      } else if (employmentType === 'student') {
+        result = await studentCreateJob(connection, osuId, body);
+      } else if (employmentType === 'graduate') {
+        result = await graduateCreateJob(connection, osuId, body);
       }
     }
     // null === success
