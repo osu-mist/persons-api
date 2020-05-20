@@ -1060,14 +1060,12 @@ components:
           format: float
           description: FTE presented as a whole percentage.
           example: 25
-        strsAssignment:
-          type: object
-          properties:
-            code:
-              type: string
-              nullable: true
-              description: STRS assignment code for the job.
-              example: '12'
+        strsAppointmentBasis:
+          type: string
+          nullable: true
+          description: STRS assignment code / appointment basis for the job.
+          maxLength: 2
+          example: '12'
         supervisor:
           $ref: '#/components/schemas/SupervisorAttributes'
         timesheet:
@@ -1330,13 +1328,6 @@ components:
               type: string
               nullable: false
               description: Description of change reason code
-        strsAssignment:
-          type: object
-          properties:
-            description:
-              type: string
-              nullable: true
-              description: Description for the strsAssignment code
         timesheet:
           type: object
           properties:
