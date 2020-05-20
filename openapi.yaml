@@ -1190,6 +1190,7 @@ components:
             code:
               type: string
               nullable: false
+              maxLength: 3
               description: Default earnings code attached to the job and used on timesheet.
               example: REG
         useTemporarySsnInd:
