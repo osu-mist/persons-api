@@ -41,6 +41,7 @@ const studentBinds = [
   'i9Form_expirationDate',
   'laborDistribution',
   'homeOrganization_current_code',
+  'employeeGroup_code',
 ];
 
 const graduateBinds = [
@@ -77,6 +78,7 @@ const graduateBinds = [
   'i9Form_expirationDate',
   'laborDistribution',
   'homeOrganization_current_code',
+  'employeeGroup_code',
 ];
 
 /**

@@ -1152,6 +1152,14 @@ components:
               description: The employee class attached to the job, based on the Employee
                 Class entered on the Position Form (NBAPOSN).
               example: CA
+        employeeGroup:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
+              enum: [NOSU]
+              description: The group this employee belongs to.
         employerIdentification:
           type: object
           properties:
@@ -1405,6 +1413,14 @@ components:
               type: string
               nullable: false
               description: Long description of employee classification code
+        employeeGroup:
+          type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+              description: Description of employee group code
+              example: Non-OSU Student
         employerIdentification:
           type: object
           properties:
