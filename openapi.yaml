@@ -941,6 +941,8 @@ components:
           nullable: false
         contractEndDate:
           nullable: false
+        campus:
+          nullable: false
         laborDistribution:
           type: array
           items:
@@ -1019,7 +1021,6 @@ components:
           properties:
             code:
               type: string
-              nullable: true
               description: ID of campus where this job will be performed.
         status:
           type: object
@@ -1329,6 +1330,8 @@ components:
         campus:
           type: object
           properties:
+            code:
+              nullable: true
             description:
               type: string
               nullable: false
