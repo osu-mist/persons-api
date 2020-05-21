@@ -1004,18 +1004,6 @@ components:
           format: date
           description: The date the contract ends.
           example: '1971-02-21'
-        contractType:
-          type: object
-          properties:
-            code:
-              type: string
-              nullable: true
-              enum: [P, S, O]
-              description: |
-                Contract type code/Id.
-                - `P` - Primary
-                - `S` - Secondary
-                - `O` - Overload
         campus:
           type: object
           properties:
@@ -1118,31 +1106,12 @@ components:
               format: float
               description: Annual salary for the job.
               example: 30000.5
-            assignment:
-              type: number
-              nullable: false
-              format: float
-              description: The salary to be paid each pay period.
-              example: 1670.83
             paysPerYear:
               type: number
               nullable: false
               format: float
               description: The number of pays per calendar year.
               example: 12
-            step:
-              type: number
-              nullable: false
-              format: integer
-              example: 1
-            group:
-              type: object
-              properties:
-                code:
-                  type: string
-                  nullable: false
-                  description: Salary group code for the job.
-                  example: 12345A
         employeeClassification:
           type: object
           properties:
@@ -1296,6 +1265,15 @@ components:
         contractType:
           type: object
           properties:
+            code:
+              type: string
+              nullable: true
+              enum: [P, S, O]
+              description: |
+                Contract type code/Id.
+                - `P` - Primary
+                - `S` - Secondary
+                - `O` - Overload
             description:
               type: string
               nullable: false
@@ -1387,9 +1365,25 @@ components:
         salary:
           type: object
           properties:
+            assignment:
+              type: number
+              nullable: false
+              format: float
+              description: The salary to be paid each pay period.
+              example: 1670.83
+            step:
+              type: number
+              nullable: false
+              format: integer
+              example: 1
             group:
               type: object
               properties:
+                code:
+                  type: string
+                  nullable: false
+                  description: Salary group code for the job.
+                  example: 12345A
                 description:
                   type: string
                   nullable: false
