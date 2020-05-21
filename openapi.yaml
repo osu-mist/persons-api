@@ -140,7 +140,7 @@ paths:
             '09B', '09C', '10A', '10B', '10C', '10D', '10E', '87', '88', '89', '16D', '34J', '20J',
             '03M', '02D', '02E', '07B', '13F', '25F', '06J', '05I', '03N', '34K', '20K', '34L',
             '24T', '10L', '09D', '09E', '27F', '20L', '37A', '27G', '22J']
-        - $ref: '#/components/parameters/studentEmployee'
+        - $ref: '#/components/parameters/studentEmployeeInd'
       responses:
         '200':
           description: Successful response
@@ -596,8 +596,8 @@ components:
       required: true
       schema:
         type: string
-    studentEmployee:
-      name: filter[studentEmployee]
+    studentEmployeeInd:
+      name: filter[studentEmployeeInd]
       in: query
       description: Filter based on the jobs type of employment
       required: false
@@ -937,16 +937,11 @@ components:
       type: object
       required:
         - positionNumber
-        - employmentType
+        - studentEmployeeInd
         - beginDate
         - supervisor
         - effectiveDate
       properties:
-        employmentType:
-          type: string
-          nullable: false
-          enum: [graduate, student]
-          description: Type of employment.
         laborDistribution:
           type: array
           items:
@@ -970,6 +965,10 @@ components:
           nullable: false
           description: Identifies a position.
           example: C12345
+        studentEmployeeInd:
+          type: boolean
+          nullable: false
+          description: Indicates if this position is for a student employee or not
         effectiveDate:
           type: string
           nullable: false
@@ -1296,10 +1295,6 @@ components:
       type: object
       additionalProperties: false
       properties:
-        studentEmployeeInd:
-          type: boolean
-          nullable: false
-          description: Indicates if this position is for a student employee or not
         contractType:
           type: object
           properties:
