@@ -4,6 +4,15 @@ import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
+const getLaborDistributions = async (connection, internalId, jobs) => {
+  await _.asyncEach(jobs, async (job) => {
+    const binds = await _.pick(job, ['positionNumber', 'suffix']);
+    binds.internalId = internalId;
+    const { rows: labors } = await connection.execute(contrib.getLaborDistribution(), binds);
+    job.laborDistribution = labors;
+  });
+};
+
 /**
  * Queries data source for raw person data and passes it to the serializer
  *
@@ -16,20 +25,11 @@ const getJobs = async (internalId, query) => {
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.internalId = internalId;
-    const binds = _.omit(parsedQuery, ['studentEmployee']);
+    const binds = _.omit(parsedQuery, ['studentEmployeeInd']);
 
     const { rows } = await connection.execute(contrib.getJobs(parsedQuery), binds);
 
-    // asynchronously get labor distributions for each job
-    await _.asyncEach(rows, async (row) => {
-      const labourBinds = await _.pick(row, ['positionNumber', 'suffix']);
-      labourBinds.internalId = internalId;
-      const { rows: labors } = await connection.execute(
-        contrib.getLaborDistribution(),
-        labourBinds,
-      );
-      row.laborDistribution = labors;
-    });
+    await getLaborDistributions(connection, internalId, rows);
 
     return rows;
   } finally {
@@ -37,4 +37,23 @@ const getJobs = async (internalId, query) => {
   }
 };
 
-export { getJobs };
+const getJobByJobId = async (internalId, jobId) => {
+  const connection = await getConnection('banner');
+  try {
+    const [positionNumber, suffix] = jobId.split('-');
+    const binds = { internalId, positionNumber, suffix };
+    const { rows } = await connection.execute(contrib.getJobs(binds), binds);
+
+    if (rows.length > 1) {
+      throw new Error(`Multiple job records found for job ID ${jobId}`);
+    }
+
+    await getLaborDistributions(connection, internalId, rows);
+
+    return rows[0];
+  } finally {
+    connection.close();
+  }
+};
+
+export { getJobs, getJobByJobId };
