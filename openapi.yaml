@@ -1129,14 +1129,6 @@ components:
               nullable: true
               enum: [NOSU]
               description: The group this employee belongs to.
-        employerIdentification:
-          type: object
-          properties:
-            code:
-              type: string
-              nullable: false
-              description: Employer identification code.
-              example: ORST
         earningCode:
           type: object
           properties:
@@ -1146,10 +1138,6 @@ components:
               nullable: true
               description: Hours/units defaulted on timesheets for earnCode.
               example: 173.33
-            shift:
-              type: string
-              nullable: false
-              description: Shift code used as a default on timesheet for earnCode.
             effectiveDate:
               type: string
               format: date
@@ -1419,6 +1407,11 @@ components:
         employerIdentification:
           type: object
           properties:
+            code:
+              type: string
+              nullable: false
+              description: Employer identification code.
+              example: ORST
             description:
               type: string
               nullable: false
@@ -1426,6 +1419,10 @@ components:
         earningCode:
           type: object
           properties:
+            shift:
+              type: string
+              nullable: false
+              description: Shift code used as a default on timesheet for earnCode.
             shortDescription:
               type: string
               nullable: false
