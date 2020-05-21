@@ -599,7 +599,7 @@ components:
     studentEmployeeInd:
       name: filter[studentEmployeeInd]
       in: query
-      description: Filter based on the jobs type of employment
+      description: Filter if job is a student job or not
       required: false
       schema:
         type: boolean
