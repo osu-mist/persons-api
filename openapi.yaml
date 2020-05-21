@@ -140,7 +140,7 @@ paths:
             '09B', '09C', '10A', '10B', '10C', '10D', '10E', '87', '88', '89', '16D', '34J', '20J',
             '03M', '02D', '02E', '07B', '13F', '25F', '06J', '05I', '03N', '34K', '20K', '34L',
             '24T', '10L', '09D', '09E', '27F', '20L', '37A', '27G', '22J']
-        - $ref: '#/components/parameters/employmentType'
+        - $ref: '#/components/parameters/studentEmployeeInd'
       responses:
         '200':
           description: Successful response
@@ -596,16 +596,13 @@ components:
       required: true
       schema:
         type: string
-    employmentType:
-      name: filter[employmentType]
+    studentEmployeeInd:
+      name: filter[studentEmployeeInd]
       in: query
-      description: Filter based on the jobs type of employment
+      description: Filter if job is a student job or not
       required: false
       schema:
-        type: array
-        items:
-          enum: &employmentTypeEnums [student, graduate]
-          type: string
+        type: boolean
     addressType:
       name: filter[addressType]
       in: query
@@ -940,7 +937,7 @@ components:
       type: object
       required:
         - positionNumber
-        - employmentType
+        - studentEmployeeInd
         - beginDate
         - supervisor
         - effectiveDate
@@ -968,11 +965,10 @@ components:
           nullable: false
           description: Identifies a position.
           example: C12345
-        employmentType:
-          type: string
+        studentEmployeeInd:
+          type: boolean
           nullable: false
-          enum: *employmentTypeEnums
-          description: Type of employment.
+          description: Indicates if this position is for a student employee or not
         effectiveDate:
           type: string
           nullable: false
@@ -1063,14 +1059,12 @@ components:
           format: float
           description: FTE presented as a whole percentage.
           example: 25
-        strsAssignment:
-          type: object
-          properties:
-            code:
-              type: string
-              nullable: true
-              description: STRS assignment code for the job.
-              example: '12'
+        strsAppointmentBasis:
+          type: string
+          nullable: true
+          description: STRS assignment code / appointment basis for the job.
+          maxLength: 2
+          example: '12'
         supervisor:
           $ref: '#/components/schemas/SupervisorAttributes'
         timesheet:
@@ -1189,6 +1183,12 @@ components:
               type: string
               nullable: false
               description: Shift code used as a default on timesheet for earnCode.
+            effectiveDate:
+              type: string
+              format: date
+              nullable: false
+              description: Effective date of the earning code
+              example: '1970-01-01'
             code:
               type: string
               nullable: false
@@ -1235,6 +1235,18 @@ components:
                 - `N` - Not Received
                 - `T` - Temporary
                 - `E` - Exempt
+            date:
+              type: string
+              format: date
+              nullable: true
+              description: Date of i9Form
+              example: '1970-01-01'
+            expirationDate:
+              type: string
+              format: date
+              nullable: true
+              description: Expiration date of i9Form
+              example: '1970-01-01'
         laborDistribution:
           type: array
           items:
@@ -1246,48 +1258,33 @@ components:
                 description: Date this labor distribution becomes effective.
                 example: '1970-01-01'
               accountIndex:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: false
-                    example: ABC123
+                type: string
+                nullable: false
+                example: ABC123
               fund:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
+                example: '001100'
               organization:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
+                example: '121205'
               account:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
+                example: '10301'
               program:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
+                example: '61000'
               activity:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
+                example: '123456'
               location:
-                type: object
-                properties:
-                  code:
-                    type: string
-                    nullable: true
+                type: string
+                nullable: true
+                example: '123456'
               distributionPercent:
                 type: number
                 format: float
@@ -1326,13 +1323,6 @@ components:
               type: string
               nullable: false
               description: Description of change reason code
-        strsAssignment:
-          type: object
-          properties:
-            description:
-              type: string
-              nullable: true
-              description: Description for the strsAssignment code
         timesheet:
           type: object
           properties:
@@ -1369,6 +1359,12 @@ components:
                   nullable: false
                   description: The next higher organizational title of the current home
                     organization.
+        lastPaidDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2019-06-20'
+          description: Date the person was last paid for this job
         salary:
           type: object
           properties:
@@ -1382,10 +1378,23 @@ components:
         employeeClassification:
           type: object
           properties:
-            description:
+            category:
+              type: string
+              description: Job classification
+              enum:
+                - Classified
+                - Temporary
+                - Student
+                - Unclassified
+                - Unpaid Appt
+            shortDescription:
               type: string
               nullable: false
-              description: Description of the employee classification code
+              description: Short description of the employee classification code
+            longDescription:
+              type: string
+              nullable: false
+              description: Long description of employee classification code
         employerIdentification:
           type: object
           properties:
@@ -1396,10 +1405,14 @@ components:
         earningCode:
           type: object
           properties:
-            description:
+            shortDescription:
               type: string
               nullable: false
-              description: Description of earn code
+              description: Short description of earn code
+            longDescription:
+              type: string
+              nullable: false
+              description: Long description of earn code
         retirement:
           type: object
           properties:
@@ -1418,61 +1431,14 @@ components:
           type: array
           items:
             properties:
-              accountIndex:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account index code
-              fund:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of fund code
-              organization:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of organization code
-              account:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of account code
-              program:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of program code
-              activity:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of activity code
-              location:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    nullable: true
-                    description: Description of location code
-              lastPaidDate:
+              title:
                 type: string
-                format: date
-                nullable: true
-                example: '2019-06-30'
-                description: Most recent date the employee was paid for this job
+                nullable: false
+                description: The hierarchy description or title appropriate for this level
+        classifiedInd:
+          type: boolean
+          nullable: false
+          description: Indicates if this assignment is a civil service job
     JobId:
       type: string
       description: Uniquely identifies a job record for the given person.

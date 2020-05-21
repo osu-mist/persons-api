@@ -35,8 +35,8 @@ const prepareRawPhones = (rawPhones) => {
  */
 const getSerializerArgs = (osuId, query) => {
   const phoneResourcePath = `persons/${osuId}/${phoneResourceType}`;
-  const addressResourceUrl = resourcePathLink(apiBaseUrl, phoneResourcePath);
-  const topLevelSelfLink = paramsLink(addressResourceUrl, query);
+  const phoneResourceUrl = resourcePathLink(apiBaseUrl, phoneResourcePath);
+  const topLevelSelfLink = paramsLink(phoneResourceUrl, query);
   return {
     identifierField: 'phoneId',
     resourceKeys: phoneResourceKeys,
