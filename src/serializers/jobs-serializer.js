@@ -60,6 +60,7 @@ const prepareRawData = (rawJobs) => {
       { converted: 'homeOrganization.predecessor.description', alias: 'homeOrganization.pred.desc' },
       { converted: 'employeeClassification.shortDescription', alias: 'employeeClass.shortDesc' },
       { converted: 'employeeClassification.longDescription', alias: 'employeeClass.longDesc' },
+      { converted: 'employerIdentification.description', alias: 'employerId.description' },
     ];
     _.forEach(nameConversion, ({ converted, alias }) => {
       job[converted] = job[alias];
