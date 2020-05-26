@@ -110,6 +110,13 @@ const serializeJobs = (rawJobs, osuId, query) => {
   ).serialize(rawJobs);
 };
 
+/**
+ * Serializes a single raw job data
+ *
+ * @param {object} rawJob Single raw job from data source
+ * @param {*} osuId OSU ID of a person
+ * @returns {object[]} Serialized job data
+ */
 const serializeJob = (rawJob, osuId) => {
   const serializerArgs = getSerializerArgs(osuId);
 
