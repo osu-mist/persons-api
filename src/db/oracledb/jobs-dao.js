@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import _ from 'async-dash';
 import { flatten } from 'flat';
 import moment from 'moment';
@@ -386,7 +385,7 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
  * @param {string} internalId Internal ID of a person
  * @returns {object} raw job record
  */
-const createOrUpdateJob = async (update, osuId, body, internalId) => {
+const createOrUpdateJob = async (update, osuId, body) => {
   const connection = await getConnection('banner');
   try {
     let result;
