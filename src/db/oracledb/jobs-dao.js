@@ -21,7 +21,7 @@ const studentBinds = [
   'hoursPerPay',
   'salary_paysPerYear',
   'salary_annual',
-  'strsAssignment_code',
+  'strsAppointmentBasis',
   'fullTimeEquivalency',
   'earningCode_effectiveDate',
   'earningCode_code',
@@ -57,7 +57,7 @@ const graduateBinds = [
   'hoursPerPay',
   'salary_paysPerYear',
   'salary_annual',
-  'strsAssignment_code',
+  'strsAppointmentBasis',
   'fullTimeEquivalency',
   'earningCode_effectiveDate',
   'earningCode_code',
@@ -390,7 +390,8 @@ const createOrUpdateJob = async (update, osuId, body, internalId) => {
   const connection = await getConnection('banner');
   try {
     let result;
-    const { employmentType, changeReason: { code: changeReasonCode } } = body;
+    const { studentEmployeeInd, changeReason: { code: changeReasonCode } } = body;
+    const employmentType = studentEmployeeInd ? 'student' : 'graduate';
 
     if (employmentType === 'student' && !/^C5[0-2]/.test(body.positionNumber)) {
       return new Error('Position number for students must start with C50, C51, or C52');
