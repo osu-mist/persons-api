@@ -140,7 +140,7 @@ paths:
             '09B', '09C', '10A', '10B', '10C', '10D', '10E', '87', '88', '89', '16D', '34J', '20J',
             '03M', '02D', '02E', '07B', '13F', '25F', '06J', '05I', '03N', '34K', '20K', '34L',
             '24T', '10L', '09D', '09E', '27F', '20L', '37A', '27G', '22J']
-        - $ref: '#/components/parameters/employmentType'
+        - $ref: '#/components/parameters/studentEmployeeInd'
       responses:
         '200':
           description: Successful response
@@ -596,14 +596,13 @@ components:
       required: true
       schema:
         type: string
-    employmentType:
-      name: filter[employmentType]
+    studentEmployeeInd:
+      name: filter[studentEmployeeInd]
       in: query
-      description: Filter based on the jobs type of employment
+      description: Filter if job is a student job or not
       required: false
       schema:
-        type: string
-        enum: &employmentTypeEnums [student, graduate]
+        type: boolean
     addressType:
       name: filter[addressType]
       in: query
@@ -850,6 +849,12 @@ components:
               type: string
               nullable: true
               description: Description field for the code
+        lastPaidDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2019-06-30'
+          description: Most recent date the employee was paid
     PersonResource:
       type: object
       properties:
@@ -932,7 +937,7 @@ components:
       type: object
       required:
         - positionNumber
-        - employmentType
+        - studentEmployeeInd
         - beginDate
         - supervisor
         - effectiveDate
@@ -967,11 +972,10 @@ components:
           nullable: false
           description: Identifies a position.
           example: C12345
-        employmentType:
-          type: string
+        studentEmployeeInd:
+          type: boolean
           nullable: false
-          enum: *employmentTypeEnums
-          description: Type of employment.
+          description: Indicates if this position is for a student employee or not
         effectiveDate:
           type: string
           nullable: false
@@ -1053,14 +1057,12 @@ components:
           format: float
           description: FTE presented as a whole percentage.
           example: 25
-        strsAssignment:
-          type: object
-          properties:
-            code:
-              type: string
-              nullable: true
-              description: STRS assignment code for the job.
-              example: '12'
+        strsAppointmentBasis:
+          type: string
+          nullable: true
+          description: STRS assignment code / appointment basis for the job.
+          maxLength: 2
+          example: '12'
         supervisor:
           $ref: '#/components/schemas/SupervisorAttributes'
         timesheet:
@@ -1221,21 +1223,27 @@ components:
               fund:
                 type: string
                 nullable: true
+                example: '001100'
               organization:
                 type: string
                 nullable: true
+                example: '121205'
               account:
                 type: string
                 nullable: true
+                example: '10301'
               program:
                 type: string
                 nullable: true
+                example: '61000'
               activity:
                 type: string
                 nullable: true
+                example: '123456'
               location:
                 type: string
                 nullable: true
+                example: '123456'
               distributionPercent:
                 type: number
                 format: float
@@ -1289,13 +1297,6 @@ components:
               type: string
               nullable: false
               description: Description of change reason code
-        strsAssignment:
-          type: object
-          properties:
-            description:
-              type: string
-              nullable: true
-              description: Description for the strsAssignment code
         timesheet:
           type: object
           properties:

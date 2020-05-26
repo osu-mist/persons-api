@@ -109,7 +109,7 @@ const getJobs = async (internalId, query) => {
   try {
     const parsedQuery = parseQuery(query);
     parsedQuery.internalId = internalId;
-    const binds = _.omit(parsedQuery, ['employmentType']);
+    const binds = _.omit(parsedQuery, ['studentEmployeeInd']);
 
     const { rows } = await connection.execute(contrib.getJobs(parsedQuery), binds);
 

@@ -14,33 +14,58 @@ const jobCombinedAttributes = _.merge(jobResourceAttributes[0], jobResourceAttri
 const jobResourceKeys = _.keys(jobCombinedAttributes.properties);
 
 const prepareRawData = (rawJobs) => {
+  const shouldBeFloat = [
+    'fullTimeEquivalency',
+    'hourlyRate',
+    'hoursPerPay',
+    'salary.annual',
+    'salary.assignment',
+    'earningCode.hours',
+  ];
+  const shouldBeNumber = [
+    'appointmentPercent',
+    'salary.paysPerYear',
+    'salary.step',
+  ];
+
   _.forEach(rawJobs, (job) => {
     job.jobId = `${job.positionNumber}-${job.suffix}`;
     job.accruesLeaveInd = job.accruesLeaveInd === 'Y';
     job.classifiedInd = job.classifiedInd === 'Y';
-    job.employmentType = job['employeeClassification.code'] === 'XA' ? 'student' : 'graduate';
+    job.studentEmployeeInd = job['employeeClassification.code'] === 'XA';
 
     job['contractType.description'] = contrib.getContractTypeDescrByCode(job['contractType.code']);
     job['i9Form.description'] = contrib.getI9FormDescrByCode(job['i9Form.code']);
     job['status.description'] = contrib.getEmployeeStatusDescrByCode(job['status.code']);
-    job['campus.description'] = contrib.getCampusDescrByCode(job['campus.code'], job.stateCode);
     job['employeeClassification.category'] = contrib.getClassificationCategoryByCode(
       job['employeeClassification.code'],
     );
 
+    _.forEach(shouldBeFloat, (field) => {
+      job[field] = parseFloat(job[field]);
+    });
+    _.forEach(shouldBeNumber, (field) => {
+      job[field] = Number(job[field]);
+    });
+
+    _.forEach(job.laborDistribution, (laborDistribution) => {
+      laborDistribution.distributionPercent = parseFloat(laborDistribution.distributionPercent);
+    });
+
     // oracle aliases have a character limit of 30 so we set the correct name here
-    job['timesheet.predecessor.description'] = job['timesheet.pred.description'];
-    delete job['timesheet.pred.description'];
-    job['homeOrganization.current.description'] = job['homeOrganization.current.desc'];
-    delete job['homeOrganization.current.desc'];
-    job['homeOrganization.predecessor.code'] = job['homeOrganization.pred.code'];
-    delete job['homeOrganization.pred.code'];
-    job['homeOrganization.predecessor.description'] = job['homeOrganization.pred.desc'];
-    delete job['homeOrganization.pred.desc'];
-    job['employeeClassification.shortDescription'] = job['employeeClass.shortDesc'];
-    job['employeeClassification.longDescription'] = job['employeeClass.longDesc'];
-    delete job['employeeClass.shortDesc'];
-    delete job['employeeClass.longDesc'];
+    const nameConversion = [
+      { converted: 'timesheet.predecessor.description', alias: 'timesheet.pred.description' },
+      { converted: 'homeOrganization.current.description', alias: 'homeOrganization.current.desc' },
+      { converted: 'homeOrganization.predecessor.code', alias: 'homeOrganization.pred.code' },
+      { converted: 'homeOrganization.predecessor.description', alias: 'homeOrganization.pred.desc' },
+      { converted: 'employeeClassification.shortDescription', alias: 'employeeClass.shortDesc' },
+      { converted: 'employeeClassification.longDescription', alias: 'employeeClass.longDesc' },
+      { converted: 'employerIdentification.description', alias: 'employerId.description' },
+    ];
+    _.forEach(nameConversion, ({ converted, alias }) => {
+      job[converted] = job[alias];
+      delete job[alias];
+    });
   });
 
   formatSubObjects(rawJobs);
