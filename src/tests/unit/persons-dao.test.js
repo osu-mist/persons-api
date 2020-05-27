@@ -5,14 +5,13 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { logger } from 'utils/logger';
+import { fakeOsuId } from './mock-data';
 
 chai.should();
 chai.use(chaiAsPromised);
 
 describe('Test persons-dao', () => {
   sinon.stub(logger, 'error').returns(null);
-
-  const fakeOsuId = '999999999';
 
   const createDaoProxy = (dbReturn) => proxyquire('db/oracledb/persons-dao', {
     './connection': {
