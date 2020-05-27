@@ -51,7 +51,71 @@ const serializedPerson = {
   },
 };
 
-const fakeMealPlanId = 'fakeMealPlanId';
+const fakeMealPlanId = '1';
+const rawMealPlan = {
+  mealPlanId: fakeMealPlanId,
+  mealPlan: '!OrangeCash',
+  balance: '9000.1',
+  'lastUsed.dateTime': '2019-03-21T10:53:06Z',
+  'lastUsed.location': 'North_Porch_Cafe',
+};
+const serializedMealPlan = {
+  links: {
+    self: `https://localhost/v2/persons/${fakeOsuId}/meal-plans/${fakeMealPlanId}`,
+  },
+  data: {
+    type: 'meal-plans',
+    id: fakeMealPlanId,
+    links: {
+      self: `https://localhost/v2/persons/${fakeOsuId}/meal-plans/${fakeMealPlanId}`,
+    },
+    attributes: {
+      mealPlan: '!OrangeCash',
+      balance: '9000.1',
+      lastUsed: {
+        dateTime: '2019-03-21T10:53:06Z',
+        location: 'North_Porch_Cafe',
+      },
+    },
+  },
+};
+const serializedMealPlans = {
+  links: {
+    self: `https://localhost/v2/persons/${fakeOsuId}/meal-plans`,
+  },
+  data: [
+    {
+      type: 'meal-plans',
+      id: fakeMealPlanId,
+      links: {
+        self: `https://localhost/v2/persons/${fakeOsuId}/meal-plans/${fakeMealPlanId}`,
+      },
+      attributes: {
+        mealPlan: '!OrangeCash',
+        balance: '9000.1',
+        lastUsed: {
+          dateTime: '2019-03-21T10:53:06Z',
+          location: 'North_Porch_Cafe',
+        },
+      },
+    },
+    {
+      type: 'meal-plans',
+      id: fakeMealPlanId,
+      links: {
+        self: `https://localhost/v2/persons/${fakeOsuId}/meal-plans/${fakeMealPlanId}`,
+      },
+      attributes: {
+        mealPlan: '!OrangeCash',
+        balance: '9000.1',
+        lastUsed: {
+          dateTime: '2019-03-21T10:53:06Z',
+          location: 'North_Porch_Cafe',
+        },
+      },
+    },
+  ],
+};
 
 export {
   fakeOsuId,
@@ -59,4 +123,7 @@ export {
   rawPerson,
   serializedPerson,
   fakeMealPlanId,
+  rawMealPlan,
+  serializedMealPlan,
+  serializedMealPlans,
 };
