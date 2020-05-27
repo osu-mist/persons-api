@@ -74,4 +74,6 @@ describe('Test persons-dao', () => {
     const result = daoProxy.createPerson({});
     return result.should.eventually.be.a('error');
   });
+
+  sinon.restore();
 });
