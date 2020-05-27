@@ -1,14 +1,20 @@
 import chai from 'chai';
 import _ from 'lodash';
+import proxyquire from 'proxyquire';
 
-import { serializePerson } from 'serializers/persons-serializer';
 import { rawPerson, serializedPerson } from './mock-data';
 
 chai.should();
 
 describe('Test persons-serializer', () => {
+  // Using proxyquire to avoid issues with config in imported classes
+  let serialProxy;
+  beforeEach(() => {
+    serialProxy = proxyquire('serializers/persons-serializer', {});
+  });
+
   it('serializePerson should return data in proper JSON API format', () => {
-    const result = serializePerson(rawPerson);
+    const result = serialProxy.serializePerson(rawPerson);
     return result.should.deep.equal(serializedPerson);
   });
 
@@ -19,7 +25,7 @@ describe('Test persons-serializer', () => {
   ];
   _.forEach(testObjectProperties, (property) => {
     it(`serializePerson should remove ${property}`, () => {
-      const result = serializePerson(rawPerson);
+      const result = serialProxy.serializePerson(rawPerson);
       return result.should.not.have.nested.property(`data.attributes.${property}`);
     });
   });
