@@ -51,9 +51,12 @@ const serializedPerson = {
   },
 };
 
+const fakeMealPlanId = 'fakeMealPlanId';
+
 export {
   fakeOsuId,
   fakeBaseUrl,
   rawPerson,
   serializedPerson,
+  fakeMealPlanId,
 };
