@@ -10,6 +10,7 @@ import { fakeBaseUrl, fakeOsuId } from './mock-data';
  *
  * @param {string} daoPath relative path to dao file
  * @param {object} dbReturn value to be returned by connection.execute()
+ * @returns {Promise<object>} stubbed oracledb connection object
  */
 const createDaoProxy = (daoPath, dbReturn) => proxyquire(daoPath, {
   './connection': {
@@ -23,9 +24,11 @@ const createDaoProxy = (daoPath, dbReturn) => proxyquire(daoPath, {
 });
 
 /**
+ * Creates resource schema for expected test results
  *
  * @param {string} resourceType type of resource as named in openapi
  * @param {object} resourceAttributes fields expected in attributes subset of resourceType
+ * @returns {object} expected schema of serialized resource
  */
 const resourceSubsetSchema = (resourceType, resourceAttributes) => {
   const fakeUrl = `${fakeBaseUrl}/${resourceType}s/fakeOsuId`;
