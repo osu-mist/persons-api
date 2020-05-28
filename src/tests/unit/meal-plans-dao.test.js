@@ -1,28 +1,19 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import _ from 'lodash';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { logger } from 'utils/logger';
 import { fakeOsuId, fakeMealPlanId } from './mock-data';
+import { createDaoProxy } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
 
 describe('Test meal-plans-dao', () => {
-  sinon.stub(logger, 'error').returns(null);
+  const daoPath = '../../db/oracledb/meal-plans-dao';
 
-  const createDaoProxy = (dbReturn) => proxyquire('db/oracledb/meal-plans-dao', {
-    './connection': {
-      getConnection: sinon.stub().resolves({
-        execute: () => dbReturn,
-        close: () => null,
-        commit: () => null,
-        rollback: () => null,
-      }),
-    },
-  });
+  sinon.stub(logger, 'error').returns(null);
 
   const testCases = [
     {
@@ -51,7 +42,7 @@ describe('Test meal-plans-dao', () => {
     expected,
   }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn);
+      const daoProxy = createDaoProxy(daoPath, dbReturn);
       const result = daoProxy[functionName](fakeOsuId, fakeMealPlanId);
       return result.should.eventually.be.fulfilled.and.deep.equal(expected);
     });
