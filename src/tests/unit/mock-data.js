@@ -40,9 +40,15 @@ const rawAddress = {
   lastModified: '2015-10-19',
 };
 
+const fakePhoneBody = {
+  addressType: {},
+  phoneType: {},
+};
+
 export {
   fakeOsuId,
   fakeBaseUrl,
   rawPerson,
   rawAddress,
+  fakePhoneBody,
 };
