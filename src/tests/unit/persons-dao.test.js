@@ -1,28 +1,19 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import _ from 'lodash';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { logger } from 'utils/logger';
 import { fakeOsuId } from './mock-data';
+import { createDaoProxy } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
 
 describe('Test persons-dao', () => {
-  sinon.stub(logger, 'error').returns(null);
+  const daoPath = '../../db/oracledb/persons-dao';
 
-  const createDaoProxy = (dbReturn) => proxyquire('db/oracledb/persons-dao', {
-    './connection': {
-      getConnection: sinon.stub().resolves({
-        execute: () => dbReturn,
-        close: () => null,
-        commit: () => null,
-        rollback: () => null,
-      }),
-    },
-  });
+  sinon.stub(logger, 'error').returns(null);
 
   const testCases = [
     {
@@ -57,20 +48,20 @@ describe('Test persons-dao', () => {
     dbReturn,
   }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn);
+      const daoProxy = createDaoProxy(daoPath, dbReturn);
       const result = daoProxy[functionName]({ fakeOsuId });
       return result.should.eventually.be.fulfilled.and.deep.equal(expected);
     });
   });
 
   it('createPerson should throw an error when outId contains an error', () => {
-    const daoProxy = createDaoProxy({ outBinds: { outId: fakeOsuId }, rows: [null] });
+    const daoProxy = createDaoProxy(daoPath, { outBinds: { outId: fakeOsuId }, rows: [null] });
     const result = daoProxy.createPerson({});
     return result.should.eventually.be.rejectedWith('Person creation failed');
   });
 
   it('createPerson should return error when outId contains ERROR', () => {
-    const daoProxy = createDaoProxy({ outBinds: { outId: 'ERROR: something happened' } });
+    const daoProxy = createDaoProxy(daoPath, { outBinds: { outId: 'ERROR: something happened' } });
     const result = daoProxy.createPerson({});
     return result.should.eventually.be.a('error');
   });
