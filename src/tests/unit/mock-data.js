@@ -19,41 +19,9 @@ const rawPerson = {
   ssnStatus: 'valid',
   lastPaidDate: '2020-05-31',
 };
-const serializedPerson = {
-  links: { self: 'https://localhost/v2/persons/999999999' },
-  data: {
-    type: 'person',
-    id: '999999999',
-    links: { self: 'https://localhost/v2/persons/999999999' },
-    attributes: {
-      firstName: 'Tom',
-      lastName: 'Riddle',
-      middleName: 'Marvolo',
-      birthDate: '1926-12-31',
-      citizen: {
-        code: 'C',
-        description: 'Citizen',
-      },
-      sex: 'M',
-      displayFirstName: 'Lord',
-      displayMiddleName: null,
-      displayLastName: 'Voldemort',
-      onid: 'riddlet',
-      confidentialInd: false,
-      currentStudentInd: false,
-      employeeStatus: {
-        code: 'A',
-        description: 'Active',
-      },
-      ssnStatus: 'valid',
-      lastPaidDate: '2020-05-31',
-    },
-  },
-};
 
 export {
   fakeOsuId,
   fakeBaseUrl,
   rawPerson,
-  serializedPerson,
 };
