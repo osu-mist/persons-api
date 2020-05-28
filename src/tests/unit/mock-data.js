@@ -44,6 +44,18 @@ const fakePhoneBody = {
   addressType: {},
   phoneType: {},
 };
+const rawPhone = {
+  phoneId: '3677954',
+  areaCode: '555',
+  phoneNumber: '4445555',
+  phoneExtension: '20',
+  primaryInd: 'Y',
+  'phoneType.code': 'EO',
+  'addressType.code': 'EO',
+  lastModified: '2020-05-04',
+  'phoneType.description': 'Employee Office (Directory)',
+  'addressType.description': 'Employee Office (Directory)',
+};
 
 export {
   fakeOsuId,
@@ -51,4 +63,5 @@ export {
   rawPerson,
   rawAddress,
   fakePhoneBody,
+  rawPhone,
 };
