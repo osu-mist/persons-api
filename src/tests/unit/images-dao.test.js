@@ -1,28 +1,19 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import _ from 'lodash';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { logger } from 'utils/logger';
 import { fakeOsuId } from './mock-data';
+import { createDaoProxy } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
 
 describe('Test images-dao', () => {
-  sinon.stub(logger, 'error').returns(null);
+  const daoPath = '../../db/oracledb/images-dao';
 
-  const createDaoProxy = (dbReturn) => proxyquire('db/oracledb/images-dao', {
-    './connection': {
-      getConnection: sinon.stub().resolves({
-        execute: () => dbReturn,
-        close: () => null,
-        commit: () => null,
-        rollback: () => null,
-      }),
-    },
-  });
+  sinon.stub(logger, 'error').returns(null);
 
   const testCases = [
     {
@@ -43,7 +34,7 @@ describe('Test images-dao', () => {
   ];
   _.forEach(testCases, ({ message, dbReturn, expected }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn);
+      const daoProxy = createDaoProxy(daoPath, dbReturn);
       const result = daoProxy.getImageById(fakeOsuId);
       return result.should.eventually.be.fulfilled.and.deep.equal(expected);
     });
