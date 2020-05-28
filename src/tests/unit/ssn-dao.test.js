@@ -1,28 +1,19 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import _ from 'lodash';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { logger } from 'utils/logger';
 import { fakeOsuId } from './mock-data';
+import { createDaoProxy } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
 
 describe('Test ssn-dao', () => {
-  sinon.stub(logger, 'error').returns(null);
+  const daoPath = '../../db/oracledb/ssn-dao';
 
-  const createDaoProxy = (dbReturn) => proxyquire('db/oracledb/ssn-dao', {
-    './connection': {
-      getConnection: sinon.stub().resolves({
-        execute: () => dbReturn,
-        close: () => null,
-        commit: () => null,
-        rollback: () => null,
-      }),
-    },
-  });
+  sinon.stub(logger, 'error').returns(null);
 
   const testCases = [
     {
@@ -51,7 +42,7 @@ describe('Test ssn-dao', () => {
     expected,
   }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn);
+      const daoProxy = createDaoProxy(daoPath, dbReturn);
       const result = daoProxy[functionName](fakeOsuId, {});
       return result.should.eventually.be.fulfilled.and.equal(expected);
     });
@@ -69,7 +60,7 @@ describe('Test ssn-dao', () => {
   ];
   _.forEach(errorCases, ({ message, dbReturn }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn);
+      const daoProxy = createDaoProxy(daoPath, dbReturn);
       const result = daoProxy.createSsn(fakeOsuId, {});
       return result.should.eventually.be.rejectedWith('Error occurred creating SSN');
     });
