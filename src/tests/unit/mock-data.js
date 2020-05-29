@@ -20,8 +20,19 @@ const rawPerson = {
   lastPaidDate: '2020-05-31',
 };
 
+const rawEmail = {
+  emailId: '99999',
+  'emailType.code': 'EMPL',
+  'emailType.description': 'Employee',
+  emailAddress: 'AAAaOpAAPAANlbzABa@nobody.nobody',
+  comment: null,
+  preferredInd: 'N',
+  lastActivityDate: '2020-03-27',
+};
+
 export {
   fakeOsuId,
   fakeBaseUrl,
   rawPerson,
+  rawEmail,
 };
