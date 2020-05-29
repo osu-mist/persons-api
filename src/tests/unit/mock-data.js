@@ -20,8 +20,11 @@ const rawPerson = {
   lastPaidDate: '2020-05-31',
 };
 
+const fakeJobId = 'C51495-00';
+
 export {
   fakeOsuId,
   fakeBaseUrl,
   rawPerson,
+  fakeJobId,
 };
