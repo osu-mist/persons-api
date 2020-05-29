@@ -7,7 +7,6 @@ import sinon from 'sinon';
 
 import { logger } from 'utils/logger';
 import { fakeOsuId, fakeJobId } from './mock-data';
-// import { createDaoProxy } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
