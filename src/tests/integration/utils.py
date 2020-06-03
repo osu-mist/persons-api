@@ -78,6 +78,20 @@ class UtilsTestCase(unittest.TestCase):
     openapi = {}
     local_test = None
 
+    def get_nullable_fields(self, resource):
+        """Parse openapi for nullable fields"""
+
+        resource_schema = self.openapi['components']['schemas'][resource]
+        resource_schema = self.__merge_allOf( resource_schema['properties']['attributes']['allOf'])
+
+        attributes = resource_schema['properties']
+        nullable_fields = []
+        for attribute in attributes:
+            if 'nullable' in attributes[attribute] and attributes[attribute]['nullable']:
+                nullable_fields.append(attribute)
+        
+        return nullable_fields
+
     def get_json_content(self, response):
         """Get response content in JSON format"""
 
@@ -127,6 +141,25 @@ class UtilsTestCase(unittest.TestCase):
 
         return response
 
+    def __merge_allOf(self, schema):
+        """Helper function to merge allOf properties"""
+
+        merged = self.__resolve_reference(schema[0])
+        for ref in schema[1:]:
+            always_merger.merge(merged, self.__resolve_reference(ref))
+        return merged
+
+    def __resolve_reference(self, reference):
+        path = reference['$ref'].split('/')[1:]
+        return self.__locate_reference(self.openapi, path)
+
+    def __locate_reference(self, openapi, path):
+        if len(path) == 1:
+            return openapi[path[0]]
+        else:
+            return self.__locate_reference(openapi[path[0]], path[1:])
+
+
     def check_schema(self, response, schema, nullable_fields):
         """Check the schema of response match OpenAPI specification"""
 
@@ -144,19 +177,12 @@ class UtilsTestCase(unittest.TestCase):
             'object': dict
         }
 
-        def __merge_allOf(schema):
-            """Helper function to merge allOf properties"""
-
-            merged = __resolve_reference(schema[0])
-            for ref in schema[1:]:
-                always_merger.merge(merged, __resolve_reference(ref))
-            return merged
 
         def __get_schema_attributes():
             """Helper function to get attributes of the schema"""
 
             if 'allOf' in schema['attributes']:
-                schema['attributes'] = __merge_allOf(schema['attributes']['allOf'])
+                schema['attributes'] = self.__merge_allOf(schema['attributes']['allOf'])
             return schema['attributes']['properties']
 
         def __validate_format(attribute, formatting, pattern):
@@ -213,23 +239,12 @@ class UtilsTestCase(unittest.TestCase):
 
             return None
 
-        def __resolve_reference(reference):
-            path = reference['$ref'].split('/')[1:]
-            return __locate_reference(self.openapi, path)
-
-        def __locate_reference(openapi, path):
-            if len(path) == 1:
-                return openapi[path[0]]
-            else:
-                return __locate_reference(openapi[path[0]], path[1:])
-
-
         def __check_resource_schema(resource):
             """Helper function to check resource object schema"""
 
             # Check resource type
             if '$ref' in schema['type']:
-                schema['type'] = __resolve_reference(schema['type'])
+                schema['type'] = self.__resolve_reference(schema['type'])
             self.assertEqual(resource['type'], schema['type']['enum'][0])
             # Check resource attributes
             actual_attributes = resource['attributes']
