@@ -389,7 +389,8 @@ const createOrUpdateJob = async (update, osuId, body) => {
         result = await graduateCreateJob(connection, osuId, body);
       }
     }
-    // null === success
+
+    // success when result is null
     if (!result) {
       connection.commit();
       return result;
