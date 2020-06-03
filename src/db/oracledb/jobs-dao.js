@@ -120,6 +120,12 @@ const getJobByJobId = async (internalId, jobId) => {
   }
 };
 
+/**
+ * Flattens body object into a 1 layer deep object using _ as a key delimiter
+ *
+ * @param {object} body Request body
+ * @returns {object} flattened body
+ */
 const flattenBody = (body) => flatten(body, { delimiter: '_' });
 
 /**
