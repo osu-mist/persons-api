@@ -95,28 +95,6 @@ const getJobs = async (internalId, query) => {
 };
 
 /**
- * Queries for a specific job record belonging to a person
- *
- * @param {object} connection oracledb connection
- * @param {string} internalId Internal ID of a person
- * @param {string} jobId ID of a job record
- * @returns {object} Single raw job record
- */
-const getJobByJobIdWithConnection = async (connection, internalId, jobId) => {
-  const [positionNumber, suffix] = jobId.split('-');
-  const binds = { internalId, positionNumber, suffix };
-  const { rows } = await connection.execute(contrib.getJobs(binds), binds);
-
-  if (rows.length > 1) {
-    throw new Error(`Multiple job records found for job ID ${jobId}`);
-  }
-
-  await getLaborDistributions(connection, internalId, rows);
-
-  return rows[0];
-};
-
-/**
  * Creates oracledb connection object and calls getJobByJobIdWithConnection
  *
  * @param {string} internalId Internal ID of a person
@@ -126,7 +104,17 @@ const getJobByJobIdWithConnection = async (connection, internalId, jobId) => {
 const getJobByJobId = async (internalId, jobId) => {
   const connection = await getConnection('banner');
   try {
-    return await getJobByJobIdWithConnection(connection, internalId, jobId);
+    const [positionNumber, suffix] = jobId.split('-');
+    const binds = { internalId, positionNumber, suffix };
+    const { rows } = await connection.execute(contrib.getJobs(binds), binds);
+
+    if (rows.length > 1) {
+      throw new Error(`Multiple job records found for job ID ${jobId}`);
+    }
+
+    await getLaborDistributions(connection, internalId, rows);
+
+    return rows[0];
   } finally {
     connection.close();
   }
