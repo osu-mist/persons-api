@@ -294,36 +294,19 @@ const studentCreateJob = async (connection, osuId, body) => {
 };
 
 /**
- * Creates graduate job records
+ * Update or create graduate job record
  *
  * @param {object} connection oracledb connection
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
  * @returns {string} Query result, null if success
  */
-const graduateCreateJob = async (connection, osuId, body) => {
+const graduateJob = async (connection, osuId, body, update) => {
   const binds = standardBinds(osuId, body, graduateBinds);
+  const queryName = update === 'update' ? 'graduateUpdateJob' : 'graduateCreateJob';
 
   const { outBinds: { result } } = await connection.execute(
-    contrib.graduateCreateJob(binds),
-    binds,
-  );
-  return result;
-};
-
-/**
- * Updates graduate job records
- *
- * @param {object} connection oracledb connection
- * @param {string} osuId OSU ID of a person
- * @param {object} body Request body
- * @returns {string} Query result, null if success
- */
-const graduateUpdateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, graduateBinds);
-
-  const { outBinds: { result } } = await connection.execute(
-    contrib.graduateUpdateJob(binds),
+    contrib[queryName](binds),
     binds,
   );
   return result;
@@ -371,14 +354,14 @@ const createOrUpdateJob = async (update, osuId, body) => {
         return new Error(`Invalid change reason code ${changeReasonCode}`);
       }
 
-      if (update) {
+      if (update === 'update') {
         if (changeReasonCode === 'NONE') {
           result = await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
           if (employmentType === 'student') {
             result = await studentUpdateJob(connection, osuId, body);
           } else if (employmentType === 'graduate') {
-            result = await graduateUpdateJob(connection, osuId, body);
+            result = await graduateJob(connection, osuId, body, update);
           }
         } else {
           await updateJob(connection, osuId, body);
@@ -386,13 +369,13 @@ const createOrUpdateJob = async (update, osuId, body) => {
       } else if (employmentType === 'student') {
         result = await studentCreateJob(connection, osuId, body);
       } else if (employmentType === 'graduate') {
-        result = await graduateCreateJob(connection, osuId, body);
+        result = await graduateJob(connection, osuId, body, update);
       }
     }
 
     // success when result is null
     if (!result) {
-      connection.commit();
+      // connection.commit();
       return result;
     }
     throw new Error(result);
