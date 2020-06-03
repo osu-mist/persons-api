@@ -7,16 +7,16 @@ import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
 
-const studentBinds = [
+const commonBinds = [
   'changeReason_code',
   'employeeClassification_code',
   'status_code',
   'hourlyRate',
+  'personnelChangeDate',
   'timesheet_current_code',
   'appointmentPercent',
   'jobDescription',
   'campus_code',
-  'personnelChangeDate',
   'hoursPerPay',
   'salary_paysPerYear',
   'salary_annual',
@@ -34,50 +34,24 @@ const studentBinds = [
   'contractEndDate',
   'useTemporarySsnInd',
   'employeeInformationReleaseInd',
-  'retirement_code',
   'i9Form_code',
   'i9Form_date',
   'i9Form_expirationDate',
   'laborDistribution',
-  'homeOrganization_current_code',
   'employeeGroup_code',
 ];
 
+const studentBinds = [
+  ...commonBinds,
+  'retirement_code',
+  'homeOrganization_current_code',
+];
+
 const graduateBinds = [
-  'changeReason_code',
-  'employeeClassification_code',
-  'personnelChangeDate',
-  'status_code',
-  'hourlyRate',
-  'timesheet_current_code',
-  'appointmentPercent',
-  'jobDescription',
-  'campus_code',
-  'hoursPerPay',
-  'salary_paysPerYear',
-  'salary_annual',
-  'strsAppointmentBasis',
-  'fullTimeEquivalency',
-  'earningCode_effectiveDate',
-  'earningCode_code',
-  'earningCode_hours',
-  'supervisor_positionNumber',
-  'supervisor_suffix',
-  'supervisor_osuId',
-  'beginDate',
-  'accruesLeaveInd',
-  'contractBeginDate',
-  'contractEndDate',
-  'useTemporarySsnInd',
-  'employeeInformationReleaseInd',
+  ...commonBinds,
   'salaryInformationReleaseInd',
   'salaryInformationReleaseDate',
-  'i9Form_code',
-  'i9Form_date',
-  'i9Form_expirationDate',
-  'laborDistribution',
   'homeOrganization_current_code',
-  'employeeGroup_code',
 ];
 
 /**
