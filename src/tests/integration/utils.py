@@ -159,7 +159,6 @@ class UtilsTestCase(unittest.TestCase):
         else:
             return self.__locate_reference(openapi[path[0]], path[1:])
 
-
     def check_schema(self, response, schema, nullable_fields):
         """Check the schema of response match OpenAPI specification"""
 
@@ -176,7 +175,6 @@ class UtilsTestCase(unittest.TestCase):
             'array': list,
             'object': dict
         }
-
 
         def __get_schema_attributes():
             """Helper function to get attributes of the schema"""
