@@ -347,7 +347,7 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
 /**
  * Determines which Epaf to execute based on fields in body
  *
- * @param {boolean} update True if updating record. False if creating record
+ * @param {string} update True if updating record. False if creating record
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
  * @param {string} internalId Internal ID of a person

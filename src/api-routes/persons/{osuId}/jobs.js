@@ -39,7 +39,7 @@ const post = async (req, res) => {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await createOrUpdateJob(false, osuId, body.data.attributes);
+    const result = await createOrUpdateJob('create', osuId, body.data.attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);

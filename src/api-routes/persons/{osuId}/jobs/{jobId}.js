@@ -48,7 +48,7 @@ const patch = async (req, res) => {
       return errorBuilder(res, 404, 'A job with the specified job ID was not found.');
     }
 
-    const result = await createOrUpdateJob(true, osuId, body.data.attributes);
+    const result = await createOrUpdateJob('update', osuId, body.data.attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);
