@@ -82,7 +82,9 @@ class UtilsTestCase(unittest.TestCase):
         """Parse openapi for nullable fields"""
 
         resource_schema = self.openapi['components']['schemas'][resource]
-        resource_schema = self.__merge_allOf(resource_schema['properties']['attributes']['allOf'])
+
+        if 'allOf' in resource_schema['properties']['attributes']:
+            resource_schema = self.__merge_allOf(resource_schema['properties']['attributes']['allOf'])
 
         attributes = resource_schema['properties']
         nullable_fields = []
