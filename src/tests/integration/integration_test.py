@@ -96,6 +96,48 @@ class IntegrationTests(utils.UtilsTestCase):
                     nullable_fields=nullable_fields
                 )
 
+    def test_get_jobs(self, endpoint='/jobs'):
+        """Test case: GET /persons/{osuId}/jobs"""
+
+        nullable_fields = self.get_nullable_fields('JobResource')
+
+        valid_person_ids = self.test_cases['valid_person_ids']
+
+        resource = 'JobResource'
+        for person in valid_person_ids:
+            osu_id = person['osu_id']
+            job_id = person['job_id']
+            self.check_endpoint(
+                f'/persons/{osu_id}{endpoint}/{job_id}',
+                resource,
+                200,
+                nullable_fields=nullable_fields
+            )
+
+        query_params = self.query_params['jobs']
+        for param in query_params:
+            for case in query_params[param]['valid']:
+                osu_id = case['osu_id']
+                value = case['value']
+                self.check_endpoint(
+                    f'/persons/{osu_id}{endpoint}',
+                    resource,
+                    200,
+                    nullable_fields=nullable_fields,
+                    query_params={ param: value }
+                )
+            if 'invalid' in query_params[param]:
+                for case in query_params[param]['invalid']:
+                    osu_id = case['osu_id']
+                    value = case['value']
+                    self.check_endpoint(
+                        f'/persons/{osu_id}{endpoint}',
+                        'ErrorObject',
+                        400,
+                        nullable_fields=nullable_fields,
+                        query_params={ param: value }
+                    )
+
 
 if __name__ == '__main__':
     arguments, argv = utils.parse_arguments()
