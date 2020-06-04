@@ -299,6 +299,7 @@ const studentCreateJob = async (connection, osuId, body) => {
  * @param {object} connection oracledb connection
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
+ * @param {string} update 'create' to create a new record, 'update' to update an existing one
  * @returns {string} Query result, null if success
  */
 const graduateJob = async (connection, osuId, body, update) => {
