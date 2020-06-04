@@ -38,15 +38,16 @@ class IntegrationTests(utils.UtilsTestCase):
 
 
     def test_get_person_by_id(self, endpoint='/persons'):
-        """Test case: GET /persons/{id}"""
+        """Test case: GET /persons/{osuId}"""
 
         nullable_fields = self.get_nullable_fields('PersonResource')
 
-        valid_osu_ids = self.test_cases['valid_osu_ids']
+        valid_person_ids = self.test_cases['valid_person_ids']
         invalid_osu_ids = self.test_cases['invalid_osu_ids']
 
-        for osu_id in valid_osu_ids:
+        for person in valid_person_ids:
             resource = 'PersonResource'
+            osu_id = person['osu_id']
             self.check_endpoint(
                 f'{endpoint}/{osu_id}',
                 resource,
