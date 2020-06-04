@@ -367,7 +367,7 @@ const createOrUpdateJob = async (update, osuId, body) => {
             result = await graduateJob(connection, osuId, body, update);
           }
         } else {
-          await updateJob(connection, osuId, body);
+          result = await updateJob(connection, osuId, body);
         }
       } else if (employmentType === 'student') {
         result = await studentCreateJob(connection, osuId, body);
