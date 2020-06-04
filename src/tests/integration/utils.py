@@ -82,15 +82,30 @@ class UtilsTestCase(unittest.TestCase):
         """Parse openapi for nullable fields"""
 
         resource_schema = self.openapi['components']['schemas'][resource]
-        resource_schema = self.__merge_allOf( resource_schema['properties']['attributes']['allOf'])
+        resource_schema = self.__merge_allOf(resource_schema['properties']['attributes']['allOf'])
 
         attributes = resource_schema['properties']
         nullable_fields = []
+        self.get_nested_nullable_fields(attributes, nullable_fields)
+
+        return nullable_fields
+
+    def get_nested_nullable_fields(self, attributes, nullable_fields):
         for attribute in attributes:
+            if 'type' in attributes[attribute]:
+                if attributes[attribute]['type'] == 'object':
+                    self.get_nested_nullable_fields(
+                        attributes[attribute]['properties'],
+                        nullable_fields
+                    )
+                elif attributes[attribute]['type'] == 'array':
+                    self.get_nested_nullable_fields(
+                        attributes[attribute]['items']['properties'],
+                        nullable_fields
+                    )
             if 'nullable' in attributes[attribute] and attributes[attribute]['nullable']:
                 nullable_fields.append(attribute)
-        
-        return nullable_fields
+
 
     def get_json_content(self, response):
         """Get response content in JSON format"""
