@@ -20,6 +20,7 @@ class IntegrationTests(utils.UtilsTestCase):
             cls.session = utils.setup_session(config)
             cls.test_cases = config['test_cases']
             cls.local_test = config['local_test']
+            cls.query_params = config['query_params']
 
         with open(openapi_path) as openapi_file:
             openapi = yaml.load(openapi_file, Loader=yaml.SafeLoader)
