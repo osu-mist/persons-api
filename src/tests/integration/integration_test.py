@@ -47,11 +47,21 @@ class IntegrationTests(utils.UtilsTestCase):
 
         for osu_id in valid_osu_ids:
             resource = 'PersonResource'
-            self.check_endpoint(f'{endpoint}/{osu_id}', resource, 200, nullable_fields=nullable_fields)
+            self.check_endpoint(
+                f'{endpoint}/{osu_id}',
+                resource,
+                200,
+                nullable_fields=nullable_fields
+            )
 
         for osu_id in invalid_osu_ids:
             resource = 'ErrorObject'
-            self.check_endpoint(f'{endpoint}/{osu_id}', resource, 404, nullable_fields=nullable_fields)
+            self.check_endpoint(
+                f'{endpoint}/{osu_id}',
+                resource,
+                404,
+                nullable_fields=nullable_fields
+            )
 
 
 if __name__ == '__main__':
