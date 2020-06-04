@@ -64,6 +64,37 @@ class IntegrationTests(utils.UtilsTestCase):
                 nullable_fields=nullable_fields
             )
 
+    def test_get_job_by_id(self, endpoint='/jobs'):
+        """Test case: GET /persons/{osuId}/jobs/{jobId}"""
+
+        nullable_fields = self.get_nullable_fields('JobResource')
+
+        valid_person_ids = self.test_cases['valid_person_ids']
+        invalid_job_ids = self.test_cases['invalid_job_ids']
+
+        for person in valid_person_ids:
+            resource = 'JobResource'
+            osu_id = person['osu_id']
+            job_id = person['job_id']
+            self.check_endpoint(
+                f'/persons/{osu_id}{endpoint}/{job_id}',
+                resource,
+                200,
+                nullable_fields=nullable_fields,
+            )
+
+        for job in invalid_job_ids:
+            resource = 'ErrorObject'
+            osu_id = job['osu_id']
+            job_ids = job['job_ids']
+            for job_id in job_ids:
+                self.check_endpoint(
+                    f'/persons/{osu_id}{endpoint}/{job_id}',
+                    resource,
+                    404,
+                    nullable_fields=nullable_fields
+                )
+
 
 if __name__ == '__main__':
     arguments, argv = utils.parse_arguments()
