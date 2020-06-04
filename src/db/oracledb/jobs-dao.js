@@ -178,8 +178,10 @@ const standardBinds = (osuId, body, additionalFields) => {
   const flattenedBody = flattenBody(body);
 
   // Some boolean fields need to be massaged to be compatible with db
-  if (_.includes(additionalFields, 'accruesLeaveInd')
-      && flattenedBody.accruesLeaveInd !== undefined) {
+  if (
+    _.includes(additionalFields, 'accruesLeaveInd')
+    && flattenedBody.accruesLeaveInd !== undefined
+  ) {
     flattenedBody.accruesLeaveInd = flattenedBody.accruesLeaveInd ? 'Y' : 'N';
   }
   if (_.includes(additionalFields, 'useTemporarySsnInd')
