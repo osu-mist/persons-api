@@ -702,7 +702,7 @@ components:
       enum: [person]
     JobType:
       type: string
-      enum: [job]
+      enum: [jobs]
     SsnType:
       type: string
       enum: [ssn]
