@@ -115,10 +115,9 @@ class IntegrationTests(utils.UtilsTestCase):
             )
 
         query_params = self.query_params['jobs']
+        osu_id = self.query_params['osu_id']
         for param in query_params:
-            for case in query_params[param]['valid']:
-                osu_id = case['osu_id']
-                value = case['value']
+            for value in query_params[param]['valid']:
                 self.check_endpoint(
                     f'/persons/{osu_id}{endpoint}',
                     resource,
@@ -127,9 +126,7 @@ class IntegrationTests(utils.UtilsTestCase):
                     query_params={ param: value }
                 )
             if 'invalid' in query_params[param]:
-                for case in query_params[param]['invalid']:
-                    osu_id = case['osu_id']
-                    value = case['value']
+                for value in query_params[param]['invalid']:
                     self.check_endpoint(
                         f'/persons/{osu_id}{endpoint}',
                         'ErrorObject',
