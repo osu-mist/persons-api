@@ -276,9 +276,11 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
  */
 const studentJob = async (connection, osuId, body, operation) => {
   const binds = standardBinds(osuId, body, studentBinds);
-  const queryName = operation === 'update' ? 'studentUpdateJob' : 'studentCreateJob';
 
-  const { outBinds: { result } } = await connection.execute(contrib[queryName](binds), binds);
+  const { outBinds: { result } } = await connection.execute(
+    contrib.studentJob(binds, operation),
+    binds,
+  );
   return result;
 };
 
@@ -293,10 +295,9 @@ const studentJob = async (connection, osuId, body, operation) => {
  */
 const graduateJob = async (connection, osuId, body, operation) => {
   const binds = standardBinds(osuId, body, graduateBinds);
-  const queryName = operation === 'update' ? 'graduateUpdateJob' : 'graduateCreateJob';
 
   const { outBinds: { result } } = await connection.execute(
-    contrib[queryName](binds),
+    contrib.graduateJob(binds, operation),
     binds,
   );
   return result;
