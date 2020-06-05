@@ -955,6 +955,11 @@ components:
               - effectiveDate
               - accountIndex
               - distributionPercent
+        employeeGroup:
+          type: object
+          properties:
+            code:
+              enum: [NOSU]
     JobPostAttributes:
       type: object
       additionalProperties: false
@@ -1129,7 +1134,6 @@ components:
             code:
               type: string
               nullable: true
-              enum: [NOSU]
               description: The group this employee belongs to.
         earningCode:
           type: object
