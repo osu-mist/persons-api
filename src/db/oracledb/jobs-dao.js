@@ -266,21 +266,6 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
 };
 
 /**
- * Updates student job records
- *
- * @param {object} connection oracledb connection
- * @param {string} osuId OSU ID of a person
- * @param {object} body Request body
- * @returns {string} Query result, null if success
- */
-const studentUpdateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, studentBinds);
-
-  const result = await connection.execute(contrib.studentUpdateJob(binds), binds);
-  return result.outBinds.result;
-};
-
-/**
  * Creates student job records
  *
  * @param {object} connection oracledb connection
@@ -288,10 +273,11 @@ const studentUpdateJob = async (connection, osuId, body) => {
  * @param {object} body Request body
  * @returns {string} Query result, null if success
  */
-const studentCreateJob = async (connection, osuId, body) => {
+const studentJob = async (connection, osuId, body, operation) => {
   const binds = standardBinds(osuId, body, studentBinds);
+  const queryName = operation === 'update' ? 'studentUpdateJob' : 'studentCreateJob';
 
-  const { outBinds: { result } } = await connection.execute(contrib.studentCreateJob(binds), binds);
+  const { outBinds: { result } } = await connection.execute(contrib[queryName](binds), binds);
   return result;
 };
 
@@ -362,7 +348,7 @@ const createOrUpdateJob = async (operation, osuId, body) => {
           error = await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
           if (employmentType === 'student') {
-            error = await studentUpdateJob(connection, osuId, body);
+            error = await studentJob(connection, osuId, body, operation);
           } else if (employmentType === 'graduate') {
             error = await graduateJob(connection, osuId, body, operation);
           }
@@ -370,9 +356,9 @@ const createOrUpdateJob = async (operation, osuId, body) => {
           error = await updateJob(connection, osuId, body);
         }
       } else if (employmentType === 'student') {
-        error = await studentCreateJob(connection, osuId, body);
+        error = await studentJob(connection, osuId, body, operation);
       } else if (employmentType === 'graduate') {
-        error = await graduateJob(connection, osuId, body, update);
+        error = await graduateJob(connection, osuId, body, operation);
       }
     }
 
