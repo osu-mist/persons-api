@@ -134,16 +134,32 @@ class IntegrationTests(utils.UtilsTestCase):
                         query_params={ param: value }
                     )
 
-    def test_get_images(self, endpoint='/images'):
-        """Test case: GET /persons/{osuId}/images"""
+    # def test_get_images(self, endpoint='/images'):
+        # """Test case: GET /persons/{osuId}/images"""
 
-        valid_person_ids = self.test_cases['valid_person_ids']
-        for person in valid_person_ids:
-            osu_id = person['osu_id']
+        # valid_person_ids = self.test_cases['valid_person_ids']
+        # for person in valid_person_ids:
+            # osu_id = person['osu_id']
+            # self.check_endpoint(
+                # f'/persons/{osu_id}{endpoint}',
+                # 'ImageResource',
+                # 200
+            # )
+
+    def test_get_meal_plans(self, endpoint='/meal-plans'):
+        """Test case: GET /persons/{osuId}/meal-plans"""
+
+        nullable_fields = self.get_nullable_fields('MealPlanResource')
+
+        valid_meal_plan_ids = self.test_cases['valid_meal_plan_ids']
+
+        for meal_plan in valid_meal_plan_ids:
+            osu_id = meal_plan['osu_id']
             self.check_endpoint(
                 f'/persons/{osu_id}{endpoint}',
-                'ImageResource',
-                200
+                'MealPlanResource',
+                200,
+                nullable_fields=nullable_fields
             )
 
 
