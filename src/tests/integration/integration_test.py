@@ -84,17 +84,14 @@ class IntegrationTests(utils.UtilsTestCase):
                 nullable_fields=nullable_fields,
             )
 
-        for job in invalid_job_ids:
-            resource = 'ErrorObject'
-            osu_id = job['osu_id']
-            job_ids = job['job_ids']
-            for job_id in job_ids:
-                self.check_endpoint(
-                    f'/persons/{osu_id}{endpoint}/{job_id}',
-                    resource,
-                    404,
-                    nullable_fields=nullable_fields
-                )
+        osu_id = invalid_job_ids['osu_id']
+        for job_id in invalid_job_ids['job_ids']:
+            self.check_endpoint(
+                f'/persons/{osu_id}{endpoint}/{job_id}',
+                'ErrorObject',
+                404,
+                nullable_fields=nullable_fields
+            )
 
     def test_get_jobs(self, endpoint='/jobs'):
         """Test case: GET /persons/{osuId}/jobs"""
