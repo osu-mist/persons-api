@@ -365,7 +365,7 @@ const createOrUpdateJob = async (operation, osuId, body) => {
 
     if (!error) {
       connection.commit();
-      return null;
+      return error;
     }
     throw new Error(error);
   } finally {
