@@ -134,6 +134,19 @@ class IntegrationTests(utils.UtilsTestCase):
                         query_params={ param: value }
                     )
 
+    def test_get_images(self, endpoint='/images'):
+        """Test case: GET /persons/{osuId}/images"""
+
+        valid_person_ids = self.test_cases['valid_person_ids']
+        for person in valid_person_ids:
+            osu_id = person['osu_id']
+            self.check_endpoint(
+                f'/persons/{osu_id}{endpoint}',
+                'ImageResource',
+                200
+            )
+
+
 
 if __name__ == '__main__':
     arguments, argv = utils.parse_arguments()
