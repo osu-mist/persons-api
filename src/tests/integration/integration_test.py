@@ -135,7 +135,8 @@ class IntegrationTests(utils.UtilsTestCase):
     def test_get_meal_plans(self, endpoint='/meal-plans'):
         """Test case: GET /persons/{osuId}/meal-plans"""
 
-        nullable_fields = self.get_nullable_fields('MealPlanResource')
+        resource = 'MealPlanResource'
+        nullable_fields = self.get_nullable_fields(resource)
 
         valid_meal_plan_ids = self.test_cases['valid_meal_plan_ids']
 
@@ -143,7 +144,7 @@ class IntegrationTests(utils.UtilsTestCase):
             osu_id = meal_plan['osu_id']
             self.check_endpoint(
                 f'/persons/{osu_id}{endpoint}',
-                'MealPlanResource',
+                resource,
                 200,
                 nullable_fields=nullable_fields
             )
