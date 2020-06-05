@@ -337,12 +337,12 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
  * @param {string} internalId Internal ID of a person
- * @returns {object} raw job record
+ * @returns {Error} returns error or null if no error occurred
  */
 const createOrUpdateJob = async (update, osuId, body) => {
   const connection = await getConnection('banner');
   try {
-    let result;
+    let error;
     const { studentEmployeeInd, changeReason: { code: changeReasonCode } } = body;
     const employmentType = studentEmployeeInd ? 'student' : 'graduate';
 
@@ -351,7 +351,7 @@ const createOrUpdateJob = async (update, osuId, body) => {
     }
 
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
-      result = await terminateJob(connection, osuId, body);
+      error = await terminateJob(connection, osuId, body);
     } else {
       if (!await isValidChangeReasonCode(connection, changeReasonCode)) {
         return new Error(`Invalid change reason code ${changeReasonCode}`);
@@ -359,29 +359,28 @@ const createOrUpdateJob = async (update, osuId, body) => {
 
       if (update === 'update') {
         if (changeReasonCode === 'NONE') {
-          result = await updateLaborChangeJob(connection, osuId, body);
+          error = await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
           if (employmentType === 'student') {
-            result = await studentUpdateJob(connection, osuId, body);
+            error = await studentUpdateJob(connection, osuId, body);
           } else if (employmentType === 'graduate') {
-            result = await graduateJob(connection, osuId, body, update);
+            error = await graduateJob(connection, osuId, body, update);
           }
         } else {
-          result = await updateJob(connection, osuId, body);
+          error = await updateJob(connection, osuId, body);
         }
       } else if (employmentType === 'student') {
-        result = await studentCreateJob(connection, osuId, body);
+        error = await studentCreateJob(connection, osuId, body);
       } else if (employmentType === 'graduate') {
-        result = await graduateJob(connection, osuId, body, update);
+        error = await graduateJob(connection, osuId, body, update);
       }
     }
 
-    // success when result is null
-    if (!result) {
+    if (!error) {
       connection.commit();
-      return result;
+      return null;
     }
-    throw new Error(result);
+    throw new Error(error);
   } finally {
     connection.close();
   }
