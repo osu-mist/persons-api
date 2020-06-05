@@ -301,12 +301,12 @@ const studentCreateJob = async (connection, osuId, body) => {
  * @param {object} connection oracledb connection
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
- * @param {string} update 'create' to create a new record, 'update' to update an existing one
+ * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @returns {string} Query result, null if success
  */
-const graduateJob = async (connection, osuId, body, update) => {
+const graduateJob = async (connection, osuId, body, operation) => {
   const binds = standardBinds(osuId, body, graduateBinds);
-  const queryName = update === 'update' ? 'graduateUpdateJob' : 'graduateCreateJob';
+  const queryName = operation === 'update' ? 'graduateUpdateJob' : 'graduateCreateJob';
 
   const { outBinds: { result } } = await connection.execute(
     contrib[queryName](binds),
@@ -333,13 +333,13 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
 /**
  * Determines which Epaf to execute based on fields in body
  *
- * @param {string} update 'create' to create a new record, 'update' to update an existing one
+ * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
  * @param {string} internalId Internal ID of a person
  * @returns {Error} returns error or null if no error occurred
  */
-const createOrUpdateJob = async (update, osuId, body) => {
+const createOrUpdateJob = async (operation, osuId, body) => {
   const connection = await getConnection('banner');
   try {
     let error;
@@ -357,14 +357,14 @@ const createOrUpdateJob = async (update, osuId, body) => {
         return new Error(`Invalid change reason code ${changeReasonCode}`);
       }
 
-      if (update === 'update') {
+      if (operation === 'update') {
         if (changeReasonCode === 'NONE') {
           error = await updateLaborChangeJob(connection, osuId, body);
         } else if (changeReasonCode === 'BREAP') {
           if (employmentType === 'student') {
             error = await studentUpdateJob(connection, osuId, body);
           } else if (employmentType === 'graduate') {
-            error = await graduateJob(connection, osuId, body, update);
+            error = await graduateJob(connection, osuId, body, operation);
           }
         } else {
           error = await updateJob(connection, osuId, body);
