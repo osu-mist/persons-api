@@ -198,6 +198,8 @@ class UtilsTestCase(unittest.TestCase):
 
             if 'allOf' in schema['attributes']:
                 schema['attributes'] = self.__merge_allOf(schema['attributes']['allOf'])
+            elif '$ref' in schema['attributes']:
+                schema['attributes'] = self.__resolve_reference(schema['attributes'])
             return schema['attributes']['properties']
 
         def __validate_format(attribute, formatting, pattern):
