@@ -106,9 +106,8 @@ class IntegrationTests(utils.UtilsTestCase):
         resource = 'JobResource'
         for person in valid_person_ids:
             osu_id = person['osu_id']
-            job_id = person['job_id']
             self.check_endpoint(
-                f'/persons/{osu_id}{endpoint}/{job_id}',
+                f'/persons/{osu_id}{endpoint}',
                 resource,
                 200,
                 nullable_fields=nullable_fields
