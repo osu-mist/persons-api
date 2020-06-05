@@ -393,3 +393,23 @@ class UtilsTestCase(unittest.TestCase):
             self.check_url(response_json['links']['self'], endpoint,
                            query_params)
         return response
+
+    def check_query_params(self, endpoint, resource, nullable_fields, query_params, osu_id):
+        for param in query_params:
+            for value in query_params[param]['valid']:
+                self.check_endpoint(
+                    endpoint,
+                    resource,
+                    200,
+                    nullable_fields=nullable_fields,
+                    query_params={ param: value }
+                )
+            if 'invalid' in query_params[param]:
+                for value in query_params[param]['invalid']:
+                    self.check_endpoint(
+                        endpoint,
+                        'ErrorObject',
+                        400,
+                        nullable_fields=nullable_fields,
+                        query_params={ param: value }
+                    )
