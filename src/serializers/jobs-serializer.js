@@ -138,7 +138,8 @@ const serializeJob = (rawJob, osuId) => {
  */
 const serializePostOrPatch = (osuId, body) => {
   const { topLevelSelfLink } = getSerializerArgs(osuId);
-  const links = { self: `${topLevelSelfLink}/${body.data.id}` };
+  const { positionNumber, suffix } = body.data.attributes;
+  const links = { self: `${topLevelSelfLink}/${positionNumber}-${suffix}` };
   body.links = links;
   body.data.links = links;
 
