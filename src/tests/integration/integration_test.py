@@ -115,24 +115,13 @@ class IntegrationTests(utils.UtilsTestCase):
 
         query_params = self.query_params['jobs']
         osu_id = self.query_params['osu_id']
-        for param in query_params:
-            for value in query_params[param]['valid']:
-                self.check_endpoint(
-                    f'/persons/{osu_id}{endpoint}',
-                    resource,
-                    200,
-                    nullable_fields=nullable_fields,
-                    query_params={ param: value }
-                )
-            if 'invalid' in query_params[param]:
-                for value in query_params[param]['invalid']:
-                    self.check_endpoint(
-                        f'/persons/{osu_id}{endpoint}',
-                        'ErrorObject',
-                        400,
-                        nullable_fields=nullable_fields,
-                        query_params={ param: value }
-                    )
+        self.check_query_params(
+            f'/persons/{osu_id}{endpoint}',
+            resource,
+            nullable_fields,
+            query_params,
+            osu_id
+        )
 
     # def test_get_images(self, endpoint='/images'):
         # """Test case: GET /persons/{osuId}/images"""
