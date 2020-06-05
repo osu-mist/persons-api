@@ -153,11 +153,38 @@ class IntegrationTests(utils.UtilsTestCase):
         osu_id = self.query_params['osu_id']
         self.check_query_params(
             f'/persons/{osu_id}{endpoint}',
-            'MealPlanResource',
+            resource,
             nullable_fields,
             query_params,
             osu_id
         )
+
+    def test_get_meal_plans_by_meal_plan_id(self, endpoint='/meal-plans'):
+        """Test case: GET /persons/{osuId}/meal-plans/{mealPlanId}"""
+
+        resource = 'MealPlanResource'
+        nullable_fields = self.get_nullable_fields(resource)
+
+        valid_meal_plan_ids = self.test_cases['valid_meal_plan_ids']
+        for meal_plan in valid_meal_plan_ids:
+            osu_id = meal_plan['osu_id']
+            meal_plan_id = meal_plan['meal_plan_id']
+            self.check_endpoint(
+                f'/persons/{osu_id}{endpoint}/{meal_plan_id}',
+                resource,
+                200,
+                nullable_fields=nullable_fields
+            )
+
+        invalid_meal_plan_ids = self.test_cases['invalid_meal_plan_ids']
+        osu_id = invalid_meal_plan_ids['osu_id']
+        for meal_plan_id in invalid_meal_plan_ids['meal_plan_ids']:
+            self.check_endpoint(
+                f'/persons/{osu_id}{endpoint}/{meal_plan_id}',
+                'ErrorObject',
+                400,
+                nullable_fields=nullable_fields
+            )
 
 
 if __name__ == '__main__':
