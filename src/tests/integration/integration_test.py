@@ -162,6 +162,15 @@ class IntegrationTests(utils.UtilsTestCase):
                 nullable_fields=nullable_fields
             )
 
+        query_params = self.query_params['meal_plans']
+        osu_id = self.query_params['osu_id']
+        self.check_query_params(
+            f'/persons/{osu_id}{endpoint}',
+            'MealPlanResource',
+            nullable_fields,
+            query_params,
+            osu_id
+        )
 
 
 if __name__ == '__main__':
