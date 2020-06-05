@@ -595,7 +595,8 @@ components:
       description: ID of meal plan
       required: true
       schema:
-        type: string
+        type: number
+        format: integer
     studentEmployeeInd:
       name: filter[studentEmployeeInd]
       in: query
