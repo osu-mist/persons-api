@@ -120,17 +120,22 @@ class IntegrationTests(utils.UtilsTestCase):
             osu_id
         )
 
-    # def test_get_images(self, endpoint='/images'):
-        # """Test case: GET /persons/{osuId}/images"""
+    def test_get_images(self, endpoint='/images'):
+        """Test case: GET /persons/{osuId}/images"""
 
-        # valid_person_ids = self.test_cases['valid_person_ids']
-        # for person in valid_person_ids:
-            # osu_id = person['osu_id']
-            # self.check_endpoint(
-                # f'/persons/{osu_id}{endpoint}',
-                # 'ImageResource',
-                # 200
-            # )
+        valid_person_ids = self.test_cases['valid_person_ids']
+        for person in valid_person_ids:
+            osu_id = person['osu_id']
+
+            # check_endpoint assumes response will be in JSON format which is not true for images
+            requested_url = f'{self.base_url}/persons/{osu_id}{endpoint}'
+            response = self.session.get(requested_url)
+            status_code = response.status_code
+            self.assertEqual(
+                status_code,
+                200,
+                f'requested_url: {requested_url},\nresponse_body: {response}'
+            )
 
     def test_get_meal_plans(self, endpoint='/meal-plans'):
         """Test case: GET /persons/{osuId}/meal-plans"""
