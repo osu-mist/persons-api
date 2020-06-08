@@ -212,6 +212,32 @@ class IntegrationTests(utils.UtilsTestCase):
             osu_id
         )
 
+    def test_get_phones(self, endpoint='/phones'):
+        """Test case: GET /persons/{osuId}/phones"""
+
+        resource = 'PhoneResource'
+        nullable_fields = self.get_nullable_fields(resource)
+
+        valid_person_ids = self.test_cases['valid_person_ids']
+        for person in valid_person_ids:
+            osu_id = person['osu_id']
+            self.check_endpoint(
+                f'/persons/{osu_id}{endpoint}',
+                resource,
+                200,
+                nullable_fields=nullable_fields
+            )
+
+        query_params = self.query_params['phones']
+        osu_id = self.query_params['osu_id']
+        self.check_query_params(
+            f'/persons/{osu_id}{endpoint}',
+            resource,
+            nullable_fields,
+            query_params,
+            osu_id
+        )
+
 
 if __name__ == '__main__':
     arguments, argv = utils.parse_arguments()
