@@ -84,9 +84,16 @@ class UtilsTestCase(unittest.TestCase):
         resource_schema = self.openapi['components']['schemas'][resource]
 
         if 'allOf' in resource_schema['properties']['attributes']:
-            resource_schema = self.__merge_allOf(resource_schema['properties']['attributes']['allOf'])
+            resource_schema['properties']['attributes'] = self.__merge_allOf(
+                resource_schema['properties']['attributes']['allOf']
+            )
+        if '$ref' in resource_schema['properties']['attributes']:
+            resolved_reference = self.__resolve_reference(
+                resource_schema['properties']['attributes']
+            )
+            resource_schema['properties']['attributes'] = resolved_reference
 
-        attributes = resource_schema['properties']
+        attributes = resource_schema['properties']['attributes']['properties']
         nullable_fields = []
         self.get_nested_nullable_fields(attributes, nullable_fields)
 
