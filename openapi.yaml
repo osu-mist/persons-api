@@ -1751,6 +1751,8 @@ components:
       properties:
         phoneNumber:
           nullable: false
+        phoneExtension:
+          pattern: ^[0-9]{1,4}$
     PhonePostAttributes:
       type: object
       additionalProperties: false
@@ -1771,7 +1773,6 @@ components:
           nullable: true
           description: Extension for the phone number. Can be returned in different formats.
           example: '20'
-          pattern: ^[0-9]{1,4}$
         primaryInd:
           type: boolean
           nullable: false
