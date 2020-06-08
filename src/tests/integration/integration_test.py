@@ -24,19 +24,12 @@ class IntegrationTests(utils.UtilsTestCase):
 
         with open(openapi_path) as openapi_file:
             openapi = yaml.load(openapi_file, Loader=yaml.SafeLoader)
-            if 'swagger' in openapi:
-                backend = 'flex'
-            elif 'openapi' in openapi:
-                backend = 'openapi-spec-validator'
-            else:
-                exit('Error: could not determine openapi document version')
 
         cls.openapi = openapi
 
     @classmethod
     def tearDownClass(cls):
         cls.session.close()
-
 
     def test_get_person_by_id(self, endpoint='/persons'):
         """Test case: GET /persons/{osuId}"""
@@ -127,7 +120,10 @@ class IntegrationTests(utils.UtilsTestCase):
         for person in valid_person_ids:
             osu_id = person['osu_id']
 
-            # check_endpoint assumes response will be in JSON format which is not true for images
+            """
+            check_endpoint assumes response will be in JSON format
+            images returns image data so we can't use that method
+            """
             requested_url = f'{self.base_url}/persons/{osu_id}{endpoint}'
             response = self.session.get(requested_url)
             status_code = response.status_code

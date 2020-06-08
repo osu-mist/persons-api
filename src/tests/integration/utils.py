@@ -105,9 +105,11 @@ class UtilsTestCase(unittest.TestCase):
                         attributes[attribute]['items']['properties'],
                         nullable_fields
                     )
-            if 'nullable' in attributes[attribute] and attributes[attribute]['nullable']:
+            if (
+                'nullable' in attributes[attribute]
+                and attributes[attribute]['nullable']
+            ):
                 nullable_fields.append(attribute)
-
 
     def get_json_content(self, response):
         """Get response content in JSON format"""
@@ -197,9 +199,13 @@ class UtilsTestCase(unittest.TestCase):
             """Helper function to get attributes of the schema"""
 
             if 'allOf' in schema['attributes']:
-                schema['attributes'] = self.__merge_allOf(schema['attributes']['allOf'])
+                schema['attributes'] = self.__merge_allOf(
+                    schema['attributes']['allOf']
+                )
             elif '$ref' in schema['attributes']:
-                schema['attributes'] = self.__resolve_reference(schema['attributes'])
+                schema['attributes'] = self.__resolve_reference(
+                    schema['attributes']
+                )
             return schema['attributes']['properties']
 
         def __validate_format(attribute, formatting, pattern):
@@ -394,7 +400,8 @@ class UtilsTestCase(unittest.TestCase):
                            query_params)
         return response
 
-    def check_query_params(self, endpoint, resource, nullable_fields, query_params, osu_id):
+    def check_query_params(self, endpoint, resource, nullable_fields,
+                           query_params, osu_id):
         for param in query_params:
             for value in query_params[param]['valid']:
                 self.check_endpoint(
@@ -402,7 +409,7 @@ class UtilsTestCase(unittest.TestCase):
                     resource,
                     200,
                     nullable_fields=nullable_fields,
-                    query_params={ param: value }
+                    query_params={param: value}
                 )
             if 'invalid' in query_params[param]:
                 for value in query_params[param]['invalid']:
@@ -411,5 +418,5 @@ class UtilsTestCase(unittest.TestCase):
                         'ErrorObject',
                         400,
                         nullable_fields=nullable_fields,
-                        query_params={ param: value }
+                        query_params={param: value}
                     )
