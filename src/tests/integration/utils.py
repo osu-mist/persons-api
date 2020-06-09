@@ -157,7 +157,8 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual(
             status_code,
             expected_status_code,
-            f'requested_url: {requested_url},\nresponse_body: {response_body}'
+            f'requested_url: {requested_url}, params: {params},\n'
+            f'response_body: {response_body}'
         )
 
         # Response time should less then max_elapsed_seconds
