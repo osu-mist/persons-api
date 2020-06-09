@@ -63,7 +63,7 @@ describe('Test persons-dao', () => {
   it('createPerson should return error when outId contains ERROR', () => {
     const daoProxy = createDaoProxy(daoPath, { outBinds: { outId: 'ERROR: something happened' } });
     const result = daoProxy.createPerson({});
-    return result.should.eventually.be.a('error');
+    return result.should.eventually.be.an('error');
   });
 
   sinon.restore();
