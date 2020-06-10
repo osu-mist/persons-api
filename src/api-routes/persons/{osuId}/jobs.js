@@ -1,7 +1,7 @@
-import { getJobs } from 'db/oracledb/jobs-dao';
+import { getJobs, createOrUpdateJob } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
-import { serializeJobs } from 'serializers/jobs-serializer';
+import { serializeJobs, serializePostOrPatch } from 'serializers/jobs-serializer';
 
 /**
  * Get jobs by OSU ID
@@ -30,8 +30,26 @@ const get = async (req, res) => {
  *
  * @type {RequestHandler}
  */
-const post = async () => {
-  // todo
+const post = async (req, res) => {
+  try {
+    const { body, params: { osuId } } = req;
+
+    const internalId = await personExists(osuId);
+    if (!internalId) {
+      return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+    }
+
+    const result = await createOrUpdateJob('create', osuId, body.data.attributes);
+
+    if (result instanceof Error) {
+      return errorBuilder(res, 400, [result.message]);
+    }
+
+    const serializedJob = serializePostOrPatch(osuId, body);
+    return res.send(serializedJob);
+  } catch (err) {
+    return errorHandler(res, err);
+  }
 };
 
 export { get, post };

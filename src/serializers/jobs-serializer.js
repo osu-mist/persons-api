@@ -71,6 +71,13 @@ const prepareRawData = (rawJobs) => {
   formatSubObjects(rawJobs);
 };
 
+/**
+ * Returns serializer arguments for serializing job records
+ *
+ * @param {string} osuId OSU ID of a person
+ * @param {object} query Query parameters passed in with request
+ * @returns {object} Serializer arguments
+ */
 const getSerializerArgs = (osuId, query) => {
   const jobResourcePath = `persons/${osuId}/${jobResourceType}`;
   const jobResourceUrl = resourcePathLink(apiBaseUrl, jobResourcePath);
@@ -103,6 +110,13 @@ const serializeJobs = (rawJobs, osuId, query) => {
   ).serialize(rawJobs);
 };
 
+/**
+ * Serializes a single raw job data
+ *
+ * @param {object} rawJob Single raw job from data source
+ * @param {*} osuId OSU ID of a person
+ * @returns {object[]} Serialized job data
+ */
 const serializeJob = (rawJob, osuId) => {
   const serializerArgs = getSerializerArgs(osuId);
 
@@ -115,4 +129,21 @@ const serializeJob = (rawJob, osuId) => {
   ).serialize(rawJob);
 };
 
-export { serializeJobs, serializeJob };
+/**
+ * Serialize bodies sent with post or put requests
+ *
+ * @param {string} osuId OSU ID of a person
+ * @param {object} body Body passed in with request
+ * @returns {object} Serialized job data
+ */
+const serializePostOrPatch = (osuId, body) => {
+  const { topLevelSelfLink } = getSerializerArgs(osuId);
+  const { positionNumber, suffix } = body.data.attributes;
+  const links = { self: `${topLevelSelfLink}/${positionNumber}-${suffix}` };
+  body.links = links;
+  body.data.links = links;
+
+  return body;
+};
+
+export { serializeJobs, serializeJob, serializePostOrPatch };
