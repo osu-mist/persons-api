@@ -20,6 +20,15 @@ const rawPerson = {
   lastPaidDate: '2020-05-31',
 };
 
+const fakeMealPlanId = '1';
+const rawMealPlan = {
+  mealPlanId: fakeMealPlanId,
+  mealPlan: '!OrangeCash',
+  balance: '9000.1',
+  'lastUsed.dateTime': '2019-03-21T10:53:06Z',
+  'lastUsed.location': 'North_Porch_Cafe',
+};
+
 const fakeJobId = 'C51495-00';
 const rawJob = {
   positionNumber: 'C51495',
@@ -100,6 +109,8 @@ export {
   fakeOsuId,
   fakeBaseUrl,
   rawPerson,
+  fakeMealPlanId,
+  rawMealPlan,
   fakeJobId,
   rawJob,
 };
