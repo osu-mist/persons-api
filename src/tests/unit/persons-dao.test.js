@@ -54,16 +54,22 @@ describe('Test persons-dao', () => {
     });
   });
 
-  it('createPerson should throw an error when outId contains an error', () => {
-    const daoProxy = createDaoProxy(daoPath, { outBinds: { outId: fakeOsuId }, rows: [null] });
-    const result = daoProxy.createPerson({});
-    return result.should.eventually.be.rejectedWith('Person creation failed');
-  });
+  it('createPerson should throw an error when querying the newly created person returns undefined',
+    () => {
+      const daoProxy = createDaoProxy(daoPath, {
+        outBinds: {
+          outId: fakeOsuId,
+        },
+        rows: [undefined],
+      });
+      const result = daoProxy.createPerson({});
+      return result.should.eventually.be.rejectedWith('Person creation failed');
+    });
 
   it('createPerson should return error when outId contains ERROR', () => {
     const daoProxy = createDaoProxy(daoPath, { outBinds: { outId: 'ERROR: something happened' } });
     const result = daoProxy.createPerson({});
-    return result.should.eventually.be.a('error');
+    return result.should.eventually.be.an('error');
   });
 
   sinon.restore();
