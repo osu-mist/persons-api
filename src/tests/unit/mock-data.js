@@ -40,6 +40,23 @@ const rawAddress = {
   lastModified: '2015-10-19',
 };
 
+const fakePhoneBody = {
+  addressType: {},
+  phoneType: {},
+};
+const rawPhone = {
+  phoneId: '3677954',
+  areaCode: '555',
+  phoneNumber: '4445555',
+  phoneExtension: '20',
+  primaryInd: 'Y',
+  'phoneType.code': 'EO',
+  'addressType.code': 'EO',
+  lastModified: '2020-05-04',
+  'phoneType.description': 'Employee Office (Directory)',
+  'addressType.description': 'Employee Office (Directory)',
+};
+
 const fakeMealPlanId = '1';
 const rawMealPlan = {
   mealPlanId: fakeMealPlanId,
@@ -130,6 +147,8 @@ export {
   fakeBaseUrl,
   rawPerson,
   rawAddress,
+  fakePhoneBody,
+  rawPhone,
   fakeMealPlanId,
   rawMealPlan,
   fakeJobId,
