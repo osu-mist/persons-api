@@ -2,7 +2,9 @@ import { expect } from 'chai';
 import _ from 'lodash';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import config from 'config';
 
+import { logger } from 'utils/logger';
 import { fakeBaseUrl, fakeOsuId } from './mock-data';
 
 /**
@@ -30,6 +32,23 @@ const createDaoProxy = (daoPath, dbReturn) => proxyquire(daoPath, {
     getConnection: getConnectionStub(dbReturn),
   },
 });
+
+/**
+ * Creates stub for config that works for both connection and uri-builder
+ *
+ * @returns {object} config stub
+ */
+const createConfigStub = () => sinon.stub(config, 'get')
+  .returns({ protocol: 'protocol', hostname: 'hostname' });
+
+/**
+ * Handles stubbing for dao unit tests
+ */
+const daoBeforeEach = () => {
+  createConfigStub();
+
+  sinon.stub(logger, 'error').returns(null);
+};
 
 /**
  * Creates resource schema for expected test results
@@ -92,4 +111,6 @@ export {
   testSingleResource,
   testMultipleResources,
   getConnectionStub,
+  daoBeforeEach,
+  createConfigStub,
 };

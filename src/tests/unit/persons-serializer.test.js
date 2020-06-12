@@ -1,13 +1,20 @@
 import chai from 'chai';
 import _ from 'lodash';
+import proxyquire from 'proxyquire';
 
-import { serializePerson } from 'serializers/persons-serializer';
 import { rawPerson } from './mock-data';
-import { testSingleResource } from './test-helpers';
+import { testSingleResource, createConfigStub } from './test-helpers';
 
 chai.should();
 
 describe('Test persons-serializer', () => {
+  const configStub = createConfigStub();
+  const { serializePerson } = proxyquire(
+    'serializers/persons-serializer',
+    {},
+  );
+  configStub.restore();
+
   const removedProperties = [
     'citizenCode',
     'citizenDescription',
