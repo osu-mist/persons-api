@@ -4,9 +4,8 @@ import _ from 'lodash';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { logger } from 'utils/logger';
 import { fakeOsuId, fakePhoneBody } from './mock-data';
-import { createDaoProxy } from './test-helpers';
+import { createDaoProxy, daoBeforeEach } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -14,7 +13,8 @@ chai.use(chaiAsPromised);
 describe('Test phones-dao', () => {
   const daoPath = '../../db/oracledb/phones-dao';
 
-  sinon.stub(logger, 'error').returns(null);
+  beforeEach(daoBeforeEach);
+  afterEach(() => sinon.restore());
 
   const testCases = [
     {
@@ -81,6 +81,4 @@ describe('Test phones-dao', () => {
         .be.rejectedWith(errorMessage);
     });
   });
-
-  sinon.restore();
 });

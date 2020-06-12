@@ -2,9 +2,8 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 
-import { logger } from 'utils/logger';
 import { fakeOsuId } from './mock-data';
-import { createDaoProxy } from './test-helpers';
+import { createDaoProxy, daoBeforeEach } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -12,9 +11,8 @@ chai.use(chaiAsPromised);
 describe('Test emails-dao', () => {
   const daoPath = '../../db/oracledb/emails-dao';
 
-  sinon.stub(logger, 'error').returns(null);
-
-  sinon.restore();
+  beforeEach(daoBeforeEach);
+  afterEach(() => sinon.restore());
 
   it('getEmailsByOsuId should return multiple results', () => {
     const daoProxy = createDaoProxy(daoPath, { rows: [{}, {}] });

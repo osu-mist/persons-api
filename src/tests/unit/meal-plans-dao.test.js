@@ -3,9 +3,8 @@ import chaiAsPromised from 'chai-as-promised';
 import _ from 'lodash';
 import sinon from 'sinon';
 
-import { logger } from 'utils/logger';
 import { fakeOsuId, fakeMealPlanId } from './mock-data';
-import { createDaoProxy } from './test-helpers';
+import { createDaoProxy, daoBeforeEach } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -13,7 +12,8 @@ chai.use(chaiAsPromised);
 describe('Test meal-plans-dao', () => {
   const daoPath = '../../db/oracledb/meal-plans-dao';
 
-  sinon.stub(logger, 'error').returns(null);
+  beforeEach(daoBeforeEach);
+  afterEach(() => sinon.restore());
 
   const testCases = [
     {
@@ -47,6 +47,4 @@ describe('Test meal-plans-dao', () => {
       return result.should.eventually.be.fulfilled.and.deep.equal(expected);
     });
   });
-
-  sinon.restore();
 });
