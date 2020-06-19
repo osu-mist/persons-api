@@ -4,9 +4,8 @@ import _ from 'lodash';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { logger } from 'utils/logger';
-import { createDaoProxy, getConnectionStub } from './test-helpers';
 import { fakeOsuId } from './mock-data';
+import { createDaoProxy, getConnectionStub, daoBeforeEach } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -14,7 +13,8 @@ chai.use(chaiAsPromised);
 describe('Test addresses-dao', () => {
   const daoPath = '../../db/oracledb/addresses-dao';
 
-  sinon.stub(logger, 'error').returns(null);
+  beforeEach(daoBeforeEach);
+  afterEach(() => sinon.restore());
 
   const testCases = [
     {
@@ -103,6 +103,4 @@ describe('Test addresses-dao', () => {
     return result.should.eventually
       .be.rejectedWith('Error: Multiple active addresses for address type undefined');
   });
-
-  sinon.restore();
 });

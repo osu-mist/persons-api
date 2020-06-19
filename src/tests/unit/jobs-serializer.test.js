@@ -1,13 +1,20 @@
 import chai from 'chai';
 import _ from 'lodash';
+import proxyquire from 'proxyquire';
 
-import { serializeJob, serializeJobs } from 'serializers/jobs-serializer';
 import { rawJob, fakeOsuId } from './mock-data';
-import { testSingleResource, testMultipleResources } from './test-helpers';
+import { testSingleResource, testMultipleResources, createConfigStub } from './test-helpers';
 
 chai.should();
 
 describe('Test jobs-serializer', () => {
+  const configStub = createConfigStub();
+  const { serializeJob, serializeJobs } = proxyquire(
+    'serializers/jobs-serializer',
+    {},
+  );
+  configStub.restore();
+
   it('serialzeJob should return data in proper JSON API format', () => {
     const result = serializeJob(_.cloneDeep(rawJob), fakeOsuId);
     return testSingleResource(result, 'jobs');

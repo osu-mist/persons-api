@@ -4,8 +4,8 @@ import _ from 'lodash';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { logger } from 'utils/logger';
 import { fakeOsuId, fakeJobId } from './mock-data';
+import { daoBeforeEach } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -13,7 +13,8 @@ chai.use(chaiAsPromised);
 describe('Test jobs-dao', () => {
   const daoPath = '../../db/oracledb/jobs-dao';
 
-  sinon.stub(logger, 'error').returns(null);
+  beforeEach(daoBeforeEach);
+  afterEach(() => sinon.restore());
 
   const createDaoProxy = (dbReturn) => {
     const executeStub = sinon.stub();
@@ -79,6 +80,4 @@ describe('Test jobs-dao', () => {
       return result.should.eventually.be.rejectedWith(expected);
     });
   });
-
-  sinon.restore();
 });

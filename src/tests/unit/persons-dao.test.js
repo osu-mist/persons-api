@@ -3,9 +3,8 @@ import chaiAsPromised from 'chai-as-promised';
 import _ from 'lodash';
 import sinon from 'sinon';
 
-import { logger } from 'utils/logger';
 import { fakeOsuId } from './mock-data';
-import { createDaoProxy } from './test-helpers';
+import { createDaoProxy, daoBeforeEach } from './test-helpers';
 
 chai.should();
 chai.use(chaiAsPromised);
@@ -13,7 +12,8 @@ chai.use(chaiAsPromised);
 describe('Test persons-dao', () => {
   const daoPath = '../../db/oracledb/persons-dao';
 
-  sinon.stub(logger, 'error').returns(null);
+  beforeEach(daoBeforeEach);
+  afterEach(() => sinon.restore());
 
   const testCases = [
     {
@@ -71,6 +71,4 @@ describe('Test persons-dao', () => {
     const result = daoProxy.createPerson({});
     return result.should.eventually.be.an('error');
   });
-
-  sinon.restore();
 });
