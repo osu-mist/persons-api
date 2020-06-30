@@ -1,3 +1,5 @@
+/* eslint jsdoc/require-jsdoc:0 */
+
 const presets = [
   [
     '@babel/preset-env',
@@ -11,6 +13,12 @@ const presets = [
 const plugins = [
   '@babel/plugin-transform-runtime',
   '@babel/plugin-proposal-optional-chaining',
+  [
+    'istanbul',
+    {
+      exclude: ['dist/**/*.js', '**/tests/', '**/contrib/'],
+    },
+  ],
   [
     'module-resolver',
     {
