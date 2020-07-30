@@ -943,13 +943,24 @@ components:
         - supervisor
         - effectiveDate
       properties:
+        contractBeginDate:
+          nullable: false
+        contractEndDate:
+          nullable: false
+        campus:
+          nullable: false
         laborDistribution:
           type: array
           items:
             required:
               - effectiveDate
-              - accountIndexCode
+              - accountIndex
               - distributionPercent
+        employeeGroup:
+          type: object
+          properties:
+            code:
+              enum: [NOSU]
     JobPostAttributes:
       type: object
       additionalProperties: false
@@ -957,6 +968,7 @@ components:
         suffix:
           type: string
           nullable: false
+          maxLength: 2
           description: >-
             Used to uniquely identify a job record for persons who have multiple
             jobs that share the same position number. For updating existing
@@ -994,34 +1006,19 @@ components:
           description: If true, the job accrues leave time.
         contractBeginDate:
           type: string
-          nullable: true
           format: date
           description: The date the contract begins.
           example: '1970-01-21'
         contractEndDate:
           type: string
-          nullable: true
           format: date
           description: The date the contract ends.
           example: '1971-02-21'
-        contractType:
-          type: object
-          properties:
-            code:
-              type: string
-              nullable: true
-              enum: [P, S, O]
-              description: |
-                Contract type code/Id.
-                - `P` - Primary
-                - `S` - Secondary
-                - `O` - Overload
         campus:
           type: object
           properties:
             code:
               type: string
-              nullable: true
               description: ID of campus where this job will be performed.
         status:
           type: object
@@ -1035,6 +1032,12 @@ components:
           type: string
           nullable: true
           description: Description of job.
+        location:
+          type: object
+          properties:
+            code:
+              type: string
+              nullable: true
         personnelChangeDate:
           type: string
           nullable: false
@@ -1079,15 +1082,6 @@ components:
                   nullable: false
                   description: Organization code where the time sheet is sent for the job.
                   example: '123456'
-            predecessor:
-              type: object
-              properties:
-                code:
-                  type: string
-                  nullable: false
-                  description: The next higher organizational code of the current timesheet
-                    organization.
-                  example: '123456'
         homeOrganization:
           type: object
           properties:
@@ -1098,15 +1092,6 @@ components:
                   type: string
                   nullable: true
                   description: The home organization code of the employee.
-                  example: '123456'
-            predecessor:
-              type: object
-              properties:
-                code:
-                  type: string
-                  nullable: true
-                  description: The next higher organizational code of the current home
-                    organization.
                   example: '123456'
         hourlyRate:
           type: number
@@ -1129,31 +1114,12 @@ components:
               format: float
               description: Annual salary for the job.
               example: 30000.5
-            assignment:
-              type: number
-              nullable: false
-              format: float
-              description: The salary to be paid each pay period.
-              example: 1670.83
             paysPerYear:
               type: number
               nullable: false
               format: float
               description: The number of pays per calendar year.
               example: 12
-            step:
-              type: number
-              nullable: false
-              format: integer
-              example: 1
-            group:
-              type: object
-              properties:
-                code:
-                  type: string
-                  nullable: false
-                  description: Salary group code for the job.
-                  example: 12345A
         employeeClassification:
           type: object
           properties:
@@ -1163,14 +1129,13 @@ components:
               description: The employee class attached to the job, based on the Employee
                 Class entered on the Position Form (NBAPOSN).
               example: CA
-        employerIdentification:
+        employeeGroup:
           type: object
           properties:
             code:
               type: string
-              nullable: false
-              description: Employer identification code.
-              example: ORST
+              nullable: true
+              description: The group this employee belongs to.
         earningCode:
           type: object
           properties:
@@ -1180,10 +1145,6 @@ components:
               nullable: true
               description: Hours/units defaulted on timesheets for earnCode.
               example: 173.33
-            shift:
-              type: string
-              nullable: false
-              description: Shift code used as a default on timesheet for earnCode.
             effectiveDate:
               type: string
               format: date
@@ -1193,6 +1154,7 @@ components:
             code:
               type: string
               nullable: false
+              maxLength: 3
               description: Default earnings code attached to the job and used on timesheet.
               example: REG
         useTemporarySsnInd:
@@ -1251,6 +1213,7 @@ components:
         laborDistribution:
           type: array
           items:
+            type: object
             properties:
               effectiveDate:
                 type: string
@@ -1296,9 +1259,22 @@ components:
       type: object
       additionalProperties: false
       properties:
+        contractBeginDate:
+          nullable: true
+        contractEndDate:
+          nullable: true
         contractType:
           type: object
           properties:
+            code:
+              type: string
+              nullable: true
+              enum: [P, S, O]
+              description: |
+                Contract type code/Id.
+                - `P` - Primary
+                - `S` - Secondary
+                - `O` - Overload
             description:
               type: string
               nullable: false
@@ -1306,6 +1282,8 @@ components:
         campus:
           type: object
           properties:
+            code:
+              nullable: true
             description:
               type: string
               nullable: false
@@ -1337,11 +1315,17 @@ components:
             predecessor:
               type: object
               properties:
+                code:
+                  type: string
+                  nullable: false
+                  description: The next higher organizational code of the current timesheet
+                    organization.
+                  example: '123456'
                 description:
                   type: string
                   nullable: false
-                  description: The next higher organizational title of the current
-                    timesheet organization.
+                  description: >-
+                    The next higher organizational title of the current timesheet organization.
         homeOrganization:
           type: object
           properties:
@@ -1355,6 +1339,12 @@ components:
             predecessor:
               type: object
               properties:
+                code:
+                  type: string
+                  nullable: true
+                  description: The next higher organizational code of the current home
+                    organization.
+                  example: '123456'
                 description:
                   type: string
                   nullable: false
@@ -1369,9 +1359,25 @@ components:
         salary:
           type: object
           properties:
+            assignment:
+              type: number
+              nullable: false
+              format: float
+              description: The salary to be paid each pay period.
+              example: 1670.83
+            step:
+              type: number
+              nullable: false
+              format: integer
+              example: 1
             group:
               type: object
               properties:
+                code:
+                  type: string
+                  nullable: false
+                  description: Salary group code for the job.
+                  example: 12345A
                 description:
                   type: string
                   nullable: false
@@ -1396,9 +1402,22 @@ components:
               type: string
               nullable: false
               description: Long description of employee classification code
+        employeeGroup:
+          type: object
+          properties:
+            description:
+              type: string
+              nullable: true
+              description: Description of employee group code
+              example: Non-OSU Student
         employerIdentification:
           type: object
           properties:
+            code:
+              type: string
+              nullable: false
+              description: Employer identification code.
+              example: ORST
             description:
               type: string
               nullable: false
@@ -1406,6 +1425,10 @@ components:
         earningCode:
           type: object
           properties:
+            shift:
+              type: string
+              nullable: false
+              description: Shift code used as a default on timesheet for earnCode.
             shortDescription:
               type: string
               nullable: false
