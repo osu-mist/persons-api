@@ -25,4 +25,14 @@ const get = async (req, res) => {
   }
 };
 
-export { get };
+/**
+ * Post email address
+ *
+ * @type {RequestHandler}
+ */
+const post = async (req, res) => {
+  console.log(req, res);
+  console.log('post email endpoint');
+};
+
+export { get, post };
