@@ -562,6 +562,36 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
+    post:
+      description: Create or update email address for a person
+      summary: Create  or update email adress for a person
+      tags:
+        - emails
+      operationId: postEmail
+      parameters:
+        - $ref: '#/components/parameters/osuId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailPostBody'
+        description: Post body for the new email address
+        required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409Post'
+        '500':
+          $ref: '#/components/responses/500'
 components:
   parameters:
     osuId:
@@ -1895,7 +1925,7 @@ components:
               allOf:
                 - $ref: '#/components/schemas/PhonePostRequired'
                 - $ref: '#/components/schemas/PhonePostAttributes'
-    EmailAttributes:
+    EmailPostAttributes:
       type: object
       required:
         - emailType
@@ -1936,12 +1966,33 @@ components:
           type: boolean
           nullable: false
           description: Indicator for a preferred email
+    EmailAttributes:
+      type: object
+      additionalProperties: false
+      properties:
         lastActivityDate:
           type: string
           format: date
           nullable: false
           description: Date of last activity for this email
           example: '1970-01-01'
+    EmailPostBody:
+      type: object
+      required:
+        - data
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          additionalProperties: false
+          properties:
+            type:
+              $ref: '#/components/schemas/PhoneType'
+            attributes:
+              $ref: '#/components/schemas/EmailPostAttributes'
     EmailResource:
       type: object
       properties:
@@ -1954,7 +2005,9 @@ components:
         links:
           $ref: '#/components/schemas/SelfLink'
         attributes:
-          $ref: '#/components/schemas/EmailAttributes'
+          allOf:
+            - $ref: '#/components/schemas/EmailPostAttributes'
+            - $ref: '#/components/schemas/EmailAttributes'
     EmailSetResult:
       type: object
       properties:
@@ -1964,6 +2017,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EmailResource'
+    EmailResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/EmailResource'
     SelfLink:
       type: object
       properties:
