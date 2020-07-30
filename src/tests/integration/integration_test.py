@@ -54,7 +54,7 @@ class IntegrationTests(utils.UtilsTestCase):
             self.check_endpoint(
                 f'{endpoint}/{osu_id}',
                 resource,
-                404,
+                400,
                 nullable_fields=nullable_fields
             )
 
