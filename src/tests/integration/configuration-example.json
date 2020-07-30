@@ -172,8 +172,7 @@
       "filter[primaryInd]": {
         "valid": [
           "true",
-          "false",
-          1
+          "false"
         ],
         "invalid": [
           true,
