@@ -398,8 +398,10 @@ class UtilsTestCase(unittest.TestCase):
 
         nullable_fields = [] if nullable_fields is None else nullable_fields
         schema = self.get_resource_schema(resource)
-        response = self.make_request(endpoint, response_code,
-                                     params=query_params)
+        response = self.make_request(endpoint,
+                                     response_code,
+                                     params=query_params,
+                                     max_elapsed_seconds=12)
 
         self.check_schema(response, schema, nullable_fields)
         response_json = response.json()
