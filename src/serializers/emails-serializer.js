@@ -65,4 +65,22 @@ const serializeEmails = (rawEmails, osuId, query) => {
   ).serialize(rawEmails);
 };
 
-export { serializeEmails };
+/**
+ * Uses JSONAPI serializer to serialize raw data from data source
+ *
+ * @param {object} rawEmail raw data from data source
+ * @param {string} osuId OSU ID of a person
+ * @returns {object} serialized data
+ */
+const serializeEmail = (rawEmail, osuId) => {
+  const serializerArgs = getSerializerArgs(osuId);
+
+  prepareRawEmails([rawEmail]);
+
+  return new JsonApiSerializer(
+    emailResourceType,
+    serializerOptions(serializerArgs, emailResourceType, serializerArgs.topLevelSelfLink),
+  ).serialize(rawEmail);
+};
+
+export { serializeEmails, serializeEmail };
