@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -23,4 +25,24 @@ const getEmailsByOsuId = async (internalId, query) => {
   }
 };
 
-export { getEmailsByOsuId };
+const createEmail = async (internalId, body) => {
+  const connection = await getConnection('banner');
+  try {
+    const { rows } = await connection.execute(
+      contrib.getEmailByInternalId(),
+      { internalId, emailType: body.emailType.code },
+    );
+
+    if (!_.isEmpty(rows)) {
+      const binds = { ...rows[0], internalId };
+      await connection.execute(contrib.deactivateEmail(), binds);
+    }
+
+    return undefined;
+  } finally {
+    await connection.rollback();
+    connection.close();
+  }
+};
+
+export { getEmailsByOsuId, createEmail };
