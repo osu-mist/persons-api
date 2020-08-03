@@ -1966,6 +1966,10 @@ components:
           type: boolean
           nullable: false
           description: Indicator for a preferred email
+        displayWebInd:
+          type: boolean
+          nullable: false
+          description: Indicates if an email can be displayed on public web pages
     EmailAttributes:
       type: object
       additionalProperties: false

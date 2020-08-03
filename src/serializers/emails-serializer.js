@@ -20,6 +20,7 @@ const emailResourceKeys = _.keys(emailCombinedAttributes.properties);
 const prepareRawEmails = (rawEmails) => {
   _.forEach(rawEmails, (email) => {
     email.preferredInd = email.preferredInd === 'Y';
+    email.displayWebInd = email.displayWebInd === 'Y';
   });
 
   formatSubObjects(rawEmails);
