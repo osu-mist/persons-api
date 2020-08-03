@@ -8,8 +8,9 @@ import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
 
 const emailResourceProp = openapi.components.schemas.EmailResource.properties;
 const emailResourceType = emailResourceProp.type.enum[0];
-const emailResourceAttributes = emailResourceProp.attributes;
-const emailResourceKeys = _.keys(emailResourceAttributes.properties);
+const emailResourceAttributes = emailResourceProp.attributes.allOf;
+const emailCombinedAttributes = _.merge(emailResourceAttributes[0], emailResourceAttributes[1]);
+const emailResourceKeys = _.keys(emailCombinedAttributes.properties);
 
 /**
  * Some fields need to be prepared for the serializer
