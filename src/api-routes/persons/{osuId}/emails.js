@@ -1,7 +1,7 @@
 import { getEmailsByOsuId, createEmail } from 'db/oracledb/emails-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
-import { serializeEmails } from 'serializers/emails-serializer';
+import { serializeEmails, serializeEmail } from 'serializers/emails-serializer';
 
 /**
  * Get emails of a person by OSU ID
@@ -32,7 +32,6 @@ const get = async (req, res) => {
  */
 const post = async (req, res) => {
   try {
-    console.log('post email endpoint');
     const { body, params: { osuId } } = req;
 
     const internalId = await personExists(osuId);
@@ -41,8 +40,8 @@ const post = async (req, res) => {
     }
 
     const result = await createEmail(internalId, body.data.attributes);
-
-    return res.send(result);
+    const serializedEmail = await serializeEmail(result, osuId);
+    return res.send(serializedEmail);
   } catch (err) {
     return errorHandler(res, err);
   }
