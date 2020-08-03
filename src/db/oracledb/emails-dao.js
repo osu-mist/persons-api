@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import oracledb from 'oracledb';
 
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
@@ -29,7 +30,7 @@ const createEmail = async (internalId, body) => {
   const connection = await getConnection('banner');
   try {
     const { rows } = await connection.execute(
-      contrib.getEmailByInternalId(),
+      contrib.hasSameEmailType(),
       { internalId, emailType: body.emailType.code },
     );
 
@@ -37,6 +38,18 @@ const createEmail = async (internalId, body) => {
       const binds = { ...rows[0], internalId };
       await connection.execute(contrib.deactivateEmail(), binds);
     }
+
+    // const binds = { ...body, internalId };
+    const binds = _.omit(body, ['comment']);
+    binds.internalId = internalId;
+    binds.emailType = binds.emailType.code;
+    binds.preferredInd = binds.preferredInd ? 'Y' : 'N';
+    binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
+    // comment is reserved in oracledb
+    binds.emailComment = body.comment;
+    console.log(binds);
+    const { outBinds: { result } } = await connection.execute(contrib.createEmail(binds), binds);
+    console.log(result);
 
     return undefined;
   } finally {
