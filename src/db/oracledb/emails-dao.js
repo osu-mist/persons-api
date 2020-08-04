@@ -39,6 +39,22 @@ const getEmailsByOsuId = async (internalId, query) => {
 };
 
 /**
+ * Checks for preferred emails for a given person
+ *
+ * @param {string} internalId
+ * @returns {string} ID of preferred email address
+ */
+const preferredEmailExists = async (internalId) => {
+  const connection = await getConnection('banner');
+  try {
+    const { rows } = await connection.execute(contrib.hasPreferredEmail(), { internalId });
+    return rows ? rows[0].emailId : undefined;
+  } finally {
+    connection.close();
+  }
+};
+
+/**
  * Creates an email record for a user
  *
  * @param {string} internalId Internal ID of a person
@@ -48,14 +64,6 @@ const getEmailsByOsuId = async (internalId, query) => {
 const createEmail = async (internalId, body) => {
   const connection = await getConnection('banner');
   try {
-    const { rows: existingEmails } = await connection.execute(
-      contrib.hasSameEmailType(),
-      { internalId, emailType: body.emailType.code },
-    );
-
-    if (!_.isEmpty(existingEmails)) {
-      const binds = { ...existingEmails[0], internalId };
-      await connection.execute(contrib.deactivateEmail(), binds);
     const binds = {
       internalId,
       emailAddress: body.emailAddress,
@@ -84,4 +92,4 @@ const createEmail = async (internalId, body) => {
   }
 };
 
-export { getEmailsByOsuId, createEmail };
+export { getEmailsByOsuId, createEmail, preferredEmailExists };
