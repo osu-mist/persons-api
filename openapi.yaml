@@ -613,6 +613,35 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
+    patch:
+      description: Update email addresses for a person by email ID
+      summary: Update email addresses
+      tags:
+        - emails
+      operationId: patchEmailById
+      parameters:
+        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/emailId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailPostBody'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409Patch'
+        '500':
+          $ref: '#/components/responses/500'
 components:
   parameters:
     osuId:
