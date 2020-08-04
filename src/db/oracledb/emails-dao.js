@@ -92,4 +92,32 @@ const createEmail = async (internalId, body) => {
   }
 };
 
-export { getEmailsByOsuId, createEmail, preferredEmailExists };
+/**
+ * Query for a single email address by email ID
+ *
+ * @param {string} internalId internal ID of a person
+ * @param {string} emailId ID of an email address
+ * @returns {Promise<object>} raw email data
+ */
+const getEmailByEmailId = async (internalId, emailId) => {
+  const connection = await getConnection('banner');
+  try {
+    const binds = { internalId, emailId };
+    const { rows } = await connection.execute(contrib.getEmailsByOsuId(binds), binds);
+
+    if (rows.length > 1) {
+      throw new Error('Multiple emails found when querying by ID');
+    }
+
+    return rows ? rows[0] : undefined;
+  } finally {
+    connection.close();
+  }
+};
+
+export {
+  getEmailsByOsuId,
+  createEmail,
+  preferredEmailExists,
+  getEmailByEmailId,
+};

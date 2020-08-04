@@ -592,6 +592,32 @@ paths:
           $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
+  /persons/{osuId}/emails/{emailId}:
+    get:
+      description: Get emails for a person by email ID
+      summary: Get emails for a person by email ID
+      tags:
+        - emails
+      operationId: getEmailsByEmailId
+      parameters:
+        - $ref: '#/components/parameters/osuId'
+        - name: emailId
+          in: path
+          required: true
+          description: ID of a specific email address
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailResult'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 components:
   parameters:
     osuId:
