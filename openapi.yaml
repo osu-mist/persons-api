@@ -598,15 +598,10 @@ paths:
       summary: Get emails for a person by email ID
       tags:
         - emails
-      operationId: getEmailsByEmailId
+      operationId: getEmailById
       parameters:
         - $ref: '#/components/parameters/osuId'
-        - name: emailId
-          in: path
-          required: true
-          description: ID of a specific email address
-          schema:
-            type: string
+        - $ref: '#/components/parameters/emailId'
       responses:
         '200':
           description: Successful response
@@ -709,6 +704,13 @@ components:
         type: string
         enum:
           &phoneTypeEnums [PA, RN, RB, MG, RE, RK, VO, VP, VF, CM, EO, RH, EF, MP]
+    emailId:
+      name: emailId
+      in: path
+      required: true
+      description: ID of a specific email address
+      schema:
+        type: string
   responses:
     '400':
       description: Bad request
