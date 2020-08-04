@@ -56,15 +56,19 @@ const createEmail = async (internalId, body) => {
     if (!_.isEmpty(existingEmails)) {
       const binds = { ...existingEmails[0], internalId };
       await connection.execute(contrib.deactivateEmail(), binds);
+    const binds = {
+      internalId,
+      emailAddress: body.emailAddress,
+      emailType: body.emailType.code,
+      result: { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT },
+    };
+    if (body.preferredInd !== undefined) {
+      binds.preferredInd = body.preferredInd ? 'Y' : 'N';
     }
-
-    const binds = _.omit(body, ['comment']);
-    binds.internalId = internalId;
-    binds.emailType = binds.emailType.code;
-    binds.preferredInd = binds.preferredInd ? 'Y' : 'N';
-    binds.result = { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT };
     // comment is reserved in oracledb
-    binds.emailComment = body.comment;
+    if (body.comment !== undefined) {
+      binds.emailComment = body.comment;
+    }
     const { outBinds: { result } } = await connection.execute(contrib.createEmail(binds), binds);
 
     const rows = await getEmailsByOsuIdWithConnection(
