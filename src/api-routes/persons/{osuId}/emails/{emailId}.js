@@ -18,7 +18,6 @@ const get = async (req, res) => {
     }
 
     const result = await getEmailByEmailId(internalId, emailId);
-
     if (!result) {
       return errorBuilder(res, 404, 'An email with the specified email ID was not found.');
     }

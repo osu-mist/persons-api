@@ -2027,6 +2027,10 @@ components:
           type: boolean
           nullable: false
           description: Indicates if an email can be displayed on public web pages
+        statusInd:
+          type: boolean
+          nullable: false
+          description: Indicates if an email is active or not
     EmailAttributes:
       type: object
       additionalProperties: false

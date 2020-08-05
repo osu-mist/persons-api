@@ -21,6 +21,7 @@ const prepareRawEmails = (rawEmails) => {
   _.forEach(rawEmails, (email) => {
     email.preferredInd = email.preferredInd === 'Y';
     email.displayWebInd = email.displayWebInd === 'Y';
+    email.statusInd = email.statusInd === 'A';
   });
 
   formatSubObjects(rawEmails);
