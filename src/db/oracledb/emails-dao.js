@@ -73,6 +73,9 @@ const createEmail = async (internalId, body) => {
     if (body.preferredInd !== undefined) {
       binds.preferredInd = body.preferredInd ? 'Y' : 'N';
     }
+    if (body.displayWebInd !== undefined) {
+      binds.displayWebInd = body.displayWebInd ? 'A' : 'I';
+    }
     // comment is reserved in oracledb
     if (body.comment !== undefined) {
       binds.emailComment = body.comment;
