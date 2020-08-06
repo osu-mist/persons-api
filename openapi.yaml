@@ -626,7 +626,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailPostBody'
+              $ref: '#/components/schemas/EmailPatchBody'
       responses:
         '200':
           description: Successful response
@@ -2005,10 +2005,6 @@ components:
                 - `EMPL` - Employee
                 - `VPAY` - Vendor Pay
                 - `EMER` - Emergency Contact Persons Email for Student
-            description:
-              type: string
-              nullable: false
-              description: Description of email code
         emailAddress:
           type: string
           format: email
@@ -2035,6 +2031,13 @@ components:
       type: object
       additionalProperties: false
       properties:
+        emailType:
+          type: object
+          properties:
+            description:
+              type: string
+              nullable: false
+              description: Description of email code
         lastActivityDate:
           type: string
           format: date
@@ -2058,13 +2061,35 @@ components:
               $ref: '#/components/schemas/EmailType'
             attributes:
               $ref: '#/components/schemas/EmailPostAttributes'
+    EmailPatchBody:
+      type: object
+      required:
+        - data
+      additionalProperties: false
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - id
+            - attributes
+          additionalProperties: false
+          properties:
+            type:
+              $ref: '#/components/schemas/EmailType'
+            id:
+              $ref: '#/components/schemas/EmailId'
+            attributes:
+              $ref: '#/components/schemas/EmailPostAttributes'
+    EmailId:
+      type: string
+      description: Unique ID for an email address
+      example: '918179'
     EmailResource:
       type: object
       properties:
         id:
-          type: string
-          description: Unique ID for an email address
-          example: '918179'
+          $ref: '#/components/schemas/EmailId'
         type:
           $ref: '#/components/schemas/EmailType'
         links:
