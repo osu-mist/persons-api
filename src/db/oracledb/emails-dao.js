@@ -17,8 +17,9 @@ const getEmailsByOsuIdWithConnection = async (connection, internalId, query) => 
   const parsedQuery = parseQuery(query);
   const { rows } = await connection.execute(
     contrib.getEmailsByOsuId(parsedQuery),
-    { internalId, ..._.pick(parsedQuery, ['emailRowId']) },
+    { internalId, ..._.omit(parsedQuery, ['emailType', 'preferredInd']) },
   );
+  console.log(rows);
   return rows;
 };
 
@@ -54,6 +55,30 @@ const preferredEmailExists = async (internalId) => {
   }
 };
 
+const postPatchBinds = (internalId, body) => {
+  const binds = {
+    internalId,
+    emailAddress: body.emailAddress,
+    emailType: body.emailType.code,
+    result: { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT },
+  };
+  if (body.preferredInd !== undefined) {
+    binds.preferredInd = body.preferredInd ? 'Y' : 'N';
+  }
+  if (body.displayWebInd !== undefined) {
+    binds.displayWebInd = body.displayWebInd ? 'Y' : 'N';
+  }
+  if (body.statusInd !== undefined) {
+    binds.statusInd = body.statusInd ? 'A' : 'I';
+  }
+  // comment is reserved in oracledb
+  if (body.comment !== undefined) {
+    binds.emailComment = body.comment;
+  }
+
+  return binds;
+};
+
 /**
  * Creates an email record for a user
  *
@@ -64,22 +89,7 @@ const preferredEmailExists = async (internalId) => {
 const createEmail = async (internalId, body) => {
   const connection = await getConnection('banner');
   try {
-    const binds = {
-      internalId,
-      emailAddress: body.emailAddress,
-      emailType: body.emailType.code,
-      result: { type: oracledb.DB_TYPE_VARCHAR, dir: oracledb.BIND_OUT },
-    };
-    if (body.preferredInd !== undefined) {
-      binds.preferredInd = body.preferredInd ? 'Y' : 'N';
-    }
-    if (body.displayWebInd !== undefined) {
-      binds.displayWebInd = body.displayWebInd ? 'A' : 'I';
-    }
-    // comment is reserved in oracledb
-    if (body.comment !== undefined) {
-      binds.emailComment = body.comment;
-    }
+    const binds = postPatchBinds(internalId, body);
     const { outBinds: { result } } = await connection.execute(contrib.createEmail(binds), binds);
 
     const rows = await getEmailsByOsuIdWithConnection(
@@ -118,9 +128,48 @@ const getEmailByEmailId = async (internalId, emailId) => {
   }
 };
 
+/**
+ * Update email address record
+ *
+ * @param {string} internalId Internal ID of a person
+ * @param {string} emailRowId ROWID of email record
+ * @param {string} emailId Email ID used to query email after update since ROWID changes
+ * @param {object} body Body sent with request
+ */
+const updateEmail = async (internalId, emailRowId, body) => {
+  const connection = await getConnection('banner');
+  try {
+    const binds = postPatchBinds(internalId, body);
+    binds.emailRowId = emailRowId;
+    delete binds.result;
+    console.log(binds);
+    await connection.execute(contrib.updateEmail(binds), binds);
+
+    const resultBinds = _.pick(binds, [
+      'emailAddress',
+      'preferredInd',
+      'displayWebInd',
+      'statusInd',
+      'emailComment',
+    ]);
+    resultBinds.emailType = [binds.emailType];
+    const rows = await getEmailsByOsuIdWithConnection(
+      connection,
+      internalId,
+      resultBinds,
+    );
+
+    return rows[0];
+  } finally {
+    await connection.rollback();
+    connection.close();
+  }
+};
+
 export {
   getEmailsByOsuId,
   createEmail,
   preferredEmailExists,
   getEmailByEmailId,
+  updateEmail,
 };
