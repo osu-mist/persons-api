@@ -31,11 +31,11 @@ class IntegrationTests(utils.UtilsTestCase):
     def tearDownClass(cls):
         cls.session.close()
 
-    def test_get_person_by_id(self, endpoint='/persons'):
+    def test_get_person_by_id(self):
         """Test case: GET /persons/{osuId}"""
 
+        endpoint = '/persons'
         nullable_fields = self.get_nullable_fields('PersonResource')
-
         valid_person_ids = self.test_cases['valid_person_ids']
         invalid_osu_ids = self.test_cases['invalid_osu_ids']
 
@@ -58,11 +58,11 @@ class IntegrationTests(utils.UtilsTestCase):
                 nullable_fields=nullable_fields
             )
 
-    def test_get_job_by_id(self, endpoint='/jobs'):
+    def test_get_job_by_id(self):
         """Test case: GET /persons/{osuId}/jobs/{jobId}"""
 
+        endpoint = '/jobs'
         nullable_fields = self.get_nullable_fields('JobResource')
-
         valid_person_ids = self.test_cases['valid_person_ids']
         invalid_job_ids = self.test_cases['invalid_job_ids']
 
@@ -86,11 +86,11 @@ class IntegrationTests(utils.UtilsTestCase):
                 nullable_fields=nullable_fields
             )
 
-    def test_get_jobs(self, endpoint='/jobs'):
+    def test_get_jobs(self):
         """Test case: GET /persons/{osuId}/jobs"""
 
+        endpoint = '/jobs'
         nullable_fields = self.get_nullable_fields('JobResource')
-
         valid_person_ids = self.test_cases['valid_person_ids']
 
         resource = 'JobResource'
@@ -113,10 +113,12 @@ class IntegrationTests(utils.UtilsTestCase):
             osu_id
         )
 
-    def test_get_images(self, endpoint='/images'):
+    def test_get_images(self):
         """Test case: GET /persons/{osuId}/images"""
 
+        endpoint = '/images'
         valid_person_ids = self.test_cases['valid_person_ids']
+
         for person in valid_person_ids:
             osu_id = person['osu_id']
 
@@ -133,12 +135,12 @@ class IntegrationTests(utils.UtilsTestCase):
                 f'requested_url: {requested_url},\nresponse_body: {response}'
             )
 
-    def test_get_meal_plans(self, endpoint='/meal-plans'):
+    def test_get_meal_plans(self):
         """Test case: GET /persons/{osuId}/meal-plans"""
 
+        endpoint = '/meal-plans'
         resource = 'MealPlanResource'
         nullable_fields = self.get_nullable_fields(resource)
-
         valid_meal_plan_ids = self.test_cases['valid_meal_plan_ids']
 
         for meal_plan in valid_meal_plan_ids:
@@ -160,13 +162,14 @@ class IntegrationTests(utils.UtilsTestCase):
             osu_id
         )
 
-    def test_get_meal_plans_by_meal_plan_id(self, endpoint='/meal-plans'):
+    def test_get_meal_plans_by_meal_plan_id(self):
         """Test case: GET /persons/{osuId}/meal-plans/{mealPlanId}"""
 
+        endpoint = '/meal-plans'
         resource = 'MealPlanResource'
         nullable_fields = self.get_nullable_fields(resource)
-
         valid_meal_plan_ids = self.test_cases['valid_meal_plan_ids']
+
         for meal_plan in valid_meal_plan_ids:
             osu_id = meal_plan['osu_id']
             meal_plan_id = meal_plan['meal_plan_id']
@@ -187,13 +190,14 @@ class IntegrationTests(utils.UtilsTestCase):
                 nullable_fields=nullable_fields
             )
 
-    def test_get_addresses(self, endpoint='/addresses'):
+    def test_get_addresses(self):
         """Test case: GET /persons/{osuId}/addresses"""
 
+        endpoint = '/addresses'
         resource = 'AddressResource'
         nullable_fields = self.get_nullable_fields(resource)
-
         valid_person_ids = self.test_cases['valid_person_ids']
+
         for person in valid_person_ids:
             osu_id = person['osu_id']
             self.check_endpoint(
@@ -213,13 +217,14 @@ class IntegrationTests(utils.UtilsTestCase):
             osu_id
         )
 
-    def test_get_phones(self, endpoint='/phones'):
+    def test_get_phones(self):
         """Test case: GET /persons/{osuId}/phones"""
 
+        endpoint = '/phones'
         resource = 'PhoneResource'
         nullable_fields = self.get_nullable_fields(resource)
-
         valid_person_ids = self.test_cases['valid_person_ids']
+
         for person in valid_person_ids:
             osu_id = person['osu_id']
             self.check_endpoint(
@@ -239,13 +244,14 @@ class IntegrationTests(utils.UtilsTestCase):
             osu_id
         )
 
-    def test_get_emails(self, endpoint='/emails'):
+    def test_get_emails(self):
         """Test case: GET /persons/{osuId}/emails"""
 
+        endpoint = '/emails'
         resource = 'EmailResource'
         nullable_fields = self.get_nullable_fields(resource)
-
         valid_person_ids = self.test_cases['valid_person_ids']
+
         for person in valid_person_ids:
             osu_id = person['osu_id']
             self.check_endpoint(
