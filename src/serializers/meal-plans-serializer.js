@@ -11,6 +11,11 @@ const planResourceType = planResourceProp.type.enum[0];
 const planResourceAttributes = planResourceProp.attributes.properties;
 const planResourceKeys = _.keys(planResourceAttributes);
 
+/**
+ * Prepares raw data for serializer
+ *
+ * @param {object[]} rawMealPlans raw meal plan data
+ */
 const prepareRawMealPlans = (rawMealPlans) => {
   formatSubObjects(rawMealPlans);
 
