@@ -209,8 +209,8 @@
   "test_cases": {
     "valid_person_ids": [
       {
-        "osu_id": "",
-        "job_id": ""
+        "osu_id": "fakeId",
+        "job_id": "fakeId"
       }
      ],
     "invalid_osu_ids": ["999", "-1", "invalid_id"],
