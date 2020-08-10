@@ -1,6 +1,5 @@
 """Utility class and functions for integration testing"""
 import argparse
-from deepmerge import always_merger
 import json
 import logging
 import re
@@ -9,6 +8,7 @@ import textwrap
 import urllib
 import unittest
 
+from deepmerge import always_merger
 import requests
 import validators
 
