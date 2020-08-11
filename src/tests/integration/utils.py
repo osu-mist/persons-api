@@ -401,7 +401,7 @@ class UtilsTestCase(unittest.TestCase):
         response = self.make_request(endpoint,
                                      response_code,
                                      params=query_params,
-                                     max_elapsed_seconds=12)
+                                     max_elapsed_seconds=5)
 
         self.check_schema(response, schema, nullable_fields)
         response_json = response.json()
