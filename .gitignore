@@ -126,3 +126,6 @@ venv.bak/
 
 # Transpiled Babel code and source maps
 dist/**
+
+# VS Code config
+.vscode

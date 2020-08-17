@@ -8,6 +8,7 @@ import textwrap
 import urllib
 import unittest
 
+from deepmerge import always_merger
 import requests
 import validators
 
@@ -77,6 +78,46 @@ class UtilsTestCase(unittest.TestCase):
     openapi = {}
     local_test = None
 
+    def get_nullable_fields(self, resource):
+        """Parse openapi for nullable fields"""
+
+        resource_schema = self.openapi['components']['schemas'][resource]
+
+        if 'allOf' in resource_schema['properties']['attributes']:
+            resource_schema['properties']['attributes'] = self.__merge_allOf(
+                resource_schema['properties']['attributes']['allOf']
+            )
+        if '$ref' in resource_schema['properties']['attributes']:
+            resolved_reference = self.__resolve_reference(
+                resource_schema['properties']['attributes']
+            )
+            resource_schema['properties']['attributes'] = resolved_reference
+
+        attributes = resource_schema['properties']['attributes']['properties']
+        nullable_fields = []
+        self.get_nested_nullable_fields(attributes, nullable_fields)
+
+        return nullable_fields
+
+    def get_nested_nullable_fields(self, attributes, nullable_fields):
+        for attribute in attributes:
+            if 'type' in attributes[attribute]:
+                if attributes[attribute]['type'] == 'object':
+                    self.get_nested_nullable_fields(
+                        attributes[attribute]['properties'],
+                        nullable_fields
+                    )
+                elif attributes[attribute]['type'] == 'array':
+                    self.get_nested_nullable_fields(
+                        attributes[attribute]['items']['properties'],
+                        nullable_fields
+                    )
+            if (
+                'nullable' in attributes[attribute]
+                and attributes[attribute]['nullable']
+            ):
+                nullable_fields.append(attribute)
+
     def get_json_content(self, response):
         """Get response content in JSON format"""
 
@@ -116,7 +157,8 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual(
             status_code,
             expected_status_code,
-            f'requested_url: {requested_url},\nresponse_body: {response_body}'
+            f'requested_url: {requested_url}, params: {params},\n'
+            f'response_body: {response_body}'
         )
 
         # Response time should less then max_elapsed_seconds
@@ -125,6 +167,24 @@ class UtilsTestCase(unittest.TestCase):
         self.assertLess(elapsed_seconds, max_elapsed_seconds)
 
         return response
+
+    def __merge_allOf(self, schema):
+        """Helper function to merge allOf properties"""
+
+        merged = self.__resolve_reference(schema[0])
+        for ref in schema[1:]:
+            always_merger.merge(merged, self.__resolve_reference(ref))
+        return merged
+
+    def __resolve_reference(self, reference):
+        path = reference['$ref'].split('/')[1:]
+        return self.__locate_reference(self.openapi, path)
+
+    def __locate_reference(self, openapi, path):
+        if len(path) == 1:
+            return openapi[path[0]]
+        else:
+            return self.__locate_reference(openapi[path[0]], path[1:])
 
     def check_schema(self, response, schema, nullable_fields):
         """Check the schema of response match OpenAPI specification"""
@@ -146,6 +206,14 @@ class UtilsTestCase(unittest.TestCase):
         def __get_schema_attributes():
             """Helper function to get attributes of the schema"""
 
+            if 'allOf' in schema['attributes']:
+                schema['attributes'] = self.__merge_allOf(
+                    schema['attributes']['allOf']
+                )
+            elif '$ref' in schema['attributes']:
+                schema['attributes'] = self.__resolve_reference(
+                    schema['attributes']
+                )
             return schema['attributes']['properties']
 
         def __validate_format(attribute, formatting, pattern):
@@ -206,6 +274,8 @@ class UtilsTestCase(unittest.TestCase):
             """Helper function to check resource object schema"""
 
             # Check resource type
+            if '$ref' in schema['type']:
+                schema['type'] = self.__resolve_reference(schema['type'])
             self.assertEqual(resource['type'], schema['type']['enum'][0])
             # Check resource attributes
             actual_attributes = resource['attributes']
@@ -328,8 +398,10 @@ class UtilsTestCase(unittest.TestCase):
 
         nullable_fields = [] if nullable_fields is None else nullable_fields
         schema = self.get_resource_schema(resource)
-        response = self.make_request(endpoint, response_code,
-                                     params=query_params)
+        response = self.make_request(endpoint,
+                                     response_code,
+                                     params=query_params,
+                                     max_elapsed_seconds=5)
 
         self.check_schema(response, schema, nullable_fields)
         response_json = response.json()
@@ -337,3 +409,24 @@ class UtilsTestCase(unittest.TestCase):
             self.check_url(response_json['links']['self'], endpoint,
                            query_params)
         return response
+
+    def check_query_params(self, endpoint, resource, nullable_fields,
+                           query_params, osu_id):
+        for param in query_params:
+            for value in query_params[param]['valid']:
+                self.check_endpoint(
+                    endpoint,
+                    resource,
+                    200,
+                    nullable_fields=nullable_fields,
+                    query_params={param: value}
+                )
+            if 'invalid' in query_params[param]:
+                for value in query_params[param]['invalid']:
+                    self.check_endpoint(
+                        endpoint,
+                        'ErrorObject',
+                        400,
+                        nullable_fields=nullable_fields,
+                        query_params={param: value}
+                    )

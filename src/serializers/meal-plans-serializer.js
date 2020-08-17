@@ -12,6 +12,19 @@ const planResourceAttributes = planResourceProp.attributes.properties;
 const planResourceKeys = _.keys(planResourceAttributes);
 
 /**
+ * Prepares raw data for serializer
+ *
+ * @param {object[]} rawMealPlans raw meal plan data
+ */
+const prepareRawMealPlans = (rawMealPlans) => {
+  formatSubObjects(rawMealPlans);
+
+  _.forEach(rawMealPlans, (mealPlan) => {
+    mealPlan.balance = parseFloat(mealPlan.balance);
+  });
+};
+
+/**
  * Get serializer arguments for JsonApiSerializer
  *
  * @param {string} osuId
@@ -41,7 +54,7 @@ const serializeMealPlans = (rawMealPlans, osuId, query) => {
   const topLevelSelfLink = paramsLink(planResourceUrl, query);
   serializerArgs.topLevelSelfLink = topLevelSelfLink;
 
-  formatSubObjects(rawMealPlans);
+  prepareRawMealPlans(rawMealPlans);
 
   return new JsonApiSerializer(
     planResourceType,
@@ -62,7 +75,7 @@ const serializeMealPlan = (rawMealPlan, osuId) => {
   const topLevelSelfLink = resourcePathLink(planResourceUrl, rawMealPlan.mealPlanId);
   serializerArgs.topLevelSelfLink = topLevelSelfLink;
 
-  formatSubObjects([rawMealPlan]);
+  prepareRawMealPlans([rawMealPlan]);
 
   return new JsonApiSerializer(
     planResourceType,

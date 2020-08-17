@@ -62,6 +62,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PersonResult'
+        '400':
+          $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -199,6 +201,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JobResult'
+        '400':
+          $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -354,6 +358,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MealPlanResult'
+        '400':
+          $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -596,6 +602,7 @@ components:
       required: true
       schema:
         type: string
+        pattern: '^[0-9]+$'
     studentEmployeeInd:
       name: filter[studentEmployeeInd]
       in: query
@@ -1773,6 +1780,8 @@ components:
       properties:
         phoneNumber:
           nullable: false
+        phoneExtension:
+          pattern: ^[0-9]{1,4}$
     PhonePostAttributes:
       type: object
       additionalProperties: false
@@ -1793,7 +1802,6 @@ components:
           nullable: true
           description: Extension for the phone number. Can be returned in different formats.
           example: '20'
-          pattern: ^[0-9]{1,4}$
         primaryInd:
           type: boolean
           nullable: false

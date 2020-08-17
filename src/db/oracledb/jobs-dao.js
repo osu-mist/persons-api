@@ -105,6 +105,10 @@ const getJobByJobId = async (internalId, jobId) => {
   const connection = await getConnection('banner');
   try {
     const [positionNumber, suffix] = jobId.split('-');
+    if (!positionNumber || !suffix) {
+      return undefined;
+    }
+
     const binds = { internalId, positionNumber, suffix };
     const { rows } = await connection.execute(contrib.getJobs(binds), binds);
 

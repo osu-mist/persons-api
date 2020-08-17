@@ -1,8 +1,8 @@
 {
   "local_test": true,
   "api": {
-    "local_base_url": "https://localhost:8080/api/v1",
-    "base_url": "https://api.oregonstate.edu/v1"
+    "local_base_url": "https://localhost:8080/api/v2",
+    "base_url": "https://api.oregonstate.edu/v2"
   },
   "auth": {
     "basic_auth": {
@@ -15,12 +15,218 @@
       "client_secret": "client_secret"
     }
   },
+  "query_params": {
+    "osu_id": "",
+    "jobs": {
+      "filter[positionNumber]": {
+        "valid": [
+          "C33544"
+        ]
+      },
+      "filter[suffix]": {
+        "valid": [
+          "S0"
+        ]
+      },
+      "filter[statusCode]": {
+        "valid": [
+          "A",
+          "B"
+        ],
+        "invalid": [
+          "Z"
+        ]
+      },
+      "filter[campusCode]": {
+        "valid": [
+          "02A",
+          "26C"
+        ],
+        "invalid": [
+          "null",
+          "Bad"
+        ]
+      },
+      "filter[studentEmployeeInd]": {
+        "valid": [
+          "true",
+          "false"
+        ]
+      }
+    },
+    "meal_plans": {
+      "filter[balance][gt]": {
+        "valid": [
+          5,
+          10,
+          99999
+        ],
+        "invalid": [
+          "five",
+          true
+        ]
+      },
+      "filter[balance][gte]": {
+        "valid": [
+          5,
+          10,
+          99999
+        ],
+        "invalid": [
+          "five",
+          true
+        ]
+      },
+      "filter[lastUsedDateTime][lte]": {
+        "valid": [
+          "2019-03-21T10:53:06Z",
+          "1995-12-25T15:53:06Z"
+        ],
+        "invalid": [
+          "1995-MAY-05",
+          "2019-3-21T10:53:06Z",
+          12,
+          true
+        ]
+      },
+      "filter[lastUsedDateTime][gte]": {
+        "valid": [
+          "2019-03-21T10:53:06Z",
+          "1995-12-25T15:53:06Z"
+        ],
+        "invalid": [
+          "1995-MAY-05",
+          "2019-3-21T10:53:06Z",
+          12,
+          true
+        ]
+      }
+    },
+    "addresses": {
+      "filter[city]": {
+        "valid": [
+          "corvallis",
+          "Hogsmeade"
+        ]
+      },
+      "filter[county]": {
+        "valid": [
+          "Benton",
+          "Linn"
+        ]
+      },
+      "filter[stateCode]": {
+        "valid": [
+          "DE",
+          "NJ"
+        ],
+        "invalid": [
+          "ZZ",
+          5
+        ]
+      },
+      "filter[nationCode]": {
+        "valid": [
+          "FPL",
+          "NUM"
+        ],
+        "invalid": [
+          "BAD",
+          5
+        ]
+      },
+      "filter[addressType]": {
+        "valid": [
+          "RH",
+          "RB"
+        ],
+        "invalid": [
+          "BAD",
+          5
+        ]
+      }
+    },
+    "phones": {
+      "filter[addressType]": {
+        "valid": [
+          "PA",
+          "CM",
+          "RB"
+        ],
+        "invalid": [
+          "BAD",
+          5
+        ]
+      },
+      "filter[phoneType]": {
+        "valid": [
+          "PA",
+          "CM",
+          "RB"
+        ],
+        "invalid": [
+          "BAD",
+          5
+        ]
+      },
+      "filter[primaryInd]": {
+        "valid": [
+          "true",
+          "false"
+        ],
+        "invalid": [
+          true,
+          false,
+          1
+        ]
+      }
+    },
+    "emails": {
+      "filter[emailType]": {
+        "valid": [
+          "ONID",
+          "VEND",
+          "VPAY"
+        ],
+        "invalid": [
+          true,
+          "BAD"
+        ]
+      },
+      "filter[preferredInd]": {
+        "valid": [
+          "true",
+          "false"
+        ],
+        "invalid": [
+          true,
+          false,
+          1
+        ]
+      }
+    }
+  },
   "test_cases": {
-    "valid_pet_ids": [
-      "57e1aab0-c50b-11e9-a7bd-1fb8646e6a06",
-      "757f4d20-c50b-11e9-a7bd-1fb8646e6a06",
-      "79b8ff30-c50b-11e9-a7bd-1fb8646e6a06"
+    "valid_person_ids": [
+      {
+        "osu_id": "fakeId",
+        "job_id": "fakeId"
+      }
      ],
-    "invalid_pet_ids": ["999", "-1", "invalid_id"]
+    "invalid_osu_ids": ["999", "-1", "invalid_id"],
+    "invalid_job_ids": {
+        "osu_id": "",
+        "job_ids": ["C33544", "S0", "null", null]
+    },
+    "valid_meal_plan_ids": [
+      {
+        "osu_id": "",
+        "meal_plan_id": ""
+      }
+    ],
+    "invalid_meal_plan_ids": {
+      "osu_id": "",
+      "meal_plan_ids": ["five", true, null]
+    }
   }
 }
