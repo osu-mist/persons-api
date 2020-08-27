@@ -813,6 +813,16 @@ components:
           nullable: true
           description: ONID username
           example: smithj
+        emailAddress:
+          type: string
+          nullable: true
+          description: Primary email address
+          example: "smithj@example.com"
+        phoneNumber:
+          type: string
+          nullable: true
+          description: Phone number for a person
+          example: 1 555 444 3333
         confidentialInd:
           type: boolean
           nullable: false
