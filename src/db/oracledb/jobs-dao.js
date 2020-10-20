@@ -10,26 +10,33 @@ import { contrib } from './contrib/contrib';
 const commonBinds = [
   'changeReason_code',
   'employeeClassification_code',
-  'status_code',
   'hourlyRate',
   'personnelChangeDate',
-  'timesheet_current_code',
   'appointmentPercent',
-  'jobDescription',
-  'campus_code',
   'hoursPerPay',
-  'salary_paysPerYear',
   'salary_annual',
-  'strsAppointmentBasis',
   'fullTimeEquivalency',
-  'earningCode_effectiveDate',
-  'earningCode_code',
-  'earningCode_hours',
   'supervisor_positionNumber',
   'supervisor_suffix',
   'supervisor_osuId',
+  'employeeGroup_code',
+];
+
+const studentBinds = [
+  ...commonBinds,
+  'status_code',
+  'timesheet_current_code',
+  'jobDescription',
+  'campus_code',
+  'salary_paysPerYear',
+  'strsAppointmentBasis',
+  'laborDistribution',
+  'earningCode_effectiveDate',
+  'earningCode_code',
+  'earningCode_hours',
   'beginDate',
   'accruesLeaveInd',
+  'effectiveDate',
   'contractBeginDate',
   'contractEndDate',
   'useTemporarySsnInd',
@@ -37,20 +44,12 @@ const commonBinds = [
   'i9Form_code',
   'i9Form_date',
   'i9Form_expirationDate',
-  'laborDistribution',
-  'employeeGroup_code',
-];
-
-const studentBinds = [
-  ...commonBinds,
   'retirement_code',
   'homeOrganization_current_code',
 ];
 
 const graduateBinds = [
   ...commonBinds,
-  'salaryInformationReleaseInd',
-  'salaryInformationReleaseDate',
   'homeOrganization_current_code',
 ];
 
