@@ -53,6 +53,8 @@ const graduateBinds = [
   'homeOrganization_current_code',
 ];
 
+const validStudentPositionNumberPrefixes = ['C50', 'C51', 'C52', 'C60', 'C69'];
+
 /**
  * Gets labor distribution data for each job passed in
  *
@@ -337,8 +339,9 @@ const createOrUpdateJob = async (operation, osuId, body) => {
     const { studentEmployeeInd, changeReason: { code: changeReasonCode } } = body;
     const employmentType = studentEmployeeInd ? 'student' : 'graduate';
 
-    if (employmentType === 'student' && !/^C5[0-2]/.test(body.positionNumber)) {
-      return new Error('Position number for students must start with C50, C51, or C52');
+    if (employmentType === 'student'
+        && !validStudentPositionNumberPrefixes.includes(body.positionNumber.substring(0, 3))) {
+      return new Error('Position number for students must start with C50, C51, C52, C60 or C69');
     }
 
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
