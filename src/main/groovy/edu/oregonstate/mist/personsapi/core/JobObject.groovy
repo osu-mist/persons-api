@@ -28,7 +28,9 @@ class JobObject {
             'T': 'Terminated'
     ].withDefault { key -> 'New job status. Please contact API support for further assistance' }
 
-    public static final List<String> validStudentPositionNumberPrefixes = ["C50", "C51", "C52"]
+    public static final List<String> validStudentPositionNumberPrefixes = [
+        "C50", "C51", "C52", "C60", "C69"
+    ]
 
     @JsonIgnore
     public Boolean isValidStudentPositionNumber() {
