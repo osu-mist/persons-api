@@ -29,10 +29,20 @@ class JobObject {
     ].withDefault { key -> 'New job status. Please contact API support for further assistance' }
 
     public static final List<String> validStudentPositionNumberPrefixes = ["C50", "C51", "C52"]
+    public static final List<String> validGradTerminatePosnPrefixes = [
+        "C50", "C51", "C52", "C60", "C69"
+    ]
 
     @JsonIgnore
     public Boolean isValidStudentPositionNumber() {
         validStudentPositionNumberPrefixes.collect {
+            this.positionNumber?.startsWith(it)
+        }.contains(true)
+    }
+
+    @JsonIgnore
+    public Boolean isValidGradTermPositionNumber() {
+        validGradTerminatePosnPrefixes.collect {
             this.positionNumber?.startsWith(it)
         }.contains(true)
     }
