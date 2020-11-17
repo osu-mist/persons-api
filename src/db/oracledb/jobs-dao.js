@@ -53,6 +53,9 @@ const graduateBinds = [
   'homeOrganization_current_code',
 ];
 
+const validStudentPositionNumberPrefixes = ['C50', 'C51', 'C52'];
+const validGradTermPositionNumberPrefixes = ['C50', 'C51', 'C52', 'C60', 'C69'];
+
 /**
  * Gets labor distribution data for each job passed in
  *
@@ -334,11 +337,22 @@ const createOrUpdateJob = async (operation, osuId, body) => {
   const connection = await getConnection('banner');
   try {
     let error;
-    const { studentEmployeeInd, changeReason: { code: changeReasonCode } } = body;
+    const { studentEmployeeInd, positionNumber, changeReason: { code: changeReasonCode } } = body;
     const employmentType = studentEmployeeInd ? 'student' : 'graduate';
 
-    if (employmentType === 'student' && !/^C5[0-2]/.test(body.positionNumber)) {
-      return new Error('Position number for students must start with C50, C51, or C52');
+    if (employmentType === 'student') {
+      const termination = ['TERME', 'TERMJ'].includes(changeReasonCode);
+      const posNumPrefix = positionNumber.substring(0, 3);
+      if (termination
+          && !validGradTermPositionNumberPrefixes.includes(posNumPrefix)) {
+        return new Error('Valid position numbers for termination must begin with one of these '
+          + `prefixes: ${validGradTermPositionNumberPrefixes.join(', ')}`);
+      }
+      if (!termination
+          && !validStudentPositionNumberPrefixes.includes(posNumPrefix)) {
+        return new Error('Student position numbers must begin with one of these prefixes: '
+          + `${validStudentPositionNumberPrefixes.join(', ')}`);
+      }
     }
 
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
