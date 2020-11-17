@@ -644,14 +644,12 @@ class PersonsResource extends Resource {
                         "for the given begin date.")
             }
             if (employmentType == studentEmploymentType) {
-                if (['TERME', 'TERMJ'].contains(job.changeReasonCode)
-                    && (!job.isValidGradTermPositionNumber())
+                boolean isTermination = ['TERME', 'TERMJ'].contains(job.changeReasonCode)
+                if (isTermination && (!job.isValidGradTermPositionNumber())
                 ) {
                     addBadRequest("Valid position numbers for termination must begin with one of "
                         + "these prefixes: ${JobObject.validGradTerminatePosnPrefixes.join(", ")}")
-                } else if (!['TERME', 'TERMJ'].contains(job.changeReasonCode)
-                    && !job.isValidStudentPositionNumber()
-                ) {
+                } else if (!isTermination && !job.isValidStudentPositionNumber()) {
                     addBadRequest("Student position numbers must begin with one of these prefixes: "
                         + "${JobObject.validStudentPositionNumberPrefixes.join(", ")}")
                 }
