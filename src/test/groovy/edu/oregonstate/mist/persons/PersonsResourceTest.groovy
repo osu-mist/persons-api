@@ -1371,7 +1371,7 @@ class PersonsResourceTest {
     @Test
     void studentPositionsMustUseValidPrefix() {
         String expectedMessage = "Student position numbers must begin with one " +
-                "of these prefixes: C50, C51, C52, C60, C69"
+                "of these prefixes: C50, C51, C52"
 
         JobObject invalidStudentJob = fakeJob
         invalidStudentJob.positionNumber = "C123456"
