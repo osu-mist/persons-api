@@ -342,13 +342,14 @@ const createOrUpdateJob = async (operation, osuId, body) => {
 
     if (employmentType === 'student') {
       const termination = ['TERME', 'TERMJ'].includes(changeReasonCode);
+      const posNumPrefix = positionNumber.substring(0, 3);
       if (termination
-          && !validGradTermPositionNumberPrefixes.includes(positionNumber.substring(0, 3))) {
+          && !validGradTermPositionNumberPrefixes.includes(posNumPrefix)) {
         return new Error('Valid position numbers for termination must begin with one of these '
           + `prefixes: ${validGradTermPositionNumberPrefixes.join(', ')}`);
       }
       if (!termination
-          && !validStudentPositionNumberPrefixes.includes(positionNumber.substring(0, 3))) {
+          && !validStudentPositionNumberPrefixes.includes(posNumPrefix)) {
         return new Error('Student position numbers must begin with one of these prefixes: '
           + `${validStudentPositionNumberPrefixes.join(', ')}`);
       }
