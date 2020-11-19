@@ -392,7 +392,8 @@ class UtilsTestCase(unittest.TestCase):
                             Link parameters: {link_url_query}'''))
 
     def check_endpoint(self, endpoint, resource, response_code,
-                       query_params=None, nullable_fields=None):
+                       query_params=None, nullable_fields=None,
+                       max_elapsed_seconds=5):
         """Check response of an endpoint for response code, schema, self
         link"""
 
@@ -401,7 +402,7 @@ class UtilsTestCase(unittest.TestCase):
         response = self.make_request(endpoint,
                                      response_code,
                                      params=query_params,
-                                     max_elapsed_seconds=5)
+                                     max_elapsed_seconds=max_elapsed_seconds)
 
         self.check_schema(response, schema, nullable_fields)
         response_json = response.json()
