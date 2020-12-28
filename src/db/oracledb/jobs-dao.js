@@ -235,6 +235,9 @@ const updateJob = async (connection, osuId, body) => {
     'fullTimeEquivalency',
     'changeReason_code',
     'salary_annual',
+    'earningCode_code',
+    'earningCode_effectiveDate',
+    'earningCode_hours',
   ]);
 
   const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
