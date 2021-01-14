@@ -46,7 +46,7 @@ const post = async (req, res) => {
     }
 
     const serializedJob = serializePostOrPatch(osuId, body);
-    return res.send(serializedJob);
+    return res.status(202).send(serializedJob);
   } catch (err) {
     return errorHandler(res, err);
   }
