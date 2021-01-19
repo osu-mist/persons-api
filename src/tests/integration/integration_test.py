@@ -54,7 +54,7 @@ class IntegrationTests(utils.UtilsTestCase):
             self.check_endpoint(
                 f'{endpoint}/{osu_id}',
                 resource,
-                400,
+                404,
                 nullable_fields=nullable_fields
             )
 
@@ -189,7 +189,7 @@ class IntegrationTests(utils.UtilsTestCase):
             self.check_endpoint(
                 f'/persons/{osu_id}{endpoint}/{meal_plan_id}',
                 'ErrorObject',
-                400,
+                404,
                 nullable_fields=nullable_fields
             )
 
