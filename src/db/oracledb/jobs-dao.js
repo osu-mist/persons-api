@@ -253,7 +253,7 @@ const updateJob = async (connection, osuId, body) => {
  * @returns {string} Query result, null if success
  */
 const terminateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, ['changeReason_code']);
+  const binds = standardBinds(osuId, body, ['changeReason_code', 'personnelChangeDate']);
 
   const { outBinds: { result } } = await connection.execute(contrib.terminateJob(), binds);
   return result;
