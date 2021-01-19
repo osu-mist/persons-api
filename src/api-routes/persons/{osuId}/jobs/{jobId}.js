@@ -37,10 +37,24 @@ const get = async (req, res) => {
 const patch = async (req, res) => {
   try {
     const { body, params: { osuId, jobId } } = req;
+    const { data: { id: pathId, attributes } } = body;
 
     const internalId = await personExists(osuId);
     if (!internalId) {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+    }
+
+    if (jobId !== pathId) {
+      return errorBuilder(res, 409, 'Job Id in path does not match job Id in body');
+    }
+
+    const [positionNumber, suffix] = jobId.split('-');
+    if (attributes.positionNumber !== positionNumber || suffix !== attributes.suffix) {
+      return errorBuilder(
+        res,
+        409,
+        'positionNumber or suffix in attributes does not match job Id in body',
+      );
     }
 
     const jobExists = await getJobByJobId(internalId, jobId);
@@ -48,14 +62,14 @@ const patch = async (req, res) => {
       return errorBuilder(res, 404, 'A job with the specified job ID was not found.');
     }
 
-    const result = await createOrUpdateJob('update', osuId, body.data.attributes);
+    const result = await createOrUpdateJob('update', osuId, attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);
     }
 
     const serializedJob = serializePostOrPatch(osuId, body);
-    return res.send(serializedJob);
+    return res.status(202).send(serializedJob);
   } catch (err) {
     return errorHandler(res, err);
   }
