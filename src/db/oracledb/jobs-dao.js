@@ -388,6 +388,11 @@ const createOrUpdateJob = async (operation, osuId, body) => {
       await connection.commit();
       return error;
     }
+
+    if (error.includes('JTRM')) {
+      return new Error(error);
+    }
+
     throw new Error(error);
   } finally {
     connection.close();
