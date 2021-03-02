@@ -218,33 +218,6 @@ const standardBinds = (osuId, body, additionalFields) => {
 };
 
 /**
- * Updates job record
- *
- * @param {object} connection oracledb connection
- * @param {string} osuId OSU ID of a person
- * @param {object} body Request body
- * @returns {string} Query result, null if success
- */
-const updateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, [
-    'hourlyRate',
-    'appointmentPercent',
-    'personnelChangeDate',
-    'hoursPerPay',
-    'annualSalary',
-    'fullTimeEquivalency',
-    'changeReason_code',
-    'salary_annual',
-    'earningCode_code',
-    'earningCode_effectiveDate',
-    'earningCode_hours',
-  ]);
-
-  const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
-  return result;
-};
-
-/**
  * Terminates a job record
  *
  * @param {object} connection oracledb connection
