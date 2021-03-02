@@ -275,11 +275,11 @@ const studentJob = async (connection, osuId, body, operation) => {
  * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @returns {string} Query result, null if success
  */
-const graduateJob = async (connection, osuId, body, operation) => {
+const graduateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, graduateBinds);
 
   const { outBinds: { result } } = await connection.execute(
-    contrib.graduateJob(binds, operation),
+    contrib.graduateJob(binds),
     binds,
   );
   return result;
@@ -338,22 +338,12 @@ const createOrUpdateJob = async (operation, osuId, body) => {
         return new Error(`Invalid change reason code ${changeReasonCode}`);
       }
 
-      if (operation === 'update') {
-        if (changeReasonCode === 'NONE') {
-          error = await updateLaborChangeJob(connection, osuId, body);
-        } else if (changeReasonCode === 'BREAP') {
-          if (employmentType === 'student') {
-            error = await studentJob(connection, osuId, body, operation);
-          } else if (employmentType === 'graduate') {
-            error = await graduateJob(connection, osuId, body, operation);
-          }
-        } else {
-          error = await updateJob(connection, osuId, body);
-        }
+      if (changeReasonCode === 'NONE') {
+        error = await updateLaborChangeJob(connection, osuId, body);
       } else if (employmentType === 'student') {
         error = await studentJob(connection, osuId, body, operation);
       } else if (employmentType === 'graduate') {
-        error = await graduateJob(connection, osuId, body, operation);
+        error = await graduateJob(connection, osuId, body);
       }
     }
 
