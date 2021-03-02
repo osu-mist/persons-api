@@ -38,6 +38,7 @@ const patch = async (req, res) => {
   try {
     const { body, params: { osuId, jobId } } = req;
     const { data: { id: pathId, attributes } } = body;
+    const { studentEmployeeInd, changeReason: { code: changeReasonCode } } = attributes;
 
     const internalId = await personExists(osuId);
     if (!internalId) {
@@ -46,6 +47,10 @@ const patch = async (req, res) => {
 
     if (jobId !== pathId) {
       return errorBuilder(res, 409, 'Job Id in path does not match job Id in body');
+    }
+
+    if (changeReasonCode === 'AAHIR' && !studentEmployeeInd) {
+      return errorBuilder(res, 400, ['AAHIR change reason code cannot be used to update graduate job records']);
     }
 
     const [positionNumber, suffix] = jobId.split('-');
