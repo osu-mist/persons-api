@@ -38,7 +38,6 @@ const post = async (req, res) => {
         attributes: {
           positionNumber,
           suffix,
-          studentEmployeeInd,
           changeReason: {
             code: changeReasonCode,
           },
@@ -56,8 +55,8 @@ const post = async (req, res) => {
       return errorBuilder(res, 409, 'A job with the specified job ID already exists.');
     }
 
-    if (changeReasonCode !== 'AAHIR' && !studentEmployeeInd) {
-      return errorBuilder(res, 400, ['AAHIR change reason code must be used to create graduate employee records.']);
+    if (changeReasonCode !== 'AAHIR') {
+      return errorBuilder(res, 400, ['AAHIR change reason code must be used to create job records.']);
     }
 
     const result = await createOrUpdateJob('create', osuId, body.data.attributes);
