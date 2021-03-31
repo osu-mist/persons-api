@@ -8,9 +8,8 @@ import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
 
 const phoneResourceProp = openapi.components.schemas.PhoneResult.properties.data.properties;
 const phoneResourceType = phoneResourceProp.type.enum[0];
-const phoneResourceAttributes = phoneResourceProp.attributes.allOf;
-const phoneCombinedAttributes = _.merge(phoneResourceAttributes[0], phoneResourceAttributes[1]);
-const phoneResourceKeys = _.keys(phoneCombinedAttributes.properties);
+const phoneResourceAttributes = phoneResourceProp.attributes;
+const phoneResourceKeys = _.keys(phoneResourceAttributes.properties);
 
 /**
  * Creates fullPhoneNumber and prepares sub-objects for serializer
