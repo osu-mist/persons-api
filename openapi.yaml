@@ -433,36 +433,6 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
-    post:
-      description: Create address for a person
-      summary: Create address for a person
-      tags:
-        - addresses
-      operationId: postAddress
-      parameters:
-        - $ref: '#/components/parameters/osuId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddressPostBody'
-        description: Post body for new address
-        required: true
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AddressResult'
-        '400':
-          $ref: '#/components/responses/400'
-        '404':
-          $ref: '#/components/responses/404'
-        '409':
-          $ref: '#/components/responses/409Post'
-        '500':
-          $ref: '#/components/responses/500'
   /persons/{osuId}/phones:
     get:
       description: Get phone numbers for a person
@@ -491,36 +461,6 @@ paths:
           $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404'
-        '500':
-          $ref: '#/components/responses/500'
-    post:
-      description: Create phone number for a person
-      summary: Create phone number for a person
-      tags:
-        - phones
-      operationId: postPhone
-      parameters:
-        - $ref: '#/components/parameters/osuId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PhonePostBody'
-        description: Post body for the new phone
-        required: true
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PhoneResult'
-        '400':
-          $ref: '#/components/responses/400'
-        '404':
-          $ref: '#/components/responses/404'
-        '409':
-          $ref: '#/components/responses/409Post'
         '500':
           $ref: '#/components/responses/500'
   /persons/{osuId}/emails:
@@ -1623,19 +1563,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MealPlanResource'
-    AddressPostRequired:
-      type: object
-      required:
-        - addressType
-        - city
-      properties:
-        postalCode:
-          nullable: false
-        addressType:
-          type: object
-          required:
-            - code
-    AddressPostAttributes:
+    AddressAttributes:
       type: object
       properties:
         addressType:
@@ -1646,6 +1574,11 @@ components:
               nullable: false
               enum: *addressTypeEnums
               description: Code for the type of address record.
+            description:
+              type: string
+              nullable: true
+              description: Short description of the address type.
+              example: Current Mailing
         addressLine1:
           type: string
           nullable: true
@@ -1677,6 +1610,7 @@ components:
         postalCode:
           type: string
           example: '97331'
+          nullable: true
         countyCode:
           type: string
           nullable: true
@@ -1686,17 +1620,6 @@ components:
           nullable: true
           enum: *nationCodeEnums
           description: Code for the nation of the address
-    AddressAttributes:
-      type: object
-      properties:
-        addressType:
-          type: object
-          properties:
-            description:
-              type: string
-              nullable: true
-              description: Short description of the address type.
-              example: Current Mailing
         state:
           type: string
           nullable: true
@@ -1707,8 +1630,6 @@ components:
           nullable: true
           description: Human readable county.
           example: Benton
-        postalCode:
-          nullable: true
         nation:
           type: string
           nullable: true
@@ -1731,9 +1652,7 @@ components:
         links:
           $ref: '#/components/schemas/SelfLink'
         attributes:
-          allOf:
-            - $ref: '#/components/schemas/AddressPostAttributes'
-            - $ref: '#/components/schemas/AddressAttributes'
+          $ref: '#/components/schemas/AddressAttributes'
     AddressSetResult:
       type: object
       properties:
@@ -1750,39 +1669,7 @@ components:
           $ref: '#/components/schemas/SelfLink'
         data:
           $ref: '#/components/schemas/AddressResource'
-    AddressPostBody:
-      type: object
-      required:
-        - data
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          required:
-            - type
-            - attributes
-          additionalProperties: false
-          properties:
-            type:
-              $ref: '#/components/schemas/AddressType'
-            attributes:
-              allOf:
-                - $ref: '#/components/schemas/AddressPostRequired'
-                - $ref: '#/components/schemas/AddressPostAttributes'
-    PhonePostRequired:
-      type: object
-      required:
-        - addressType
-        - phoneType
-        - areaCode
-        - phoneNumber
-        - primaryInd
-      properties:
-        phoneNumber:
-          nullable: false
-        phoneExtension:
-          pattern: ^[0-9]{1,4}$
-    PhonePostAttributes:
+    PhoneAttributes:
       type: object
       additionalProperties: false
       properties:
@@ -1797,6 +1684,7 @@ components:
           description: Extension for the phone number. Can be returned in different formats.
           example: '4443333'
           pattern: ^[0-9]{1,7}$
+          nullable: true
         phoneExtension:
           type: string
           nullable: true
@@ -1814,27 +1702,6 @@ components:
               nullable: false
               description: Enum marking which type of address this phone number matches with.
               enum: *phoneTypeEnums
-        addressType:
-          type: object
-          properties:
-            code:
-              type: string
-              nullable: false
-              description: Enum marking which type of address this phone number matches with.
-              enum: *addressTypeEnums
-    PhoneAttributes:
-      type: object
-      properties:
-        phoneNumber:
-          nullable: true
-        fullPhoneNumber:
-          type: string
-          nullable: false
-          description: Combination of area code and phone number.
-          example: '5414443333'
-        phoneType:
-          type: object
-          properties:
             description:
               type: string
               nullable: false
@@ -1843,11 +1710,21 @@ components:
         addressType:
           type: object
           properties:
+            code:
+              type: string
+              nullable: false
+              description: Enum marking which type of address this phone number matches with.
+              enum: *addressTypeEnums
             description:
               type: string
               nullable: false
               description: Describes the address type enum.
               example: Current Mailing
+        fullPhoneNumber:
+          type: string
+          nullable: false
+          description: Combination of area code and phone number.
+          example: '5414443333'
         lastModified:
           type: string
           format: date
@@ -1865,9 +1742,7 @@ components:
         links:
           $ref: '#/components/schemas/SelfLink'
         attributes:
-          allOf:
-            - $ref: '#/components/schemas/PhonePostAttributes'
-            - $ref: '#/components/schemas/PhoneAttributes'
+          $ref: '#/components/schemas/PhoneAttributes'
     PhoneSetResult:
       type: object
       properties:
@@ -1884,25 +1759,6 @@ components:
           $ref: '#/components/schemas/SelfLink'
         data:
           $ref: '#/components/schemas/PhoneResource'
-    PhonePostBody:
-      type: object
-      required:
-        - data
-      additionalProperties: false
-      properties:
-        data:
-          type: object
-          required:
-            - type
-            - attributes
-          additionalProperties: false
-          properties:
-            type:
-              $ref: '#/components/schemas/PhoneType'
-            attributes:
-              allOf:
-                - $ref: '#/components/schemas/PhonePostRequired'
-                - $ref: '#/components/schemas/PhonePostAttributes'
     EmailAttributes:
       type: object
       required:
