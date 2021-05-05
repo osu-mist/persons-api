@@ -59,7 +59,7 @@ const post = async (req, res) => {
       return errorBuilder(res, 400, ['AAHIR change reason code must be used to create job records.']);
     }
 
-    const result = await createOrUpdateJob('create', osuId, body.data.attributes);
+    const result = await createOrUpdateJob(osuId, body.data.attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);

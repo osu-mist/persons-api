@@ -256,11 +256,11 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
  * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @returns {string} Query result, null if success
  */
-const studentJob = async (connection, osuId, body, operation) => {
+const studentJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, studentBinds);
 
   const { outBinds: { result } } = await connection.execute(
-    contrib.studentJob(binds, operation),
+    contrib.studentJob(binds),
     binds,
   );
   return result;
@@ -308,7 +308,7 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
  * @param {string} internalId Internal ID of a person
  * @returns {Error} returns error or null if no error occurred
  */
-const createOrUpdateJob = async (operation, osuId, body) => {
+const createOrUpdateJob = async (osuId, body) => {
   const connection = await getConnection('banner');
   try {
     let error;
@@ -340,7 +340,7 @@ const createOrUpdateJob = async (operation, osuId, body) => {
       if (changeReasonCode === 'NONE') {
         error = await updateLaborChangeJob(connection, osuId, body);
       } else if (employmentType === 'student') {
-        error = await studentJob(connection, osuId, body, operation);
+        error = await studentJob(connection, osuId, body);
       } else if (employmentType === 'graduate') {
         error = await graduateJob(connection, osuId, body);
       }
