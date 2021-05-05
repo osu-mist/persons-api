@@ -306,7 +306,7 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
  * @param {string} internalId Internal ID of a person
  * @returns {Error} returns error or null if no error occurred
  */
-const createOrUpdateJob = async (osuId, body) => {
+const handleJob = async (osuId, body) => {
   const connection = await getConnection('banner');
   try {
     let error;
@@ -359,4 +359,4 @@ const createOrUpdateJob = async (osuId, body) => {
   }
 };
 
-export { getJobs, getJobByJobId, createOrUpdateJob };
+export { getJobs, getJobByJobId, handleJob };

@@ -1,4 +1,4 @@
-import { getJobByJobId, createOrUpdateJob } from 'db/oracledb/jobs-dao';
+import { getJobByJobId, handleJob } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeJob, serializePostOrPatch } from 'serializers/jobs-serializer';
@@ -67,7 +67,7 @@ const patch = async (req, res) => {
       return errorBuilder(res, 404, 'A job with the specified job ID was not found.');
     }
 
-    const result = await createOrUpdateJob(osuId, attributes);
+    const result = await handleJob(osuId, attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);

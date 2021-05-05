@@ -1,4 +1,4 @@
-import { getJobs, getJobByJobId, createOrUpdateJob } from 'db/oracledb/jobs-dao';
+import { getJobs, getJobByJobId, handleJob } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeJobs, serializePostOrPatch } from 'serializers/jobs-serializer';
@@ -59,7 +59,7 @@ const post = async (req, res) => {
       return errorBuilder(res, 400, ['AAHIR change reason code must be used to create job records.']);
     }
 
-    const result = await createOrUpdateJob(osuId, body.data.attributes);
+    const result = await handleJob(osuId, body.data.attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);
