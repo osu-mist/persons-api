@@ -253,7 +253,6 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
  * @param {object} connection oracledb connection
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
- * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @returns {string} Query result, null if success
  */
 const studentJob = async (connection, osuId, body) => {
@@ -302,7 +301,6 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
 /**
  * Determines which Epaf to execute based on fields in body
  *
- * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
  * @param {string} internalId Internal ID of a person
