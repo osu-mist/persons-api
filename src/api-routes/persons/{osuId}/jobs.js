@@ -1,4 +1,4 @@
-import { getJobs, getJobByJobId, createOrUpdateJob } from 'db/oracledb/jobs-dao';
+import { getJobs, getJobByJobId, handleJob } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeJobs, serializePostOrPatch } from 'serializers/jobs-serializer';
@@ -33,7 +33,17 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   try {
     const { body, params: { osuId } } = req;
-    const { data: { attributes: { positionNumber, suffix } } } = body;
+    const {
+      data: {
+        attributes: {
+          positionNumber,
+          suffix,
+          changeReason: {
+            code: changeReasonCode,
+          },
+        },
+      },
+    } = body;
 
     const internalId = await personExists(osuId);
     if (!internalId) {
@@ -45,7 +55,11 @@ const post = async (req, res) => {
       return errorBuilder(res, 409, 'A job with the specified job ID already exists.');
     }
 
-    const result = await createOrUpdateJob('create', osuId, body.data.attributes);
+    if (changeReasonCode !== 'AAHIR') {
+      return errorBuilder(res, 400, ['AAHIR change reason code must be used to create job records.']);
+    }
+
+    const result = await handleJob(osuId, body.data.attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);

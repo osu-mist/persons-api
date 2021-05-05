@@ -1,4 +1,4 @@
-import { getJobByJobId, createOrUpdateJob } from 'db/oracledb/jobs-dao';
+import { getJobByJobId, handleJob } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeJob, serializePostOrPatch } from 'serializers/jobs-serializer';
@@ -38,6 +38,7 @@ const patch = async (req, res) => {
   try {
     const { body, params: { osuId, jobId } } = req;
     const { data: { id: pathId, attributes } } = body;
+    const { changeReason: { code: changeReasonCode } } = attributes;
 
     const internalId = await personExists(osuId);
     if (!internalId) {
@@ -46,6 +47,10 @@ const patch = async (req, res) => {
 
     if (jobId !== pathId) {
       return errorBuilder(res, 409, 'Job Id in path does not match job Id in body');
+    }
+
+    if (changeReasonCode === 'AAHIR') {
+      return errorBuilder(res, 400, ['AAHIR change reason code cannot be used to update job records']);
     }
 
     const [positionNumber, suffix] = jobId.split('-');
@@ -62,7 +67,7 @@ const patch = async (req, res) => {
       return errorBuilder(res, 404, 'A job with the specified job ID was not found.');
     }
 
-    const result = await createOrUpdateJob('update', osuId, attributes);
+    const result = await handleJob(osuId, attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);
