@@ -1,10 +1,8 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import _ from 'lodash';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { fakeOsuId } from './mock-data';
 import { createDaoProxy, getConnectionStub, daoBeforeEach } from './test-helpers';
 
 chai.should();
@@ -34,12 +32,6 @@ describe('Test addresses-dao', () => {
       functionName: 'phoneHasSameAddressType',
       dbReturn: { rows: [{}] },
       expected: {},
-    },
-    {
-      message: 'createAddress should return single result',
-      functionName: 'createAddress',
-      dbReturn: { outBinds: { seqno: {} }, rows: [{}] },
-      expected: { addrSeqno: {} },
     },
   ];
   _.forEach(testCases, ({
@@ -82,25 +74,5 @@ describe('Test addresses-dao', () => {
       const result = daoProxy[functionName](connectionStub, { addressType: {} });
       return result.should.eventually.be.rejectedWith(expected);
     });
-  });
-
-  it('createAddress should throw error when multiple new addresses are found', () => {
-    // need unique dao proxy for this
-    const executeStub = sinon.stub().returns({ outBinds: { seqno: {} }, rows: [] });
-    // third call with execute is the one we need to test
-    executeStub.onCall(3).returns({ rows: [{}, {}] });
-    const daoProxy = proxyquire(daoPath, {
-      './connection': {
-        getConnection: sinon.stub().resolves({
-          execute: executeStub,
-          close: () => null,
-          commit: () => null,
-          rollback: () => null,
-        }),
-      },
-    });
-    const result = daoProxy.createAddress(fakeOsuId, { addressType: {} });
-    return result.should.eventually
-      .be.rejectedWith('Error: Multiple active addresses for address type undefined');
   });
 });
