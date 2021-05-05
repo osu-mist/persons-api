@@ -303,7 +303,6 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
  *
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
- * @param {string} internalId Internal ID of a person
  * @returns {Error} returns error or null if no error occurred
  */
 const handleJob = async (osuId, body) => {
