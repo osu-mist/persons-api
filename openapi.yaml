@@ -753,16 +753,19 @@ components:
           nullable: true
           description: ONID username
           example: smithj
-        primaryEmailAddress:
-          type: string
-          nullable: true
-          description: Primary email address
-          example: "smithj@example.com"
-        primaryPhoneNumber:
-          type: string
-          nullable: true
-          description: Primary phone number for a person
-          example: 1 555 444 3333
+        gybonid:
+          type: object
+          properties:
+            emailAddress:
+              type: string
+              nullable: true
+              description: GYBONID Primary email address
+              example: "smithj@example.com"
+            phoneNumber:
+              type: string
+              nullable: true
+              description: GYBONID phone number
+              example: 1 555 444 3333
         confidentialInd:
           type: boolean
           nullable: false
