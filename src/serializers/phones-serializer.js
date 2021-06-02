@@ -18,7 +18,10 @@ const phoneResourceKeys = _.keys(phoneResourceAttributes.properties);
  */
 const prepareRawPhones = (rawPhones) => {
   _.forEach(rawPhones, (phone) => {
-    phone.fullPhoneNumber = `${phone.areaCode}${phone.phoneNumber}`;
+    // set fullPhoneNumber only if phoneNumber is not null
+    phone.fullPhoneNumber = phone.phoneNumber
+      ? `${phone.areaCode || ''}${phone.phoneNumber}`
+      : null;
     phone.primaryInd = phone.primaryInd === 'Y';
   });
 
