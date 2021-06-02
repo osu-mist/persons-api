@@ -10,26 +10,33 @@ import { contrib } from './contrib/contrib';
 const commonBinds = [
   'changeReason_code',
   'employeeClassification_code',
-  'status_code',
   'hourlyRate',
   'personnelChangeDate',
-  'timesheet_current_code',
   'appointmentPercent',
-  'jobDescription',
-  'campus_code',
   'hoursPerPay',
-  'salary_paysPerYear',
   'salary_annual',
-  'strsAppointmentBasis',
   'fullTimeEquivalency',
-  'earningCode_effectiveDate',
-  'earningCode_code',
-  'earningCode_hours',
   'supervisor_positionNumber',
   'supervisor_suffix',
   'supervisor_osuId',
+  'employeeGroup_code',
+];
+
+const studentBinds = [
+  ...commonBinds,
+  'status_code',
+  'timesheet_current_code',
+  'jobDescription',
+  'campus_code',
+  'salary_paysPerYear',
+  'strsAppointmentBasis',
+  'laborDistribution',
+  'earningCode_effectiveDate',
+  'earningCode_code',
+  'earningCode_hours',
   'beginDate',
   'accruesLeaveInd',
+  'effectiveDate',
   'contractBeginDate',
   'contractEndDate',
   'useTemporarySsnInd',
@@ -37,22 +44,17 @@ const commonBinds = [
   'i9Form_code',
   'i9Form_date',
   'i9Form_expirationDate',
-  'laborDistribution',
-  'employeeGroup_code',
-];
-
-const studentBinds = [
-  ...commonBinds,
   'retirement_code',
   'homeOrganization_current_code',
 ];
 
 const graduateBinds = [
   ...commonBinds,
-  'salaryInformationReleaseInd',
-  'salaryInformationReleaseDate',
   'homeOrganization_current_code',
 ];
+
+const validStudentPositionNumberPrefixes = ['C50', 'C51', 'C52'];
+const validGradTermPositionNumberPrefixes = ['C50', 'C51', 'C52', 'C60', 'C69'];
 
 /**
  * Gets labor distribution data for each job passed in
@@ -216,30 +218,6 @@ const standardBinds = (osuId, body, additionalFields) => {
 };
 
 /**
- * Updates job record
- *
- * @param {object} connection oracledb connection
- * @param {string} osuId OSU ID of a person
- * @param {object} body Request body
- * @returns {string} Query result, null if success
- */
-const updateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, [
-    'hourlyRate',
-    'appointmentPercent',
-    'personnelChangeDate',
-    'hoursPerPay',
-    'annualSalary',
-    'fullTimeEquivalency',
-    'changeReason_code',
-    'salary_annual',
-  ]);
-
-  const { outBinds: { result } } = await connection.execute(contrib.updateJob(binds), binds);
-  return result;
-};
-
-/**
  * Terminates a job record
  *
  * @param {object} connection oracledb connection
@@ -248,7 +226,7 @@ const updateJob = async (connection, osuId, body) => {
  * @returns {string} Query result, null if success
  */
 const terminateJob = async (connection, osuId, body) => {
-  const binds = standardBinds(osuId, body, ['changeReason_code']);
+  const binds = standardBinds(osuId, body, ['changeReason_code', 'personnelChangeDate']);
 
   const { outBinds: { result } } = await connection.execute(contrib.terminateJob(), binds);
   return result;
@@ -275,14 +253,13 @@ const updateLaborChangeJob = async (connection, osuId, body) => {
  * @param {object} connection oracledb connection
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
- * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @returns {string} Query result, null if success
  */
-const studentJob = async (connection, osuId, body, operation) => {
+const studentJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, studentBinds);
 
   const { outBinds: { result } } = await connection.execute(
-    contrib.studentJob(binds, operation),
+    contrib.studentJob(binds),
     binds,
   );
   return result;
@@ -294,14 +271,13 @@ const studentJob = async (connection, osuId, body, operation) => {
  * @param {object} connection oracledb connection
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
- * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @returns {string} Query result, null if success
  */
-const graduateJob = async (connection, osuId, body, operation) => {
+const graduateJob = async (connection, osuId, body) => {
   const binds = standardBinds(osuId, body, graduateBinds);
 
   const { outBinds: { result } } = await connection.execute(
-    contrib.graduateJob(binds, operation),
+    contrib.graduateJob(binds),
     binds,
   );
   return result;
@@ -325,21 +301,30 @@ const isValidChangeReasonCode = async (connection, changeReasonCode) => {
 /**
  * Determines which Epaf to execute based on fields in body
  *
- * @param {string} operation 'create' to create a new record, 'update' to update an existing one
  * @param {string} osuId OSU ID of a person
  * @param {object} body Request body
- * @param {string} internalId Internal ID of a person
  * @returns {Error} returns error or null if no error occurred
  */
-const createOrUpdateJob = async (operation, osuId, body) => {
+const handleJob = async (osuId, body) => {
   const connection = await getConnection('banner');
   try {
     let error;
-    const { studentEmployeeInd, changeReason: { code: changeReasonCode } } = body;
+    const { studentEmployeeInd, positionNumber, changeReason: { code: changeReasonCode } } = body;
     const employmentType = studentEmployeeInd ? 'student' : 'graduate';
 
-    if (employmentType === 'student' && !/^C5[0-2]/.test(body.positionNumber)) {
-      return new Error('Position number for students must start with C50, C51, or C52');
+    if (employmentType === 'student') {
+      const termination = ['TERME', 'TERMJ'].includes(changeReasonCode);
+      const posNumPrefix = positionNumber.substring(0, 3);
+      if (termination
+          && !validGradTermPositionNumberPrefixes.includes(posNumPrefix)) {
+        return new Error('Valid position numbers for termination must begin with one of these '
+          + `prefixes: ${validGradTermPositionNumberPrefixes.join(', ')}`);
+      }
+      if (!termination
+          && !validStudentPositionNumberPrefixes.includes(posNumPrefix)) {
+        return new Error('Student position numbers must begin with one of these prefixes: '
+          + `${validStudentPositionNumberPrefixes.join(', ')}`);
+      }
     }
 
     if (_.includes(['TERME', 'TERMJ'], changeReasonCode)) {
@@ -349,22 +334,12 @@ const createOrUpdateJob = async (operation, osuId, body) => {
         return new Error(`Invalid change reason code ${changeReasonCode}`);
       }
 
-      if (operation === 'update') {
-        if (changeReasonCode === 'NONE') {
-          error = await updateLaborChangeJob(connection, osuId, body);
-        } else if (changeReasonCode === 'BREAP') {
-          if (employmentType === 'student') {
-            error = await studentJob(connection, osuId, body, operation);
-          } else if (employmentType === 'graduate') {
-            error = await graduateJob(connection, osuId, body, operation);
-          }
-        } else {
-          error = await updateJob(connection, osuId, body);
-        }
+      if (changeReasonCode === 'NONE') {
+        error = await updateLaborChangeJob(connection, osuId, body);
       } else if (employmentType === 'student') {
-        error = await studentJob(connection, osuId, body, operation);
+        error = await studentJob(connection, osuId, body);
       } else if (employmentType === 'graduate') {
-        error = await graduateJob(connection, osuId, body, operation);
+        error = await graduateJob(connection, osuId, body);
       }
     }
 
@@ -372,10 +347,15 @@ const createOrUpdateJob = async (operation, osuId, body) => {
       await connection.commit();
       return error;
     }
+
+    if (error.includes('JTRM')) {
+      return new Error(error);
+    }
+
     throw new Error(error);
   } finally {
     connection.close();
   }
 };
 
-export { getJobs, getJobByJobId, createOrUpdateJob };
+export { getJobs, getJobByJobId, handleJob };

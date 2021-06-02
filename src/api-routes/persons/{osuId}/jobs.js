@@ -1,4 +1,4 @@
-import { getJobs, createOrUpdateJob } from 'db/oracledb/jobs-dao';
+import { getJobs, getJobByJobId, handleJob } from 'db/oracledb/jobs-dao';
 import { personExists } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeJobs, serializePostOrPatch } from 'serializers/jobs-serializer';
@@ -33,20 +33,40 @@ const get = async (req, res) => {
 const post = async (req, res) => {
   try {
     const { body, params: { osuId } } = req;
+    const {
+      data: {
+        attributes: {
+          positionNumber,
+          suffix,
+          changeReason: {
+            code: changeReasonCode,
+          },
+        },
+      },
+    } = body;
 
     const internalId = await personExists(osuId);
     if (!internalId) {
       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
     }
 
-    const result = await createOrUpdateJob('create', osuId, body.data.attributes);
+    const job = await getJobByJobId(internalId, `${positionNumber}-${suffix}`);
+    if (job) {
+      return errorBuilder(res, 409, 'A job with the specified job ID already exists.');
+    }
+
+    if (changeReasonCode !== 'AAHIR') {
+      return errorBuilder(res, 400, ['AAHIR change reason code must be used to create job records.']);
+    }
+
+    const result = await handleJob(osuId, body.data.attributes);
 
     if (result instanceof Error) {
       return errorBuilder(res, 400, [result.message]);
     }
 
     const serializedJob = serializePostOrPatch(osuId, body);
-    return res.send(serializedJob);
+    return res.status(202).send(serializedJob);
   } catch (err) {
     return errorHandler(res, err);
   }

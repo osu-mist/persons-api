@@ -8,11 +8,8 @@ import { apiBaseUrl, resourcePathLink, paramsLink } from 'utils/uri-builder';
 
 const addressResourceProp = openapi.components.schemas.AddressResult.properties.data.properties;
 const addressResourceType = addressResourceProp.type.enum[0];
-const addressResourceAttributes = addressResourceProp.attributes.allOf;
-const addressCombinedAttributes = _.merge(
-  addressResourceAttributes[0], addressResourceAttributes[1],
-);
-const addressResourceKeys = _.keys(addressCombinedAttributes.properties);
+const addressResourceAttributes = addressResourceProp.attributes;
+const addressResourceKeys = _.keys(addressResourceAttributes.properties);
 
 /**
  * Some fields need to be massaged before the can be passed to the serializer

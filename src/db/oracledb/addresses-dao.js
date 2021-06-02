@@ -1,5 +1,3 @@
-import { DB_TYPE_VARCHAR, BIND_OUT } from 'oracledb';
-
 import { parseQuery } from 'utils/parse-query';
 import { getConnection } from './connection';
 import { contrib } from './contrib/contrib';
@@ -78,64 +76,8 @@ const phoneHasSameAddressType = async (connection, internalId, addressType) => {
   return rows[0];
 };
 
-const updatePhoneAddrSeqno = async (connection, addrSeqno, phone) => {
-  if (phone) {
-    phone.addrSeqno = addrSeqno;
-    await connection.execute(contrib.updatePhoneAddrSeqno(), phone);
-  }
-};
-
-/**
- * Creates address records
- *
- * @param {string} internalId internal ID of a person
- * @param {object} body Request body with new address attributes
- * @returns {Promise<object>} Raw address record from data source
- */
-const createAddress = async (internalId, body) => {
-  const connection = await getConnection('banner');
-  try {
-    body.addressType = body.addressType.code;
-    body.internalId = internalId;
-    body.returnValue = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
-    body.seqno = { type: DB_TYPE_VARCHAR, dir: BIND_OUT };
-
-    // Query phone early because it deactivated automatically by the create address query
-    const phone = await phoneHasSameAddressType(connection, internalId, body.addressType);
-
-    const address = await hasSameAddressType(connection, internalId, body.addressType);
-    if (address) {
-      const deactivateBinds = { ...address, internalId };
-      await connection.execute(contrib.deactivateAddress(), deactivateBinds);
-    }
-
-    const { outBinds: { seqno: addrSeqno } } = await connection.execute(
-      contrib.createAddress(body),
-      body,
-    );
-
-    const newAddress = await getAddresses(
-      connection,
-      internalId,
-      { 'filter[addressType]': body.addressType },
-    );
-    if (newAddress.length > 1) {
-      throw new Error(`Error: Multiple active addresses for address type ${body.addressType}`);
-    }
-
-    await updatePhoneAddrSeqno(connection, addrSeqno, phone);
-
-    // wait till everything is done and working to commit
-    await connection.commit();
-    return newAddress[0];
-  } finally {
-    connection.close();
-  }
-};
-
 export {
   getAddressesByInternalId,
-  createAddress,
   hasSameAddressType,
   phoneHasSameAddressType,
 };

@@ -54,7 +54,7 @@ class IntegrationTests(utils.UtilsTestCase):
             self.check_endpoint(
                 f'{endpoint}/{osu_id}',
                 resource,
-                400,
+                404,
                 nullable_fields=nullable_fields
             )
 
@@ -75,6 +75,7 @@ class IntegrationTests(utils.UtilsTestCase):
                 resource,
                 200,
                 nullable_fields=nullable_fields,
+                max_elapsed_seconds=11
             )
 
         osu_id = invalid_job_ids['osu_id']
@@ -83,7 +84,8 @@ class IntegrationTests(utils.UtilsTestCase):
                 f'/persons/{osu_id}{endpoint}/{job_id}',
                 'ErrorObject',
                 404,
-                nullable_fields=nullable_fields
+                nullable_fields=nullable_fields,
+                max_elapsed_seconds=11
             )
 
     def test_get_jobs(self):
@@ -100,7 +102,8 @@ class IntegrationTests(utils.UtilsTestCase):
                 f'/persons/{osu_id}{endpoint}',
                 resource,
                 200,
-                nullable_fields=nullable_fields
+                nullable_fields=nullable_fields,
+                max_elapsed_seconds=11
             )
 
         query_params = self.query_params['jobs']
@@ -186,7 +189,7 @@ class IntegrationTests(utils.UtilsTestCase):
             self.check_endpoint(
                 f'/persons/{osu_id}{endpoint}/{meal_plan_id}',
                 'ErrorObject',
-                400,
+                404,
                 nullable_fields=nullable_fields
             )
 

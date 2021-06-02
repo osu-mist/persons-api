@@ -24,7 +24,7 @@ const post = async (req, res) => {
     }
 
     const serializedPerson = serializePerson(result);
-    return res.send(serializedPerson);
+    return res.status(202).send(serializedPerson);
   } catch (err) {
     return errorHandler(res, err);
   }
