@@ -759,8 +759,8 @@ components:
             emailAddress:
               type: string
               nullable: true
-              description: GYBONID Primary email address
-              example: "smithj@example.com"
+              description: GYBONID primary email address
+              example: smithj@example.com
             phoneNumber:
               type: string
               nullable: true
