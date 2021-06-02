@@ -32,6 +32,11 @@ const prepareRawData = (rawPerson) => {
     code: rawPerson.citizenCode,
     description: rawPerson.citizenDescription,
   };
+
+  rawPerson.gybonid = {
+    emailAddress: rawPerson.gybonidEmailAddress,
+    phoneNumber: rawPerson.gybonidPhoneNumber,
+  };
 };
 
 /**
