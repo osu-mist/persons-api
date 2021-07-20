@@ -1957,12 +1957,12 @@ components:
         codeDate:
           type: string
           format: date
-          nullable: false
+          nullable: true
           description: Date associated with this medical code
           example: '1970-01-01'
         comment:
           type: string
-          nullable: false
+          nullable: true
           description: Free form text associated with this record
     MedicalResource:
       type: object
