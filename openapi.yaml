@@ -508,6 +508,99 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
+  /persons/{osuId}/medical:
+    get:
+      description: Get medical data for a person
+      summary: Get medical data for a person
+      tags:
+        - medical
+      operationId: getMedical
+      parameters:
+        - $ref: '#/components/parameters/osuId'
+        - name: filter[medicalType]
+          in: query
+          required: false
+          description: &medicalTypeDescription |
+            Type of medical record
+            - `LD` - Learning Disabled
+            - `MU` - mumps missing
+            - `ID` - inpatient diagnosis
+            - `IP` - inpatient practitioner
+            - `TW` - temp immunization waiver signd
+            - `CA` - completed all immunizations
+            - `MBEM` - MenB Exception Medical
+            - `AA` - Alcohol Dependent
+            - `HH` - Health History missing
+            - `M2` - Second measles missing
+            - `CT` - Clear T.B. requirement
+            - `DISABSURV` - Disability Survey
+            - `HAC` - Haven Complete
+            - `HAR` - Haven Required
+            - `NHB` - Needs Hepatitis B requirement
+            - `NVAR` - Needs Varicella Requirement
+            - `CICR` - CIC Required
+            - `MBB1` - Bexsero 1
+            - `MBB2` - Bexsero 2
+            - `AI` - All immunizations missing
+            - `TA` - T.B. Testing needed
+            - `FO` - Health History Form Only
+            - `AR` - Archives
+            - `CICC` - CIC Complete
+            - `MBEN` - MenB Exception Non-Medical
+            - `RU` - Rubella missing
+            - `TE` - Taking INH
+            - `TG` - T.B. testing complete
+            - `WD` - Withdrawn
+            - `TH` - Needing INH Counseling
+            - `TK` - Completed INH Counseling
+            - `AER` - Alcohol.edu Required
+            - `NMCV` - Needs MCV4 requirement
+            - `MBT1` - Trumenba 1
+            - `PP` - Paraplegic
+            - `M1` - First measles missing
+            - `TB` - T.B. CXR needed
+            - `IA` - Inpatient Admit/Discharge
+            - `NMB` - Meng B Form - Not Proof of Vax
+            - `CI` - Completed MMR and MCV4 Reqmnt
+            - `TC` - T.B. F.U. needed
+            - `TD` - PPD positive
+            - `TF` - Completed INH
+            - `CICW` - CIC Waived
+            - `ST` - Storage
+            - `NTD` - Needs Tdap Requirement
+            - `COVIDVACC` - COVID-19 Vaccine Completed
+            - `MBT3` - Trumenba 3
+            - `MBFA` - MenB Former Academic Exception
+            - `ER` - Early Registration
+            - `OC` - Occupational  Medicine
+            - `PW` - Perm Immunization Waiver Signd
+            - `CH` - Clear Health Hist requirement
+            - `AEC` - Alcohol.edu Complete
+            - `NMMR` - Needs MMR requirement
+            - `MBT2` - Trumenba 2
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                &medicalTypeEnums [LD, MU, ID, IP, TW, CA, MBEM, AA, HH, M2, CT, DISABSURV, HAC, HAR,
+                                  NHB, NVAR, CICR, MBB1, MBB2, AI, TA, FO, AR, CICC, MBEN, RU, TE,
+                                  TG, WD, TH, TK, AER, NMCV, MBT1, PP, M1, TB, IA, NMB, CI, TC, TD,
+                                  TF, CICW, ST, NTD, COVIDVACC, MBT3, MBFA, ER, OC, PW, CH, AEC,
+                                  NMMR, MBT2]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicalSetResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 components:
   parameters:
     osuId:
@@ -665,6 +758,9 @@ components:
     EmailType:
       type: string
       enum: [emails]
+    MedicalType:
+      type: string
+      enum: [medical]
     PersonPostRequired:
       type: object
       required:
@@ -1841,6 +1937,55 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EmailResource'
+    MedicalAttributes:
+      type: object
+      additionalProperties: false
+      properties:
+        medicalType:
+          type: object
+          nullable: false
+          properties:
+            code:
+              type: string
+              nullable: false
+              enum: *medicalTypeEnums
+              description: *medicalTypeDescription
+            description:
+              type: string
+              nullable: false
+              description: Description of medical code
+        codeDate:
+          type: string
+          format: date
+          nullable: false
+          description: Date associated with this medical code
+          example: '1970-01-01'
+        comment:
+          type: string
+          nullable: false
+          description: Free form text associated with this record
+    MedicalResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique ID for a medical record
+          example: '918179'
+        type:
+          $ref: '#/components/schemas/MedicalType'
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          $ref: '#/components/schemas/MedicalAttributes'
+    MedicalSetResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MedicalResource'
     SelfLink:
       type: object
       properties:
