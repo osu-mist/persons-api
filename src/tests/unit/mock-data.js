@@ -152,6 +152,14 @@ const rawJob = {
   ],
 };
 
+const rawMedical = {
+  medicalId: '99999',
+  'medicalType.code': 'COVIDVACC',
+  'medicalType.description': 'COVID-19 Vaccine Completed',
+  comment: 'completed',
+  codeDate: '2021-06-15',
+};
+
 export {
   fakeOsuId,
   fakeBaseUrl,
@@ -164,4 +172,5 @@ export {
   rawMealPlan,
   fakeJobId,
   rawJob,
+  rawMedical,
 };
