@@ -1960,10 +1960,6 @@ components:
           nullable: true
           description: Date associated with this medical code
           example: '1970-01-01'
-        comment:
-          type: string
-          nullable: true
-          description: Free form text associated with this record
     MedicalResource:
       type: object
       properties:
