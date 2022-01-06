@@ -50,6 +50,7 @@ const studentBinds = [
 
 const graduateBinds = [
   ...commonBinds,
+  'status_code',
   'homeOrganization_current_code',
 ];
 
