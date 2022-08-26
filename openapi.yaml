@@ -1016,9 +1016,8 @@ components:
           properties:
             code:
               enum: [NOSU]
-    JobPostAttributes:
+    JobSuffixRequired:
       type: object
-      additionalProperties: false
       properties:
         suffix:
           type: string
@@ -1026,8 +1025,21 @@ components:
           maxLength: 2
           description: >-
             Used to uniquely identify a job record for persons who have multiple
-            jobs that share the same position number. For updating existing
-            jobs, this field is required.
+            jobs that share the same position number. This field is required.
+    JobSuffixOptional:
+      type: object
+      properties:
+        suffix:
+          type: string
+          nullable: true
+          maxLength: 2
+          description: >-
+            Used to uniquely identify a job record for persons who have multiple
+            jobs that share the same position number. This field is optional.
+    JobPostAttributes:
+      type: object
+      additionalProperties: false
+      properties:
         positionNumber:
           type: string
           nullable: false
@@ -1534,6 +1546,7 @@ components:
         attributes:
           allOf:
             - $ref: '#/components/schemas/JobAttributes'
+            - $ref: '#/components/schemas/JobSuffixRequired'
             - $ref: '#/components/schemas/JobPostAttributes'
     JobSetResult:
       type: object
@@ -1567,6 +1580,7 @@ components:
             attributes:
               allOf:
                 - $ref: '#/components/schemas/JobPostAttributes'
+                - $ref: '#/components/schemas/JobSuffixOptional'
                 - $ref: '#/components/schemas/JobPostRequired'
     JobPatchBody:
       type: object
