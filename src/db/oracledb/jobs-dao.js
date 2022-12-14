@@ -52,6 +52,9 @@ const graduateBinds = [
   ...commonBinds,
   'status_code',
   'homeOrganization_current_code',
+  'salaryInformationReleaseInd',
+  'salaryInformationReleaseDate',
+  'employeeInformationReleaseInd',
 ];
 
 const validStudentPositionNumberPrefixes = ['C50', 'C51', 'C52'];
