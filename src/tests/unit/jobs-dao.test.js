@@ -19,7 +19,7 @@ describe('Test jobs-dao', () => {
 
   const createDaoProxy = (dbReturn, stubReturn) => {
     const executeStub = sinon.stub();
-    executeStub.returns(stubReturn ? stubReturn : { rows: [{}] });
+    executeStub.returns(stubReturn || { rows: [{}] });
     executeStub.onCall(0).returns(dbReturn);
     return proxyquire(daoPath, {
       './connection': {
@@ -85,51 +85,51 @@ describe('Test jobs-dao', () => {
   const handleJobTestCases = [
     {
       message: 'handleJob should call graduateJob without studentEmployeeInd',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
       expected: null,
       postBody: { changeReason: { code: 'dummy' } },
       expectedCalledType: jobStubType.graduateJob,
     },
     {
       message: 'handleJob should call graduateJob',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
       expected: null,
       postBody: { studentEmployeeInd: false, changeReason: { code: 'dummy' } },
       expectedCalledType: jobStubType.graduateJob,
     },
     {
       message: 'handleJob should call studentJob',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
       expected: null,
-      postBody: { studentEmployeeInd: true, positionNumber: "C50236", changeReason: { code: 'dummy' } },
+      postBody: { studentEmployeeInd: true, positionNumber: 'C50236', changeReason: { code: 'dummy' } },
       expectedCalledType: jobStubType.studentJob,
     },
     {
       message: 'handleJob should call terminateJob for student',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
       expected: null,
-      postBody: { studentEmployeeInd: true, positionNumber: "C50236", changeReason: { code: 'TERMJ' } },
+      postBody: { studentEmployeeInd: true, positionNumber: 'C50236', changeReason: { code: 'TERMJ' } },
       expectedCalledType: jobStubType.terminateJob,
     },
     {
       message: 'handleJob should call terminateJob for graduate',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
       expected: null,
-      postBody: { studentEmployeeInd: false, positionNumber: "C50236", changeReason: { code: 'TERMJ' } },
+      postBody: { studentEmployeeInd: false, positionNumber: 'C50236', changeReason: { code: 'TERMJ' } },
       expectedCalledType: jobStubType.terminateJob,
     },
     {
       message: 'handleJob should call updateLaborChangeJob for graduate',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
       expected: null,
-      postBody: { studentEmployeeInd: false, positionNumber: "C50236", changeReason: { code: 'NONE' } },
+      postBody: { studentEmployeeInd: false, positionNumber: 'C50236', changeReason: { code: 'NONE' } },
       expectedCalledType: jobStubType.updateLaborChangeJob,
     },
     {
       message: 'handleJob should call updateLaborChangeJob for student',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
       expected: null,
-      postBody: { studentEmployeeInd: true, positionNumber: "C50236", changeReason: { code: 'NONE' } },
+      postBody: { studentEmployeeInd: true, positionNumber: 'C50236', changeReason: { code: 'NONE' } },
       expectedCalledType: jobStubType.updateLaborChangeJob,
     },
   ];
@@ -150,36 +150,37 @@ describe('Test jobs-dao', () => {
       const result = daoProxy.handleJob(fakeOsuId, postBody);
       await result.should.eventually.be.fulfilled.and.deep.equal(expected);
 
-      assertStubCalled(expectedCalledType == jobStubType.graduateJob, stubGraduateJob);
-      assertStubCalled(expectedCalledType == jobStubType.studentJob, stubStudentJob);
-      assertStubCalled(expectedCalledType == jobStubType.terminateJob, stubTerminateJob);
-      assertStubCalled(expectedCalledType == jobStubType.updateLaborChangeJob, stubUpdateLaborChangeJob);
+      assertStubCalled(expectedCalledType === jobStubType.graduateJob, stubGraduateJob);
+      assertStubCalled(expectedCalledType === jobStubType.studentJob, stubStudentJob);
+      assertStubCalled(expectedCalledType === jobStubType.terminateJob, stubTerminateJob);
+      assertStubCalled(expectedCalledType === jobStubType.updateLaborChangeJob,
+        stubUpdateLaborChangeJob);
     });
   });
 
   const handleJobErrorCases = [
     {
       message: 'handleJob returns error for student with invalid positionNumber and valid reason code',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
-      postBody: { studentEmployeeInd: true, positionNumber: "X50236", changeReason: { code: 'TERME' } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
+      postBody: { studentEmployeeInd: true, positionNumber: 'X50236', changeReason: { code: 'TERME' } },
       expected: 'Valid position numbers for termination must begin with one of these prefixes: C50, C51, C52, C60, C69',
     },
     {
       message: 'handleJob returns error for student with invalid positionNumber and invalid reason code',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: null } },
-      postBody: { studentEmployeeInd: true, positionNumber: "X50236", changeReason: { code: 'dummy' } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: null } },
+      postBody: { studentEmployeeInd: true, positionNumber: 'X50236', changeReason: { code: 'dummy' } },
       expected: 'Student position numbers must begin with one of these prefixes: C50, C51, C52',
     },
     {
       message: 'handleJob returns error for graduate with invalid reason code',
-      dbReturn: { rows: [ { count: 0 } ], outBinds: { result: null } },
-      postBody: { studentEmployeeInd: false, positionNumber: "C50236", changeReason: { code: 'dummy' } },
+      dbReturn: { rows: [{ count: 0 }], outBinds: { result: null } },
+      postBody: { studentEmployeeInd: false, positionNumber: 'C50236', changeReason: { code: 'dummy' } },
       expected: 'Invalid change reason code dummy',
     },
     {
       message: 'handleJob returns error for graduate with termination code',
-      dbReturn: { rows: [ { count: 1 } ], outBinds: { result: ['JTRM'] } },
-      postBody: { studentEmployeeInd: false, positionNumber: "C50236", changeReason: { code: 'dummy' } },
+      dbReturn: { rows: [{ count: 1 }], outBinds: { result: ['JTRM'] } },
+      postBody: { studentEmployeeInd: false, positionNumber: 'C50236', changeReason: { code: 'dummy' } },
       expected: 'JTRM',
     },
   ];
@@ -202,8 +203,8 @@ describe('Test jobs-dao', () => {
 
   it('handleJob returns error for graduate with with non-termination code', () => {
     const expected = 'ZZZZ';
-    const dbReturn = { rows: [ { count: 1 } ], outBinds: { result: [ expected ] } };
-    const postBody = { studentEmployeeInd: false, positionNumber: "C50236", changeReason: { code: 'dummy' } };
+    const dbReturn = { rows: [{ count: 1 }], outBinds: { result: [expected] } };
+    const postBody = { studentEmployeeInd: false, positionNumber: 'C50236', changeReason: { code: 'dummy' } };
 
     const daoProxy = createDaoProxy(dbReturn, dbReturn);
     const result = daoProxy.handleJob(fakeOsuId, postBody);

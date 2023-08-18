@@ -84,10 +84,11 @@ const resourceSubsetSchema = (resourceType, resourceAttributes) => {
  * @param {object} stub the stub
  */
 const assertStubCalled = (expectedToBeCalled, stub) => {
-  if (expectedToBeCalled)
+  if (expectedToBeCalled) {
     sinon.assert.calledOnce(stub);
-  else
+  } else {
     sinon.assert.notCalled(stub);
+  }
 };
 
 /**
