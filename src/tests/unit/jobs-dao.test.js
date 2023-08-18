@@ -39,7 +39,6 @@ describe('Test jobs-dao', () => {
       message: 'getJobByJobId should return single result',
       functionName: 'getJobByJobId',
       dbReturn: { rows: [{}] },
-//      dbReturn: laborDistExpected,//{ rows: [{}] },
       expected: laborDistExpected,
     },
     {
@@ -155,7 +154,7 @@ describe('Test jobs-dao', () => {
       assertStubCalled(expectedCalledType === jobStubType.studentJob, stubStudentJob);
       assertStubCalled(expectedCalledType === jobStubType.terminateJob, stubTerminateJob);
       assertStubCalled(
-        expectedCalledType === jobStubType.updateLaborChangeJob, stubUpdateLaborChangeJob
+        expectedCalledType === jobStubType.updateLaborChangeJob, stubUpdateLaborChangeJob,
       );
     });
   });
