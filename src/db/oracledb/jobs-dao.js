@@ -362,4 +362,13 @@ const handleJob = async (osuId, body) => {
   }
 };
 
-export { getJobs, getJobByJobId, handleJob };
+export {
+  getJobs,
+  getJobByJobId,
+  handleJob,
+  updateLaborChangeJob,
+  studentJob,
+  graduateJob,
+  terminateJob,
+  isValidChangeReasonCode,
+};

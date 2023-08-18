@@ -160,6 +160,13 @@ const rawMedical = {
   codeDate: '2021-06-15',
 };
 
+const jobStubType = {
+  graduateJob: 1,
+  studentJob: 2,
+  terminateJob: 3,
+  updateLaborChangeJob: 4,
+};
+
 export {
   fakeOsuId,
   fakeBaseUrl,
@@ -173,4 +180,5 @@ export {
   fakeJobId,
   rawJob,
   rawMedical,
+  jobStubType,
 };

@@ -76,6 +76,21 @@ const resourceSubsetSchema = (resourceType, resourceAttributes) => {
 };
 
 /**
+ * Asserts that the stub was or was not called.
+ * If expectedToBeCalled is true then the stub must be called once.
+ * If expectedToBeCalled is false then the stub must have been called.
+ *
+ * @param {object} expectedToBeCalled indidates whether the stub should have been called
+ * @param {object} stub the stub
+ */
+const assertStubCalled = (expectedToBeCalled, stub) => {
+  if (expectedToBeCalled)
+    sinon.assert.calledOnce(stub);
+  else
+    sinon.assert.notCalled(stub);
+};
+
+/**
  * Helper function for lite-testing single resource
  *
  * @param {object} serializedResource serialized resource
@@ -113,4 +128,5 @@ export {
   getConnectionStub,
   daoBeforeEach,
   createConfigStub,
+  assertStubCalled,
 };
