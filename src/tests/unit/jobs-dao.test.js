@@ -17,10 +17,10 @@ describe('Test jobs-dao', () => {
   beforeEach(daoBeforeEach);
   afterEach(() => sinon.restore());
 
-  const createDaoProxy = (dbReturn, stubReturn) => {
+  const createDaoProxy = (firstDbReturn, otherDbReturn) => {
     const executeStub = sinon.stub();
-    executeStub.returns(stubReturn || { rows: [{}] });
-    executeStub.onCall(0).returns(dbReturn);
+    executeStub.returns(otherDbReturn || { rows: [{}] });
+    executeStub.onCall(0).returns(firstDbReturn);
     return proxyquire(daoPath, {
       './connection': {
         getConnection: sinon.stub().resolves({
@@ -39,6 +39,7 @@ describe('Test jobs-dao', () => {
       message: 'getJobByJobId should return single result',
       functionName: 'getJobByJobId',
       dbReturn: { rows: [{}] },
+//      dbReturn: laborDistExpected,//{ rows: [{}] },
       expected: laborDistExpected,
     },
     {
@@ -153,8 +154,9 @@ describe('Test jobs-dao', () => {
       assertStubCalled(expectedCalledType === jobStubType.graduateJob, stubGraduateJob);
       assertStubCalled(expectedCalledType === jobStubType.studentJob, stubStudentJob);
       assertStubCalled(expectedCalledType === jobStubType.terminateJob, stubTerminateJob);
-      assertStubCalled(expectedCalledType === jobStubType.updateLaborChangeJob,
-        stubUpdateLaborChangeJob);
+      assertStubCalled(
+        expectedCalledType === jobStubType.updateLaborChangeJob, stubUpdateLaborChangeJob
+      );
     });
   });
 
@@ -201,7 +203,7 @@ describe('Test jobs-dao', () => {
     });
   });
 
-  it('handleJob returns error for graduate with with non-termination code', () => {
+  it('handleJob returns error for graduate with non-termination code', () => {
     const expected = 'ZZZZ';
     const dbReturn = { rows: [{ count: 1 }], outBinds: { result: [expected] } };
     const postBody = { studentEmployeeInd: false, positionNumber: 'C50236', changeReason: { code: 'dummy' } };
