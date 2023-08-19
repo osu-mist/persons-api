@@ -17,10 +17,21 @@ describe('Test jobs-dao', () => {
   beforeEach(daoBeforeEach);
   afterEach(() => sinon.restore());
 
-  const createDaoProxy = (firstDbReturn, otherDbReturn) => {
+  /**
+   * createDaoProxy creates a proxy DAO using an array of results. dbReturns specifies the result
+   * for the specific call index. The last entry of dbReturns is repeated for calls beyond
+   * what is specifed in dbReturns.
+   *
+   * @param {object} dbReturns an array of results
+   */
+  const createDaoProxy = (dbReturns) => {
     const executeStub = sinon.stub();
-    executeStub.returns(otherDbReturn || { rows: [{}] });
-    executeStub.onCall(0).returns(firstDbReturn);
+
+    executeStub.returns(dbReturns[dbReturns.length - 1]);
+    for (let i = 0; i < dbReturns.length; i++) {
+      executeStub.onCall(i).returns(dbReturns[i]);
+    }
+
     return proxyquire(daoPath, {
       './connection': {
         getConnection: sinon.stub().resolves({
@@ -55,7 +66,7 @@ describe('Test jobs-dao', () => {
     expected,
   }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn);
+      const daoProxy = createDaoProxy([dbReturn, { rows: [{}] }]);
       const result = daoProxy[functionName](fakeOsuId, fakeJobId);
       return result.should.eventually.be.fulfilled.and.deep.equal(expected);
     });
@@ -76,7 +87,7 @@ describe('Test jobs-dao', () => {
     expected,
   }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn);
+      const daoProxy = createDaoProxy([dbReturn, { rows: [{}] }]);
       const result = daoProxy[functionName](fakeOsuId, fakeJobId);
       return result.should.eventually.be.rejectedWith(expected);
     });
@@ -145,7 +156,7 @@ describe('Test jobs-dao', () => {
       const stubStudentJob = sinon.stub(contrib, 'studentJob');
       const stubTerminateJob = sinon.stub(contrib, 'terminateJob');
       const stubUpdateLaborChangeJob = sinon.stub(contrib, 'updateLaborChangeJob');
-      const daoProxy = createDaoProxy(dbReturn, dbReturn);
+      const daoProxy = createDaoProxy([dbReturn]);
 
       const result = daoProxy.handleJob(fakeOsuId, postBody);
       await result.should.eventually.be.fulfilled.and.deep.equal(expected);
@@ -192,7 +203,7 @@ describe('Test jobs-dao', () => {
     expected,
   }) => {
     it(message, () => {
-      const daoProxy = createDaoProxy(dbReturn, dbReturn);
+      const daoProxy = createDaoProxy([dbReturn]);
       const result = daoProxy.handleJob(fakeOsuId, postBody);
 
       result.should
@@ -207,7 +218,7 @@ describe('Test jobs-dao', () => {
     const dbReturn = { rows: [{ count: 1 }], outBinds: { result: [expected] } };
     const postBody = { studentEmployeeInd: false, positionNumber: 'C50236', changeReason: { code: 'dummy' } };
 
-    const daoProxy = createDaoProxy(dbReturn, dbReturn);
+    const daoProxy = createDaoProxy([dbReturn]);
     const result = daoProxy.handleJob(fakeOsuId, postBody);
 
     result.should
