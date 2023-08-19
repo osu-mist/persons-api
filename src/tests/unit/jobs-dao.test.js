@@ -23,12 +23,13 @@ describe('Test jobs-dao', () => {
    * what is specifed in dbReturns.
    *
    * @param {object} dbReturns an array of results
+   * @returns {object} a proxy
    */
   const createDaoProxy = (dbReturns) => {
     const executeStub = sinon.stub();
 
     executeStub.returns(dbReturns[dbReturns.length - 1]);
-    for (let i = 0; i < dbReturns.length; i++) {
+    for (let i = 0; i < dbReturns.length; i += 1) {
       executeStub.onCall(i).returns(dbReturns[i]);
     }
 
