@@ -22,16 +22,16 @@ describe('Test jobs-dao', () => {
    * for the specific call index. The last entry of dbReturns is repeated for calls beyond
    * what is specifed in dbReturns.
    *
-   * @param {object} dbReturns an array of results
-   * @returns {object} a proxy
+   * @param {object[]} dbReturns an array of results
+   * @returns {object} a proxy DAO
    */
   const createDaoProxy = (dbReturns) => {
     const executeStub = sinon.stub();
 
     executeStub.returns(dbReturns[dbReturns.length - 1]);
-    for (let i = 0; i < dbReturns.length; i += 1) {
-      executeStub.onCall(i).returns(dbReturns[i]);
-    }
+    _.forEach(dbReturns, (dbReturn, i) => {
+      executeStub.onCall(i).returns(dbReturn);
+    });
 
     return proxyquire(daoPath, {
       './connection': {
