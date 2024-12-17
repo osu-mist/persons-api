@@ -665,9 +665,6 @@ components:
     EmailType:
       type: string
       enum: [emails]
-    MedicalType:
-      type: string
-      enum: [medical]
     PersonPostRequired:
       type: object
       required:
@@ -1844,51 +1841,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EmailResource'
-    MedicalAttributes:
-      type: object
-      additionalProperties: false
-      properties:
-        medicalType:
-          type: object
-          nullable: false
-          properties:
-            code:
-              type: string
-              nullable: false
-              enum: *medicalTypeEnums
-              description: *medicalTypeDescription
-            description:
-              type: string
-              nullable: false
-              description: Description of medical code
-        codeDate:
-          type: string
-          format: date
-          nullable: true
-          description: Date associated with this medical code
-          example: '1970-01-01'
-    MedicalResource:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique ID for a medical record
-          example: '918179'
-        type:
-          $ref: '#/components/schemas/MedicalType'
-        links:
-          $ref: '#/components/schemas/SelfLink'
-        attributes:
-          $ref: '#/components/schemas/MedicalAttributes'
-    MedicalSetResult:
-      type: object
-      properties:
-        links:
-          $ref: '#/components/schemas/SelfLink'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MedicalResource'
     SelfLink:
       type: object
       properties:
