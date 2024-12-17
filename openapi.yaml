@@ -508,7 +508,6 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
-  /persons/{osuId}/medical:
     get:
       description: Get medical data for a person
       summary: Get medical data for a person
