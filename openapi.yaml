@@ -76,7 +76,7 @@ paths:
         - jobs
       operationId: getJobs
       parameters:
-        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/osuIdOrOnid'
         - name: filter[positionNumber]
           in: query
           required: false
