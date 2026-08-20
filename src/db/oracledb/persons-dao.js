@@ -21,6 +21,22 @@ const personExists = async (osuId) => {
 };
 
 /**
+ * Returns person internal ID and OSU ID by ONID
+ *
+ * @param {string} onid ONID of a person
+ * @returns {Promise<object>} person identifiers
+ */
+const getPersonIdByOnid = async (onid) => {
+  const connection = await getConnection('banner');
+  try {
+    const { rows } = await connection.execute(contrib.getPersonIdByOnid(), { onid });
+    return rows.length > 0 ? rows[0] : null;
+  } finally {
+    connection.close();
+  }
+};
+
+/**
  * Uses passed in connection to query data source for person records
  *
  * @param {object} connection oracledb connection
