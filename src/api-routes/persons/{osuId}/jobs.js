@@ -1,5 +1,5 @@
 import { getJobs, getJobByJobId, handleJob } from 'db/oracledb/jobs-dao';
-import { personExists } from 'db/oracledb/persons-dao';
+import { personExists, getPersonIdByOnid } from 'db/oracledb/persons-dao';
 import { errorHandler, errorBuilder } from 'errors/errors';
 import { serializeJobs, serializePostOrPatch } from 'serializers/jobs-serializer';
 
