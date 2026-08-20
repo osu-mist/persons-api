@@ -15,6 +15,7 @@ const post = async (req, res) => {
 
     if (moment().isBefore(attributes.birthDate)) {
       return errorBuilder(res, 400, ["birthDate can't be a future date"]);
+      // hsdf
     }
 
     const result = await createPerson(attributes);
