@@ -8,17 +8,47 @@ import { serializeJobs, serializePostOrPatch } from 'serializers/jobs-serializer
  *
  * @type {RequestHandler}
  */
+// const get = async (req, res) => {
+//   try {
+//     const { query, params: { osuId } } = req;
+
+//     const internalId = await personExists(osuId);
+//     if (!internalId) {
+//       return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+//     }
+
+//     const results = await getJobs(internalId, query);
+//     const serializedJobs = serializeJobs(results, osuId, query);
+//     return res.send(serializedJobs);
+//   } catch (err) {
+//     return errorHandler(res, err);
+//   }
+// };
+
 const get = async (req, res) => {
   try {
     const { query, params: { osuId } } = req;
 
-    const internalId = await personExists(osuId);
+    let internalId;
+    let realOsuId = osuId;
+    const isOsuId = /^\d{9}$/.test(osuId);
+
+    if (isOsuId) {
+      internalId = await personExists(osuId);
+    } else {
+      const ids = await getPersonIdByOnid(osuId);
+      if (ids) {
+        internalId = ids.internalId;
+        realOsuId = ids.osuId;
+      }
+    }
+
     if (!internalId) {
-      return errorBuilder(res, 404, 'A person with the specified OSU ID was not found.');
+      return errorBuilder(res, 404, 'A person with the specified OSU ID or ONID was not found.');
     }
 
     const results = await getJobs(internalId, query);
-    const serializedJobs = serializeJobs(results, osuId, query);
+    const serializedJobs = serializeJobs(results, realOsuId, query);
     return res.send(serializedJobs);
   } catch (err) {
     return errorHandler(res, err);
