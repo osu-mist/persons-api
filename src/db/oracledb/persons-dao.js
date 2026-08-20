@@ -102,4 +102,6 @@ const createPerson = async (body) => {
   }
 };
 
-export { getPersonById, personExists, createPerson };
+export {
+  getPersonById, personExists, createPerson, getPersonIdByOnid,
+};
