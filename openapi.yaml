@@ -192,7 +192,7 @@ paths:
         - jobs
       operationId: getJobById
       parameters:
-        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/osuIdOrOnid'
         - $ref: '#/components/parameters/jobId'
       responses:
         '200':
@@ -518,6 +518,13 @@ components:
       schema:
         type: string
         pattern: ^\d{9}$
+    osuIdOrOnid:
+      name: osuId
+      in: path
+      required: true
+      description: OSU ID or ONID of a person
+      schema:
+        type: string
     jobId:
       name: jobId
       in: path
