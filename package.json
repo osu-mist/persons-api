@@ -50,7 +50,7 @@
     "query-string": "^6.13.1",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
-    "sharp": "^0.25.4",
+    "sharp": "^0.30.5",
     "simple-git": "^2.9.0",
     "source-map-support": "^0.5.19",
     "swagger-parser": "^9.0.1",
