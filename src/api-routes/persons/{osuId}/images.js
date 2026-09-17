@@ -2,7 +2,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 
 import { getImageById } from 'db/oracledb/images-dao';
-import { personExists } from 'db/oracledb/persons-dao';
+import { personExists, getPersonIdByOnid } from 'db/oracledb/persons-dao';
 import { errorHandler } from 'errors/errors';
 import { openapi } from 'utils/load-openapi';
 
@@ -17,7 +17,20 @@ const get = async (req, res) => {
   try {
     const { osuId } = req.params;
     const { width } = req.query;
-    const internalId = await personExists(osuId);
+    // const internalId = await personExists(osuId);
+
+    let internalId;
+    const isOsuId = /^\d{9}$/.test(osuId);
+
+    if (isOsuId) {
+      internalId = await personExists(osuId);
+    } else {
+      const ids = await getPersonIdByOnid(osuId);
+      if (ids) {
+        internalId = ids.internalId;
+      }
+    }
+
     let image;
 
     if (internalId) {

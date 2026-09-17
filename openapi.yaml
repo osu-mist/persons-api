@@ -274,7 +274,7 @@ paths:
         - images
       operationId: getImages
       parameters:
-        - $ref: '#/components/parameters/osuId'
+        - $ref: '#/components/parameters/osuIdOrOnid'
         - $ref: '#/components/parameters/imageWidth'
       responses:
         '200':
